@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary-blue: #0e6fa8;
+  --color-deep-blue: #073f68;
+  --color-soft-blue: #e8f5fb;
+  --color-ocean-green: #138a73;
+  --color-mint-green: #ddf6eb;
+  --color-warm-white: #fffdfa;
+  --color-soft-gray: #f5f8f9;
+  --color-dark-navy: #082238;
+  --color-warm-accent: #dca45d;
+  --color-ink-muted: #526475;
+  --color-border-soft: #dce7ec;
+  --shadow-soft-brand: 0 20px 50px color-mix(in srgb, var(--color-dark-navy) 12%, transparent);
+  --shadow-card-brand: 0 12px 30px color-mix(in srgb, var(--color-dark-navy) 9%, transparent);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--color-warm-white);
+  color: var(--color-dark-navy);
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+::selection {
+  background: rgba(22, 143, 122, 0.2);
+}
+
+.ocean-surface {
+  background:
+    radial-gradient(circle at 18% 18%, color-mix(in srgb, var(--color-mint-green) 92%, transparent), transparent 30%),
+    radial-gradient(circle at 78% 20%, color-mix(in srgb, var(--color-soft-blue) 92%, transparent), transparent 32%),
+    linear-gradient(135deg, var(--color-warm-white) 0%, var(--color-soft-blue) 52%, var(--color-warm-white) 100%);
+}
+
+.wave-grid {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--color-primary-blue) 9%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-ocean-green) 9%, transparent) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+.wave-lines {
+  background-image:
+    radial-gradient(120% 58% at 50% 120%, transparent 58%, color-mix(in srgb, var(--color-primary-blue) 18%, transparent) 59%, transparent 61%),
+    radial-gradient(110% 52% at 48% 118%, transparent 58%, color-mix(in srgb, var(--color-ocean-green) 16%, transparent) 59%, transparent 61%);
+  background-size: 420px 150px;
+}
+
+.ocean-card {
+  background:
+    radial-gradient(circle at 18% 14%, color-mix(in srgb, var(--color-mint-green) 72%, transparent), transparent 28%),
+    radial-gradient(circle at 80% 18%, color-mix(in srgb, var(--color-soft-blue) 78%, transparent), transparent 30%),
+    linear-gradient(135deg, var(--color-warm-white), var(--color-soft-gray));
+}
+
+.focus-ring {
+  @apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ocean-green;
+}
