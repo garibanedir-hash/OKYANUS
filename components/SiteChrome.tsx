@@ -10,7 +10,8 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
     pathname.startsWith("/admin") ||
     pathname.startsWith("/panel") ||
     pathname.startsWith("/koordinator") ||
-    pathname.startsWith("/personel");
+    pathname.startsWith("/personel") ||
+    pathname.startsWith("/tadilat");
 
   if (isPrivatePanel) {
     return <>{children}</>;
