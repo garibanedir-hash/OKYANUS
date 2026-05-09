@@ -1,5 +1,13 @@
+export function sanitizeCsvCell(value: string) {
+  const trimmedStart = value.trimStart();
+  if (/^[=+\-@\t\r]/.test(trimmedStart)) {
+    return `'${value}`;
+  }
+  return value;
+}
+
 function escapeCsvValue(value: string | number | boolean | null | undefined) {
-  const stringValue = String(value ?? "");
+  const stringValue = sanitizeCsvCell(String(value ?? ""));
   if (/[",\n]/.test(stringValue)) {
     return `"${stringValue.replaceAll('"', '""')}"`;
   }

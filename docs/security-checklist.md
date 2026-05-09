@@ -79,6 +79,11 @@
 - [ ] Public site admin linki göstermiyor.
 - [ ] proxy.ts admin route guard için hazır mı?
 - [ ] /admin/giris route'u koruma dışı mı?
+- [ ] /giris ve /kayit public auth route'ları koruma dışında mı?
+- [ ] /panel route'ları bağışçı/gönüllü account type ile korunuyor mu?
+- [ ] /koordinator route'ları koordinatör rolü ve assignment kapsamı ile korunuyor mu?
+- [ ] /personel route'ları sadece kendi görev/mesaj/profil verisine erişiyor mu?
+- [ ] /tadilat redirect loop dışında mı?
 
 ## Environment variables
 

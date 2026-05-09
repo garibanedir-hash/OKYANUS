@@ -1,3 +1,5 @@
+import "server-only";
+
 // GÜVENLİK NOTU:
 // Bu dosya client componentlerde asla import edilmemelidir.
 // SUPABASE_SECRET_KEY / SUPABASE_SERVICE_ROLE_KEY yalnızca server-side işlemler için kullanılmalıdır.

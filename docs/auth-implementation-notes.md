@@ -18,7 +18,9 @@ Bu route proxy korumasından muaftır. Sayfada demo mod açıklaması, güvenlik
 
 ## Next.js 16 proxy yaklaşımı
 
-Kök dizindeki `proxy.ts`, `/admin/:path*` matcher’ı ile çalışır. Demo mod açıkken admin route’larını engellemez. Demo kapalı ve Supabase env varsa session kontrolü yapmaya hazırlanmıştır.
+Kök dizindeki `proxy.ts`, bakım modu ve admin session yenileme/koruma hazırlığını birlikte yönetir. Matcher public route'ları, admin route'larını ve panel route'larını kapsar; statik assetler, `_next` dosyaları ve temel public dosyalar dışarıda bırakılır.
+
+Bakım modunda public route'lar `/tadilat` sayfasına yönlenir. `/admin`, `/admin/giris`, `/panel`, `/koordinator`, `/personel` ve `/api` route'ları geliştirme/demo erişimi için açık bırakılmıştır.
 
 ## Admin route guard
 
@@ -33,6 +35,19 @@ Kök dizindeki `proxy.ts`, `/admin/:path*` matcher’ı ile çalışır. Demo mo
 - `getAdminGuardState`
 
 fonksiyonları hazırdır.
+
+## Panel route guard stratejisi
+
+Bu aşamada gerçek auth zorunluluğu açılmamıştır; demo mode korunur. 8B ve sonrasında önerilen guard kapsamı:
+
+- `/admin`: Supabase session + admin role kontrolü.
+- `/panel`: bağışçı/gönüllü session ve account type kontrolü.
+- `/koordinator`: koordinatör rolü ve `coordinator_assignments` kapsam kontrolü.
+- `/personel`: personel rolü ve sadece kendi `staff_assignments`/task/message kayıtları.
+- `/giris`, `/kayit`, `/admin/giris`: koruma dışında kalır.
+- `/tadilat`: bakım sayfası her zaman redirect loop dışındadır.
+
+Panel route guard'ları UI seviyesine bırakılmamalı; proxy/server layout/server action katmanında da doğrulanmalıdır.
 
 ## Demo mode → gerçek mode geçişi
 

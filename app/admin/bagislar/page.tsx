@@ -2,7 +2,7 @@ import { mockDonations } from "@/data/adminMock";
 import { donationSummary } from "@/data/adminAnalyticsMock";
 import { projects } from "@/data/projects";
 import { prepareDonationExport } from "@/lib/export/donationExport";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, formatDate } from "@/lib/format";
 import { AdminActionButton } from "@/components/admin/AdminActionButton";
 import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
 import { AdminMiniStat } from "@/components/admin/AdminMiniStat";
@@ -92,7 +92,7 @@ export default function AdminDonationsPage() {
               <td className="px-4 py-3 text-ink-muted">{formatCurrency(donation.amount)}</td>
               <td className="px-4 py-3 text-ink-muted">{donation.donationType}</td>
               <td className="px-4 py-3 text-ink-muted">{project?.title ?? "Genel bağış"}</td>
-              <td className="px-4 py-3 text-ink-muted">{donation.date}</td>
+              <td className="px-4 py-3 text-ink-muted">{formatDate(donation.date)}</td>
               <td className="px-4 py-3"><AdminStatusBadge status={donation.paymentStatus} /></td>
               <td className="px-4 py-3"><AdminStatusBadge status={donation.receiptStatus} /></td>
               <td className="px-4 py-3"><div className="flex gap-2"><AdminActionButton>İncele</AdminActionButton><AdminActionButton>Makbuz</AdminActionButton></div></td>

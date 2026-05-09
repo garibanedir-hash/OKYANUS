@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "check:supabase-env": "node scripts/check-supabase-env.mjs",
+    "test:supabase": "node scripts/supabase-smoke-test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.2",
@@ -16,7 +18,8 @@
     "next": "^16.2.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "recharts": "^3.8.1"
+    "recharts": "^3.8.1",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@types/node": "^20.17.10",

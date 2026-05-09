@@ -41,7 +41,7 @@ export const mockDonations: MockDonation[] = [
     amount: 500,
     donationType: "Gıda Desteği",
     projectSlug: "bir-koli-bir-umut",
-    date: "6 Mayıs 2026",
+    date: "2026-05-06",
     status: "Demo kayıt",
     paymentStatus: "Demo",
     receiptStatus: "Demo",
@@ -53,7 +53,7 @@ export const mockDonations: MockDonation[] = [
     amount: 1000,
     donationType: "Eğitim Desteği",
     projectSlug: "yetim-cocuklara-egitim-destegi",
-    date: "5 Mayıs 2026",
+    date: "2026-05-05",
     status: "Beklemede",
     paymentStatus: "Beklemede",
     receiptStatus: "Bekliyor"
@@ -63,7 +63,7 @@ export const mockDonations: MockDonation[] = [
     donorName: "Kurumsal Destekçi",
     amount: 2500,
     donationType: "Genel Bağış",
-    date: "3 Mayıs 2026",
+    date: "2026-05-03",
     status: "Tamamlandı",
     paymentStatus: "Ödendi",
     receiptStatus: "Oluşturuldu"
