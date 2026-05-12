@@ -15,6 +15,7 @@ export function AdminChartCard({
 }) {
   return (
     <section className={cn("rounded-brand border border-border-soft bg-white p-5 shadow-card", className)}>
+      <div className="mb-4 h-1 w-20 rounded-full bg-gradient-to-r from-deep-blue to-ocean-green" />
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
           <h2 className="text-xl font-bold text-dark-navy">{title}</h2>

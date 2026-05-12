@@ -1,117 +1,126 @@
 # Okyanus İnsani Yardım Derneği Marka Rehberi
 
-## Marka adı
+## Marka Özü
 
-Okyanus İnsani Yardım Derneği
+Okyanus İnsani Yardım Derneği; toplumsal faydayı merkeze alan, ihtiyaç sahiplerine sürdürülebilir destek sağlamayı hedefleyen bir insani yardım kuruluşudur.
 
-## Marka özü
+Marka kavramları:
 
-Bir damlayla başlayan iyiliğin, emanet bilinci ve düzenli çalışma sistemiyle büyüyerek okyanusa dönüşmesi.
+- Güven
+- Şeffaflık
+- Umut
+- Dayanışma
+- Sürdürülebilir destek
+- İnsan odaklı yardım
 
-Okyanus markası derinlik, kuşatıcılık, süreklilik, umut, hayat, merhamet, temiz akış ve sınırları aşan dayanışma duygusunu taşır. Marka hissi şu cümlede özetlenir:
+Temel ifade:
 
-> Bu dernek hem gönlü olan hem de sistemi olan ciddi bir kurum.
+> İyilik Paylaştıkça Okyanusa Dönüşür.
 
-## Marka kişiliği
+## Logo Rasyoneli
 
-- Güven veren
-- Samimi ama ciddi
-- Kurumsal ve düzenli
-- Umut odaklı
-- İnsan onurunu koruyan
-- Şeffaf ve hesap verebilir
-- Manevi hassasiyeti olan ama herkese açık
+Logo; okyanus, dayanışma ve insan odaklı yardımlaşma fikrini temsil eder. Akışkan dalga formu süreklilik, birliktelik ve umut duygusunu ifade eder. Merkezdeki insan figürü yardımın odağındaki insanı simgeler.
 
-## Renk paleti
+Gerçek logo assetleri sağlanana kadar web arayüzünde kullanılan BrandMark geçici dijital logo temsilidir. Nihai logo yerine geçmez.
 
-Renkler CSS değişkenleri ve Tailwind tokenlarıyla yönetilir.
+## Logo Kullanım İlkeleri
 
-| Token | Kullanım | Anlam |
+- Logo oranları bozulmamalıdır.
+- Logo üzerine gölge, efekt veya farklı renk uygulanmamalıdır.
+- Açık zeminde renkli logo kullanılmalıdır.
+- Koyu zeminde beyaz/negatif kullanım tercih edilmelidir.
+- Logo çevresinde güvenli boşluk korunmalıdır.
+- Düşük kaliteli PDF kırpımları veya ekran görüntüleri logo asseti olarak kullanılmamalıdır.
+
+## Kurumsal Renkler
+
+Ana kurumsal renkler:
+
+| Renk | HEX | RGB | Kullanım |
+| --- | --- | --- | --- |
+| Koyu Lacivert | `#0F2547` | 15, 37, 71 | Başlıklar, koyu alanlar, güven ve kurumsallık |
+| Turkuaz | `#1F8083` | 31, 128, 131 | Vurgu, CTA, ikon, bağlantı ve umut hissi |
+
+Web token eşlemesi:
+
+| Token | Değer | Not |
 | --- | --- | --- |
-| `deep-blue` | Header, güçlü CTA, koyu alanlar | Güven, ciddiyet, kurumsallık |
-| `primary-blue` | Vurgu, ikon, progress | Okyanus, açıklık, yön duygusu |
-| `ocean-green` | Ana aksiyon, başarı, gönüllülük | Umut, yaşam, dayanışma |
-| `soft-blue` | Sayfa hero, kart iç yüzeyleri | Ferahlık, sakinlik |
-| `mint-green` | Yumuşak vurgu, badge, ikon arka planı | İyileşme, merhamet |
-| `warm-white` | Ana zemin | Temizlik, açıklık |
-| `soft-gray` | Bölüm arka planı, form alanları | Düzen, denge |
-| `dark-navy` | Başlık ve ana metin | Okunabilirlik, güven |
+| `deep-blue` | `#0F2547` | Ana kurumsal lacivert |
+| `dark-navy` | `#0F2547` | Metin ve koyu zemin |
+| `primary-blue` | `#1F8083` | Turkuaz vurgu |
+| `ocean-green` | `#1F8083` | CTA ve durum vurguları |
+| `soft-blue` | `#E8F2F3` | Hafif yüzey |
+| `mint-green` | `#DCEFED` | Yumuşak vurgu |
+| `warm-white` | `#FFFEFD` | Ana zemin |
+| `soft-gray` | `#F5F7F8` | Kart ve bölüm zemini |
 
-## Tipografi yaklaşımı
+## Tipografi Yaklaşımı
 
-- Sistem fontları ve modern sans-serif yapı kullanılır.
-- Başlıklar güçlü, kısa ve net olmalıdır.
-- Paragraflar rahat okunmalı; gereksiz uzun cümlelerden kaçınılmalıdır.
-- CTA metinleri doğrudan aksiyon söyler: “Bağış Yap”, “Gönüllü Ol”, “Projeye Destek Ol”.
-- Haber ve proje kartlarında kategori, tarih, başlık, özet ve aksiyon hiyerarşisi korunur.
+Kurumsal rehberde temel yazı tipleri:
 
-## Görsel dil
+- Gilroy-Black
+- Gilroy-Bold
+- Brittany Signature
+
+Font dosyaları projede sağlanmadığı için web arayüzü güvenli fallback kullanır:
+
+```text
+Gilroy, Inter, Arial, system-ui, sans-serif
+```
+
+Font dosyaları sağlandığında `next/font/local` ile bağlanacaktır. Başlıklarda güçlü, modern ve net sans-serif yapı korunmalıdır. Brittany Signature dijital UI içinde ana metin fontu olarak kullanılmamalı; gerekiyorsa sınırlı marka uygulamalarında değerlendirilmelidir.
+
+## Dijital Uygulama İlkeleri
+
+- Lacivert + turkuaz ana eksen olmalıdır.
+- Gradient kullanımı sınırlı ve kontrollü olmalıdır.
+- Beyaz alan güçlü tutulmalıdır.
+- Kartlar temiz, açık ve kurumsal görünmelidir.
+- CTA alanlarında sade dalga formu kullanılabilir.
+- Formlar label odaklı, erişilebilir ve sakin olmalıdır.
+- Renk tek başına anlam taşımaz; metin/ikon ile desteklenir.
+
+## Web UI Renk Tokenları
+
+Tüm web UI renkleri Tailwind tokenları ve CSS değişkenleri üzerinden yönetilir. Hard-coded renkler minimumda tutulmalıdır.
+
+Öncelikli tokenlar:
+
+- `bg-deep-blue`
+- `text-dark-navy`
+- `text-ocean-green`
+- `bg-ocean-green`
+- `bg-soft-blue`
+- `bg-mint-green`
+- `border-border-soft`
+
+## Fotoğraf/Görsel Kullanım İlkeleri
 
 - İnsan onurunu koruyan, umut veren ve doğal ışıklı görseller tercih edilir.
 - Yardım alan kişi pasif veya acındırılan bir figür olarak gösterilmez.
-- Gönüllü emeği, dayanışma, teslimat, eğitim, saha koordinasyonu ve temiz süreç hissi öne çıkarılır.
-- Gerçek fotoğraf yoksa soft gradient, abstract wave, subtle pattern ve icon-based placeholder kullanılır.
-- Aşırı dramatik, karanlık, stok hissi veren veya duygu sömürüsü yapan görseller kullanılmaz.
+- Gönüllü emeği, saha koordinasyonu, yardım kolisi, eğitim desteği ve düzenli takip hissi öne çıkarılır.
+- Çocuk görsellerinde mahremiyet ve izin hassasiyeti esastır.
+- Gerçek fotoğraf yoksa sade placeholder, dalga formu, ikon kartı veya marka pattern kullanılabilir.
 
-## Kullanılacak kelimeler
+## Sosyal Medya ve Saha Materyali Dili
 
-- emanet
-- dayanışma
-- umut
-- iyilik yolculuğu
-- destek
-- gönüllülük
-- paylaşma
-- ihtiyaç sahipleri
-- aileler
-- çocuklar
-- eğitim desteği
-- proje bazlı takip
-- şeffaflık
-- faaliyet raporu
+Kurumsal saha ve sosyal medya dilinin ortak özellikleri:
 
-## Kaçınılacak kelimeler
+- Beyaz zemin
+- Lacivert alt dalga formu
+- Turkuaz vurgu
+- Logo merkezli sade kullanım
+- Net hiyerarşi
+- “İyilik Paylaştıkça Okyanusa Dönüşür” mesajı
 
-- çaresiz
-- zavallı
-- perişan
-- acınacak durumda
-- mağdur edebiyatı
-- duygu sömürüsü yapan ifadeler
-- aşırı dramatik bağış çağrıları
+Bu dil web CTA alanlarında, kart alt çizgilerinde, bakım sayfasında ve görsel placeholderlarda kontrollü şekilde uygulanır.
 
-## CTA dili
+## Kaçınılacak Kullanımlar
 
-CTA metinleri baskıcı değil, net ve güven veren olmalıdır.
-
-Önerilen CTA metinleri:
-
-- Bağış Yap
-- Gönüllü Ol
-- Projeye Destek Ol
-- Bu Alana Destek Ver
-- Gönüllü Başvurusu Yap
-- Haberlere Dön
-
-Kaçınılması gereken CTA yaklaşımı:
-
-- Aşırı aciliyet hissi veren ve kullanıcıyı suçlu hissettiren metinler
-- Bağış yapmayan kişiyi dışlayan ifadeler
-- Uzun ve belirsiz komutlar
-
-## Fotoğraf kullanım ilkeleri
-
-- Fotoğraflar açık, doğal ve saygın olmalıdır.
-- Çocuk fotoğraflarında mahremiyet ve izin hassasiyeti gözetilmelidir.
-- Yakın plan acı, yoksunluk veya çaresizlik görüntüleri kullanılmamalıdır.
-- Saha çalışmaları; hazırlık, koordinasyon, teslimat ve gönüllü dayanışması üzerinden anlatılmalıdır.
-- Görsel alt metinleri erişilebilir ve açıklayıcı olmalıdır.
-
-## UI tasarım ilkeleri
-
-- Okyanus hissi hafif wave, radial gradient ve yumuşak geçişlerle verilir.
-- Kartlar sade, okunabilir ve gölgeleri yumuşak olmalıdır.
-- Formlar güven veren, erişilebilir ve label odaklı tasarlanmalıdır.
-- Renk anlamı tek başına yeterli olmamalı; ikon, metin veya durum açıklamasıyla desteklenmelidir.
-- Mobil deneyimde CTA’lar kolay erişilebilir ve metinler rahat okunabilir olmalıdır.
-- Header ve footer tüm sayfalarda aynı kurumsal hiyerarşiyi korumalıdır.
+- Logo oranını bozmak
+- Logoya gölge, glow veya efekt uygulamak
+- Eski mavi/yeşil tonları hard-code etmek
+- Aşırı gradient ve dekoratif karmaşa
+- Karanlık, dramatik ve duygu sömürüsü yapan görseller
+- Çocuk/sponsorluk verilerini açık kimlik bilgisiyle göstermek
+- “Çaresiz”, “zavallı”, “perişan” gibi insan onurunu zedeleyen ifadeler

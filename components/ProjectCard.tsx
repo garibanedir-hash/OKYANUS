@@ -23,8 +23,9 @@ export function ProjectCard({
   const progress = Math.min(Math.round((raised / goal) * 100), 100);
 
   return (
-    <article className="overflow-hidden rounded-brand border border-slate-200/80 bg-white shadow-card transition hover:-translate-y-1 hover:shadow-soft">
+    <article className="overflow-hidden rounded-brand border border-border-soft bg-white shadow-card transition hover:-translate-y-1 hover:shadow-soft">
       <VisualPlaceholder label={category} className={`h-48 bg-gradient-to-br ${visualTone}`} />
+      <div className="h-1 bg-gradient-to-r from-deep-blue to-ocean-green" />
       <div className="p-6">
         <h3 className="text-xl font-bold text-dark-navy">{title}</h3>
         <p className="mt-3 min-h-20 text-sm leading-6 text-slate-600">{description}</p>

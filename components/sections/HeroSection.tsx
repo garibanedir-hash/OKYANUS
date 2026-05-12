@@ -16,6 +16,7 @@ export function HeroSection() {
           <h1 className="max-w-3xl text-4xl font-extrabold leading-tight text-dark-navy sm:text-5xl lg:text-6xl">
             İyilik büyür, umut olur.
           </h1>
+          <p className="mt-4 text-base font-bold text-ocean-green">İyilik Paylaştıkça Okyanusa Dönüşür.</p>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
             Okyanus İnsani Yardım Derneği; bağışları kayıt altına alan, projeleri takip eden ve ihtiyaç sahiplerine insan
             onurunu gözeten destekler ulaştıran bir dayanışma platformudur.
@@ -41,8 +42,8 @@ export function HeroSection() {
           <div className="relative mx-auto w-full max-w-xl">
             <div className="absolute -inset-4 rounded-[2rem] bg-white/50 blur-2xl" />
             <div className="relative overflow-hidden rounded-[1.75rem] bg-white shadow-soft ring-1 ring-white/80">
-              <div className="h-80 bg-gradient-to-br from-deep-blue via-primary-blue to-ocean-green p-6 text-white sm:h-[27rem]">
-                <div className="flex h-full flex-col justify-between rounded-[1.3rem] border border-white/20 bg-white/10 p-5 backdrop-blur-sm">
+              <div className="h-80 bg-deep-blue p-6 text-white sm:h-[27rem]">
+                <div className="flex h-full flex-col justify-between rounded-[1.3rem] border border-white/15 bg-white/8 p-5 backdrop-blur-sm">
                   <div className="flex items-center justify-between">
                     <span className="rounded-full bg-white/18 px-3 py-1 text-xs font-semibold">Okyanus saha akışı</span>
                     <Droplets aria-hidden className="h-8 w-8 text-mint-green" />

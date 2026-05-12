@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function MaintenancePage() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-warm-white">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,148,179,0.18),transparent_32%),radial-gradient(circle_at_82%_18%,rgba(55,168,127,0.16),transparent_28%),linear-gradient(135deg,rgba(234,248,250,0.9),rgba(248,252,249,0.95))]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(31,128,131,0.14),transparent_32%),linear-gradient(135deg,rgba(255,254,253,0.96),rgba(232,242,243,0.92))]" />
       <div className="absolute inset-x-0 bottom-0 h-64 opacity-50">
         <div className="h-full rounded-t-[55%] bg-soft-blue" />
       </div>

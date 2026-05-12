@@ -12,6 +12,7 @@ export function DonationCTA() {
             <h2 className="mt-3 max-w-4xl text-3xl font-bold leading-tight sm:text-4xl">
               Bir iyilik, bazen bir ailenin sofrasına; bazen bir çocuğun defterine; bazen de soğuk bir gecede sıcak bir desteğe dönüşür.
             </h2>
+            <p className="mt-4 text-sm font-semibold text-white/78">İyilik Paylaştıkça Okyanusa Dönüşür.</p>
           </div>
           <Button href="/bagis-yap" variant="light" showIcon>
             Şimdi Bağış Yap

@@ -8,6 +8,7 @@ export function AdminKpiCard({ stat }: { stat: DashboardStat }) {
 
   return (
     <article className="rounded-brand border border-border-soft bg-white p-5 shadow-card">
+      <div className="mb-4 h-1 w-16 rounded-full bg-ocean-green" />
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-bold text-ink-muted">{stat.title}</p>
