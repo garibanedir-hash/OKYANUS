@@ -47,22 +47,41 @@ function loadLocalEnv() {
 const loadedEnvFile = loadLocalEnv();
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const keySource = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+  ? "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+  : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    ? "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+    : "none";
 
 const publicReadTables = ["projects", "news_posts", "reports", "activity_areas", "site_settings", "legal_pages"];
 const restrictedTables = [
   "donations",
+  "donation_transactions",
+  "donation_receipts",
   "volunteer_applications",
   "contact_messages",
   "internal_tasks",
+  "task_comments",
+  "internal_conversations",
   "internal_messages",
+  "message_read_receipts",
   "export_logs",
   "user_accounts",
   "donor_profiles",
   "volunteer_profiles",
   "sponsored_children",
   "sponsorships",
+  "portal_notifications",
+  "volunteer_events",
+  "event_applications",
   "role_permissions",
-  "panel_access_rules"
+  "panel_access_rules",
+  "coordinator_assignments",
+  "staff_assignments",
+  "profiles",
+  "admin_roles",
+  "audit_logs",
+  "media_assets"
 ];
 
 function isMissingTable(error) {
@@ -77,21 +96,32 @@ async function checkTable(supabase, table, expectedPublic) {
   const { error } = await supabase.from(table).select("*").limit(1);
 
   if (!error) {
-    console.log(`${table}: okunabilir${expectedPublic ? "" : " (UYARI: public kapalı olması beklenir)"}`);
-    return;
+    if (expectedPublic) {
+      console.log(`${table}: OK - public read`);
+      return "publicOk";
+    }
+
+    console.log(`${table}: FAIL / SECURITY WARNING - hassas tablo anon/public key ile okunabiliyor`);
+    return "securityWarning";
   }
 
   if (isMissingTable(error)) {
     console.log(`${table}: tablo bulunamadı; migration uygulanmamış olabilir.`);
-    return;
+    return "missing";
   }
 
   if (isRlsBlocked(error)) {
-    console.log(`${table}: RLS/permission engeli${expectedPublic ? " (public read için policy gerekebilir)" : " (beklenen güvenlik davranışı)"}`);
-    return;
+    if (expectedPublic) {
+      console.log(`${table}: RLS/permission engeli (public read için policy gerekebilir)`);
+      return "publicBlocked";
+    }
+
+    console.log(`${table}: OK - protected`);
+    return "protectedOk";
   }
 
   console.log(`${table}: kontrol hatası (${error.code ?? "no-code"}) ${error.message}`);
+  return "error";
 }
 
 if (!url || !key) {
@@ -108,14 +138,35 @@ const supabase = createClient(url, key, {
 });
 
 console.log(`Env dosyası: ${loadedEnvFile ?? "bulunamadı"}`);
+console.log(`Smoke test key kaynağı: ${keySource}`);
 console.log("Supabase read-only smoke test başlıyor. Write/insert/update/delete yapılmayacak.");
 
+const summary = {
+  publicOk: 0,
+  protectedOk: 0,
+  securityWarning: 0,
+  missing: 0,
+  publicBlocked: 0,
+  error: 0
+};
+
 for (const table of publicReadTables) {
-  await checkTable(supabase, table, true);
+  summary[await checkTable(supabase, table, true)] += 1;
 }
 
 for (const table of restrictedTables) {
-  await checkTable(supabase, table, false);
+  summary[await checkTable(supabase, table, false)] += 1;
 }
 
+console.log("Smoke test özeti");
+console.log(`Public read OK: ${summary.publicOk}`);
+console.log(`Protected OK: ${summary.protectedOk}`);
+console.log(`Security warning: ${summary.securityWarning}`);
+console.log(`Missing table: ${summary.missing}`);
+console.log(`Public blocked: ${summary.publicBlocked}`);
+console.log(`Diğer hata: ${summary.error}`);
 console.log("Supabase smoke test tamamlandı.");
+
+if (summary.securityWarning > 0) {
+  process.exit(1);
+}

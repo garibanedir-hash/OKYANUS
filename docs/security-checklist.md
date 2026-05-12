@@ -22,6 +22,10 @@
 - [ ] Hassas tablolar public read'e kapatıldı.
 - [ ] RLS policy'leri staging ortamında test edildi.
 - [ ] RLS policy testleri yapıldı mı?
+- [ ] Smoke test anon/publishable key ile çalışıyor mu?
+- [ ] Service role ile RLS testi yapılmadığı doğrulandı mı?
+- [ ] Bağış, gönüllü, iletişim, görev, mesaj, personel, sponsorluk ve çocuk verileri varsayılan kapalı mı?
+- [ ] Hassas tablolarda yanlışlıkla public SELECT policy kalmadı mı?
 
 ## Form validation
 
