@@ -63,3 +63,18 @@ Security warning sayısı 0'dan büyükse script exit code 1 ile bitmelidir.
 ## 8C Notu
 
 8C aşamasında authenticated ownership/role-based policies eklenecektir. Bu aşamada hassas tabloların varsayılan kapalı kalması önceliklidir.
+
+## Route Guard ve RLS İlişkisi
+
+8C route guard hazırlığı, kullanıcının doğru panele yönlendirilmesini ve korumalı route'lara oturumsuz erişimi engellemeyi hedefler. Bu katman tek başına veri güvenliği sayılmaz.
+
+RLS testlerinde ayrıca şu senaryolar doğrulanmalıdır:
+
+- Bağışçı yalnızca kendi `donations`, `donation_receipts` ve `sponsorships` kayıtlarını okuyabilmelidir.
+- Sponsor yalnızca kendi sponsorluk kayıtlarını ve maskeli çocuk/sponsorluk özetini görebilmelidir.
+- Gönüllü yalnızca kendi başvuru, etkinlik ve görev kapsamındaki kayıtları görebilmelidir.
+- Personel yalnızca kendi görevleri, yorumları ve mesaj konuşmalarını görebilmelidir.
+- Koordinatör yalnızca kendi `coordinator_assignments` kapsamındaki ekip/faaliyet verisini görebilmelidir.
+- Admin rolleri yalnızca `role_permissions` ile izin verilen modülleri okuyup yönetebilmelidir.
+
+Service role key bu testlerde kullanılmamalıdır; çünkü RLS'i bypass eder.

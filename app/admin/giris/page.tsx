@@ -23,7 +23,9 @@ export default async function AdminLoginPage({
       : params?.durum === "env-eksik"
         ? "Supabase env değişkenleri eksik. Giriş akışı başlatılamadı."
         : params?.durum === "hata"
-          ? params.mesaj ?? "Giriş başarısız."
+          ? "Giriş bilgileri doğrulanamadı."
+          : params?.durum === "yetkisiz"
+            ? "Bu hesap yönetim paneline erişim yetkisine sahip değil."
           : null;
 
   return (

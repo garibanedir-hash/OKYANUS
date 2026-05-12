@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { adminHomePath, isAdminDemoMode } from "@/config/admin";
+import { adminRoles, getRolesFromUser, hasAnyRole } from "@/lib/auth/routeGuard";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function signInAdmin(formData: FormData) {
@@ -17,12 +18,18 @@ export async function signInAdmin(formData: FormData) {
     redirect("/admin/giris?durum=env-eksik");
   }
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-  if (error) {
-    redirect(`/admin/giris?durum=hata&mesaj=${encodeURIComponent(error.message)}`);
+  if (error || !data.user) {
+    redirect("/admin/giris?durum=hata");
   }
 
-  // TODO: profiles/admin_roles tablosundan admin rol doğrulaması yapılmalı.
+  const roles = getRolesFromUser(data.user);
+  if (!hasAnyRole(roles, adminRoles)) {
+    await supabase.auth.signOut();
+    redirect("/admin/giris?durum=yetkisiz");
+  }
+
+  // TODO: 8D'de profiles/admin_roles/user_accounts/role_permissions üzerinden read-only rol doğrulaması RLS ile bağlanacak.
   redirect(adminHomePath);
 }

@@ -28,11 +28,18 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] `/koordinator` assignment kapsamıyla korunuyor.
 - [ ] `/personel` yalnızca kendi verisini gösteriyor.
 - [ ] Demo paneller production öncesi kapatıldı veya auth ile korundu.
+- [ ] `NEXT_PUBLIC_ADMIN_DEMO_MODE=false` production ortamında doğrulandı.
+- [ ] `/giris`, `/kayit`, `/admin/giris` dışındaki korumalı paneller oturumsuz erişimde login sayfasına yönleniyor.
+- [ ] Bilinmeyen veya yetkisiz rol güvenli fallback ile panele alınmıyor.
+- [ ] İlk Super Admin hesabı oluşturuldu ve audit/security sorumlusu tarafından doğrulandı.
 
 ## Veri Güvenliği ve KVKK
 
 - [ ] Çocuk/sponsorluk verileri maskeli ve sınırlı görünüyor.
 - [ ] Bağışçı ve gönüllü kişisel verileri rol bazlı korunuyor.
+- [ ] Sponsor yalnızca kendi sponsorluk kayıtlarını görebiliyor.
+- [ ] Personel yalnızca kendi görev ve mesajlarını görebiliyor.
+- [ ] Koordinatör yalnızca kendi ekip/faaliyet kapsamını görebiliyor.
 - [ ] KVKK/hukuk danışmanı yasal metinleri kontrol etti.
 - [ ] Veri saklama ve imha politikası belirlendi.
 

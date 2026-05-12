@@ -1,9 +1,19 @@
 export type AppRole =
   | "super_admin"
+  | "admin"
   | "content_editor"
   | "donation_manager"
   | "volunteer_coordinator"
-  | "reporting_manager";
+  | "reporting_manager"
+  | "coordinator"
+  | "koordinator"
+  | "staff"
+  | "personnel"
+  | "personel"
+  | "donor"
+  | "bagisci"
+  | "volunteer"
+  | "gonullu";
 
 export type ProjectStatus = "planning" | "active" | "completed" | "paused" | "archived";
 export type DonationStatus = "pending" | "completed" | "failed" | "cancelled" | "refunded";
@@ -152,6 +162,15 @@ export type AdminAuthState = {
   supabaseConfigured: boolean;
   session?: AdminSession;
 };
+
+export type AdminGuardMode = "demo" | "authenticated" | "missing_env" | "auth_required" | "forbidden";
+
+export type RouteGuardResult =
+  | { allowed: true; mode: "demo"; reason: string }
+  | { allowed: true; mode: "authenticated"; user: AuthUser; roles: AppRole[]; redirectTo: string }
+  | { allowed: false; mode: "missing_env" | "auth_required" | "forbidden"; reason: string; loginPath: string };
+
+export type PanelScope = "admin" | "portal" | "coordinator" | "personnel";
 
 export type AccountType = "Bağışçı" | "Gönüllü" | "Bağışçı + Gönüllü" | "Koordinatör" | "Personel" | "Admin";
 

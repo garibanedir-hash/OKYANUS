@@ -3,6 +3,7 @@
 ## Auth
 
 - [ ] Admin route'ları auth gerektiriyor.
+- [ ] `NEXT_PUBLIC_ADMIN_DEMO_MODE=false` olduğunda `/admin`, `/panel`, `/koordinator`, `/personel` route'ları server-side guard ile korunuyor.
 - [ ] MFA ihtiyacı değerlendirildi.
 - [ ] Oturum süresi ve güvenli çıkış tanımlandı.
 - [ ] Supabase env değişkenleri tanımlandı mı?
@@ -15,6 +16,8 @@
 - [ ] UI aksiyonları role göre sınırlandı.
 - [ ] Backend/server action yetki kontrolü eklendi.
 - [ ] Admin role validation server-side yapılacak mı?
+- [ ] Route guard yalnızca client-side görünürlük olarak kalmıyor; proxy/server action/server layout katmanında doğrulanıyor.
+- [ ] Bilinmeyen rol güvenli fallback route'a yönlendiriliyor.
 
 ## RLS
 
@@ -26,6 +29,7 @@
 - [ ] Service role ile RLS testi yapılmadığı doğrulandı mı?
 - [ ] Bağış, gönüllü, iletişim, görev, mesaj, personel, sponsorluk ve çocuk verileri varsayılan kapalı mı?
 - [ ] Hassas tablolarda yanlışlıkla public SELECT policy kalmadı mı?
+- [ ] RLS, route guard'dan bağımsız şekilde asıl veri güvenliği katmanı olarak korunuyor mu?
 
 ## Form validation
 
@@ -88,6 +92,8 @@
 - [ ] /koordinator route'ları koordinatör rolü ve assignment kapsamı ile korunuyor mu?
 - [ ] /personel route'ları sadece kendi görev/mesaj/profil verisine erişiyor mu?
 - [ ] /tadilat redirect loop dışında mı?
+- [ ] `/admin/giris`, `/giris` ve `/kayit` route'ları auth guard dışında kalıyor mu?
+- [ ] Demo mode production'da kapatılıyor mu?
 
 ## Environment variables
 

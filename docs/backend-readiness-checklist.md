@@ -26,7 +26,17 @@
 
 ## 8C Hazırlığı
 
+- [ ] `/admin`, `/panel`, `/koordinator`, `/personel` için proxy/server guard hazırlığı tamamlandı.
+- [ ] `NEXT_PUBLIC_ADMIN_DEMO_MODE=true` demo erişimi, `false` auth guard davranışı net.
+- [ ] Public login/register ve admin login server action'ları Supabase Auth'a hazır.
+- [ ] Role redirect fallback stratejisi belirlendi.
 - [ ] Authenticated ownership policy tasarımı hazır.
 - [ ] Admin/role-based policy tasarımı hazır.
 - [ ] Audit log policy tasarımı hazır.
 - [ ] Export yetki/audit modeli hazır.
+
+## 8D Öncesi Ek Kontroller
+
+- [ ] `profiles`, `user_accounts`, `admin_roles`, `role_permissions` read-only doğrulaması RLS ile test edildi.
+- [ ] İlk Super Admin kurulum akışı staging ortamında doğrulandı.
+- [ ] Bağışçı/gönüllü/koordinatör/personel test hesaplarıyla beklenen panel yönlendirmeleri çalışıyor.
