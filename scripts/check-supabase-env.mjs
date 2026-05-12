@@ -1,3 +1,49 @@
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+
+function parseEnv(content) {
+  const entries = {};
+
+  for (const line of content.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+
+    const normalized = trimmed.startsWith("export ") ? trimmed.slice(7).trim() : trimmed;
+    const separatorIndex = normalized.indexOf("=");
+    if (separatorIndex === -1) continue;
+
+    const key = normalized.slice(0, separatorIndex).trim();
+    let value = normalized.slice(separatorIndex + 1).trim();
+
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    } else {
+      value = value.replace(/\s+#.*$/, "");
+    }
+
+    if (key) entries[key] = value.replaceAll("\\n", "\n");
+  }
+
+  return entries;
+}
+
+function loadLocalEnv() {
+  const candidates = [".env.local", ".env"];
+  const found = candidates.find((file) => existsSync(join(process.cwd(), file)));
+
+  if (!found) return null;
+
+  const parsed = parseEnv(readFileSync(join(process.cwd(), found), "utf8"));
+  for (const [key, value] of Object.entries(parsed)) {
+    if (process.env[key] === undefined) {
+      process.env[key] = value;
+    }
+  }
+
+  return found;
+}
+
+const loadedEnvFile = loadLocalEnv();
 const publicUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -9,6 +55,7 @@ function status(value) {
 }
 
 console.log("Supabase env kontrolü");
+console.log(`Env dosyası: ${loadedEnvFile ?? "bulunamadı"}`);
 console.log(`NEXT_PUBLIC_SUPABASE_URL: ${status(publicUrl)}`);
 console.log(`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${status(publishableKey)}`);
 console.log(`NEXT_PUBLIC_SUPABASE_ANON_KEY: ${status(anonKey)}`);
