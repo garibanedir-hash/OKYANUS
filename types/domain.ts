@@ -172,6 +172,16 @@ export type RouteGuardResult =
 
 export type PanelScope = "admin" | "portal" | "coordinator" | "personnel";
 
+export type AuthAccount = {
+  id: string;
+  authUserId: string;
+  fullName: string;
+  email: string;
+  accountType: string;
+  role: string;
+  status: string;
+};
+
 export type AccountType = "Bağışçı" | "Gönüllü" | "Bağışçı + Gönüllü" | "Koordinatör" | "Personel" | "Admin";
 
 export type PortalUser = {

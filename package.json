@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint .",
     "check:supabase-env": "node scripts/check-supabase-env.mjs",
-    "test:supabase": "node scripts/supabase-smoke-test.mjs"
+    "test:supabase": "node scripts/supabase-smoke-test.mjs",
+    "test:supabase-auth": "node scripts/supabase-auth-smoke-test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.2",

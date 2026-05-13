@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { adminHomePath, isAdminDemoMode } from "@/config/admin";
-import { adminRoles, getRolesFromUser, hasAnyRole } from "@/lib/auth/routeGuard";
+import { adminRoles, getRolesForUser, hasAnyRole } from "@/lib/auth/routeGuard";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function signInAdmin(formData: FormData) {
@@ -24,7 +24,7 @@ export async function signInAdmin(formData: FormData) {
     redirect("/admin/giris?durum=hata");
   }
 
-  const roles = getRolesFromUser(data.user);
+  const roles = await getRolesForUser(data.user);
   if (!hasAnyRole(roles, adminRoles)) {
     await supabase.auth.signOut();
     redirect("/admin/giris?durum=yetkisiz");

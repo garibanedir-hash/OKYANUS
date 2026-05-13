@@ -78,3 +78,21 @@ RLS testlerinde ayrıca şu senaryolar doğrulanmalıdır:
 - Admin rolleri yalnızca `role_permissions` ile izin verilen modülleri okuyup yönetebilmelidir.
 
 Service role key bu testlerde kullanılmamalıdır; çünkü RLS'i bypass eder.
+
+## 007 Authenticated Policy Testleri
+
+`supabase/migrations/007_authenticated_role_policies.sql` staging ortamında çalıştırıldıktan sonra aşağıdaki senaryolar rol bazlı test kullanıcılarıyla doğrulanmalıdır:
+
+- Giriş yapmış bağışçı kendi `donations` kayıtlarını görebilir.
+- Giriş yapmış bağışçı başkasının bağış kaydını göremez.
+- Sponsor kendi `sponsorships` kaydını ve yalnızca maskeli/sınırlı `sponsored_children_safe` görünümünü görebilir.
+- Sponsor başka sponsorluk kaydını göremez.
+- Gönüllü kendi `volunteer_applications`, `event_applications` ve `portal_notifications` kayıtlarını görebilir.
+- Personel yalnızca `assigned_to = auth.uid()` olan `internal_tasks` kayıtlarını görebilir.
+- Personel yalnızca kendi göreviyle ilişkili yorum/mesaj kayıtlarını görebilir.
+- Koordinatör yalnızca kendi `coordinator_assignments` ve ekip kapsamındaki kayıtları görebilir.
+- Admin yetkisiz modüle ait veriyi `role_permissions` olmadan görememelidir.
+- Super Admin yönetim tablolarını kontrollü şekilde okuyabilmelidir.
+- Public/anon kullanıcılar 006 lockdown sonrası hassas tabloları hâlâ görememelidir.
+
+Not: Mevcut bağış ownership taslağı `donor_email = auth.email()` kontrolünü kullanır. 8E aşamasında `donations.user_account_id` veya `donor_profile_id` gibi doğrudan ilişki alanı eklenmesi önerilir.

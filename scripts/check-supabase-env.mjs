@@ -63,6 +63,8 @@ console.log(`SUPABASE_SECRET_KEY: ${status(secretKey)}`);
 console.log(`SUPABASE_SERVICE_ROLE_KEY: ${status(serviceRoleKey)}`);
 console.log(`NEXT_PUBLIC_ADMIN_DEMO_MODE: ${process.env.NEXT_PUBLIC_ADMIN_DEMO_MODE ?? "tanımsız (demo default)"}`);
 console.log(`SITE_MAINTENANCE_MODE: ${process.env.SITE_MAINTENANCE_MODE ?? "tanımsız (false default)"}`);
+console.log(`TEST_AUTH_EMAIL: ${status(process.env.TEST_AUTH_EMAIL)}`);
+console.log(`TEST_AUTH_PASSWORD: ${status(process.env.TEST_AUTH_PASSWORD)}`);
 
 if (!publicUrl || (!publishableKey && !anonKey)) {
   console.log("Public Supabase env eksik. Proje demo/mock modda çalışmaya devam eder.");

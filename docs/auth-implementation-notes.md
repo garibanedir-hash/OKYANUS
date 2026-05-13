@@ -96,6 +96,17 @@ Bilinmeyen rol güvenli fallback olarak `/giris` yoluna yönlendirilir.
 
 Route guard erişim katmanıdır; asıl veri güvenliği RLS ile sağlanmalıdır. Bağışçı yalnızca kendi bağışlarını, sponsor yalnızca kendi sponsorluklarını, gönüllü yalnızca kendi başvuru/görevlerini, personel yalnızca kendi görev/mesajlarını ve koordinatör yalnızca kendi ekip/faaliyet kapsamını görebilmelidir. Yetim/çocuk verileri maskeli ve sınırlı kalmalıdır.
 
+## 8D Read-only profil/rol doğrulama
+
+8D ile `lib/auth/routeGuard.ts` şu kaynaklardan rol okumaya hazırlanmıştır:
+
+- Supabase Auth metadata (`role`, `roles`, `account_type`)
+- `user_accounts.role` ve `user_accounts.account_type`
+- `profiles.role`
+- `role_permissions` üzerinden modül/aksiyon yetkileri
+
+Demo mode açıkken bu sorgular erişimi engellemez. Demo mode kapatıldığında Supabase session yoksa veya read-only rol sorguları yetkili rol döndürmezse erişim reddedilir. Production seviyesinde metadata yalnız başına güvenlik kaynağı kabul edilmemeli; database + RLS doğrulaması esas alınmalıdır.
+
 ## Profile ve admin_roles ilişkisi
 
 Auth user id, `profiles.id` ile eşleşmelidir. Rol bilgisi `profiles.role` üzerinden okunabilir. Daha gelişmiş ihtiyaçlarda `admin_roles` ve permission tabloları eklenebilir.

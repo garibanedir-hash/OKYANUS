@@ -1,8 +1,48 @@
 import type { User } from "@supabase/supabase-js";
 import { isAdminDemoMode } from "@/config/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { AppRole, AuthUser, PanelScope, RouteGuardResult } from "@/types/domain";
+import type { AppRole, AuthAccount, AuthUser, PanelScope, PermissionAction, PermissionModule, RolePermission, RouteGuardResult } from "@/types/domain";
 import { getDefaultPanelPathForRole, normalizeRole } from "@/lib/auth/roleRedirect";
+
+type QueryResult<T> = Promise<{ data: T | null; error: { message?: string; code?: string } | null }>;
+
+type ReadOnlyQueryBuilder<T> = {
+  select: (columns?: string) => ReadOnlyQueryBuilder<T>;
+  eq: (column: string, value: string | boolean) => ReadOnlyQueryBuilder<T>;
+  in: (column: string, values: string[]) => ReadOnlyQueryBuilder<T>;
+  limit: (count: number) => ReadOnlyQueryBuilder<T>;
+  maybeSingle: () => QueryResult<T>;
+  then: Promise<{ data: T[] | null; error: { message?: string; code?: string } | null }>["then"];
+};
+
+type ReadOnlySupabaseClient = {
+  from: <T>(table: string) => ReadOnlyQueryBuilder<T>;
+};
+
+type UserAccountRow = {
+  id: string;
+  auth_user_id: string;
+  full_name: string;
+  email: string;
+  account_type: string;
+  role: string;
+  status: string;
+};
+
+type ProfileRow = {
+  id: string;
+  full_name: string;
+  email: string;
+  role: string;
+  status: string;
+};
+
+type RolePermissionRow = {
+  role: string;
+  permission_module: string;
+  permission_action: string;
+  allowed: boolean;
+};
 
 export const adminRoles: AppRole[] = [
   "super_admin",
@@ -147,12 +187,142 @@ export async function getCurrentUser(): Promise<User | null> {
 }
 
 export async function getCurrentAccount() {
-  // TODO: 8D aşamasında `user_accounts` tablosundan authenticated ownership policy ile okunacak.
-  return null;
+  const user = await getCurrentUser();
+  if (!user) {
+    return null;
+  }
+
+  return getAccountForUser(user);
+}
+
+export async function getAccountForUser(user: User): Promise<AuthAccount | null> {
+  if (isDemoMode() || !isSupabaseConfigured()) {
+    return null;
+  }
+
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return null;
+  }
+
+  const db = supabase as unknown as ReadOnlySupabaseClient;
+  const { data, error } = await db
+    .from<UserAccountRow>("user_accounts")
+    .select("id, auth_user_id, full_name, email, account_type, role, status")
+    .eq("auth_user_id", user.id)
+    .eq("status", "active")
+    .maybeSingle();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return {
+    id: data.id,
+    authUserId: data.auth_user_id,
+    fullName: data.full_name,
+    email: data.email,
+    accountType: data.account_type,
+    role: data.role,
+    status: data.status
+  };
+}
+
+async function getProfileRolesForUser(user: User): Promise<AppRole[]> {
+  if (isDemoMode() || !isSupabaseConfigured()) {
+    return [];
+  }
+
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return [];
+  }
+
+  const db = supabase as unknown as ReadOnlySupabaseClient;
+  const { data, error } = await db
+    .from<ProfileRow>("profiles")
+    .select("id, full_name, email, role, status")
+    .eq("id", user.id)
+    .eq("status", "active")
+    .maybeSingle();
+
+  if (error || !data) {
+    return [];
+  }
+
+  const normalized = normalizeRole(data.role);
+  return normalized && normalized !== "Bağışçı" && normalized !== "Gönüllü" && normalized !== "Bağışçı + Gönüllü"
+    ? [normalized as AppRole]
+    : [];
 }
 
 export async function getCurrentRoles() {
-  return getRolesFromUser(await getCurrentUser());
+  const user = await getCurrentUser();
+  if (!user) {
+    return [];
+  }
+
+  return getRolesForUser(user);
+}
+
+export async function getRolesForUser(user: User): Promise<AppRole[]> {
+  const metadataRoles = getRolesFromUser(user);
+  const account = await getAccountForUser(user);
+  const accountRoles = account ? getRolesFromUserLikeValues([account.role, account.accountType]) : [];
+  const profileRoles = await getProfileRolesForUser(user);
+
+  return Array.from(new Set([...metadataRoles, ...accountRoles, ...profileRoles]));
+}
+
+function getRolesFromUserLikeValues(values: string[]) {
+  return values.flatMap((value) => {
+    const normalized = normalizeRole(value);
+
+    if (normalized === "Bağışçı + Gönüllü") {
+      return ["donor", "volunteer"] satisfies AppRole[];
+    }
+
+    if (normalized === "Bağışçı") {
+      return ["donor"] satisfies AppRole[];
+    }
+
+    if (normalized === "Gönüllü") {
+      return ["volunteer"] satisfies AppRole[];
+    }
+
+    return normalized ? [normalized as AppRole] : [];
+  });
+}
+
+export async function getCurrentPermissions(): Promise<RolePermission[]> {
+  const roles = await getCurrentRoles();
+  if (!roles.length || isDemoMode() || !isSupabaseConfigured()) {
+    return [];
+  }
+
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return [];
+  }
+
+  const db = supabase as unknown as ReadOnlySupabaseClient;
+  const { data, error } = await db
+    .from<RolePermissionRow>("role_permissions")
+    .select("role, permission_module, permission_action, allowed")
+    .in("role", roles)
+    .eq("allowed", true)
+    .limit(500);
+
+  if (error || !Array.isArray(data)) {
+    return [];
+  }
+
+  return data.map((permission) => ({
+    role: permission.role,
+    module: permission.permission_module as PermissionModule,
+    action: permission.permission_action as PermissionAction,
+    allowed: permission.allowed
+  }));
 }
 
 export async function requireAnyRole(allowedRoles: AppRole[]): Promise<RouteGuardResult> {
@@ -169,7 +339,7 @@ export async function requireAnyRole(allowedRoles: AppRole[]): Promise<RouteGuar
     return { allowed: false, mode: "auth_required", reason: "Oturum bulunamadı.", loginPath: "/giris" };
   }
 
-  const roles = getRolesFromUser(user);
+  const roles = await getRolesForUser(user);
   if (!hasAnyRole(roles, allowedRoles)) {
     return { allowed: false, mode: "forbidden", reason: "Bu panele erişim yetkiniz yok.", loginPath: "/giris" };
   }
@@ -186,8 +356,13 @@ export async function canAccessModule(moduleName: string, action: string) {
     return true;
   }
 
-  // TODO: `role_permissions` tablosu authenticated role policy ile açıldığında gerçek modül yetkisi kontrol edilecek.
-  return Boolean(moduleName && action);
+  const permissions = await getCurrentPermissions();
+  return permissions.some(
+    (permission) =>
+      permission.allowed &&
+      permission.module === moduleName &&
+      permission.action === action
+  );
 }
 
 export async function getRouteGuardState(pathname: string) {

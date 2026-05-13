@@ -1,5 +1,6 @@
 import type { User } from "@supabase/supabase-js";
 import { adminAuthEnabled, isAdminDemoMode } from "@/config/admin";
+import { adminRoles, getRolesForUser } from "@/lib/auth/routeGuard";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { AdminGuardResult, AdminPermission, SupabaseProfile } from "@/types/domain";
 
@@ -37,12 +38,19 @@ export async function getCurrentAdminProfile(): Promise<SupabaseProfile | null> 
     return null;
   }
 
-  // TODO: profiles/admin_roles tablosu bağlandığında gerçek profil sorgusu yapılacak.
+  const roles = await getRolesForUser(user);
+  const role = roles.find((currentRole) => adminRoles.includes(currentRole));
+
+  if (!role) {
+    return null;
+  }
+
+  // TODO: 8D sonrası profiles/admin_roles tablosundan full profile alanları read-only doğrulanacak.
   return {
     id: user.id,
     fullName: user.email ?? "Admin Kullanıcı",
     email: user.email ?? "",
-    role: "content_editor",
+    role,
     status: "active",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()

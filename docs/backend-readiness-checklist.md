@@ -40,3 +40,20 @@
 - [ ] `profiles`, `user_accounts`, `admin_roles`, `role_permissions` read-only doğrulaması RLS ile test edildi.
 - [ ] İlk Super Admin kurulum akışı staging ortamında doğrulandı.
 - [ ] Bağışçı/gönüllü/koordinatör/personel test hesaplarıyla beklenen panel yönlendirmeleri çalışıyor.
+
+## 8D Authenticated Policy Kontrolleri
+
+- [ ] İlk Super Admin Auth kullanıcısı oluşturuldu.
+- [ ] İlk Super Admin için `profiles` kaydı oluşturuldu.
+- [ ] İlk Super Admin için `user_accounts` kaydı oluşturuldu.
+- [ ] `admin_roles` ve `role_permissions` kayıtları oluşturuldu.
+- [ ] `NEXT_PUBLIC_ADMIN_DEMO_MODE=false` staging denemesi yapıldı.
+- [ ] `/admin/giris` login testi geçti.
+- [ ] `npm run test:supabase-auth` test kullanıcısıyla çalıştı veya test env yoksa kontrollü atladı.
+- [ ] 007 authenticated policy staging ortamında çalıştırıldı.
+- [ ] Bağışçı kendi verisini görebiliyor.
+- [ ] Bağışçı başkasının verisini göremiyor.
+- [ ] Gönüllü kendi başvuru/görev verisini görebiliyor.
+- [ ] Personel yalnızca kendi görev/mesaj kayıtlarını görebiliyor.
+- [ ] Koordinatör yalnızca kendi ekip/faaliyet kapsamına erişiyor.
+- [ ] Public lockdown hâlâ korunuyor ve `npm run test:supabase` Security warning 0 veriyor.
