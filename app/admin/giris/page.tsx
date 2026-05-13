@@ -17,16 +17,14 @@ export default async function AdminLoginPage({
 }) {
   const configured = isSupabaseConfigured();
   const params = await searchParams;
-  const statusMessage =
-    params?.durum === "demo"
-      ? "Demo mod aktif. Gerçek giriş yapılmaz; /admin route'u önizleme için açıktır."
-      : params?.durum === "env-eksik"
-        ? "Supabase env değişkenleri eksik. Giriş akışı başlatılamadı."
-        : params?.durum === "hata"
-          ? "Giriş bilgileri doğrulanamadı."
-          : params?.durum === "yetkisiz"
-            ? "Bu hesap yönetim paneline erişim yetkisine sahip değil."
-          : null;
+  const statusMessages: Record<string, string> = {
+    demo: "Demo mod aktif. Gerçek giriş yapılmaz; /admin route'u önizleme için açıktır.",
+    "env-eksik": "Supabase env değişkenleri eksik. Giriş akışı başlatılamadı.",
+    hata: "Giriş bilgileri doğrulanamadı.",
+    yetkisiz: "Bu hesap yönetim paneline erişim yetkisine sahip değil.",
+    "rol-dogrulanamadi": "Rol bilgisi doğrulanamadı. Lütfen yöneticiyle iletişime geçin."
+  };
+  const statusMessage = params?.durum ? statusMessages[params.durum] : null;
 
   return (
     <main className="min-h-screen bg-soft-gray px-5 py-12">

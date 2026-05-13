@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { adminHomePath, isAdminDemoMode } from "@/config/admin";
-import { adminRoles, getRolesForUser, hasAnyRole } from "@/lib/auth/routeGuard";
+import { type ReadOnlySupabaseClient, verifyAdminAccessForUser } from "@/lib/auth/routeGuard";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function signInAdmin(formData: FormData) {
@@ -24,12 +24,17 @@ export async function signInAdmin(formData: FormData) {
     redirect("/admin/giris?durum=hata");
   }
 
-  const roles = await getRolesForUser(data.user);
-  if (!hasAnyRole(roles, adminRoles)) {
+  const access = await verifyAdminAccessForUser(data.user, supabase as unknown as ReadOnlySupabaseClient);
+  if (!access.allowed) {
     await supabase.auth.signOut();
+
+    if (access.reason === "unverified") {
+      redirect("/admin/giris?durum=rol-dogrulanamadi");
+    }
+
     redirect("/admin/giris?durum=yetkisiz");
   }
 
-  // TODO: 8D'de profiles/admin_roles/user_accounts/role_permissions üzerinden read-only rol doğrulaması RLS ile bağlanacak.
+  // admin_roles rol tanım tablosudur; kullanıcı-rol bağlantısı olarak kullanılmaz.
   redirect(adminHomePath);
 }

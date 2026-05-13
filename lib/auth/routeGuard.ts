@@ -15,7 +15,7 @@ type ReadOnlyQueryBuilder<T> = {
   then: Promise<{ data: T[] | null; error: { message?: string; code?: string } | null }>["then"];
 };
 
-type ReadOnlySupabaseClient = {
+export type ReadOnlySupabaseClient = {
   from: <T>(table: string) => ReadOnlyQueryBuilder<T>;
 };
 
@@ -47,15 +47,16 @@ type RolePermissionRow = {
 export const adminRoles: AppRole[] = [
   "super_admin",
   "admin",
-  "content_editor",
-  "donation_manager",
-  "volunteer_coordinator",
-  "reporting_manager"
 ];
+export const extendedAdminRoles: AppRole[] = ["content_editor", "donation_manager", "volunteer_coordinator", "reporting_manager"];
 
 export const portalRoles: AppRole[] = ["donor", "bagisci", "volunteer", "gonullu"];
 export const coordinatorRoles: AppRole[] = ["coordinator", "koordinator", "volunteer_coordinator"];
 export const personnelRoles: AppRole[] = ["staff", "personnel", "personel"];
+
+export type AdminAccessResult =
+  | { allowed: true; role: "super_admin" | "admin"; source: "profiles" | "user_accounts" }
+  | { allowed: false; reason: "inactive" | "missing_role" | "unverified" };
 
 export function isDemoMode() {
   return isAdminDemoMode;
@@ -195,17 +196,15 @@ export async function getCurrentAccount() {
   return getAccountForUser(user);
 }
 
-export async function getAccountForUser(user: User): Promise<AuthAccount | null> {
+export async function getAccountForUser(user: User, client?: ReadOnlySupabaseClient): Promise<AuthAccount | null> {
   if (isDemoMode() || !isSupabaseConfigured()) {
     return null;
   }
 
-  const supabase = await createSupabaseServerClient();
-  if (!supabase) {
-    return null;
-  }
+  const supabase = client ?? ((await createSupabaseServerClient()) as unknown as ReadOnlySupabaseClient | null);
+  if (!supabase) return null;
 
-  const db = supabase as unknown as ReadOnlySupabaseClient;
+  const db = supabase;
   const { data, error } = await db
     .from<UserAccountRow>("user_accounts")
     .select("id, auth_user_id, full_name, email, account_type, role, status")
@@ -228,17 +227,15 @@ export async function getAccountForUser(user: User): Promise<AuthAccount | null>
   };
 }
 
-async function getProfileRolesForUser(user: User): Promise<AppRole[]> {
+async function getProfileRolesForUser(user: User, client?: ReadOnlySupabaseClient): Promise<AppRole[]> {
   if (isDemoMode() || !isSupabaseConfigured()) {
     return [];
   }
 
-  const supabase = await createSupabaseServerClient();
-  if (!supabase) {
-    return [];
-  }
+  const supabase = client ?? ((await createSupabaseServerClient()) as unknown as ReadOnlySupabaseClient | null);
+  if (!supabase) return [];
 
-  const db = supabase as unknown as ReadOnlySupabaseClient;
+  const db = supabase;
   const { data, error } = await db
     .from<ProfileRow>("profiles")
     .select("id, full_name, email, role, status")
@@ -272,6 +269,81 @@ export async function getRolesForUser(user: User): Promise<AppRole[]> {
   const profileRoles = await getProfileRolesForUser(user);
 
   return Array.from(new Set([...metadataRoles, ...accountRoles, ...profileRoles]));
+}
+
+export async function getRolesForUserWithClient(user: User, client: ReadOnlySupabaseClient): Promise<AppRole[]> {
+  const metadataRoles = getRolesFromUser(user);
+  const account = await getAccountForUser(user, client);
+  const accountRoles = account ? getRolesFromUserLikeValues([account.role, account.accountType]) : [];
+  const profileRoles = await getProfileRolesForUser(user, client);
+
+  return Array.from(new Set([...metadataRoles, ...accountRoles, ...profileRoles]));
+}
+
+export async function verifyAdminAccessForUser(user: User, client?: ReadOnlySupabaseClient): Promise<AdminAccessResult> {
+  if (isDemoMode()) {
+    return { allowed: true, role: "super_admin", source: "profiles" };
+  }
+
+  if (!isSupabaseConfigured()) {
+    return { allowed: false, reason: "unverified" };
+  }
+
+  const supabase = client ?? ((await createSupabaseServerClient()) as unknown as ReadOnlySupabaseClient | null);
+  if (!supabase) return { allowed: false, reason: "unverified" };
+
+  const profileResult = await supabase
+    .from<ProfileRow>("profiles")
+    .select("id, full_name, email, role, status")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profileResult.error) {
+    return { allowed: false, reason: "unverified" };
+  }
+
+  if (profileResult.data) {
+    if (profileResult.data.status !== "active") {
+      return { allowed: false, reason: "inactive" };
+    }
+
+    const normalizedProfileRole = normalizeRole(profileResult.data.role);
+    if (normalizedProfileRole === "super_admin" || normalizedProfileRole === "admin") {
+      return { allowed: true, role: normalizedProfileRole, source: "profiles" };
+    }
+  }
+
+  const accountResult = await supabase
+    .from<UserAccountRow>("user_accounts")
+    .select("id, auth_user_id, full_name, email, account_type, role, status")
+    .eq("auth_user_id", user.id)
+    .maybeSingle();
+
+  if (accountResult.error) {
+    return { allowed: false, reason: "unverified" };
+  }
+
+  if (accountResult.data) {
+    if (accountResult.data.status !== "active") {
+      return { allowed: false, reason: "inactive" };
+    }
+
+    const normalizedAccountType = normalizeRole(accountResult.data.account_type);
+    const normalizedAccountRole = normalizeRole(accountResult.data.role);
+    if (
+      normalizedAccountType === "admin" ||
+      normalizedAccountRole === "admin" ||
+      normalizedAccountRole === "super_admin"
+    ) {
+      return {
+        allowed: true,
+        role: normalizedAccountRole === "super_admin" ? "super_admin" : "admin",
+        source: "user_accounts"
+      };
+    }
+  }
+
+  return { allowed: false, reason: "missing_role" };
 }
 
 function getRolesFromUserLikeValues(values: string[]) {
