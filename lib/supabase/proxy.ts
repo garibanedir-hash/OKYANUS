@@ -151,6 +151,33 @@ async function getAdminRolesFromDatabase(client: ProxyReadClient, userId: string
   return { roles: Array.from(new Set(roles)), verified: true };
 }
 
+async function getAccountRolesFromDatabase(client: ProxyReadClient, userId: string) {
+  const accountResult = await client
+    .from<ProxyAccountRow>("user_accounts")
+    .select("account_type, role, status")
+    .eq("auth_user_id", userId)
+    .maybeSingle();
+
+  if (accountResult.error) {
+    return { roles: [], verified: false };
+  }
+
+  if (accountResult.data?.status !== "active") {
+    return { roles: [], verified: true };
+  }
+
+  const roles = [accountResult.data.role, accountResult.data.account_type].flatMap((value) => {
+    const normalized = normalizeRole(value);
+
+    if (normalized === "Bağışçı + Gönüllü") return ["donor", "volunteer"];
+    if (normalized === "Bağışçı") return ["donor"];
+    if (normalized === "Gönüllü") return ["volunteer"];
+    return normalized ? [normalized] : [];
+  });
+
+  return { roles: Array.from(new Set(roles)), verified: true };
+}
+
 export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const response = NextResponse.next({ request });
@@ -162,8 +189,16 @@ export async function updateSession(request: NextRequest) {
 
   const config = getProxySupabaseConfig();
 
-  if (isAdminDemoMode || !config.isConfigured || !config.url || !config.key) {
+  if (isAdminDemoMode) {
     return response;
+  }
+
+  if (!config.isConfigured || !config.url || !config.key) {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = guardedRoute.loginPath;
+    redirectUrl.searchParams.set("durum", "env-eksik");
+    redirectUrl.searchParams.set("redirectedFrom", pathname);
+    return NextResponse.redirect(redirectUrl);
   }
 
   const supabase = createServerClient<Database>(config.url, config.key, {
@@ -194,12 +229,18 @@ export async function updateSession(request: NextRequest) {
     guardedRoute.scope === "admin"
       ? await getAdminRolesFromDatabase(supabase as unknown as ProxyReadClient, user.id)
       : null;
-  const roles = databaseAdminCheck ? databaseAdminCheck.roles : getRolesFromAuthMetadata(user);
+  const databaseAccountCheck =
+    guardedRoute.scope !== "admin"
+      ? await getAccountRolesFromDatabase(supabase as unknown as ProxyReadClient, user.id)
+      : null;
+  const roles = databaseAdminCheck
+    ? databaseAdminCheck.roles
+    : Array.from(new Set([...getRolesFromAuthMetadata(user), ...(databaseAccountCheck?.roles ?? [])]));
 
   if (!roles.some((role) => (guardedRoute.allowedRoles as readonly string[]).includes(role))) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = guardedRoute.loginPath;
-    redirectUrl.searchParams.set("durum", databaseAdminCheck?.verified === false ? "rol-dogrulanamadi" : "yetkisiz");
+    redirectUrl.searchParams.set("durum", databaseAdminCheck?.verified === false || databaseAccountCheck?.verified === false ? "rol-dogrulanamadi" : "yetkisiz");
     redirectUrl.searchParams.set("redirectedFrom", pathname);
     return NextResponse.redirect(redirectUrl);
   }

@@ -32,10 +32,10 @@ const navGroups = [
     title: "Bağış ve Destek",
     items: [
       { label: "Bağışlar", href: "/admin/bagislar", icon: HeartHandshake },
-      { label: "Makbuzlar", href: "/admin/bagislar", icon: ReceiptText, badge: "demo" },
+      { label: "Makbuzlar", href: "/admin/makbuzlar", icon: ReceiptText, badge: "demo" },
       { label: "Kampanyalar", href: "/admin/projeler", icon: BarChart3 },
-      { label: "Ödeme Kayıtları", href: "/admin/bagislar", icon: CreditCard, badge: "demo" },
-      { label: "Bağışçı Listesi", href: "/admin/bagislar", icon: UsersRound, badge: "demo" }
+      { label: "Ödeme Kayıtları", href: "/admin/odeme-kayitlari", icon: CreditCard, badge: "demo" },
+      { label: "Bağışçı Listesi", href: "/admin/bagisci-listesi", icon: UsersRound, badge: "demo" }
     ]
   },
   {
@@ -56,7 +56,7 @@ const navGroups = [
       { label: "Mesajlar", href: "/admin/mesajlar", icon: MessageSquare },
       { label: "Personel", href: "/admin/personel", icon: UserCog },
       { label: "Gönüllü Başvuruları", href: "/admin/gonullu-basvurular", icon: UsersRound },
-      { label: "Gönüllü Havuzu", href: "/admin/gonullu-basvurular", icon: UserCog, badge: "demo" },
+      { label: "Gönüllü Havuzu", href: "/admin/gonullu-havuzu", icon: UserCog, badge: "demo" },
       { label: "İletişim Mesajları", href: "/admin/iletisim-mesajlari", icon: Mail }
     ]
   },

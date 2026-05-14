@@ -2,6 +2,7 @@ import { getCurrentPortalUser, getDonorDashboard, getPortalNotifications, getUse
 import { PortalNotificationList } from "@/components/portal/PortalNotificationList";
 import { PortalStatCard } from "@/components/portal/PortalStatCard";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/format";
 
 export default function PortalHomePage() {
@@ -15,18 +16,32 @@ export default function PortalHomePage() {
     <div className="grid gap-6">
       <section className="rounded-brand border border-border-soft bg-white p-6 shadow-card">
         <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-ocean-green">Hesap özeti</p>
-        <h1 className="mt-2 text-3xl font-extrabold text-dark-navy">İyilik yolculuğunuz</h1>
-        <p className="mt-3 max-w-3xl leading-7 text-ink-muted">Bağışlarınızı, gönüllülük durumunuzu, desteklediğiniz projeleri ve bildirimlerinizi tek yerden takip etmek için hazırlanmış demo panel.</p>
+        <h1 className="mt-2 text-3xl font-extrabold text-dark-navy">Hesap yönlendirme merkezi</h1>
+        <p className="mt-3 max-w-3xl leading-7 text-ink-muted">Bu alan hesap türünüze göre bağışçı veya gönüllü paneline geçiş yapmanızı sağlar. Demo kullanıcı iki profile de sahip olduğu için iki özet birlikte gösterilir.</p>
         <div className="mt-5 max-w-md">
           <div className="mb-2 flex justify-between text-sm font-bold text-dark-navy"><span>Profil tamamlama</span><span>{user.profileCompletion}%</span></div>
           <ProgressBar value={user.profileCompletion} />
         </div>
       </section>
+      <section className="grid gap-5 md:grid-cols-2">
+        <article className="rounded-brand border border-border-soft bg-white p-6 shadow-card">
+          <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-ocean-green">Bağışçı akışı</p>
+          <h2 className="mt-2 text-2xl font-bold text-dark-navy">Bağışlarım ve desteklerim</h2>
+          <p className="mt-3 text-sm leading-6 text-ink-muted">Makbuz, sponsorluk, desteklenen proje ve tekrar bağış aksiyonları için bağışçı panelini kullanın.</p>
+          <div className="mt-5"><Button href="/panel/bagisci">Bağışçı Paneline Git</Button></div>
+        </article>
+        <article className="rounded-brand border border-border-soft bg-white p-6 shadow-card">
+          <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-ocean-green">Gönüllü akışı</p>
+          <h2 className="mt-2 text-2xl font-bold text-dark-navy">Faaliyetlerim ve görevlerim</h2>
+          <p className="mt-3 text-sm leading-6 text-ink-muted">Etkinlik, görev, duyuru ve koordinatör mesajları için gönüllü panelini kullanın.</p>
+          <div className="mt-5"><Button href="/panel/gonullu" variant="ghost">Gönüllü Paneline Git</Button></div>
+        </article>
+      </section>
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <PortalStatCard label="Toplam bağış" value={formatCurrency(donor.profile.totalDonationAmount)} helper={`${donor.profile.totalDonationCount} işlem`} />
         <PortalStatCard label="Desteklenen proje" value={donor.profile.supportedProjectCount} />
-        <PortalStatCard label="Gönüllü durumu" value={volunteer.profile.status} helper={volunteer.profile.applicationStatus} />
-        <PortalStatCard label="Yaklaşan etkinlik" value={volunteer.events.length} />
+        <PortalStatCard label="Gönüllü başvuru" value={volunteer.profile.applicationStatus} />
+        <PortalStatCard label="Bildirim" value={notifications.length} />
       </section>
       <section className="grid gap-6 xl:grid-cols-[1fr_0.9fr]">
         <div className="rounded-brand border border-border-soft bg-white p-6 shadow-card">

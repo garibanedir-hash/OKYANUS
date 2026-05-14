@@ -14,7 +14,7 @@ export default function DonorPanelPage() {
         <div>
           <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-ocean-green">Bağışçı paneli</p>
           <h1 className="mt-2 text-3xl font-extrabold text-dark-navy">Desteklerinizin özeti</h1>
-          <p className="mt-2 leading-7 text-ink-muted">Kendi bağış, makbuz ve proje takiplerinizi görebileceğiniz demo alan.</p>
+          <p className="mt-2 leading-7 text-ink-muted">Kendi bağışlarınızı, makbuz durumunuzu, desteklediğiniz projeleri ve sponsorluk özetinizi takip edebileceğiniz demo alan.</p>
         </div>
         <Button href="/bagis-yap">Bağış Yap</Button>
       </section>
@@ -27,7 +27,13 @@ export default function DonorPanelPage() {
       <section className="grid gap-6 xl:grid-cols-[1fr_0.8fr]">
         <DonationHistoryTable donations={recentDonations} />
         <div className="rounded-brand border border-border-soft bg-white p-6 shadow-card">
-          <h2 className="text-xl font-bold text-dark-navy">Desteklediğim projeler</h2>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-bold text-dark-navy">Desteklediğim projeler</h2>
+              <p className="mt-1 text-sm leading-6 text-ink-muted">Proje bazlı destek geçmişiniz ve ilerleme oranları.</p>
+            </div>
+            <Button href="/panel/bagislarim" variant="ghost">Geçmiş</Button>
+          </div>
           <div className="mt-4 grid gap-4">
             {supportedProjects.map((project) => (
               <article key={project.slug} className="rounded-2xl bg-soft-gray p-4">
@@ -35,6 +41,9 @@ export default function DonorPanelPage() {
                 <ProgressBar value={project.progress} />
               </article>
             ))}
+          </div>
+          <div className="mt-5 rounded-2xl border border-border-soft bg-white p-4 text-sm leading-6 text-ink-muted">
+            <strong className="text-dark-navy">İkincil not:</strong> Gönüllü olmak da isterseniz başvurunuzu ayrı gönüllü panelinden takip edebilirsiniz.
           </div>
         </div>
       </section>
