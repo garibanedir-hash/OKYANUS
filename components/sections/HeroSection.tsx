@@ -2,23 +2,15 @@ import { CheckCircle2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { MotionReveal } from "@/components/MotionReveal";
+import { OfficialLogo } from "@/components/brand/OfficialLogo";
 
 function HeroBrandLockup() {
   return (
-    <div className="flex items-center gap-4 sm:gap-5">
-      <span className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white ring-1 ring-border-soft sm:h-20 sm:w-20" aria-hidden>
-        <span className="absolute inset-2 rounded-full border-[3px] border-deep-blue" />
-        <span className="absolute inset-x-3 bottom-4 h-7 rounded-[100%] border-[4px] border-ocean-green border-t-0" />
-        <span className="absolute left-1/2 top-4 h-4 w-4 -translate-x-1/2 rounded-full bg-deep-blue" />
-        <span className="absolute left-1/2 top-8 h-6 w-3.5 -translate-x-1/2 rounded-full bg-ocean-green" />
-      </span>
+    <div className="inline-flex items-center gap-5 rounded-xl border border-border-soft bg-white px-5 py-4 shadow-sm">
+      <OfficialLogo variant="color" context="hero" className="shrink-0" />
       <div className="leading-none">
-        <p className="text-5xl font-black tracking-[0.02em] text-deep-blue sm:text-6xl lg:text-7xl">
-          OKYANUS
-        </p>
-        <p className="mt-2 text-[0.72rem] font-extrabold uppercase tracking-[0.42em] text-ocean-green sm:text-sm sm:tracking-[0.48em]">
-          İnsani Yardım Derneği
-        </p>
+        <p className="text-5xl font-black tracking-[0.02em] text-deep-blue sm:text-6xl lg:text-7xl">OKYANUS</p>
+        <p className="mt-2 text-[0.72rem] font-extrabold uppercase tracking-[0.42em] text-ocean-green sm:text-sm sm:tracking-[0.48em]">İnsani Yardım Derneği</p>
       </div>
     </div>
   );

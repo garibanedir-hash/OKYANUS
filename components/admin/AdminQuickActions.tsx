@@ -4,20 +4,20 @@ import { adminIconMap } from "@/data/adminAnalyticsMock";
 
 export function AdminQuickActions({ actions }: { actions: QuickAction[] }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
       {actions.map((action) => {
         const Icon = adminIconMap[action.iconName];
         return (
           <Link
             key={action.label}
             href={action.href}
-            className="focus-ring rounded-2xl border border-border-soft bg-white p-4 shadow-card transition hover:-translate-y-0.5 hover:shadow-soft"
+            className="focus-ring rounded-lg border border-border-soft bg-white p-3 transition hover:bg-soft-gray"
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-soft-blue text-deep-blue">
-              <Icon aria-hidden className="h-5 w-5" />
+            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-soft-blue text-deep-blue">
+              <Icon aria-hidden className="h-4 w-4" />
             </span>
-            <p className="mt-4 font-bold text-dark-navy">{action.label}</p>
-            <p className="mt-1 text-sm leading-6 text-ink-muted">{action.description}</p>
+            <p className="mt-3 text-sm font-extrabold text-dark-navy">{action.label}</p>
+            <p className="mt-1 text-xs leading-5 text-ink-muted">{action.description}</p>
           </Link>
         );
       })}

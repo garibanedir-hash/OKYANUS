@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
+import { AuthShell } from "@/components/auth/AuthShell";
 import { registerPublicAccount } from "@/app/kayit/actions";
 
 export const metadata: Metadata = {
@@ -29,11 +29,7 @@ export default async function RegisterPage({
               : null;
 
   return (
-    <Container className="py-16">
-      <div className="mx-auto max-w-4xl rounded-brand border border-border-soft bg-white p-6 shadow-card lg:p-8">
-        <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-ocean-green">Demo kayıt akışı</p>
-        <h1 className="mt-2 text-3xl font-extrabold text-dark-navy">Okyanus’a Katıl</h1>
-        <p className="mt-3 leading-7 text-ink-muted">Bu ekran demo modda çalışmaktadır. Gerçek üyelik Supabase Auth entegrasyonundan sonra aktif olacaktır.</p>
+    <AuthShell title="Okyanus’a Katıl" description="Bağışçı veya gönüllü hesabınızı oluşturun.">
         <form action={registerPublicAccount} className="mt-8 grid gap-4 md:grid-cols-2">
           {statusMessage ? (
             <div className="rounded-2xl bg-soft-blue p-4 text-sm font-bold leading-6 text-deep-blue md:col-span-2">
@@ -54,7 +50,6 @@ export default async function RegisterPage({
           <Button type="submit" className="md:col-span-2">Hesap Oluştur</Button>
           <p className="text-sm text-ink-muted md:col-span-2">Zaten hesabın var mı? <Link className="font-bold text-deep-blue" href="/giris">Giriş yap</Link></p>
         </form>
-      </div>
-    </Container>
+    </AuthShell>
   );
 }

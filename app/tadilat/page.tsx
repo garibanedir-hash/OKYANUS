@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Building2, Mail, ShieldCheck, Sparkles, Waves } from "lucide-react";
-import { BrandMark } from "@/components/BrandMark";
+import { OfficialLogo } from "@/components/brand/OfficialLogo";
 
 export const metadata: Metadata = {
   title: "Web Sitemiz Yenileniyor | Okyanus",
@@ -37,6 +37,7 @@ export default function MaintenancePage() {
       <section className="relative z-10 flex min-h-screen items-center px-5 py-8 sm:py-12">
         <div className="mx-auto w-full max-w-6xl">
           <header className="mb-8 flex items-center justify-between gap-4">
+            <OfficialLogo variant="color" size="md" />
             <span className="hidden rounded-full border border-border-soft bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-[0.14em] text-ocean-green shadow-card sm:inline-flex">
               Hazırlık süreci devam ediyor
             </span>

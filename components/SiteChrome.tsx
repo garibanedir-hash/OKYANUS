@@ -11,7 +11,9 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
     pathname.startsWith("/panel") ||
     pathname.startsWith("/koordinator") ||
     pathname.startsWith("/personel") ||
-    pathname.startsWith("/tadilat");
+    pathname.startsWith("/tadilat") ||
+    pathname === "/giris" ||
+    pathname === "/kayit";
 
   if (isPrivatePanel) {
     return <>{children}</>;

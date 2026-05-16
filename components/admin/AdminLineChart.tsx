@@ -21,11 +21,11 @@ export function AdminLineChart({ data }: { data: DailyDonationPoint[] }) {
   );
 
   if (!mounted) {
-    return <div className="h-80 w-full rounded-2xl bg-soft-gray" aria-hidden />;
+    return <div className="h-64 w-full rounded-lg bg-soft-gray" aria-hidden />;
   }
 
   return (
-    <div className="h-80 w-full min-w-0">
+    <div className="h-64 w-full min-w-0">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ left: 0, right: 12, top: 12, bottom: 0 }}>
           <defs>

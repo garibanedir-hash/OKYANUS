@@ -6,19 +6,23 @@ import { AdminTaskStatusBadge } from "@/components/admin/AdminTaskStatusBadge";
 
 export function AdminTaskList({ tasks }: { tasks: MockTask[] }) {
   return (
-    <AdminTable headers={["Görev", "Atanan", "Öncelik", "Durum", "Modül", "Termin", "İşlemler"]}>
+    <AdminTable headers={["İşlem", "Görev Konusu", "Sorumlu", "Görev Tarihi", "Kapatma Hedefi", "Kapanış", "İdari Avans", "Proje Avansı", "Aşama", "Harcama", "Kalan"]} recordCount={tasks.length}>
       {tasks.map((task) => (
         <tr key={task.id}>
-          <td className="px-4 py-3">
+          <td><AdminActionButton href={`/admin/gorevler/${task.id}`}>İncele</AdminActionButton></td>
+          <td>
             <p className="font-bold text-dark-navy">{task.title}</p>
             <p className="mt-1 max-w-sm text-xs leading-5 text-ink-muted">{task.description}</p>
           </td>
-          <td className="px-4 py-3 text-ink-muted">{task.assignedTo}</td>
-          <td className="px-4 py-3"><AdminPriorityBadge priority={task.priority} /></td>
-          <td className="px-4 py-3"><AdminTaskStatusBadge status={task.status} /></td>
-          <td className="px-4 py-3 text-ink-muted">{task.relatedEntityType}</td>
-          <td className="px-4 py-3 text-ink-muted">{task.dueDate}</td>
-          <td className="px-4 py-3"><AdminActionButton>Görevi İncele</AdminActionButton></td>
+          <td>{task.assignedTo}</td>
+          <td>{task.createdAt}</td>
+          <td>{task.dueDate}</td>
+          <td>{task.completedAt ?? "-"}</td>
+          <td>2.500 TL</td>
+          <td>8.000 TL</td>
+          <td><div className="flex gap-1.5"><AdminPriorityBadge priority={task.priority} /><AdminTaskStatusBadge status={task.status} /></div></td>
+          <td>1.900 TL</td>
+          <td>8.600 TL</td>
         </tr>
       ))}
     </AdminTable>

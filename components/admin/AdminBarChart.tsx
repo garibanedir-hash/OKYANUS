@@ -12,11 +12,11 @@ export function AdminBarChart({ data }: { data: TopCampaign[] }) {
   );
 
   if (!mounted) {
-    return <div className="h-72 w-full rounded-2xl bg-soft-gray" aria-hidden />;
+    return <div className="h-64 w-full rounded-lg bg-soft-gray" aria-hidden />;
   }
 
   return (
-    <div className="h-72 w-full min-w-0">
+    <div className="h-64 w-full min-w-0">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} layout="vertical" margin={{ left: 24, right: 12, top: 8, bottom: 8 }}>
           <CartesianGrid stroke="var(--color-border-soft)" strokeDasharray="3 3" />

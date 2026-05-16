@@ -11,7 +11,7 @@ export function AdminStatusBadge({ status }: { status: string }) {
         : "bg-soft-gray text-ink-muted ring-border-soft";
 
   return (
-    <span className={cn("inline-flex rounded-full px-3 py-1 text-xs font-bold ring-1", tone)}>
+    <span className={cn("inline-flex whitespace-nowrap rounded px-2 py-0.5 text-[0.68rem] font-extrabold ring-1", tone)}>
       {status}
     </span>
   );

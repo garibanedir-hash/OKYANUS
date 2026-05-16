@@ -5,14 +5,16 @@ import { cn } from "@/lib/utils";
 export function AdminActionButton({
   children,
   variant = "ghost",
-  href
+  href,
+  onClick
 }: {
   children: React.ReactNode;
   variant?: "primary" | "ghost" | "danger";
   href?: string;
+  onClick?: () => void;
 }) {
   const className = cn(
-    "focus-ring inline-flex min-h-9 items-center justify-center rounded-full px-3 py-1.5 text-xs font-bold transition",
+    "focus-ring inline-flex min-h-8 items-center justify-center rounded-md px-2.5 py-1 text-[0.72rem] font-extrabold transition",
     variant === "primary" && "bg-deep-blue text-white hover:bg-dark-navy",
     variant === "ghost" && "bg-white text-deep-blue ring-1 ring-border-soft hover:bg-soft-blue",
     variant === "danger" && "bg-warm-accent/15 text-dark-navy ring-1 ring-warm-accent/25 hover:bg-warm-accent/25"
@@ -30,7 +32,7 @@ export function AdminActionButton({
     <button
       type="button"
       className={className}
-      onClick={() => window.alert("Demo mod: Bu işlem gerçek veri üzerinde değişiklik yapmaz.")}
+      onClick={onClick ?? (() => window.alert("Demo mod: Bu işlem gerçek veri üzerinde değişiklik yapmaz."))}
     >
       {children}
     </button>

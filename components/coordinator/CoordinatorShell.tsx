@@ -3,11 +3,11 @@ import { CoordinatorTopbar } from "@/components/coordinator/CoordinatorTopbar";
 
 export function CoordinatorShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-soft-gray">
+    <div className="min-h-screen bg-[#f4f7f8]">
       <CoordinatorSidebar />
-      <div className="lg:pl-72">
+      <div className="lg:pl-[18rem]">
         <CoordinatorTopbar />
-        <main className="px-5 py-8 lg:px-8">{children}</main>
+        <main className="px-4 py-5 lg:px-6">{children}</main>
       </div>
     </div>
   );

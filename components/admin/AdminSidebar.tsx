@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   BarChart3,
   BellRing,
+  CalendarClock,
   CheckSquare,
   CreditCard,
   FileText,
@@ -15,18 +16,43 @@ import {
   MessageSquare,
   Newspaper,
   ReceiptText,
+  Route,
   Settings,
   ShieldCheck,
+  TableProperties,
   UserCog,
-  UsersRound
+  UsersRound,
+  WalletCards
 } from "lucide-react";
-import { BrandMark } from "@/components/BrandMark";
+import { OfficialLogo } from "@/components/brand/OfficialLogo";
 import { cn } from "@/lib/utils";
 
 const navGroups = [
   {
     title: "Genel",
-    items: [{ label: "Genel Bakış", href: "/admin", icon: LayoutDashboard }]
+    items: [
+      { label: "Genel Bakış", href: "/admin", icon: LayoutDashboard },
+      { label: "Raporlar", href: "/admin/raporlar", icon: FileText, badge: "demo" },
+      { label: "Grafikler", href: "/admin/grafikler", icon: BarChart3, badge: "demo" }
+    ]
+  },
+  {
+    title: "Operasyon",
+    items: [
+      { label: "İş Kayıtları & Faaliyetler", href: "/admin/is-kayitlari", icon: TableProperties, badge: "demo" },
+      { label: "Görevlendirmeler", href: "/admin/gorevlendirmeler", icon: Route, badge: "demo" },
+      { label: "Görevler", href: "/admin/gorevler", icon: CheckSquare },
+      { label: "Harcama & Masraf Talepleri", href: "/admin/harcama-masraf", icon: WalletCards, badge: "demo" },
+      { label: "Ulaşım & Konaklama", href: "/admin/ulasim-konaklama", icon: Route, badge: "demo" }
+    ]
+  },
+  {
+    title: "Toplantı ve Rezervasyon",
+    items: [
+      { label: "Toplantı Yönetimi", href: "/admin/toplanti-yonetimi", icon: CalendarClock, badge: "demo" },
+      { label: "Toplantı Rezervasyonu", href: "/admin/toplanti-rezervasyonu", icon: CalendarClock, badge: "demo" },
+      { label: "Rezervasyon Takvimi", href: "/admin/rezervasyon-takvimi", icon: CalendarClock, badge: "demo" }
+    ]
   },
   {
     title: "Bağış ve Destek",
@@ -52,7 +78,6 @@ const navGroups = [
   {
     title: "İnsan Kaynağı / Gönüllülük",
     items: [
-      { label: "Görevler", href: "/admin/gorevler", icon: CheckSquare },
       { label: "Mesajlar", href: "/admin/mesajlar", icon: MessageSquare },
       { label: "Personel", href: "/admin/personel", icon: UserCog },
       { label: "Gönüllü Başvuruları", href: "/admin/gonullu-basvurular", icon: UsersRound },
@@ -77,34 +102,34 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="border-b border-border-soft bg-white lg:fixed lg:inset-y-0 lg:left-0 lg:w-72 lg:border-b-0 lg:border-r">
+    <aside className="border-b border-deep-blue/80 bg-deep-blue text-white lg:fixed lg:inset-y-0 lg:left-0 lg:w-[14rem] lg:border-b-0 lg:border-r">
       <div className="flex h-full flex-col">
-        <div className="border-b border-border-soft p-5">
-          <BrandMark compact />
-          <p className="mt-4 rounded-2xl bg-soft-blue p-3 text-xs font-bold leading-5 text-deep-blue">
-            Demo/Admin Preview: Gerçek kimlik doğrulama ve veri kaydı yoktur.
+        <div className="border-b border-white/10 px-3 py-3">
+          <OfficialLogo variant="white" context="sidebar" className="-ml-2" />
+          <p className="mt-1 border-l-2 border-ocean-green/80 pl-2 text-[0.62rem] font-semibold leading-4 text-white/62">
+            Demo panel · veri kaydı yoktur
           </p>
         </div>
-        <nav aria-label="Admin menüsü" className="flex gap-4 overflow-x-auto p-4 lg:flex-1 lg:flex-col lg:overflow-y-auto">
+        <nav aria-label="Admin menüsü" className="flex gap-4 overflow-x-auto px-2 py-3 lg:flex-1 lg:flex-col lg:gap-3 lg:overflow-y-auto">
           {navGroups.map((group) => (
             <div key={group.title} className="shrink-0 lg:shrink">
-              <p className="mb-2 px-2 text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-ink-muted">{group.title}</p>
-              <div className="flex gap-2 lg:flex-col">
+              <p className="mb-1.5 px-2 text-[0.6rem] font-extrabold uppercase tracking-[0.12em] text-white/38">{group.title}</p>
+              <div className="flex gap-1 lg:flex-col">
                 {group.items.map(({ label, href, icon: Icon, badge }) => {
-                  const active = pathname === href;
+                  const active = pathname === href || (href !== "/admin" && pathname.startsWith(`${href}/`));
                   return (
                     <Link
                       key={`${group.title}-${label}`}
                       href={href}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "focus-ring flex shrink-0 items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition",
-                        active ? "bg-deep-blue text-white shadow-card" : "text-ink-muted hover:bg-soft-blue hover:text-deep-blue"
+                        "focus-ring relative flex min-h-[34px] shrink-0 items-center gap-2 rounded-md px-2 py-1.5 text-[0.74rem] font-bold leading-4 transition",
+                        active ? "bg-white/12 text-white before:absolute before:left-0 before:top-1 before:h-[calc(100%-0.5rem)] before:w-0.5 before:rounded-full before:bg-ocean-green" : "text-white/72 hover:bg-white/8 hover:text-white"
                       )}
                     >
-                      <Icon aria-hidden className="h-5 w-5" />
-                      <span>{label}</span>
-                      {badge ? <span className="ml-auto rounded-full bg-mint-green px-2 py-0.5 text-[0.65rem] uppercase text-ocean-green">{badge}</span> : null}
+                      <Icon aria-hidden className={cn("h-3.5 w-3.5 shrink-0", active ? "text-ocean-green" : "text-white/52")} />
+                      <span className="min-w-0 flex-1 truncate">{label}</span>
+                      {badge ? <span className={cn("ml-auto rounded px-1 py-0.5 text-[0.52rem] uppercase", active ? "bg-ocean-green text-white" : "bg-white/10 text-white/58")}>{badge}</span> : null}
                     </Link>
                   );
                 })}
@@ -112,6 +137,11 @@ export function AdminSidebar() {
             </div>
           ))}
         </nav>
+        <div className="border-t border-white/10 p-3">
+          <button type="button" className="focus-ring w-full rounded-md bg-white/8 px-2 py-2 text-left text-[0.68rem] font-extrabold text-white/60 hover:bg-white/12">
+            Menüyü daralt · demo
+          </button>
+        </div>
       </div>
     </aside>
   );

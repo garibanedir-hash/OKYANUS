@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { BrandMark } from "@/components/BrandMark";
+import { OfficialLogo } from "@/components/brand/OfficialLogo";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -39,7 +39,7 @@ export function Header() {
       )}
     >
       <Container className="flex h-20 items-center justify-between">
-        <BrandMark compact onClick={() => setOpen(false)} />
+        <OfficialLogo variant="color" size="md" onClick={() => setOpen(false)} />
 
         <nav aria-label="Ana menü" className="hidden items-center gap-7 lg:flex">
           {navItems.map((item) => (

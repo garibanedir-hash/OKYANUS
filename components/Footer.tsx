@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Facebook, Instagram, Mail, MapPin, Phone, Twitter } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
-import { BrandMark } from "@/components/BrandMark";
+import { OfficialLogo } from "@/components/brand/OfficialLogo";
 
 const quickLinks = [
   ["Hakkımızda", "/hakkimizda"],
@@ -38,7 +38,7 @@ export function Footer() {
         </div>
         <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr_0.9fr_1fr]">
           <div>
-            <BrandMark inverse />
+            <OfficialLogo variant="white" size="md" />
             <p className="mt-5 max-w-sm text-sm leading-7 text-white/70">
               İhtiyaç sahiplerine umut, güven ve destek ulaştırmak için bağışçı, gönüllü ve saha ekiplerimizle birlikte çalışıyoruz.
             </p>

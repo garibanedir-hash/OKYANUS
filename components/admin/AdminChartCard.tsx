@@ -14,16 +14,15 @@ export function AdminChartCard({
   className?: string;
 }) {
   return (
-    <section className={cn("rounded-brand border border-border-soft bg-white p-5 shadow-card", className)}>
-      <div className="mb-4 h-1 w-20 rounded-full bg-gradient-to-r from-deep-blue to-ocean-green" />
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+    <section className={cn("rounded-lg border border-border-soft bg-white p-4 shadow-sm", className)}>
+      <div className="flex flex-col gap-3 border-b border-border-soft pb-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <h2 className="text-xl font-bold text-dark-navy">{title}</h2>
-          {description ? <p className="mt-1 text-sm leading-6 text-ink-muted">{description}</p> : null}
+          <h2 className="text-base font-extrabold text-dark-navy">{title}</h2>
+          {description ? <p className="mt-1 text-xs leading-5 text-ink-muted">{description}</p> : null}
         </div>
         {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}
       </div>
-      <div className="mt-5">{children}</div>
+      <div className="mt-4">{children}</div>
     </section>
   );
 }

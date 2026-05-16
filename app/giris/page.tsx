@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ShieldCheck, UserRound, UsersRound } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Container } from "@/components/ui/Container";
+import { AuthShell } from "@/components/auth/AuthShell";
 import { signInPublic } from "@/app/giris/actions";
 
 export const metadata: Metadata = {
@@ -32,25 +31,7 @@ export default async function LoginPage({
                 : null;
 
   return (
-    <Container className="py-16">
-      <div className="mx-auto grid max-w-5xl gap-8 rounded-brand border border-border-soft bg-white p-6 shadow-card lg:grid-cols-[0.9fr_1.1fr] lg:p-8">
-        <aside className="rounded-brand bg-soft-blue p-6">
-          <ShieldCheck className="h-10 w-10 text-deep-blue" aria-hidden />
-          <h1 className="mt-5 text-3xl font-extrabold text-dark-navy">Okyanus Hesabına Giriş Yap</h1>
-          <p className="mt-4 leading-7 text-ink-muted">Bağışçı veya gönüllü hesabınıza buradan ulaşabilirsiniz. Personel, koordinatör ve admin erişimleri yetki kontrolüyle ilgili panele yönlendirilir.</p>
-          <div className="mt-5 grid gap-3">
-            <div className="flex gap-3 rounded-2xl bg-white p-4 text-sm font-bold text-deep-blue">
-              <UserRound aria-hidden className="h-5 w-5 text-ocean-green" />
-              Bağışçı Girişi: bağışlar, makbuzlar ve sponsorluklar
-            </div>
-            <div className="flex gap-3 rounded-2xl bg-white p-4 text-sm font-bold text-deep-blue">
-              <UsersRound aria-hidden className="h-5 w-5 text-ocean-green" />
-              Gönüllü Girişi: etkinlikler, görevler ve duyurular
-            </div>
-          </div>
-          <p className="mt-5 rounded-2xl bg-white p-4 text-sm font-bold leading-6 text-deep-blue">Demo mod: Gerçek giriş yapılmaz, kişisel veri kaydedilmez.</p>
-          <p className="mt-3 text-sm font-semibold text-ink-muted">Yönetim paneli için ayrı giriş: <Link className="font-bold text-deep-blue" href="/admin/giris">/admin/giris</Link></p>
-        </aside>
+    <AuthShell title="Okyanus Portalı" description="Bağışçı ve gönüllü hesaplarınıza güvenli şekilde erişin.">
         <form action={signInPublic} className="grid gap-4">
           {statusMessage ? (
             <div className="rounded-2xl bg-soft-blue p-4 text-sm font-bold leading-6 text-deep-blue">
@@ -60,9 +41,12 @@ export default async function LoginPage({
           <label className="text-sm font-bold text-dark-navy">E-posta<input name="email" className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" type="email" placeholder="ornek@example.com" required /></label>
           <label className="text-sm font-bold text-dark-navy">Şifre<input name="password" className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" type="password" placeholder="••••••••" required /></label>
           <Button type="submit" className="w-full">Giriş Yap</Button>
-          <p className="text-center text-sm text-ink-muted">Hesabın yok mu? <Link className="font-bold text-deep-blue" href="/kayit">Hesap oluştur</Link></p>
+          <div className="grid gap-2 text-center text-sm text-ink-muted">
+            <p>Hesabınız yok mu? <Link className="font-bold text-deep-blue" href="/kayit">Kayıt olun</Link></p>
+            <p><span className="font-semibold">Şifremi unuttum</span> <span className="text-xs">(demo)</span></p>
+            <p className="pt-2 text-xs">Yönetim paneli girişi için <Link className="font-bold text-deep-blue" href="/admin/giris">buraya tıklayın</Link>.</p>
+          </div>
         </form>
-      </div>
-    </Container>
+    </AuthShell>
   );
 }
