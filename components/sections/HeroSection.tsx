@@ -1,87 +1,200 @@
+"use client";
+
 import { CheckCircle2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { MotionReveal } from "@/components/MotionReveal";
 import { OfficialLogo } from "@/components/brand/OfficialLogo";
+import { motion } from "framer-motion";
+
+const trustPoints = [
+  "Bağış ve destek alanı kayıt altına alınır.",
+  "Proje bazlı ilerleme ve raporlama hazırlanır.",
+  "Bağışçı ve gönüllüler süreçten bilgilendirilir.",
+];
+
+function OceanRings() {
+  const radii = [80, 160, 240, 320, 400, 480, 560, 640];
+  return (
+    <svg
+      viewBox="0 0 640 640"
+      fill="none"
+      aria-hidden
+      className="absolute inset-0 h-full w-full"
+      preserveAspectRatio="xMaxYMin slice"
+    >
+      {radii.map((r, i) => (
+        <circle
+          key={r}
+          cx="640"
+          cy="0"
+          r={r}
+          stroke="rgba(31,128,131,0.14)"
+          strokeWidth="1"
+          fill="none"
+          opacity={1 - i * 0.08}
+        />
+      ))}
+      <circle cx="640" cy="0" r="24" fill="rgba(31,128,131,0.35)" />
+      <circle cx="640" cy="0" r="8" fill="rgba(31,128,131,0.7)" />
+    </svg>
+  );
+}
+
+const reveal = {
+  hidden: { opacity: 0, y: 28 },
+  show: (d: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut", delay: d },
+  }),
+};
 
 export function HeroSection() {
   return (
-    <section className="ocean-surface relative overflow-hidden">
-      {/* Subtle dot-grid texture */}
-      <div className="wave-grid absolute inset-0 opacity-30" />
+    <section className="relative min-h-[calc(100vh-6rem)] overflow-hidden bg-dark-navy">
+      {/* Ambient glow top-center */}
+      <div className="pointer-events-none absolute inset-x-0 -top-32 h-[36rem] bg-[radial-gradient(ellipse_70%_50%_at_55%_0%,rgba(31,128,131,0.22),transparent)]" />
+      {/* Bottom-left warmth */}
+      <div className="pointer-events-none absolute bottom-0 left-0 h-80 w-80 bg-[radial-gradient(circle,rgba(220,239,237,0.05),transparent_70%)]" />
 
-      {/* Top-right ambient glow */}
-      <div className="pointer-events-none absolute -right-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-ocean-green/10 blur-3xl" />
-      <div className="pointer-events-none absolute -left-20 top-1/2 h-64 w-64 -translate-y-1/2 rounded-full bg-mint-green/40 blur-3xl" />
+      {/* Ocean ring decoration — top right */}
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-1/2 overflow-hidden opacity-100">
+        <OceanRings />
+      </div>
 
-      {/* Bottom section fade into deep-blue (stats below) */}
-      <div className="absolute inset-x-0 bottom-0 h-28 bg-deep-blue" />
-      <div className="absolute inset-x-0 bottom-28 h-px bg-ocean-green/30" />
+      {/* Hairline separator to stats below */}
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-ocean-green/25 to-transparent" />
 
-      <Container className="relative grid min-h-[calc(100vh-6rem)] items-center gap-10 py-16 lg:grid-cols-[1.08fr_0.92fr] lg:py-24">
-        <MotionReveal>
-          {/* Logo lockup */}
-          <div className="mb-8 inline-flex items-center justify-center rounded-2xl border border-border-soft bg-white/90 px-5 py-4 shadow-card backdrop-blur-sm">
-            <OfficialLogo variant="color" context="hero" className="shrink-0" />
+      <Container className="relative flex min-h-[calc(100vh-6rem)] flex-col justify-center py-20 lg:py-28">
+        <div className="grid gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+
+          {/* ── Left column ── */}
+          <div className="flex flex-col">
+            {/* Logo — no box, no border, just the mark */}
+            <motion.div
+              variants={reveal}
+              initial="hidden"
+              animate="show"
+              custom={0}
+              className="mb-10 self-start"
+            >
+              <OfficialLogo variant="white" size="lg" />
+            </motion.div>
+
+            {/* Trust pill */}
+            <motion.div
+              variants={reveal}
+              initial="hidden"
+              animate="show"
+              custom={0.1}
+              className="mb-6 self-start"
+            >
+              <span className="inline-flex items-center gap-2 rounded-full border border-ocean-green/30 bg-ocean-green/12 px-4 py-1.5">
+                <ShieldCheck aria-hidden className="h-3.5 w-3.5 text-ocean-green" />
+                <span className="text-xs font-bold uppercase tracking-[0.13em] text-ocean-green">
+                  Güvenilir · Şeffaf · Emanet Bilinçli
+                </span>
+              </span>
+            </motion.div>
+
+            {/* Headline */}
+            <motion.h1
+              variants={reveal}
+              initial="hidden"
+              animate="show"
+              custom={0.18}
+              className="text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-[3.6rem]"
+            >
+              İyilik,{" "}
+              <span className="text-ocean-green">güvenle</span>{" "}
+              büyür.
+            </motion.h1>
+
+            <motion.p
+              variants={reveal}
+              initial="hidden"
+              animate="show"
+              custom={0.24}
+              className="mt-3 text-sm font-semibold text-ocean-green/75"
+            >
+              İyilik Paylaştıkça Okyanusa Dönüşür.
+            </motion.p>
+
+            <motion.p
+              variants={reveal}
+              initial="hidden"
+              animate="show"
+              custom={0.3}
+              className="mt-6 max-w-[34rem] text-lg leading-8 text-white/60"
+            >
+              Bağışları kayıt altına alan, projeleri takip eden ve ihtiyaç sahiplerine insan onurunu gözeten destekler ulaştıran bir dayanışma platformu.
+            </motion.p>
+
+            <motion.div
+              variants={reveal}
+              initial="hidden"
+              animate="show"
+              custom={0.38}
+              className="mt-10 flex flex-col gap-3 sm:flex-row"
+            >
+              <Button href="/bagis-yap" showIcon>
+                Bağış Yap
+              </Button>
+              <Button href="/gonullu-ol" variant="ghost" showIcon>
+                Gönüllü Ol
+              </Button>
+            </motion.div>
           </div>
 
-          {/* Trust badge */}
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-ocean-green/25 bg-mint-green/70 px-4 py-1.5 backdrop-blur-sm">
-            <ShieldCheck aria-hidden className="h-3.5 w-3.5 text-ocean-green" />
-            <span className="text-xs font-bold uppercase tracking-[0.13em] text-ocean-green">
-              Güvenilir · Şeffaf · Emanet Bilinçli
-            </span>
-          </div>
-
-          <h1 className="text-4xl font-extrabold leading-tight text-dark-navy sm:text-5xl lg:text-[3.5rem]">
-            İyilik, güvenle büyür.
-          </h1>
-          <p className="mt-3 text-base font-bold text-ocean-green">
-            İyilik Paylaştıkça Okyanusa Dönüşür.
-          </p>
-          <p className="mt-5 max-w-2xl text-lg leading-8 text-ink-muted">
-            Okyanus İnsani Yardım Derneği; bağışları kayıt altına alan, projeleri takip eden ve ihtiyaç sahiplerine insan onurunu gözeten destekler ulaştıran bir dayanışma platformudur.
-          </p>
-
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button href="/bagis-yap" showIcon>
-              Bağış Yap
-            </Button>
-            <Button href="/gonullu-ol" variant="ghost" showIcon>
-              Gönüllü Ol
-            </Button>
-          </div>
-        </MotionReveal>
-
-        <MotionReveal delay={0.12}>
-          <div className="relative overflow-hidden rounded-[1.5rem] border border-border-soft bg-white shadow-[0_20px_60px_rgba(15,37,71,0.10)]">
-            {/* Gradient accent bar at top */}
-            <div className="h-1 w-full bg-gradient-to-r from-deep-blue via-ocean-green to-mint-green" />
-            <div className="p-6">
+          {/* ── Right column — glassmorphism card ── */}
+          <motion.div
+            variants={reveal}
+            initial="hidden"
+            animate="show"
+            custom={0.2}
+          >
+            <div className="rounded-[1.75rem] border border-white/10 bg-white/[0.07] p-7 shadow-[0_24px_64px_rgba(0,0,0,0.4)] backdrop-blur-xl">
               <div className="flex items-start gap-4">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-soft-blue text-deep-blue">
-                  <ShieldCheck aria-hidden className="h-6 w-6" />
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-ocean-green/20 ring-1 ring-ocean-green/30">
+                  <ShieldCheck aria-hidden className="h-6 w-6 text-ocean-green" />
                 </span>
                 <div>
-                  <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-ocean-green">Emanet bilinci</p>
-                  <h2 className="mt-2 text-2xl font-bold text-dark-navy">Bağış süreci izlenebilir ve kayıtlı ilerler.</h2>
+                  <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-ocean-green">
+                    Emanet bilinci
+                  </p>
+                  <h2 className="mt-1.5 text-xl font-bold leading-snug text-white">
+                    Bağış süreci izlenebilir ve kayıtlı ilerler.
+                  </h2>
                 </div>
               </div>
-              <div className="mt-6 grid gap-3">
-                {[
-                  "Bağış ve destek alanı kayıt altına alınır.",
-                  "Proje bazlı ilerleme ve raporlama hazırlanır.",
-                  "Bağışçı ve gönüllüler süreçten bilgilendirilir."
-                ].map((item) => (
-                  <div key={item} className="flex gap-3 rounded-2xl bg-soft-gray p-4 text-sm font-bold leading-6 text-deep-blue">
+
+              <div className="mt-5 grid gap-2.5">
+                {trustPoints.map((item, i) => (
+                  <motion.div
+                    key={item}
+                    variants={reveal}
+                    initial="hidden"
+                    animate="show"
+                    custom={0.35 + i * 0.08}
+                    className="flex gap-3 rounded-xl border border-white/8 bg-white/5 px-4 py-3.5 text-sm font-semibold leading-6 text-white/75"
+                  >
                     <CheckCircle2 aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-ocean-green" />
                     <span>{item}</span>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
+
+              {/* Bottom strip */}
+              <div className="mt-6 flex items-center gap-2 rounded-xl border border-ocean-green/20 bg-ocean-green/10 px-4 py-3">
+                <span className="h-2 w-2 rounded-full bg-ocean-green" />
+                <span className="text-xs font-bold text-ocean-green/90">
+                  Demo mod aktif — yakında canlı sisteme geçiş
+                </span>
+              </div>
             </div>
-          </div>
-        </MotionReveal>
+          </motion.div>
+
+        </div>
       </Container>
     </section>
   );

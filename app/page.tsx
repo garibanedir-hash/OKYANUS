@@ -28,27 +28,33 @@ export default function HomePage() {
       <HeroSection />
       <StatsSection />
 
-      {/* Nasıl Çalışıyoruz */}
-      <section className="bg-white py-16 sm:py-24">
+      {/* ── Nasıl Çalışıyoruz? ── */}
+      <section className="bg-white py-20 sm:py-28">
         <Container>
-          <SectionHeading
-            eyebrow="Nasıl Çalışıyoruz?"
-            title="Derneği tanıyın, faaliyeti görün, güvenle destek olun"
-            description="Ana akışımız ziyaretçinin merak ettiği temel sorulara net cevap verir: kimiz, ne yapıyoruz, neden güveniliriz ve nasıl destek olabilirsiniz?"
-            align="center"
-          />
-          <div className="mt-12 grid gap-5 md:grid-cols-4">
+          <MotionReveal>
+            <SectionHeading
+              eyebrow="Nasıl Çalışıyoruz?"
+              title="Derneği tanıyın, faaliyeti görün, güvenle destek olun"
+              description="Temel sorularınıza net yanıtlar: Kimiz, ne yapıyoruz, neden güveniliriz ve nasıl destek olabilirsiniz?"
+              align="center"
+            />
+          </MotionReveal>
+
+          <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {homeFlow.map(({ icon: Icon, title, text }, i) => (
-              <MotionReveal key={title} delay={i * 0.06}>
-                <article className="group relative rounded-brand border border-slate-200 bg-soft-gray p-6 transition hover:-translate-y-1 hover:shadow-card">
-                  <span className="absolute right-5 top-4 select-none text-4xl font-extrabold text-slate-100">
+              <MotionReveal key={title} delay={i * 0.07}>
+                <article className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition hover:-translate-y-1.5 hover:shadow-card">
+                  {/* Top accent */}
+                  <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-ocean-green/60 to-transparent" />
+                  {/* Step watermark */}
+                  <span className="absolute right-4 top-3 select-none font-extrabold leading-none text-slate-100" style={{ fontSize: "3.5rem" }}>
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-deep-blue shadow-sm ring-1 ring-border-soft">
+                  <span className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-soft-blue text-deep-blue ring-1 ring-border-soft">
                     <Icon aria-hidden className="h-6 w-6" />
                   </span>
-                  <h3 className="mt-5 text-xl font-bold text-dark-navy">{title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-slate-600">{text}</p>
+                  <h3 className="relative mt-5 text-xl font-bold text-dark-navy">{title}</h3>
+                  <p className="relative mt-3 text-sm leading-6 text-slate-600">{text}</p>
                 </article>
               </MotionReveal>
             ))}
@@ -56,18 +62,21 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Faaliyet Alanları */}
-      <section className="bg-soft-gray py-20">
+      {/* ── Faaliyet Alanları ── */}
+      <section className="bg-soft-gray py-20 sm:py-24">
         <Container>
-          <SectionHeading
-            eyebrow="Faaliyet Alanları"
-            title="İhtiyaca göre planlanan, insana yakışır destekler"
-            description="Her faaliyet alanını sahadan gelen gerçek ihtiyaçlara göre tasarlıyor; bağışçı ve gönüllülerimizin desteğini doğru yere ulaştırmak için çalışıyoruz."
-            align="center"
-          />
-          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <MotionReveal>
+            <SectionHeading
+              eyebrow="Faaliyet Alanları"
+              title="İhtiyaca göre planlanan, insana yakışır destekler"
+              description="Her alanı sahadan gelen gerçek ihtiyaçlara göre tasarlıyor; desteğinizi doğru yere ulaştırıyoruz."
+              align="center"
+            />
+          </MotionReveal>
+
+          <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {activities.map((activity, index) => (
-              <MotionReveal key={activity.title} delay={index * 0.04}>
+              <MotionReveal key={activity.title} delay={index * 0.05}>
                 <ActivityCard {...activity} />
               </MotionReveal>
             ))}
@@ -75,19 +84,20 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Öne Çıkan Projeler */}
-      <section className="bg-white py-20">
+      {/* ── Öne Çıkan Projeler ── */}
+      <section className="bg-white py-20 sm:py-24">
         <Container>
-          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <MotionReveal>
             <SectionHeading
               eyebrow="Öne Çıkan Projeler"
               title="Desteğinizi proje bazlı görün"
               description="Her proje, hedef ve ulaşılan destek bilgisini gösterecek şekilde hazırlandı."
             />
-          </div>
-          <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          </MotionReveal>
+
+          <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             {projects.map((project, index) => (
-              <MotionReveal key={project.title} delay={index * 0.04}>
+              <MotionReveal key={project.title} delay={index * 0.05}>
                 <ProjectCard {...project} />
               </MotionReveal>
             ))}
@@ -99,18 +109,21 @@ export default function HomePage() {
       <VolunteerCTA />
       <DonationCTA />
 
-      {/* Haberler */}
-      <section className="bg-white py-20">
+      {/* ── Haberler ── */}
+      <section className="bg-white py-20 sm:py-24">
         <Container>
-          <SectionHeading
-            eyebrow="Haberler / Duyurular"
-            title="Sahadan ve dernek çalışmalarından notlar"
-            description="Yapılan faaliyetlerin, gönüllü buluşmalarının ve kampanya duyurularının düzenli takip edilebildiği alan."
-            align="center"
-          />
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
+          <MotionReveal>
+            <SectionHeading
+              eyebrow="Haberler & Duyurular"
+              title="Sahadan ve dernek çalışmalarından notlar"
+              description="Faaliyetlerin, gönüllü buluşmalarının ve kampanya duyurularının düzenli takip edilebildiği alan."
+              align="center"
+            />
+          </MotionReveal>
+
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
             {news.map((item, index) => (
-              <MotionReveal key={item.slug} delay={index * 0.05}>
+              <MotionReveal key={item.slug} delay={index * 0.06}>
                 <NewsCard {...item} />
               </MotionReveal>
             ))}
