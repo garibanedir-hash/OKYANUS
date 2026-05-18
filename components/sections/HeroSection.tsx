@@ -6,12 +6,8 @@ import { OfficialLogo } from "@/components/brand/OfficialLogo";
 
 function HeroBrandLockup() {
   return (
-    <div className="inline-flex items-center gap-5 rounded-xl border border-border-soft bg-white px-5 py-4 shadow-sm">
+    <div className="inline-flex max-w-full items-center justify-center rounded-xl border border-border-soft bg-white px-4 py-3 shadow-sm sm:px-6 sm:py-4">
       <OfficialLogo variant="color" context="hero" className="shrink-0" />
-      <div className="leading-none">
-        <p className="text-5xl font-black tracking-[0.02em] text-deep-blue sm:text-6xl lg:text-7xl">OKYANUS</p>
-        <p className="mt-2 text-[0.72rem] font-extrabold uppercase tracking-[0.42em] text-ocean-green sm:text-sm sm:tracking-[0.48em]">İnsani Yardım Derneği</p>
-      </div>
     </div>
   );
 }

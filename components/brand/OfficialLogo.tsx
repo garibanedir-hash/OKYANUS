@@ -32,14 +32,25 @@ const sizeClasses = {
     logo: "h-56 w-56",
     mark: "h-36 w-36",
     text: "text-xl"
+  },
+  hero: {
+    logo: "h-72 w-72 sm:h-80 sm:w-80 lg:h-96 lg:w-96",
+    mark: "h-36 w-36",
+    text: "text-xl"
+  },
+  header: {
+    logo: "h-20 w-20",
+    mark: "h-16 w-16",
+    text: "text-base"
   }
 };
 
 const contextDefaults = {
+  header: "header",
   sidebar: "lg",
   topbar: "md",
   auth: "xl",
-  hero: "xl",
+  hero: "hero",
   footer: "lg",
   compact: "sm"
 } as const;
@@ -53,8 +64,8 @@ export function OfficialLogo({
   onClick
 }: {
   variant?: "color" | "white" | "mark";
-  context?: "sidebar" | "topbar" | "auth" | "hero" | "footer" | "compact";
-  size?: "sm" | "md" | "lg" | "xl";
+  context?: "header" | "sidebar" | "topbar" | "auth" | "hero" | "footer" | "compact";
+  size?: "sm" | "md" | "lg" | "xl" | "hero" | "header";
   showText?: boolean;
   className?: string;
   onClick?: () => void;

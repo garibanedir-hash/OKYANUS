@@ -39,7 +39,7 @@ export function Header() {
       )}
     >
       <Container className="flex h-20 items-center justify-between">
-        <OfficialLogo variant="color" size="md" onClick={() => setOpen(false)} />
+        <OfficialLogo variant="color" context="header" onClick={() => setOpen(false)} />
 
         <nav aria-label="Ana menü" className="hidden items-center gap-7 lg:flex">
           {navItems.map((item) => (
