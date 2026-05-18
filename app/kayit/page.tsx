@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Button } from "@/components/ui/Button";
 import { AuthShell } from "@/components/auth/AuthShell";
+import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
 import { registerPublicAccount } from "@/app/kayit/actions";
 
 export const metadata: Metadata = {
@@ -47,7 +47,7 @@ export default async function RegisterPage({
             <label className="flex gap-3 text-sm font-semibold leading-6 text-ink-muted"><input name="kvkkAccepted" className="mt-1 h-4 w-4" type="checkbox" required />KVKK aydınlatma metnini okudum ve demo kayıt akışını anladım.</label>
             <label className="flex gap-3 text-sm font-semibold leading-6 text-ink-muted"><input name="communicationPermission" className="mt-1 h-4 w-4" type="checkbox" />İletişim izni vermek istiyorum.</label>
           </div>
-          <Button type="submit" className="md:col-span-2">Hesap Oluştur</Button>
+          <AuthSubmitButton idleLabel="Hesap Oluştur" pendingLabel="Kayıt oluşturuluyor..." className="md:col-span-2" />
           <p className="text-sm text-ink-muted md:col-span-2">Zaten hesabın var mı? <Link className="font-bold text-deep-blue" href="/giris">Giriş yap</Link></p>
         </form>
     </AuthShell>

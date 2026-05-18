@@ -19,14 +19,8 @@ export function AuthShell({
     <main className={cn("min-h-screen px-5 py-8", adminMode ? "bg-deep-blue" : "bg-warm-white")}>
       <div className="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-6xl items-center gap-8 lg:grid-cols-[0.9fr_1fr]">
         <aside className={cn("rounded-[1.5rem] border p-7 sm:p-9", adminMode ? "border-white/10 bg-white/8 text-white" : "border-border-soft bg-white text-dark-navy")}>
-          <OfficialLogo variant={adminMode ? "white" : "color"} context="auth" className="-ml-3" />
-          <div className="mt-10">
-            <p className={cn("text-5xl font-black tracking-[0.02em] sm:text-6xl", adminMode ? "text-white" : "text-deep-blue")}>
-              OKYANUS
-            </p>
-            <p className={cn("mt-2 text-xs font-extrabold uppercase tracking-[0.42em] sm:text-sm", adminMode ? "text-mint-green" : "text-ocean-green")}>
-              İnsani Yardım Derneği
-            </p>
+          <div className="flex justify-center lg:justify-start">
+            <OfficialLogo variant={adminMode ? "white" : "color"} context="auth" className="-ml-3 max-w-[280px] sm:max-w-[320px]" />
           </div>
           <p className={cn("mt-8 max-w-sm text-lg font-bold leading-8", adminMode ? "text-white" : "text-deep-blue")}>
             İyilik Paylaştıkça Okyanusa Dönüşür.

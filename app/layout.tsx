@@ -5,16 +5,19 @@ import "./globals.css";
 import { SiteChrome } from "@/components/SiteChrome";
 
 const faviconPngExists = existsSync(path.join(process.cwd(), "public", "brand", "favicon.png"));
+const markWhitePngExists = existsSync(path.join(process.cwd(), "public", "brand", "mark-white.png"));
 const markPngExists = existsSync(path.join(process.cwd(), "public", "brand", "mark.png"));
 const faviconSvgExists = existsSync(path.join(process.cwd(), "public", "brand", "favicon.svg"));
 const socialPreviewExists = existsSync(path.join(process.cwd(), "public", "brand", "social-preview.png"));
-const faviconPath = faviconPngExists
-  ? "/brand/favicon.png"
-  : markPngExists
-    ? "/brand/mark.png"
-    : faviconSvgExists
-      ? "/brand/favicon.svg"
-      : undefined;
+const faviconPath = faviconSvgExists
+  ? "/brand/favicon.svg"
+  : faviconPngExists
+    ? "/brand/favicon.png"
+    : markWhitePngExists
+      ? "/brand/mark-white.png"
+      : markPngExists
+        ? "/brand/mark.png"
+        : undefined;
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://okyanusyardim.org"),

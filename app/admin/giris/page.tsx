@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { adminHomePath, isAdminDemoMode } from "@/config/admin";
 import { AuthShell } from "@/components/auth/AuthShell";
+import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
 import { isSupabaseConfigured } from "@/lib/auth/adminGuard";
 import { signInAdmin } from "@/app/admin/giris/actions";
 
@@ -54,9 +55,7 @@ export default async function AdminLoginPage({
             Şifre
             <input name="password" type="password" required className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="••••••••" />
           </label>
-          <button type="submit" className="focus-ring rounded-full bg-deep-blue px-5 py-3 text-sm font-bold text-white shadow-card">
-            Giriş Yap
-          </button>
+          <AuthSubmitButton idleLabel="Yönetim Paneline Giriş Yap" pendingLabel="Giriş kontrol ediliyor..." />
         </form>
 
         <div className="mt-6 rounded-2xl bg-warm-accent/10 p-4 text-sm font-semibold leading-6 text-dark-navy">
