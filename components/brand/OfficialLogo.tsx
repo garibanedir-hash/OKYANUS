@@ -34,12 +34,12 @@ const sizeClasses = {
     text: "text-xl"
   },
   hero: {
-    logo: "h-72 w-72 sm:h-80 sm:w-80 lg:h-96 lg:w-96",
+    logo: "h-80 w-80 sm:h-96 sm:w-96 lg:h-[28rem] lg:w-[28rem]",
     mark: "h-36 w-36",
     text: "text-xl"
   },
   header: {
-    logo: "h-20 w-20",
+    logo: "h-24 w-24",
     mark: "h-16 w-16",
     text: "text-base"
   }
@@ -88,7 +88,7 @@ export function OfficialLogo({
         height={variant === "mark" ? 96 : 120}
         className={cn("shrink-0 object-contain", variant === "mark" ? dimensions.mark : dimensions.logo)}
         onError={() => setFailed(true)}
-        priority={resolvedSize === "lg" || resolvedSize === "xl"}
+        priority={resolvedSize === "lg" || resolvedSize === "xl" || resolvedSize === "hero"}
       />
       {variant === "mark" && showText ? (
         <span className="leading-tight">
