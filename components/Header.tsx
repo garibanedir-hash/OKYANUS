@@ -38,7 +38,7 @@ export function Header() {
         scrolled && "border-slate-200/80 shadow-sm"
       )}
     >
-      <Container className="flex h-24 items-center justify-between">
+      <Container className="flex h-28 items-center justify-between">
         <OfficialLogo variant="color" context="header" onClick={() => setOpen(false)} />
 
         <nav aria-label="Ana menü" className="hidden items-center gap-7 lg:flex">

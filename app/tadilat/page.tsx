@@ -76,7 +76,7 @@ export default function MaintenancePage() {
 
         {/* Header */}
         <header className="flex items-center justify-between">
-          <OfficialLogo variant="white" size="md" />
+          <OfficialLogo variant="white" size="xl" />
           <span className="inline-flex items-center gap-2 rounded-full border border-ocean-green/30 bg-ocean-green/10 px-4 py-1.5">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-ocean-green" />
             <span className="text-xs font-bold uppercase tracking-[0.14em] text-ocean-green">

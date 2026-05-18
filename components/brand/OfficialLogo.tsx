@@ -14,23 +14,23 @@ const logoSources = {
 
 const sizeClasses = {
   sm: {
-    logo: "h-12 w-36",
-    mark: "h-12 w-12",
+    logo: "h-14 w-40",
+    mark: "h-14 w-14",
     text: "text-sm"
   },
   md: {
-    logo: "h-16 w-48",
-    mark: "h-16 w-16",
+    logo: "h-20 w-56",
+    mark: "h-20 w-20",
     text: "text-base"
   },
   lg: {
-    logo: "h-20 w-60",
-    mark: "h-24 w-24",
+    logo: "h-28 w-80",
+    mark: "h-28 w-28",
     text: "text-lg"
   },
   xl: {
-    logo: "h-24 w-72",
-    mark: "h-28 w-28",
+    logo: "h-36 w-[27rem]",
+    mark: "h-32 w-32",
     text: "text-xl"
   },
   hero: {
@@ -39,8 +39,8 @@ const sizeClasses = {
     text: "text-xl"
   },
   header: {
-    logo: "h-16 w-48",
-    mark: "h-16 w-16",
+    logo: "h-20 w-56",
+    mark: "h-20 w-20",
     text: "text-base"
   }
 };
