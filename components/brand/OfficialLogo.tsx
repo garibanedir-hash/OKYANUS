@@ -76,7 +76,8 @@ export function OfficialLogo({
   const dimensions = sizeClasses[resolvedSize];
 
   if (failed) {
-    return <BrandMark compact={resolvedSize === "sm"} inverse={inverse} onClick={onClick} />;
+    const isLarge = resolvedSize === "lg" || resolvedSize === "xl" || resolvedSize === "hero";
+    return <BrandMark compact={resolvedSize === "sm"} large={isLarge} inverse={inverse} onClick={onClick} />;
   }
 
   return (

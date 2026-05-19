@@ -26,120 +26,105 @@ const pillars = [
 ];
 
 function OceanRings() {
-  const radii = [80, 160, 240, 320, 400, 480, 560, 640];
   return (
-    <svg
-      viewBox="0 0 640 640"
-      fill="none"
-      aria-hidden
-      className="absolute inset-0 h-full w-full"
-      preserveAspectRatio="xMaxYMax slice"
-    >
-      {radii.map((r, i) => (
+    <svg viewBox="0 0 800 800" fill="none" aria-hidden className="absolute inset-0 h-full w-full">
+      {[100, 200, 300, 400, 500, 600, 700].map((r, i) => (
         <circle
           key={r}
-          cx="640"
-          cy="640"
+          cx="400"
+          cy="400"
           r={r}
-          stroke="rgba(31,128,131,0.13)"
+          stroke="rgba(31,128,131,0.10)"
           strokeWidth="1"
           fill="none"
-          opacity={1 - i * 0.08}
+          opacity={1 - i * 0.1}
         />
       ))}
-      <circle cx="640" cy="640" r="20" fill="rgba(31,128,131,0.3)" />
-      <circle cx="640" cy="640" r="7" fill="rgba(31,128,131,0.65)" />
+      <circle cx="400" cy="400" r="18" fill="rgba(31,128,131,0.25)" />
+      <circle cx="400" cy="400" r="6" fill="rgba(31,128,131,0.55)" />
     </svg>
   );
 }
 
 export default function MaintenancePage() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-dark-navy">
+    <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-dark-navy px-6 py-16 text-center">
 
-      {/* Ambient radial glow — top center */}
-      <div className="pointer-events-none absolute inset-x-0 -top-40 h-[40rem] bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(31,128,131,0.2),transparent)]" />
-
-      {/* Bottom-left warmth */}
-      <div className="pointer-events-none absolute bottom-0 left-0 h-80 w-96 bg-[radial-gradient(circle,rgba(220,239,237,0.04),transparent_70%)]" />
-
-      {/* Ocean rings — bottom right */}
-      <div className="pointer-events-none absolute bottom-0 right-0 h-[70%] w-[55%] overflow-hidden">
+      {/* Concentric rings — centered, full background */}
+      <div className="pointer-events-none absolute inset-0">
         <OceanRings />
       </div>
 
+      {/* Top radial glow */}
+      <div className="pointer-events-none absolute inset-x-0 -top-40 h-[32rem] bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(31,128,131,0.22),transparent)]" />
+
       {/* Top hairline */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-ocean-green/40 to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-ocean-green/50 to-transparent" />
+      {/* Bottom hairline */}
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-ocean-green/20 to-transparent" />
 
-      {/* ── Page ── */}
-      <div className="relative z-10 flex min-h-screen flex-col px-5 py-10 sm:px-8 lg:px-16">
+      {/* ── Content ── */}
+      <div className="relative z-10 flex w-full max-w-3xl flex-col items-center">
 
-        {/* Header */}
-        <header className="flex items-center justify-between">
-          <OfficialLogo variant="white" size="xl" />
-          <span className="inline-flex items-center gap-2 rounded-full border border-ocean-green/30 bg-ocean-green/10 px-4 py-1.5">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-ocean-green" />
-            <span className="text-xs font-bold uppercase tracking-[0.14em] text-ocean-green">
-              Hazırlık devam ediyor
-            </span>
+        {/* Status badge */}
+        <span className="mb-10 inline-flex items-center gap-2 rounded-full border border-ocean-green/30 bg-ocean-green/10 px-4 py-1.5">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-ocean-green" />
+          <span className="text-xs font-bold uppercase tracking-[0.15em] text-ocean-green">
+            Hazırlık devam ediyor
           </span>
-        </header>
+        </span>
 
-        {/* Main content */}
-        <div className="flex flex-1 items-center py-16">
-          <div className="w-full max-w-4xl">
+        {/* Logo — centered, large */}
+        <OfficialLogo variant="white" size="xl" className="mx-auto mb-12" />
 
-            {/* Headline */}
-            <h1 className="text-5xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-6xl lg:text-[5rem]">
-              Web Sitemiz
-              <br />
-              <span className="text-ocean-green">Yenileniyor.</span>
-            </h1>
+        {/* Headline */}
+        <h1 className="text-5xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-6xl lg:text-7xl">
+          Web Sitemiz
+          <br />
+          <span className="text-ocean-green">Yenileniyor.</span>
+        </h1>
 
-            <p className="mt-7 max-w-2xl text-lg leading-8 text-white/55">
-              Dijital altyapımızı daha güvenli, erişilebilir ve kurumsal bir deneyim sunmak için hazırlıyoruz. Kısa süre içinde faaliyetlerimizi, projelerimizi ve bağış süreçlerimizi sizlerle buluşturacağız.
-            </p>
+        {/* Description */}
+        <p className="mx-auto mt-7 max-w-xl text-lg leading-8 text-white/55">
+          Dijital altyapımızı daha güvenli, erişilebilir ve kurumsal bir deneyim sunmak için hazırlıyoruz. Kısa süre içinde sizlerle buluşacağız.
+        </p>
 
-            {/* Tagline */}
-            <div className="mt-7 inline-flex items-center gap-3">
-              <div className="h-px w-8 bg-ocean-green/50" />
-              <p className="text-sm font-extrabold text-ocean-green/80">
-                İyilik Paylaştıkça Okyanusa Dönüşür.
-              </p>
-            </div>
-
-            {/* Pillars */}
-            <div className="mt-16 grid gap-8 border-t border-white/8 pt-12 sm:grid-cols-3">
-              {pillars.map(({ icon: Icon, title, description }) => (
-                <div key={title} className="flex flex-col gap-4">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-ocean-green/15 ring-1 ring-ocean-green/20">
-                    <Icon aria-hidden className="h-5 w-5 text-ocean-green" />
-                  </span>
-                  <h3 className="font-bold text-white">{title}</h3>
-                  <p className="text-sm leading-6 text-white/50">{description}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Contact */}
-            <div className="mt-12 flex items-center gap-3 border-t border-white/8 pt-8 text-sm font-semibold text-white/40">
-              <Mail aria-hidden className="h-4 w-4 text-ocean-green" />
-              <span>Sorularınız için:</span>
-              <a
-                href="mailto:info@okyanus.org.tr"
-                className="text-white/70 transition hover:text-ocean-green"
-              >
-                info@okyanus.org.tr
-              </a>
-            </div>
-          </div>
+        {/* Tagline */}
+        <div className="mt-6 flex items-center justify-center gap-3">
+          <div className="h-px w-8 bg-ocean-green/40" />
+          <p className="text-sm font-extrabold text-ocean-green/80">
+            İyilik Paylaştıkça Okyanusa Dönüşür.
+          </p>
+          <div className="h-px w-8 bg-ocean-green/40" />
         </div>
 
-        {/* Footer note */}
-        <p className="text-center text-xs font-semibold text-white/25">
-          Bu sayfa bakım modu kapsamında geçici olarak yayındadır.
-        </p>
+        {/* Pillars */}
+        <div className="mt-16 grid w-full gap-6 border-t border-white/8 pt-14 sm:grid-cols-3">
+          {pillars.map(({ icon: Icon, title, description }) => (
+            <div key={title} className="flex flex-col items-center gap-3 text-center">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-ocean-green/15 ring-1 ring-ocean-green/20">
+                <Icon aria-hidden className="h-5 w-5 text-ocean-green" />
+              </span>
+              <h3 className="font-bold text-white">{title}</h3>
+              <p className="text-sm leading-6 text-white/50">{description}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Contact */}
+        <div className="mt-14 flex items-center justify-center gap-3 border-t border-white/8 pt-8 text-sm text-white/40">
+          <Mail aria-hidden className="h-4 w-4 text-ocean-green" />
+          <span>Sorularınız için:</span>
+          <a href="mailto:info@okyanus.org.tr" className="font-semibold text-white/70 transition hover:text-ocean-green">
+            info@okyanus.org.tr
+          </a>
+        </div>
       </div>
+
+      {/* Footer note */}
+      <p className="absolute bottom-5 text-xs text-white/20">
+        Bu sayfa bakım modu kapsamında geçici olarak yayındadır.
+      </p>
     </main>
   );
 }
