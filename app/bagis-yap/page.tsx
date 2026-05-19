@@ -5,6 +5,7 @@ import { DonationForm } from "@/components/forms/DonationForm";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
+import { Button } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
   title: "Bağış Yap",
@@ -71,6 +72,20 @@ export default async function DonatePage({ searchParams }: DonatePageProps) {
                       Bağış türü, tutar, bağışçı bilgisi ve not alanı ayrı tutulur; ileride ödeme, makbuz ve proje raporu modüllerine bağlanabilir.
                     </p>
                   </div>
+                </div>
+              </div>
+              <div className="mt-6 rounded-brand border border-ocean-green/20 bg-mint-green/50 p-6 shadow-card">
+                <h2 className="text-xl font-bold text-dark-navy">Kurban bağışı</h2>
+                <p className="mt-2 leading-7 text-slate-600">
+                  Kurban bağışı yapmak için Kurban Çalışmaları sayfasına geçebilirsiniz. Vekalet, kesim ve dağıtım akışı bu modülde ayrıca takip edilir.
+                </p>
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <Button href="/kurban" variant="secondary" showIcon>
+                    Kurban Çalışmaları
+                  </Button>
+                  <Button href="/kurban/bagis" variant="ghost">
+                    Kurban Bağışı Yap
+                  </Button>
                 </div>
               </div>
               <div className="mt-6 rounded-brand border border-border-soft bg-white p-6 shadow-card">

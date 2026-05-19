@@ -98,3 +98,17 @@ Server-side doğrulama yapılır:
 - Draft/archived kayıtların public sitede görünmediği test edilmeli.
 - Dosya/PDF upload için private bucket ve signed URL tasarımı yapılmalı.
 - Bağış/ödeme/gönüllü/sponsorluk gibi hassas CRUD alanları ayrı RLS ve audit testlerinden sonra ele alınmalı.
+
+## 9B Kurban Modülü Notu
+
+9B'de kurban çalışmaları ayrı bir operasyon modülü olarak başlatıldı. Bu modül public içerik CRUD kapsamına dahil değildir; çünkü vekalet, ödeme, bağışçı kimliği, hisse/adet, kesim, dağıtım ve bilgilendirme süreçleri hassas operasyonel veri içerir.
+
+9B kapsamı:
+
+- `010_qurban_module.sql` ile veri modeli ve read policy hazırlığı.
+- Public `/kurban` sayfaları.
+- Admin kurban operasyon ekranları.
+- Bağışçı `/panel/kurbanlarim` takip alanı.
+- Koordinatör/personel kurban operasyon ve görev ekranları.
+
+9B'de gerçek kurban order create, ödeme, makbuz, SMS/e-posta gönderimi veya dosya upload yapılmaz. Bu işlemler audit, RLS ve provider güvenlik testleri tamamlandıktan sonra ayrı aşamada açılmalıdır.

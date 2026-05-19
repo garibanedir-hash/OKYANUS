@@ -94,3 +94,15 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Audit log helper best-effort çalışıyor ve audit hatası CRUD işlemini patlatmıyor.
 - [ ] Draft/archived kayıtlar public sitede görünmüyor.
 - [ ] Server-side validation title/slug/status/numeric/url/metrics alanlarını kontrol ediyor.
+
+## 9B Kurban Modülü Kontrolleri
+
+- [ ] `010_qurban_module.sql` staging ortamında çalıştırıldı.
+- [ ] Public/anon yalnızca aktif `qurban_campaigns` kayıtlarını okuyabiliyor.
+- [ ] Public/anon kurban siparişi, vekalet, hisse, operasyon, dağıtım, bildirim ve export tablolarını okuyamıyor.
+- [ ] Bağışçı yalnızca kendi `donor_account_id` ilişkili kurban kayıtlarını görebiliyor.
+- [ ] Koordinatör/personel yalnızca kendisine atanmış kurban operasyon kapsamını görebiliyor.
+- [ ] Kurban modülü bu aşamada gerçek ödeme, gerçek kayıt, makbuz veya dosya upload yapmıyor.
+- [ ] Vekalet metni yönetim, hukuk danışmanı ve dini danışman onayı olmadan production'da kullanılmıyor.
+- [ ] Kurban export ekranında kişisel veri maskeleme varsayılan açık planlandı.
+- [ ] Service role key client tarafına taşınmadan read-only/mock akış korunuyor.

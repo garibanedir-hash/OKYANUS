@@ -45,6 +45,10 @@
 - [ ] 9A write policy'leri yalnızca public içerik tabloları için authenticated admin/super_admin kapsamıyla açıldı mı?
 - [ ] Public/anon insert/update/delete kesinlikle kapalı mı?
 - [ ] Hard delete yerine archive/status update kullanılıyor mu?
+- [ ] Kurban modülünde public/anon yalnızca aktif `qurban_campaigns` kayıtlarını okuyabiliyor mu?
+- [ ] `qurban_orders`, `qurban_delegations`, `qurban_shares`, `qurban_operations`, `qurban_distribution_logs`, `qurban_status_logs`, `qurban_notifications` ve `qurban_exports` public erişime kapalı mı?
+- [ ] Kurban modülünde insert/update/delete policy sonraki aşamaya bırakıldı mı?
+- [ ] Bağışçı, koordinatör ve personel kurban kayıtları ownership/assignment kapsamıyla sınırlandırıldı mı?
 
 ## Form validation
 
@@ -81,6 +85,7 @@
 - [ ] Export işlemleri audit log'a düşüyor mu?
 - [ ] Personel rol değişiklikleri audit log'a düşüyor mu?
 - [ ] Public içerik create/update/archive işlemleri audit helper'a best-effort yazılıyor mu?
+- [ ] Kurban vekalet, ödeme, kesim, dağıtım ve export işlemleri production öncesi audit planına eklendi mi?
 
 ## PII masking
 
@@ -88,6 +93,8 @@
 - [ ] Telefon maskeleme var.
 - [ ] Export dosyalarında PII sınırlandı.
 - [ ] Export kişisel verileri maskeliyor mu?
+- [ ] Kurban bağışçı ekranlarında e-posta/telefon maskeli gösteriliyor mu?
+- [ ] Kurban export ekranında kişisel veri maskeleme varsayılan açık mı?
 - [ ] İç mesajlarda hassas veri paylaşımı engelleniyor mu?
 
 ## Backup
@@ -147,11 +154,13 @@
 - [ ] Görevleri sadece yetkili roller görüntülüyor mu?
 - [ ] Supabase Realtime kullanılacaksa kanal erişimleri sınırlandırıldı mı?
 - [ ] Bağışçı yalnızca kendi bağışlarını görebiliyor mu?
+- [ ] Bağışçı yalnızca kendi kurban siparişi ve vekalet durumunu görebiliyor mu?
 - [ ] Sponsor yalnızca kendi sponsorluklarını görebiliyor mu?
 - [ ] Yetim/çocuk verileri maskeleniyor mu?
 - [ ] Gönüllü yalnızca kendi başvurularını ve görevlerini görebiliyor mu?
 - [ ] Personel yalnızca kendi görevlerine erişiyor mu?
 - [ ] Koordinatör sadece kendi ekibine erişiyor mu?
+- [ ] Koordinatör/personel yalnızca kendisine atanmış kurban operasyonlarını görebiliyor mu?
 - [ ] Kullanıcı rol değişiklikleri audit log'a düşüyor mu?
 - [ ] Panel erişimleri server-side doğrulanıyor mu?
 - [ ] Public kayıt spam/rate limit ile korunuyor mu?

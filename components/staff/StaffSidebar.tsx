@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 const items = [
   { label: "Özet", href: "/personel", icon: Home },
   { label: "Görevlerim", href: "/personel/gorevler", icon: CheckSquare },
+  { label: "Kurban Görevleri", href: "/personel/kurban-gorevleri", icon: CheckSquare },
   { label: "Mesajlarım", href: "/personel/mesajlar", icon: Mail },
   { label: "Faaliyetlerim", href: "/personel/faaliyetlerim", icon: Waves },
   { label: "Profil", href: "/personel/profil", icon: UserRound }

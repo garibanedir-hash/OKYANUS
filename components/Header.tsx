@@ -14,6 +14,7 @@ const navItems = [
   { label: "Hakkımızda", href: "/hakkimizda" },
   { label: "Faaliyetler", href: "/faaliyetler" },
   { label: "Projeler", href: "/projeler" },
+  { label: "Kurban", href: "/kurban" },
   { label: "Gönüllü Ol", href: "/gonullu-ol" },
   { label: "Haberler", href: "/haberler" },
   { label: "İletişim", href: "/iletisim" }

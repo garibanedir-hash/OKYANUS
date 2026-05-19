@@ -65,6 +65,20 @@ const navGroups = [
     ]
   },
   {
+    title: "Kurban Çalışmaları",
+    items: [
+      { label: "Genel Bakış", href: "/admin/kurban", icon: LayoutDashboard },
+      { label: "Kampanyalar", href: "/admin/kurban/kampanyalar", icon: BarChart3, badge: "demo" },
+      { label: "Kurban Bağışları", href: "/admin/kurban/bagislar", icon: HeartHandshake, badge: "demo" },
+      { label: "Vekaletler", href: "/admin/kurban/vekaletler", icon: CheckSquare, badge: "demo" },
+      { label: "Kesim Takibi", href: "/admin/kurban/kesim-takibi", icon: Route, badge: "demo" },
+      { label: "Dağıtımlar", href: "/admin/kurban/dagitimlar", icon: TableProperties, badge: "demo" },
+      { label: "Bildirimler", href: "/admin/kurban/bildirimler", icon: BellRing, badge: "demo" },
+      { label: "Raporlar", href: "/admin/kurban/raporlar", icon: FileText, badge: "demo" },
+      { label: "Export", href: "/admin/kurban/export", icon: FileText, badge: "demo" }
+    ]
+  },
+  {
     title: "İçerik Yönetimi",
     items: [
       { label: "Projeler", href: "/admin/projeler", icon: BarChart3 },

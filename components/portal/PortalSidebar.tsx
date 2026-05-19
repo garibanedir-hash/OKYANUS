@@ -15,6 +15,7 @@ const items = [
   { label: "Etkinlikler", href: "/panel/etkinlikler", icon: CalendarDays },
   { label: "Yetim Sponsorluk", href: "/panel/yetim-sponsorluk", icon: ShieldCheck },
   { label: "Bağışlarım", href: "/panel/bagislarim", icon: HeartHandshake },
+  { label: "Kurbanlarım", href: "/panel/kurbanlarim", icon: Gift },
   { label: "Bildirimler", href: "/panel/bildirimler", icon: Bell },
   { label: "Profil", href: "/panel/profil", icon: UserRound }
 ];
