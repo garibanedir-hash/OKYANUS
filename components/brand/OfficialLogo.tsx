@@ -14,32 +14,32 @@ const logoSources = {
 
 const sizeClasses = {
   sm: {
-    logo: "h-14 w-40",
-    mark: "h-14 w-14",
+    logo: "h-16 w-16",
+    mark: "h-16 w-16",
     text: "text-sm"
   },
   md: {
-    logo: "h-20 w-56",
+    logo: "h-24 w-24",
     mark: "h-20 w-20",
     text: "text-base"
   },
   lg: {
-    logo: "h-28 w-80",
+    logo: "h-36 w-36",
     mark: "h-28 w-28",
     text: "text-lg"
   },
   xl: {
-    logo: "h-36 w-[27rem]",
-    mark: "h-32 w-32",
+    logo: "h-72 w-72",
+    mark: "h-40 w-40",
     text: "text-xl"
   },
   hero: {
-    logo: "h-80 w-80 sm:h-96 sm:w-96 lg:h-[28rem] lg:w-[28rem]",
+    logo: "h-80 w-80 sm:h-96 sm:w-96 lg:h-[30rem] lg:w-[30rem]",
     mark: "h-36 w-36",
     text: "text-xl"
   },
   header: {
-    logo: "h-20 w-56",
+    logo: "h-24 w-24",
     mark: "h-20 w-20",
     text: "text-base"
   }
@@ -85,8 +85,8 @@ export function OfficialLogo({
       <Image
         src={logoSources[variant]}
         alt={variant === "mark" && !showText ? "Okyanus" : "Okyanus İnsani Yardım Derneği"}
-        width={variant === "mark" ? 96 : 360}
-        height={variant === "mark" ? 96 : 120}
+        width={800}
+        height={800}
         className={cn("shrink-0 object-contain", variant === "mark" ? dimensions.mark : dimensions.logo)}
         onError={() => setFailed(true)}
         priority={resolvedSize === "lg" || resolvedSize === "xl" || resolvedSize === "hero"}
