@@ -25,6 +25,7 @@
 - [ ] Metadata tek başına nihai güvenlik kaynağı olarak kullanılmıyor mu?
 - [ ] Her rol yalnızca kendi paneline yönleniyor ve diğer panellere erişimi server-side reddediliyor mu?
 - [ ] `profiles.role` ve `user_accounts.account_type` uyumu test kullanıcılarıyla doğrulandı mı?
+- [ ] Admin public içerik CRUD işlemleri sadece `admin` veya `super_admin` rolüyle yapılabiliyor mu?
 
 ## RLS
 
@@ -41,6 +42,9 @@
 - [ ] Authenticated user başkasının verisine erişemiyor mu?
 - [ ] 8F read-only public bağlantılar sadece `projects`, `news_posts` ve `reports` gibi düşük riskli public tablolara gidiyor mu?
 - [ ] Hassas tablolar read-only entegrasyon bahanesiyle public erişime açılmadı mı?
+- [ ] 9A write policy'leri yalnızca public içerik tabloları için authenticated admin/super_admin kapsamıyla açıldı mı?
+- [ ] Public/anon insert/update/delete kesinlikle kapalı mı?
+- [ ] Hard delete yerine archive/status update kullanılıyor mu?
 
 ## Form validation
 
@@ -76,6 +80,7 @@
 - [ ] Audit log silme kapalı.
 - [ ] Export işlemleri audit log'a düşüyor mu?
 - [ ] Personel rol değişiklikleri audit log'a düşüyor mu?
+- [ ] Public içerik create/update/archive işlemleri audit helper'a best-effort yazılıyor mu?
 
 ## PII masking
 

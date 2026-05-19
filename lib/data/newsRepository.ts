@@ -16,6 +16,10 @@ export type SupabaseNewsRow = {
   content: string;
   related_project_id: string | null;
   related_activity_id: string | null;
+  related_project_slug?: string | null;
+  related_activity_slug?: string | null;
+  tags?: string[] | null;
+  cover_image_url?: string | null;
   status: string;
   published_at: string | null;
   created_at: string;
@@ -31,6 +35,10 @@ const publicNewsColumns = [
   "content",
   "related_project_id",
   "related_activity_id",
+  "related_project_slug",
+  "related_activity_slug",
+  "tags",
+  "cover_image_url",
   "status",
   "published_at",
   "created_at",
@@ -51,6 +59,8 @@ function formatDate(value: string | null | undefined) {
 }
 
 export function mapSupabaseNewsToNewsPost(row: SupabaseNewsRow): NewsItem {
+  const tags = Array.isArray(row.tags) && row.tags.length ? row.tags.filter(Boolean) : [row.category].filter(Boolean);
+
   return {
     id: row.id,
     slug: row.slug,
@@ -59,7 +69,9 @@ export function mapSupabaseNewsToNewsPost(row: SupabaseNewsRow): NewsItem {
     date: formatDate(row.published_at ?? row.updated_at),
     summary: row.summary,
     content: row.content,
-    tags: [row.category].filter(Boolean)
+    tags,
+    relatedProjectSlug: row.related_project_slug ?? undefined,
+    relatedActivitySlug: row.related_activity_slug ?? undefined
   };
 }
 

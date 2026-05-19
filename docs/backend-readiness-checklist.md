@@ -82,3 +82,15 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Bağış, gönüllü, mesaj, görev, kullanıcı ve sponsorluk gibi hassas tablolar 8F'de gerçek veri kaynağına bağlanmadı.
 - [ ] Repository logları secret/key/token/şifre bilgisi yazmıyor.
 - [ ] `npm run test:supabase` sonucu `Security warning: 0` olarak korunuyor.
+
+## 9A Admin Public İçerik CRUD Kontrolleri
+
+- [ ] `009_admin_content_crud_policies.sql` staging ortamında çalıştırıldı.
+- [ ] Admin CRUD server action'ları write öncesi `profiles.role` admin/super_admin ve `status = active` doğruluyor.
+- [ ] Proje, haber ve rapor create/update işlemleri client tarafına service role taşımadan çalışıyor.
+- [ ] Arşivleme hard delete yerine status update ile yapılıyor.
+- [ ] Public/anon insert/update/delete policy açılmadı.
+- [ ] Hassas tablolar için CRUD veya write policy eklenmedi.
+- [ ] Audit log helper best-effort çalışıyor ve audit hatası CRUD işlemini patlatmıyor.
+- [ ] Draft/archived kayıtlar public sitede görünmüyor.
+- [ ] Server-side validation title/slug/status/numeric/url/metrics alanlarını kontrol ediyor.

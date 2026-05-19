@@ -50,6 +50,17 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Dashboard gerçek bağış/gönüllü/mesaj/görev verisine bağlanmadı; yalnızca public içerik sayaçları okundu.
 - [ ] Repository hata logları secret/key/token/şifre içermiyor.
 
+## Admin Public İçerik CRUD
+
+- [ ] `009_admin_content_crud_policies.sql` staging ortamında uygulanıp test edildi.
+- [ ] Proje/haber/rapor create/update/archive işlemleri sadece admin/super_admin hesabıyla çalışıyor.
+- [ ] Public/anon insert/update/delete policy açılmadı.
+- [ ] Hassas operasyonel tablolara write policy eklenmedi.
+- [ ] Hard delete kullanılmıyor; arşivleme status update ile yapılıyor.
+- [ ] Audit log helper create/update/archive işlemlerinde best-effort çalışıyor.
+- [ ] CRUD formları server-side validation hatalarını kullanıcı dostu gösteriyor.
+- [ ] Production öncesi gerçek admin hesabıyla staging smoke/manual CRUD testi yapıldı.
+
 ## Veri Güvenliği ve KVKK
 
 - [ ] Çocuk/sponsorluk verileri maskeli ve sınırlı görünüyor.

@@ -87,3 +87,14 @@ CRUD aşamasına geçmeden önce:
 - Admin create/update/delete işlemleri audit log tasarımıyla birlikte ele alınmalı.
 - Dosya/PDF upload için private bucket ve signed URL stratejisi tamamlanmalı.
 - Ödeme entegrasyonu webhook signature ve idempotency ile ayrı test edilmeli.
+
+## 9A Notu
+
+9A ile düşük riskli public içerikler için admin CRUD başlangıcı eklenmiştir. Read-only public repository yapısı korunur; write işlemleri ayrı server action dosyalarında ve admin-only helper üzerinden yapılır.
+
+- Proje CRUD: `app/admin/projeler/actions.ts`
+- Haber CRUD: `app/admin/haberler/actions.ts`
+- Rapor CRUD: `app/admin/faaliyet-raporlari/actions.ts`
+- RLS hazırlığı: `supabase/migrations/009_admin_content_crud_policies.sql`
+
+Hard delete hâlâ kullanılmaz; arşivleme status update ile yapılır.

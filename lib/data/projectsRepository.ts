@@ -22,6 +22,10 @@ export type SupabaseProjectRow = {
   end_date?: string | null;
   transparency_note: string | null;
   featured: boolean | null;
+  metrics?: unknown;
+  impact_items?: string[] | null;
+  scope_items?: string[] | null;
+  cta?: { label?: unknown; href?: unknown } | null;
   created_at: string;
   updated_at: string;
 };
@@ -41,6 +45,10 @@ const publicProjectColumns = [
   "end_date",
   "transparency_note",
   "featured",
+  "metrics",
+  "impact_items",
+  "scope_items",
+  "cta",
   "created_at",
   "updated_at"
 ].join(", ");
@@ -81,6 +89,38 @@ function formatMetricAmount(value: number) {
   }).format(value);
 }
 
+function isMetric(value: unknown): value is { label: string; value: string } {
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    typeof (value as { label?: unknown }).label === "string" &&
+    typeof (value as { value?: unknown }).value === "string"
+  );
+}
+
+function normalizeMetrics(metrics: unknown, goal: number, raised: number, status: Project["status"]) {
+  if (Array.isArray(metrics) && metrics.every(isMetric) && metrics.length) {
+    return metrics;
+  }
+
+  return [
+    { label: "Hedef destek", value: formatMetricAmount(goal) },
+    { label: "Ulaşılan destek", value: formatMetricAmount(raised) },
+    { label: "Durum", value: status }
+  ];
+}
+
+function normalizeStringList(value: string[] | null | undefined, fallback: string[]) {
+  return Array.isArray(value) && value.length ? value.filter(Boolean) : fallback;
+}
+
+function normalizeCta(value: SupabaseProjectRow["cta"], slug: string) {
+  const label = typeof value?.label === "string" && value.label.trim() ? value.label.trim() : "Projeye Destek Ol";
+  const href = typeof value?.href === "string" && value.href.trim() ? value.href.trim() : `/bagis-yap?proje=${slug}`;
+
+  return { label, href };
+}
+
 function mapProjectStatus(status: SupabaseProjectRow["status"]): Project["status"] {
   switch (status) {
     case "active":
@@ -98,6 +138,7 @@ function mapProjectStatus(status: SupabaseProjectRow["status"]): Project["status
 export function mapSupabaseProjectToProject(row: SupabaseProjectRow): Project {
   const goal = parseAmount(row.goal_amount);
   const raised = parseAmount(row.raised_amount);
+  const status = mapProjectStatus(row.status);
 
   return {
     id: row.id,
@@ -109,23 +150,19 @@ export function mapSupabaseProjectToProject(row: SupabaseProjectRow): Project {
     detail: row.description,
     goal,
     raised,
-    status: mapProjectStatus(row.status),
+    status,
     location: row.location ?? "Lokasyon güncellenecek",
     startDate: formatDate(row.start_date),
     updatedAt: formatDate(row.updated_at),
     visualTone: projectVisualTones[row.category] ?? "from-soft-blue via-warm-white to-mint-green",
     tags: [row.category].filter(Boolean),
-    metrics: [
-      { label: "Hedef destek", value: formatMetricAmount(goal) },
-      { label: "Ulaşılan destek", value: formatMetricAmount(raised) },
-      { label: "Durum", value: mapProjectStatus(row.status) }
-    ],
-    impactItems: ["Proje bazlı destek", "Kayıtlı takip", "Şeffaf bilgilendirme"],
-    scopeItems: ["İhtiyaç tespiti", "Destek planlama", "Saha koordinasyonu", "Dönemsel raporlama"],
+    metrics: normalizeMetrics(row.metrics, goal, raised, status),
+    impactItems: normalizeStringList(row.impact_items, ["Proje bazlı destek", "Kayıtlı takip", "Şeffaf bilgilendirme"]),
+    scopeItems: normalizeStringList(row.scope_items, ["İhtiyaç tespiti", "Destek planlama", "Saha koordinasyonu", "Dönemsel raporlama"]),
     transparencyNote:
       row.transparency_note ??
       "Bu proje için şeffaflık notu Supabase içerik modelinden güncellenecektir.",
-    cta: { label: "Projeye Destek Ol", href: `/bagis-yap?proje=${row.slug}` }
+    cta: normalizeCta(row.cta, row.slug)
   };
 }
 

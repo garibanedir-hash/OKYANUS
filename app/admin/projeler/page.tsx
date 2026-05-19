@@ -1,5 +1,6 @@
 import { formatCurrency } from "@/lib/format";
 import { getProjectsWithSource } from "@/lib/data/projectsRepository";
+import { archiveProjectAction } from "@/app/admin/projeler/actions";
 import { AdminActionButton } from "@/components/admin/AdminActionButton";
 import { AdminChartCard } from "@/components/admin/AdminChartCard";
 import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
@@ -8,7 +9,20 @@ import { AdminSectionHeader } from "@/components/admin/AdminSectionHeader";
 import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
 import { AdminTable } from "@/components/admin/AdminTable";
 
-export default async function AdminProjectsPage() {
+const statusMessages: Record<string, string> = {
+  "proje-olusturuldu": "Proje kaydı oluşturuldu.",
+  "proje-guncellendi": "Proje kaydı güncellendi.",
+  "proje-arsivlendi": "Proje arşivlendi.",
+  hata: "İşlem tamamlanamadı. Lütfen tekrar deneyin.",
+  yetkisiz: "Bu işlem için yetkili admin hesabınızla giriş yapmanız gerekiyor."
+};
+
+export default async function AdminProjectsPage({
+  searchParams
+}: {
+  searchParams?: Promise<{ durum?: string; mesaj?: string }>;
+}) {
+  const params = await searchParams;
   const { data: projects, source } = await getProjectsWithSource();
   const activeCount = projects.filter((project) => project.status === "Devam Ediyor").length;
   const completedCount = projects.filter((project) => project.status === "Tamamlandı").length;
@@ -32,9 +46,15 @@ export default async function AdminProjectsPage() {
       <AdminSectionHeader
         eyebrow="İçerik Yönetimi"
         title="Projeler"
-        description="Projeler CMS veya backend entegrasyonuna hazır veri modeliyle listelenir. İşlemler demo modundadır."
+        description="Projeler CMS veya backend entegrasyonuna hazır veri modeliyle listelenir. Oluşturma ve güncelleme server-side admin doğrulamasıyla yapılır."
         actionLabel="Yeni Proje Ekle"
+        actionHref="/admin/projeler/yeni"
       />
+      {params?.durum ? (
+        <div className="rounded-lg border border-primary-blue/20 bg-soft-blue px-4 py-3 text-sm font-bold leading-6 text-deep-blue">
+          {params.mesaj ?? statusMessages[params.durum] ?? "İşlem tamamlandı."}
+        </div>
+      ) : null}
       <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
         Veri kaynağı: {source === "supabase" ? "Supabase read-only" : "Demo fallback"}
       </div>
@@ -72,8 +92,13 @@ export default async function AdminProjectsPage() {
               <td className="px-4 py-3">
                 <div className="flex gap-2">
                   <AdminActionButton href={`/projeler/${project.slug}`}>İncele</AdminActionButton>
-                  <AdminActionButton>Düzenle</AdminActionButton>
-                  <AdminActionButton variant="danger">Yayından kaldır</AdminActionButton>
+                  <AdminActionButton href={`/admin/projeler/${project.id}/duzenle`}>Düzenle</AdminActionButton>
+                  <form action={archiveProjectAction}>
+                    <input type="hidden" name="id" value={project.id} />
+                    <button type="submit" className="focus-ring inline-flex min-h-8 items-center justify-center rounded-md bg-warm-accent/15 px-2.5 py-1 text-[0.72rem] font-extrabold text-dark-navy ring-1 ring-warm-accent/25 transition hover:bg-warm-accent/25">
+                      Arşivle
+                    </button>
+                  </form>
                 </div>
               </td>
             </tr>

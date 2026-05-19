@@ -16,6 +16,7 @@ export type SupabaseReportRow = {
   summary: string;
   status: "draft" | "published" | "archived";
   pdf_asset_id: string | null;
+  file_url?: string | null;
   metrics: unknown;
   published_at: string | null;
   created_at: string;
@@ -31,6 +32,7 @@ const publicReportColumns = [
   "summary",
   "status",
   "pdf_asset_id",
+  "file_url",
   "metrics",
   "published_at",
   "created_at",
@@ -67,6 +69,7 @@ export function mapSupabaseReportToReport(row: SupabaseReportRow): Report {
     category: row.category,
     summary: row.summary,
     statusLabel: row.pdf_asset_id ? "Demo rapor" : "PDF yakında",
+    pdfUrl: row.file_url ?? undefined,
     metrics: metrics.length ? metrics : [{ label: "Durum", value: "Yayında" }],
     tags: [row.category, row.period].filter(Boolean)
   };

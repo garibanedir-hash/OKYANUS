@@ -4,12 +4,14 @@ export function AdminSectionHeader({
   eyebrow,
   title,
   description,
-  actionLabel
+  actionLabel,
+  actionHref
 }: {
   eyebrow?: string;
   title: string;
   description?: string;
   actionLabel?: string;
+  actionHref?: string;
 }) {
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-border-soft bg-white px-4 py-3 shadow-sm md:flex-row md:items-center md:justify-between">
@@ -18,7 +20,7 @@ export function AdminSectionHeader({
         <h1 className="mt-1 text-2xl font-extrabold text-dark-navy">{title}</h1>
         {description ? <p className="mt-1 max-w-4xl text-sm leading-6 text-ink-muted">{description}</p> : null}
       </div>
-      {actionLabel ? <AdminActionButton variant="primary">{actionLabel}</AdminActionButton> : null}
+      {actionLabel ? <AdminActionButton href={actionHref} variant="primary">{actionLabel}</AdminActionButton> : null}
     </div>
   );
 }
