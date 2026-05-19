@@ -19,15 +19,18 @@ export default async function AdminQurbanOrdersPage() {
       <QurbanDataSourceBadge source={source} />
       <AdminFilterBar>
         <label className="text-sm font-bold text-dark-navy">Sipariş<input className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2" placeholder="KRB-2026..." /></label>
+        <label className="text-sm font-bold text-dark-navy">Kampanya<input className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2" placeholder="Kampanya adı" /></label>
         <label className="text-sm font-bold text-dark-navy">Ödeme<select className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2"><option>Tümü</option><option>Bekliyor</option><option>Ödendi</option></select></label>
         <label className="text-sm font-bold text-dark-navy">Vekalet<select className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2"><option>Tümü</option><option>Bekliyor</option><option>Kabul edildi</option></select></label>
         <label className="text-sm font-bold text-dark-navy">Durum<select className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2"><option>Tümü</option><option>Kesim planlandı</option><option>Kesim tamamlandı</option></select></label>
+        <label className="text-sm font-bold text-dark-navy">Tarih aralığı<select className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2"><option>Tümü</option><option>Bugün</option><option>Bu hafta</option><option>Bu ay</option></select></label>
       </AdminFilterBar>
-      <AdminTable headers={["Sipariş No", "Bağışçı", "Kurban türü", "Hisse/adet", "Tutar", "Ödeme durumu", "Vekalet durumu", "Kurban durumu", "Tarih", "İşlem"]} recordCount={orders.length} empty={!orders.length}>
+      <AdminTable headers={["Sipariş No", "Bağışçı", "Kampanya", "Kurban türü", "Hisse/adet", "Tutar", "Ödeme", "Vekalet", "Durum", "Tarih", "İşlem"]} recordCount={orders.length} empty={!orders.length}>
         {orders.map((order) => (
           <tr key={order.id}>
             <td className="font-bold text-dark-navy">{order.orderNo}</td>
             <td>{order.donorDisplayName}<span className="block text-xs text-ink-muted">{order.donorEmailMasked}</span></td>
+            <td>{order.campaignTitle}</td>
             <td>{order.qurbanTypeLabel}</td>
             <td>{order.shareCount}</td>
             <td>{formatQurbanMoney(order.totalAmount, order.currency)}</td>

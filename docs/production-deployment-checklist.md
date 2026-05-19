@@ -67,13 +67,18 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 ## Kurban Çalışmaları
 
 - [ ] Public `/kurban`, `/kurban/[slug]` ve `/kurban/bagis` sayfaları demo/read-only davranışla doğrulandı.
-- [ ] `/kurban/bagis` gerçek kayıt, ödeme veya makbuz üretmiyor.
+- [ ] `011_qurban_order_flow.sql` staging ortamında uygulandı.
+- [ ] `/kurban/bagis` ödeme öncesi başvuru, vekalet kabulü ve hisse rezervasyonu oluşturuyor.
+- [ ] `/kurban/bagis` gerçek online ödeme, makbuz veya bildirim üretmiyor.
+- [ ] Vekalet/KVKK checkbox olmadan başvuru oluşturulamıyor.
+- [ ] `qurban_campaigns.quota_reserved` kontenjan aşımı olmadan artıyor.
 - [ ] Vekalet metni dernek yönetimi, hukuk danışmanı ve dini danışman tarafından onaylandı.
 - [ ] Bağışçı `/panel/kurbanlarim` yalnızca kendi kurban durumlarını görebiliyor.
 - [ ] Koordinatör `/koordinator/kurban-operasyon` yalnızca atanmış operasyonları görebiliyor.
 - [ ] Personel `/personel/kurban-gorevleri` yalnızca atanmış görevleri görebiliyor.
 - [ ] Kurban export kişisel veri maskeleme varsayılan açık şekilde test edildi.
 - [ ] Gerçek ödeme/SMS/e-posta/makbuz entegrasyonları ayrı güvenlik testinden geçmeden açılmadı.
+- [ ] Kurban smoke test kapsamı `qurban_campaigns` public, diğer kurban tabloları protected olacak şekilde geçti.
 
 ## Veri Güvenliği ve KVKK
 

@@ -106,3 +106,15 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Vekalet metni yönetim, hukuk danışmanı ve dini danışman onayı olmadan production'da kullanılmıyor.
 - [ ] Kurban export ekranında kişisel veri maskeleme varsayılan açık planlandı.
 - [ ] Service role key client tarafına taşınmadan read-only/mock akış korunuyor.
+
+## 9C Kurban Kayıt Akışı Kontrolleri
+
+- [ ] `011_qurban_order_flow.sql` staging ortamında çalıştırıldı.
+- [ ] `/kurban/bagis` formu server action üzerinden kayıt oluşturuyor; client tarafında service role key yok.
+- [ ] `create_qurban_order` RPC anon/authenticated rollere açık değil, sadece server-side service role ile çağrılıyor.
+- [ ] Vekalet ve KVKK onayı olmadan order oluşturulmuyor.
+- [ ] `qurban_orders`, `qurban_delegations`, `qurban_shares` ve `qurban_status_logs` kayıtları aynı DB transaction içinde oluşuyor.
+- [ ] `qurban_campaigns.quota_reserved` kontenjan aşımı olmadan artırılıyor.
+- [ ] Girişsiz başvurularda `donor_account_id` null kalıyor ve panelde otomatik görünmüyor.
+- [ ] Girişli bağışçı başvuruları `donor_account_id` ile panelde görünüyor.
+- [ ] Yeni kurban tabloları smoke testte public/protected kapsamına eklendi ve `Security warning: 0` korunuyor.

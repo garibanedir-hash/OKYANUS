@@ -30,6 +30,8 @@ import {
   logReadOnlyFallback,
   type RepositoryResult
 } from "@/lib/data/readOnlySupabase";
+import { isAdminDemoMode } from "@/config/admin";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type SupabaseQurbanCampaignRow = {
   id: string;
@@ -96,6 +98,18 @@ type SupabaseQurbanOperationRow = {
   notes: string | null;
   updated_at: string | null;
   qurban_campaigns?: { title?: string | null } | Array<{ title?: string | null }> | null;
+};
+
+type QurbanReadClient = {
+  from: <T>(table: string) => {
+    select: (columns?: string) => QurbanReadQuery<T>;
+  };
+};
+
+type QurbanReadQuery<T> = {
+  eq: (column: string, value: string) => QurbanReadQuery<T>;
+  order: (column: string, options?: { ascending?: boolean; nullsFirst?: boolean }) => QurbanReadQuery<T>;
+  abortSignal: (signal: AbortSignal) => Promise<{ data: T[] | null; error: { code?: string; message?: string } | null }>;
 };
 
 const qurbanCampaignColumns = [
@@ -280,6 +294,20 @@ function mapOperation(row: SupabaseQurbanOperationRow): QurbanOperation {
   };
 }
 
+async function createAuthenticatedReadClient() {
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) return null;
+
+  const {
+    data: { user },
+    error
+  } = await supabase.auth.getUser();
+
+  if (error || !user) return null;
+
+  return supabase as unknown as QurbanReadClient;
+}
+
 async function fetchQurbanCampaigns(statuses?: QurbanCampaignStatus[]) {
   const supabase = createSupabaseReadOnlyClient();
   if (!supabase) return null;
@@ -340,7 +368,7 @@ async function fetchQurbanCampaignBySlug(slug: string) {
 }
 
 async function fetchAdminOrders() {
-  const supabase = createSupabaseReadOnlyClient();
+  const supabase = await createAuthenticatedReadClient();
   if (!supabase) return null;
 
   const timeout = createReadOnlyAbortSignal();
@@ -366,7 +394,7 @@ async function fetchAdminOrders() {
 }
 
 async function fetchAdminOperations() {
-  const supabase = createSupabaseReadOnlyClient();
+  const supabase = await createAuthenticatedReadClient();
   if (!supabase) return null;
 
   const timeout = createReadOnlyAbortSignal();
@@ -385,6 +413,32 @@ async function fetchAdminOperations() {
     return (data ?? []).map((row) => mapOperation(row as unknown as SupabaseQurbanOperationRow));
   } catch {
     logReadOnlyFallback("qurban-operations");
+    return null;
+  } finally {
+    timeout.clear();
+  }
+}
+
+async function fetchCurrentDonorOrders() {
+  const supabase = await createAuthenticatedReadClient();
+  if (!supabase) return null;
+
+  const timeout = createReadOnlyAbortSignal();
+  try {
+    const { data, error } = await supabase
+      .from<SupabaseQurbanOrderRow>("qurban_orders")
+      .select(qurbanOrderColumns)
+      .order("created_at", { ascending: false })
+      .abortSignal(timeout.signal);
+
+    if (error) {
+      logReadOnlyFallback("qurban-donor-orders", error);
+      return null;
+    }
+
+    return (data ?? []).map((row) => mapOrder(row as unknown as SupabaseQurbanOrderRow));
+  } catch {
+    logReadOnlyFallback("qurban-donor-orders");
     return null;
   } finally {
     timeout.clear();
@@ -483,6 +537,24 @@ export async function getDonorQurbanOrders(accountId: string) {
   const orders = await fetchAdminOrders();
   const source = orders ?? mockQurbanOrders;
   return source.filter((order) => order.donorAccountId === accountId);
+}
+
+export async function getCurrentDonorQurbanOrdersWithSource(): Promise<RepositoryResult<QurbanOrder[]>> {
+  const orders = await fetchCurrentDonorOrders();
+
+  if (orders) {
+    return { data: orders, source: "supabase" };
+  }
+
+  return {
+    data: isAdminDemoMode ? mockQurbanOrders.filter((order) => order.donorAccountId === "demo-donor-account") : [],
+    source: "demo"
+  };
+}
+
+export async function getCurrentDonorQurbanOrders() {
+  const result = await getCurrentDonorQurbanOrdersWithSource();
+  return result.data;
 }
 
 export async function getCoordinatorQurbanOperations(accountId: string) {

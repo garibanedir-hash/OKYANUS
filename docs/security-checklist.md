@@ -49,6 +49,9 @@
 - [ ] `qurban_orders`, `qurban_delegations`, `qurban_shares`, `qurban_operations`, `qurban_distribution_logs`, `qurban_status_logs`, `qurban_notifications` ve `qurban_exports` public erişime kapalı mı?
 - [ ] Kurban modülünde insert/update/delete policy sonraki aşamaya bırakıldı mı?
 - [ ] Bağışçı, koordinatör ve personel kurban kayıtları ownership/assignment kapsamıyla sınırlandırıldı mı?
+- [ ] Kurban başvuru yazımı public tablo insert yerine server-side `create_qurban_order` RPC ile yapılıyor mu?
+- [ ] `create_qurban_order` RPC anon/authenticated rollerden revoke edildi mi?
+- [ ] Kurban kontenjan rezervasyonu transaction içinde satır kilidiyle kontrol ediliyor mu?
 
 ## Form validation
 
@@ -86,6 +89,7 @@
 - [ ] Personel rol değişiklikleri audit log'a düşüyor mu?
 - [ ] Public içerik create/update/archive işlemleri audit helper'a best-effort yazılıyor mu?
 - [ ] Kurban vekalet, ödeme, kesim, dağıtım ve export işlemleri production öncesi audit planına eklendi mi?
+- [ ] Kurban order create, vekalet kabulü, hisse rezervasyonu ve quota rezervasyonu status/audit log'a düşüyor mu?
 
 ## PII masking
 
@@ -129,6 +133,8 @@
 - [ ] Production secret management planlandı mı?
 - [ ] Test kullanıcı env değerleri GitHub'a veya public deploy loglarına yazılmıyor mu?
 - [ ] Read-only public sorgular yalnızca publishable/anon key ile yapılıyor; service role key kullanılmıyor.
+- [ ] Kurban write akışı service role kullanıyorsa sadece server-only repository içinde mi?
+- [ ] Kurban form client component'i secret veya service role env import etmiyor mu?
 
 ## Error handling
 

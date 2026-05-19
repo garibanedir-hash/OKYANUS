@@ -1,7 +1,7 @@
 import { AdminSectionHeader } from "@/components/admin/AdminSectionHeader";
 import { AdminTable } from "@/components/admin/AdminTable";
 import { Button } from "@/components/ui/Button";
-import { getDonorQurbanOrders } from "@/lib/data/qurbanRepository";
+import { getCurrentDonorQurbanOrdersWithSource } from "@/lib/data/qurbanRepository";
 import { formatDate } from "@/lib/format";
 import { formatQurbanMoney, QurbanStatusCell } from "@/app/admin/kurban/_components/QurbanAdminShared";
 
@@ -16,17 +16,20 @@ const timelineSteps = [
 ];
 
 export default async function PanelQurbanOrdersPage() {
-  const orders = await getDonorQurbanOrders("demo-donor-account");
+  const { data: orders, source } = await getCurrentDonorQurbanOrdersWithSource();
 
   return (
     <div className="grid gap-6">
       <AdminSectionHeader
         eyebrow="Bağışçı Paneli"
         title="Kurbanlarım"
-        description="Kurban bağışlarınızın vekalet, ödeme, kesim, dağıtım, makbuz ve bilgilendirme durumu bu alanda izlenir. Bu aşamada kayıtlar demo/read-only gösterilir."
+        description="Kurban bağışlarınızın vekalet, ödeme, kesim, dağıtım, makbuz ve bilgilendirme durumu bu alanda izlenir. Girişsiz oluşturulan kayıtlar donor hesabıyla eşleşmediği için otomatik görünmeyebilir."
         actionLabel="Kurban Bağışı"
         actionHref="/kurban/bagis"
       />
+      <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
+        Veri kaynağı: {source === "supabase" ? "Supabase authenticated read" : "Demo fallback"}
+      </div>
       <section className="grid gap-4 md:grid-cols-3">
         <div className="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
           <p className="text-xs font-extrabold uppercase text-ink-muted">Kurban bağışlarım</p>

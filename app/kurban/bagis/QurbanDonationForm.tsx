@@ -1,0 +1,159 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import type { QurbanCampaign, QurbanType } from "@/data/qurbanMock";
+import { qurbanTypeLabels } from "@/data/qurbanMock";
+import { formatCurrency } from "@/lib/format";
+
+type DonorDefaults = {
+  fullName?: string;
+  email?: string;
+  phone?: string;
+  city?: string;
+};
+
+export function QurbanDonationForm({
+  campaigns,
+  selectedSlug,
+  donorDefaults,
+  action
+}: {
+  campaigns: QurbanCampaign[];
+  selectedSlug?: string;
+  donorDefaults?: DonorDefaults;
+  action: (formData: FormData) => void;
+}) {
+  const initialCampaign = campaigns.find((campaign) => campaign.slug === selectedSlug) ?? campaigns[0];
+  const [campaignSlug, setCampaignSlug] = useState(initialCampaign?.slug ?? "");
+  const [qurbanType, setQurbanType] = useState<QurbanType>(initialCampaign?.type ?? "vacip");
+  const [shareCount, setShareCount] = useState(1);
+
+  const selectedCampaign = useMemo(
+    () => campaigns.find((campaign) => campaign.slug === campaignSlug) ?? initialCampaign,
+    [campaignSlug, campaigns, initialCampaign]
+  );
+  const totalAmount = (selectedCampaign?.unitPrice ?? 0) * shareCount;
+  const quotaRemaining = selectedCampaign && selectedCampaign.quotaTotal > 0
+    ? Math.max(0, selectedCampaign.quotaTotal - selectedCampaign.quotaReserved)
+    : null;
+
+  if (!campaigns.length) {
+    return (
+      <div className="rounded-brand border border-border-soft bg-white p-6 shadow-card">
+        <h2 className="text-xl font-extrabold text-dark-navy">Aktif kampanya bulunamadı</h2>
+        <p className="mt-2 text-sm leading-6 text-ink-muted">Kurban başvuru formu aktif kampanya yayına alındığında kullanılabilir.</p>
+      </div>
+    );
+  }
+
+  return (
+    <form action={action} className="rounded-brand border border-border-soft bg-white p-6 shadow-card">
+      <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
+
+      <div className="grid gap-5 md:grid-cols-2">
+        <label className="text-sm font-bold text-dark-navy">
+          Kurban türü
+          <select
+            name="qurbanType"
+            value={qurbanType}
+            onChange={(event) => setQurbanType(event.target.value as QurbanType)}
+            className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3"
+          >
+            {Object.entries(qurbanTypeLabels).map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
+        </label>
+        <label className="text-sm font-bold text-dark-navy">
+          Kampanya
+          <select
+            name="campaign"
+            value={campaignSlug}
+            onChange={(event) => {
+              const nextCampaign = campaigns.find((campaign) => campaign.slug === event.target.value);
+              setCampaignSlug(event.target.value);
+              if (nextCampaign) setQurbanType(nextCampaign.type);
+            }}
+            className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3"
+          >
+            {campaigns.map((campaign) => (
+              <option key={campaign.id} value={campaign.slug}>{campaign.title}</option>
+            ))}
+          </select>
+        </label>
+        <label className="text-sm font-bold text-dark-navy">
+          Hisse/adet
+          <input
+            name="shareCount"
+            type="number"
+            min="1"
+            max="20"
+            value={shareCount}
+            onChange={(event) => {
+              const nextValue = Number.parseInt(event.target.value, 10);
+              setShareCount(Number.isFinite(nextValue) ? Math.min(20, Math.max(1, nextValue)) : 1);
+            }}
+            className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3"
+          />
+        </label>
+        <div className="rounded-2xl border border-border-soft bg-soft-gray p-4">
+          <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-ink-muted">Tutar önizlemesi</p>
+          <p className="mt-2 text-2xl font-black text-deep-blue">{formatCurrency(totalAmount)}</p>
+          <p className="mt-1 text-xs font-semibold text-ink-muted">
+            Birim bedel: {formatCurrency(selectedCampaign?.unitPrice ?? 0)}
+            {quotaRemaining !== null ? ` · Kalan kontenjan: ${quotaRemaining}` : ""}
+          </p>
+        </div>
+        <label className="text-sm font-bold text-dark-navy">
+          Ad soyad
+          <input name="fullName" defaultValue={donorDefaults?.fullName} required className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="Ad soyad" />
+        </label>
+        <label className="text-sm font-bold text-dark-navy">
+          E-posta
+          <input name="email" type="email" defaultValue={donorDefaults?.email} required className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="ornek@example.org" />
+        </label>
+        <label className="text-sm font-bold text-dark-navy">
+          Telefon
+          <input name="phone" defaultValue={donorDefaults?.phone} required className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="+90 5** *** ** **" />
+        </label>
+        <label className="text-sm font-bold text-dark-navy">
+          Şehir
+          <input name="city" defaultValue={donorDefaults?.city} className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="İl bilgisi" />
+        </label>
+        <label className="text-sm font-bold text-dark-navy md:col-span-2">
+          Not
+          <textarea name="note" rows={4} maxLength={500} className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="Kurban niyeti veya bilgilendirme tercihi" />
+        </label>
+      </div>
+
+      <div className="mt-6 rounded-lg border border-border-soft bg-soft-gray p-5">
+        <h2 className="text-lg font-extrabold text-dark-navy">Vekalet Metni</h2>
+        <p className="mt-3 text-sm leading-7 text-ink-muted">
+          {selectedCampaign?.delegationText ?? "Vekalet metni kampanya bilgisi üzerinden hazırlanır."}
+        </p>
+        <p className="mt-3 text-xs font-bold leading-6 text-ink-muted">
+          Vekalet metni dernek tarafından onaylandıktan sonra production&apos;da kesin metin olarak kullanılmalıdır.
+        </p>
+      </div>
+
+      <div className="mt-5 grid gap-3">
+        <label className="flex items-start gap-3 text-sm font-semibold leading-6 text-ink-muted">
+          <input name="delegationAccepted" type="checkbox" required className="mt-1 h-4 w-4 accent-ocean-green" />
+          Vekalet metnini okudum ve kurban kesimi için Okyanus İnsani Yardım Derneği&apos;ni vekil tayin ediyorum.
+        </label>
+        <label className="flex items-start gap-3 text-sm font-semibold leading-6 text-ink-muted">
+          <input name="kvkkAccepted" type="checkbox" required className="mt-1 h-4 w-4 accent-ocean-green" />
+          KVKK bilgilendirmesini okudum ve başvuru bilgilerimin bu süreç için işlenmesini kabul ediyorum.
+        </label>
+        <label className="flex items-start gap-3 text-sm font-semibold leading-6 text-ink-muted">
+          <input name="contactPermission" type="checkbox" className="mt-1 h-4 w-4 accent-ocean-green" />
+          Kurban süreciyle ilgili bilgilendirme almak istiyorum.
+        </label>
+      </div>
+
+      <button type="submit" className="focus-ring mt-7 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-ocean-green px-5 py-3 text-sm font-extrabold text-white transition hover:bg-deep-blue">
+        Kurban Başvurusu Oluştur
+      </button>
+    </form>
+  );
+}

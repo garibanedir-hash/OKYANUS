@@ -14,6 +14,14 @@ Kurban modülü sıradan bir bağış projesi olarak ele alınmaz. Amaç; kurban
 - Makbuz, PDF veya dosya upload yapılmaz.
 - Hassas tablolar public erişime açılmaz.
 
+9C ile ödeme öncesi başvuru akışı başlatılmıştır:
+
+- `/kurban/bagis` güvenli server action ile `qurban_orders` kaydı oluşturabilir.
+- Vekalet kabulü `qurban_delegations` içinde kaydedilir.
+- `share_count` kadar `qurban_shares` rezervasyonu yapılır.
+- `qurban_campaigns.quota_reserved` transaction içinde artırılır.
+- Kayıt `payment_pending` durumunda kalır; gerçek ödeme hâlâ yoktur.
+
 ## Kurban Süreç Akışı
 
 1. Kurban türü seçilir.
@@ -30,6 +38,7 @@ Kurban modülü sıradan bir bağış projesi olarak ele alınmaz. Amaç; kurban
 Yeni migration:
 
 - `supabase/migrations/010_qurban_module.sql`
+- `supabase/migrations/011_qurban_order_flow.sql`
 
 Enumlar:
 
@@ -53,6 +62,19 @@ Tablolar:
 - `qurban_notifications`: bağışçı bilgilendirme hazırlığı.
 - `qurban_exports`: export hazırlık kayıtları.
 
+9C ekleri:
+
+- `qurban_orders.kvkk_accepted`
+- `qurban_orders.contact_permission`
+- `qurban_orders.source`
+- `qurban_orders.created_by`
+- `qurban_orders.updated_by`
+- `qurban_delegations.kvkk_accepted`
+- `qurban_delegations.source`
+- `qurban_shares.share_index`
+- `qurban_shares.reserved_at`
+- `qurban_status_logs.event_type`
+
 ## Public Kurban Akışı
 
 Public route'lar:
@@ -61,7 +83,7 @@ Public route'lar:
 - `/kurban/[slug]`
 - `/kurban/bagis`
 
-`/kurban` sadece aktif kampanyaları listeler. `/kurban/[slug]` kampanya detayını, vekalet metni önizlemesini ve kontenjan bilgisini gösterir. `/kurban/bagis` demo/pre-registration formudur; Supabase insert veya ödeme işlemi yapmaz.
+`/kurban` sadece aktif kampanyaları listeler. `/kurban/[slug]` kampanya detayını, vekalet metni önizlemesini ve kontenjan bilgisini gösterir. `/kurban/bagis` 9C itibarıyla ödeme öncesi başvuru, vekalet kabulü ve hisse/adet rezervasyonu oluşturabilir. Ödeme işlemi, makbuz ve bildirim hâlâ kapalıdır.
 
 ## Admin Kurban Operasyonu
 
@@ -77,7 +99,7 @@ Admin route'ları:
 - `/admin/kurban/raporlar`
 - `/admin/kurban/export`
 
-Admin ekranları operasyon yazılımı diliyle kompakt KPI, filtre bar, tablo ve durum rozetleri kullanır. Bu aşamada write action yoktur; butonlar demo veya read-only davranıştadır.
+Admin ekranları operasyon yazılımı diliyle kompakt KPI, filtre bar, tablo ve durum rozetleri kullanır. Kurban bağışları ekranı authenticated RLS üzerinden gerçek `qurban_orders` kayıtlarını okuyabilir; write aksiyonları hâlâ admin UI içinde açılmamıştır.
 
 ## Bağışçı Kurban Takip Paneli
 
@@ -94,7 +116,7 @@ Bağışçı paneli şu durumları gösterir:
 - Makbuz durumu
 - Bilgilendirme durumu
 
-Şimdilik demo hesap verisiyle çalışır. Production öncesi gerçek `donor_account_id` ownership policy ve server-side account context doğrulanmalıdır.
+Giriş yapan bağışçı ile oluşturulan kayıtlar `donor_account_id` üzerinden panelde görünebilir. Girişsiz oluşturulan kayıtların sonradan hesapla eşleştirilmesi sonraki aşamaya bırakılmıştır; e-posta tek başına güvenlik kaynağı değildir.
 
 ## Koordinatör ve Personel Görevleri
 
@@ -138,6 +160,8 @@ Kurban bağışı akışı ödeme, vekalet ve makbuz süreçleri açısından ay
 - Admin/super_admin yönetim ekranları için read policy hazırlanmıştır.
 - Insert/update/delete policy bu aşamada açılmamıştır.
 - Service role key client tarafına taşınmaz.
+- Kurban başvuru yazımı server action üzerinden service role ile `create_qurban_order` RPC çağrılarak yapılır.
+- `create_qurban_order` RPC public/anon/authenticated rollere açık değildir; server-only write katmanı kullanır.
 
 ## Export ve Raporlama
 
