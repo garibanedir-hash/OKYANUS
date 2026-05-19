@@ -7,39 +7,49 @@ import { BrandMark } from "@/components/BrandMark";
 import { cn } from "@/lib/utils";
 
 const logoSources = {
-  color: "/brand/logo.png",
-  white: "/brand/logo-white.png",
-  mark: "/brand/mark.png"
+  color: { src: "/brand/logo.png", width: 500, height: 200 },
+  white: { src: "/brand/logo-white.png", width: 500, height: 200 },
+  mark: { src: "/brand/mark.png", width: 96, height: 96 }
 };
 
 const sizeClasses = {
   sm: {
-    logo: "h-16 w-16",
+    logo: "h-10 w-[9.75rem]",
     mark: "h-16 w-16",
     text: "text-sm"
   },
   md: {
-    logo: "h-24 w-24",
+    logo: "h-12 w-[11.75rem]",
     mark: "h-20 w-20",
     text: "text-base"
   },
   lg: {
-    logo: "h-36 w-36",
+    logo: "h-16 w-[15.5rem]",
     mark: "h-28 w-28",
     text: "text-lg"
   },
   xl: {
-    logo: "h-72 w-72",
+    logo: "h-20 w-[19.5rem]",
     mark: "h-40 w-40",
     text: "text-xl"
   },
+  auth: {
+    logo: "h-20 w-[19.5rem] sm:h-24 sm:w-[23.5rem] lg:h-28 lg:w-[27.25rem]",
+    mark: "h-40 w-40",
+    text: "text-xl"
+  },
+  footer: {
+    logo: "h-16 w-[15.5rem]",
+    mark: "h-28 w-28",
+    text: "text-lg"
+  },
   hero: {
-    logo: "h-80 w-80 sm:h-96 sm:w-96 lg:h-[30rem] lg:w-[30rem]",
+    logo: "h-24 w-[23.5rem] sm:h-28 sm:w-[27.25rem] lg:h-32 lg:w-[31.25rem]",
     mark: "h-36 w-36",
     text: "text-xl"
   },
   header: {
-    logo: "h-24 w-24",
+    logo: "h-12 w-[11.75rem]",
     mark: "h-20 w-20",
     text: "text-base"
   }
@@ -49,9 +59,9 @@ const contextDefaults = {
   header: "header",
   sidebar: "md",
   topbar: "md",
-  auth: "xl",
+  auth: "auth",
   hero: "hero",
-  footer: "lg",
+  footer: "footer",
   compact: "sm"
 } as const;
 
@@ -65,7 +75,7 @@ export function OfficialLogo({
 }: {
   variant?: "color" | "white" | "mark";
   context?: "header" | "sidebar" | "topbar" | "auth" | "hero" | "footer" | "compact";
-  size?: "sm" | "md" | "lg" | "xl" | "hero" | "header";
+  size?: "sm" | "md" | "lg" | "xl" | "auth" | "footer" | "hero" | "header";
   showText?: boolean;
   className?: string;
   onClick?: () => void;
@@ -74,6 +84,15 @@ export function OfficialLogo({
   const inverse = variant === "white";
   const resolvedSize = size ?? (context ? contextDefaults[context] : "md");
   const dimensions = sizeClasses[resolvedSize];
+  const source = logoSources[variant];
+  const isMark = variant === "mark";
+  const eager =
+    resolvedSize === "header" ||
+    resolvedSize === "lg" ||
+    resolvedSize === "xl" ||
+    resolvedSize === "auth" ||
+    resolvedSize === "footer" ||
+    resolvedSize === "hero";
 
   if (failed) {
     const isLarge = resolvedSize === "lg" || resolvedSize === "xl" || resolvedSize === "hero";
@@ -83,15 +102,16 @@ export function OfficialLogo({
   return (
     <Link href="/" className={cn("focus-ring inline-flex items-center gap-3 rounded-xl", className)} onClick={onClick}>
       <Image
-        src={logoSources[variant]}
-        alt={variant === "mark" && !showText ? "Okyanus" : "Okyanus İnsani Yardım Derneği"}
-        width={800}
-        height={800}
-        className={cn("shrink-0 object-contain", variant === "mark" ? dimensions.mark : dimensions.logo)}
+        src={source.src}
+        alt={isMark && !showText ? "Okyanus" : "Okyanus İnsani Yardım Derneği"}
+        width={source.width}
+        height={source.height}
+        className={cn(isMark ? "shrink-0 object-contain" : "max-w-full object-cover object-center", isMark ? dimensions.mark : dimensions.logo)}
         onError={() => setFailed(true)}
-        priority={resolvedSize === "lg" || resolvedSize === "xl" || resolvedSize === "hero"}
+        loading={eager ? "eager" : undefined}
+        preload={eager}
       />
-      {variant === "mark" && showText ? (
+      {isMark && showText ? (
         <span className="leading-tight">
           <span className={cn("block font-extrabold", dimensions.text, inverse ? "text-white" : "text-dark-navy")}>
             Okyanus

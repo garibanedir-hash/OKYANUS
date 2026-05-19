@@ -20,7 +20,7 @@ export function AuthShell({
       <div className="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-6xl items-center gap-8 lg:grid-cols-[0.9fr_1fr]">
         <aside className={cn("rounded-[1.5rem] border p-7 sm:p-9", adminMode ? "border-white/10 bg-white/8 text-white" : "border-border-soft bg-white text-dark-navy")}>
           <div className="flex justify-center lg:justify-start">
-            <OfficialLogo variant={adminMode ? "white" : "color"} context="auth" className="-ml-3 max-w-[280px] sm:max-w-[320px]" />
+            <OfficialLogo variant={adminMode ? "white" : "color"} context="auth" className="-ml-3 w-full" />
           </div>
           <p className={cn("mt-8 max-w-sm text-lg font-bold leading-8", adminMode ? "text-white" : "text-deep-blue")}>
             İyilik Paylaştıkça Okyanusa Dönüşür.
