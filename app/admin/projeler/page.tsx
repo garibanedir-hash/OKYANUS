@@ -1,5 +1,5 @@
-import { projects } from "@/data/projects";
 import { formatCurrency } from "@/lib/format";
+import { getProjectsWithSource } from "@/lib/data/projectsRepository";
 import { AdminActionButton } from "@/components/admin/AdminActionButton";
 import { AdminChartCard } from "@/components/admin/AdminChartCard";
 import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
@@ -8,11 +8,24 @@ import { AdminSectionHeader } from "@/components/admin/AdminSectionHeader";
 import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
 import { AdminTable } from "@/components/admin/AdminTable";
 
-export default function AdminProjectsPage() {
+export default async function AdminProjectsPage() {
+  const { data: projects, source } = await getProjectsWithSource();
   const activeCount = projects.filter((project) => project.status === "Devam Ediyor").length;
   const completedCount = projects.filter((project) => project.status === "Tamamlandı").length;
   const plannedCount = projects.filter((project) => project.status === "Planlanıyor").length;
   const totalRaised = projects.reduce((sum, project) => sum + project.raised, 0);
+  const averageProgress = projects.length
+    ? Math.round(projects.reduce((sum, project) => sum + (project.goal > 0 ? project.raised / project.goal : 0), 0) / projects.length * 100)
+    : 0;
+  const topCategory =
+    projects
+      .reduce<Array<{ category: string; count: number }>>((items, project) => {
+        const item = items.find((entry) => entry.category === project.category);
+        if (item) item.count += 1;
+        else items.push({ category: project.category, count: 1 });
+        return items;
+      }, [])
+      .sort((a, b) => b.count - a.count)[0]?.category ?? "Yok";
 
   return (
     <div className="grid gap-6">
@@ -22,6 +35,9 @@ export default function AdminProjectsPage() {
         description="Projeler CMS veya backend entegrasyonuna hazır veri modeliyle listelenir. İşlemler demo modundadır."
         actionLabel="Yeni Proje Ekle"
       />
+      <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
+        Veri kaynağı: {source === "supabase" ? "Supabase read-only" : "Demo fallback"}
+      </div>
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <AdminMiniStat label="Toplam proje" value={projects.length} />
         <AdminMiniStat label="Aktif proje" value={activeCount} />
@@ -33,9 +49,9 @@ export default function AdminProjectsPage() {
         <label className="text-sm font-bold text-dark-navy">Kategori<select className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2"><option>Tümü</option><option>Gıda</option><option>Eğitim</option><option>Sağlık</option></select></label>
         <label className="text-sm font-bold text-dark-navy">Durum<select className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2"><option>Tümü</option><option>Devam Ediyor</option><option>Planlanıyor</option><option>Tamamlandı</option></select></label>
       </AdminFilterBar>
-      <AdminTable headers={["Proje adı", "Kategori", "Durum", "Lokasyon", "Hedef destek", "Ulaşılan destek", "İlerleme", "Güncelleme", "İşlemler"]}>
+      <AdminTable headers={["Proje adı", "Kategori", "Durum", "Lokasyon", "Hedef destek", "Ulaşılan destek", "İlerleme", "Güncelleme", "İşlemler"]} recordCount={projects.length} empty={!projects.length}>
         {projects.map((project) => {
-          const progress = Math.round((project.raised / project.goal) * 100);
+          const progress = project.goal > 0 ? Math.round((project.raised / project.goal) * 100) : 0;
           return (
             <tr key={project.id}>
               <td className="px-4 py-3 font-bold text-dark-navy">{project.title}</td>
@@ -67,8 +83,8 @@ export default function AdminProjectsPage() {
       <AdminChartCard title="Proje performans özeti" description="Demo proje portföyünün destek ve durum dağılımı.">
         <div className="grid gap-4 sm:grid-cols-3">
           <AdminMiniStat label="Toplam ulaşılan destek" value={formatCurrency(totalRaised)} />
-          <AdminMiniStat label="En yüksek kategori" value="Sağlık" />
-          <AdminMiniStat label="Ortalama ilerleme" value={`%${Math.round(projects.reduce((sum, project) => sum + project.raised / project.goal, 0) / projects.length * 100)}`} />
+          <AdminMiniStat label="En yüksek kategori" value={topCategory} />
+          <AdminMiniStat label="Ortalama ilerleme" value={`%${averageProgress}`} />
         </div>
       </AdminChartCard>
     </div>

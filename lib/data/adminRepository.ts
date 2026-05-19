@@ -4,6 +4,13 @@ import {
   mockStaffMembers,
   mockTasks
 } from "@/data/adminMock";
+import { getPublishedNewsCount } from "@/lib/data/newsRepository";
+import { getPublishedProjectCount } from "@/lib/data/projectsRepository";
+import { getPublishedReportCount } from "@/lib/data/reportsRepository";
+import type { RepositoryResult } from "@/lib/data/readOnlySupabase";
+
+// 8F notu: Bu repository yalnızca düşük riskli public içerik sayaçlarını Supabase read-only
+// bağlar. Personel, görev ve mesaj verileri hassas olduğu için mock-only kalır.
 
 export function getStaffMembers() {
   // TODO: Supabase read-only entegrasyonunda profiles/admin_roles tablosundan beslenecek.
@@ -42,5 +49,28 @@ export function getInternalCommunicationSummary() {
     totalConversations: conversations.length,
     unreadTotal: conversations.reduce((sum, conversation) => sum + conversation.unreadCount, 0),
     taskRelated: conversations.filter((conversation) => Boolean(conversation.relatedTaskId)).length
+  };
+}
+
+export async function getAdminReadOnlyContentMetrics(): Promise<RepositoryResult<{
+  projectCount: number;
+  newsCount: number;
+  reportCount: number;
+}>> {
+  const [projects, news, reports] = await Promise.all([
+    getPublishedProjectCount(),
+    getPublishedNewsCount(),
+    getPublishedReportCount()
+  ]);
+
+  return {
+    data: {
+      projectCount: projects.data,
+      newsCount: news.data,
+      reportCount: reports.data
+    },
+    source: projects.source === "supabase" && news.source === "supabase" && reports.source === "supabase"
+      ? "supabase"
+      : "demo"
   };
 }

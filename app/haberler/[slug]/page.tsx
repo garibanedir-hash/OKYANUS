@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { news } from "@/data/news";
-import { projects } from "@/data/projects";
+import { news as fallbackNews } from "@/data/news";
 import { activities } from "@/data/activities";
+import { getNewsPostBySlug, getNewsPosts } from "@/lib/data/newsRepository";
+import { getProjects } from "@/lib/data/projectsRepository";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { NewsCard } from "@/components/NewsCard";
 import { Badge } from "@/components/ui/Badge";
 
 export function generateStaticParams() {
-  return news.map((item) => ({ slug: item.slug }));
+  return fallbackNews.map((item) => ({ slug: item.slug }));
 }
 
 type NewsPageProps = {
@@ -18,7 +19,7 @@ type NewsPageProps = {
 
 export async function generateMetadata({ params }: NewsPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const item = news.find((entry) => entry.slug === slug);
+  const item = await getNewsPostBySlug(slug);
   return {
     title: item?.title ?? "Haber",
     description: item?.summary ?? "Okyanus Derneği haber detayı."
@@ -27,14 +28,16 @@ export async function generateMetadata({ params }: NewsPageProps): Promise<Metad
 
 export default async function NewsDetailPage({ params }: NewsPageProps) {
   const { slug } = await params;
-  const item = news.find((entry) => entry.slug === slug);
-  const related = news.filter((entry) => entry.slug !== slug).slice(0, 2);
-  const relatedProject = projects.find((project) => project.slug === item?.relatedProjectSlug);
-  const relatedActivity = activities.find((activity) => activity.slug === item?.relatedActivitySlug);
+  const item = await getNewsPostBySlug(slug);
 
   if (!item) {
     notFound();
   }
+
+  const [news, projects] = await Promise.all([getNewsPosts(), getProjects()]);
+  const related = news.filter((entry) => entry.slug !== slug).slice(0, 2);
+  const relatedProject = projects.find((project) => project.slug === item.relatedProjectSlug);
+  const relatedActivity = activities.find((activity) => activity.slug === item.relatedActivitySlug);
 
   return (
     <article className="bg-warm-white py-16 sm:py-20">

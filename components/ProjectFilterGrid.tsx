@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { projects, type ProjectCategory } from "@/data/projects";
+import type { Project, ProjectCategory } from "@/data/projects";
 import { ProjectCard } from "@/components/ProjectCard";
 
 const filters = ["Tüm Projeler", "Eğitim", "Gıda", "Sağlık", "Acil Yardım", "Yetim"] as const;
 
-export function ProjectFilterGrid() {
+export function ProjectFilterGrid({ projects }: { projects: Project[] }) {
   const [active, setActive] = useState<(typeof filters)[number]>("Tüm Projeler");
   const visibleProjects =
     active === "Tüm Projeler" ? projects : projects.filter((project) => project.category === (active as ProjectCategory));
@@ -29,9 +29,15 @@ export function ProjectFilterGrid() {
         ))}
       </div>
       <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        {visibleProjects.map((project) => (
-          <ProjectCard key={project.title} {...project} />
-        ))}
+        {visibleProjects.length ? (
+          visibleProjects.map((project) => (
+            <ProjectCard key={project.slug} {...project} />
+          ))
+        ) : (
+          <div className="rounded-brand border border-border-soft bg-white p-6 text-sm font-semibold leading-6 text-ink-muted md:col-span-2 xl:col-span-4">
+            Bu kategoride yayında olan proje bulunmuyor.
+          </div>
+        )}
       </div>
     </>
   );

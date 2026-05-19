@@ -1,8 +1,8 @@
 import { activities } from "@/data/activities";
-import { projects } from "@/data/projects";
-import { news } from "@/data/news";
 import { HandHeart, ListChecks, ShieldCheck, UsersRound } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { getFeaturedProjects } from "@/lib/data/projectsRepository";
+import { getLatestNews } from "@/lib/data/newsRepository";
 import { ActivityCard } from "@/components/ActivityCard";
 import { ProjectCard } from "@/components/ProjectCard";
 import { NewsCard } from "@/components/NewsCard";
@@ -22,7 +22,12 @@ const homeFlow: Array<{ icon: LucideIcon; title: string; text: string }> = [
   { icon: UsersRound, title: "Nasıl katılırsınız?", text: "Bağış yaparak veya gönüllü olarak iyilik yolculuğuna dahil olabilirsiniz." }
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [projects, news] = await Promise.all([
+    getFeaturedProjects(4),
+    getLatestNews(3)
+  ]);
+
   return (
     <>
       <HeroSection />
@@ -96,11 +101,17 @@ export default function HomePage() {
           </MotionReveal>
 
           <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {projects.map((project, index) => (
-              <MotionReveal key={project.title} delay={index * 0.05}>
-                <ProjectCard {...project} />
-              </MotionReveal>
-            ))}
+            {projects.length ? (
+              projects.map((project, index) => (
+                <MotionReveal key={project.slug} delay={index * 0.05}>
+                  <ProjectCard {...project} />
+                </MotionReveal>
+              ))
+            ) : (
+              <div className="rounded-brand border border-border-soft bg-white p-6 text-sm font-semibold leading-6 text-ink-muted md:col-span-2 xl:col-span-4">
+                Yayında olan öne çıkan proje bulunmuyor.
+              </div>
+            )}
           </div>
         </Container>
       </section>
@@ -122,11 +133,17 @@ export default function HomePage() {
           </MotionReveal>
 
           <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {news.map((item, index) => (
-              <MotionReveal key={item.slug} delay={index * 0.06}>
-                <NewsCard {...item} />
-              </MotionReveal>
-            ))}
+            {news.length ? (
+              news.map((item, index) => (
+                <MotionReveal key={item.slug} delay={index * 0.06}>
+                  <NewsCard {...item} />
+                </MotionReveal>
+              ))
+            ) : (
+              <div className="rounded-brand border border-border-soft bg-white p-6 text-sm font-semibold leading-6 text-ink-muted md:col-span-3">
+                Yayında olan haber bulunmuyor.
+              </div>
+            )}
           </div>
         </Container>
       </section>

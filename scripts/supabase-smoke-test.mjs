@@ -124,6 +124,27 @@ async function checkTable(supabase, table, expectedPublic) {
   return "error";
 }
 
+async function reportPublicContentCount(supabase, table, filter) {
+  let query = supabase.from(table).select("id", { count: "exact", head: true });
+
+  if (filter?.eq) {
+    query = query.eq(filter.eq.column, filter.eq.value);
+  }
+
+  if (filter?.in) {
+    query = query.in(filter.in.column, filter.in.values);
+  }
+
+  const { count, error } = await query;
+
+  if (error) {
+    console.log(`${table} count: okunamadı (${error.code ?? "no-code"})`);
+    return;
+  }
+
+  console.log(`${table} count: ${count ?? 0}`);
+}
+
 if (!url || !key) {
   console.log(`Env dosyası: ${loadedEnvFile ?? "bulunamadı"}`);
   console.log("Supabase smoke test atlandı: public env eksik. Proje demo/mock modda çalışmaya devam eder.");
@@ -153,6 +174,11 @@ const summary = {
 for (const table of publicReadTables) {
   summary[await checkTable(supabase, table, true)] += 1;
 }
+
+console.log("Public content kayıt sayıları");
+await reportPublicContentCount(supabase, "projects", { in: { column: "status", values: ["active", "completed"] } });
+await reportPublicContentCount(supabase, "news_posts", { eq: { column: "status", value: "published" } });
+await reportPublicContentCount(supabase, "reports", { eq: { column: "status", value: "published" } });
 
 for (const table of restrictedTables) {
   summary[await checkTable(supabase, table, false)] += 1;

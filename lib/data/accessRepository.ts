@@ -9,6 +9,9 @@ import {
   mockUserAccounts
 } from "@/data/panelAccessMock";
 
+// 8F notu: Kullanıcı, rol, koordinatör ve personel kapsamı hassas olduğu için bu repository
+// şimdilik mock-only kalır. Gerçek sorgular 8G/9A öncesi ownership policy testleriyle açılmalıdır.
+
 export function getUserAccounts() {
   // TODO: Supabase Auth users + user_accounts + profiles ilişkilerinden beslenecek.
   return mockUserAccounts;

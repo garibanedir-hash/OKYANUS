@@ -3,6 +3,7 @@ import { ArrowUpRight, ClipboardList, FileCheck2, Inbox, MessageSquare, ReceiptT
 import type { QuickAction } from "@/data/adminAnalyticsMock";
 import { dailyDonations, topCampaigns } from "@/data/adminAnalyticsMock";
 import { operationFlowItems, operationKpis, recentWorkRecords } from "@/data/adminOperationsMock";
+import { getAdminReadOnlyContentMetrics } from "@/lib/data/adminRepository";
 import { AdminBarChart } from "@/components/admin/AdminBarChart";
 import { AdminChartCard } from "@/components/admin/AdminChartCard";
 import { AdminLineChart } from "@/components/admin/AdminLineChart";
@@ -31,7 +32,9 @@ const iconMap = {
   "Açık Mesaj / Talep": MessageSquare
 };
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+  const contentMetrics = await getAdminReadOnlyContentMetrics();
+
   return (
     <div className="grid gap-5">
       <AdminSectionHeader
@@ -56,6 +59,23 @@ export default function AdminDashboardPage() {
             </article>
           );
         })}
+      </section>
+
+      <section className="rounded-lg border border-border-soft bg-white p-4 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-ocean-green">Read-only içerik</p>
+            <h2 className="mt-1 text-lg font-extrabold text-dark-navy">Public içerik sayaçları</h2>
+          </div>
+          <span className="rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
+            Veri kaynağı: {contentMetrics.source === "supabase" ? "Supabase read-only" : "Demo fallback"}
+          </span>
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <AdminMiniStat label="Yayındaki proje" value={contentMetrics.data.projectCount} />
+          <AdminMiniStat label="Yayındaki haber" value={contentMetrics.data.newsCount} />
+          <AdminMiniStat label="Yayındaki rapor" value={contentMetrics.data.reportCount} />
+        </div>
       </section>
 
       <section className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">

@@ -39,6 +39,8 @@
 - [ ] RLS, route guard'dan bağımsız şekilde asıl veri güvenliği katmanı olarak korunuyor mu?
 - [ ] Authenticated ownership policy staging ortamında test edildi mi?
 - [ ] Authenticated user başkasının verisine erişemiyor mu?
+- [ ] 8F read-only public bağlantılar sadece `projects`, `news_posts` ve `reports` gibi düşük riskli public tablolara gidiyor mu?
+- [ ] Hassas tablolar read-only entegrasyon bahanesiyle public erişime açılmadı mı?
 
 ## Form validation
 
@@ -114,12 +116,15 @@
 - [ ] Secret/service role key client tarafına sızmıyor mu?
 - [ ] Production secret management planlandı mı?
 - [ ] Test kullanıcı env değerleri GitHub'a veya public deploy loglarına yazılmıyor mu?
+- [ ] Read-only public sorgular yalnızca publishable/anon key ile yapılıyor; service role key kullanılmıyor.
 
 ## Error handling
 
 - [ ] Kullanıcıya güvenli hata mesajı gösteriliyor.
 - [ ] Teknik detaylar public ekrana basılmıyor.
 - [ ] Kritik hatalar loglanıyor.
+- [ ] Supabase read-only hata/timeout durumunda public sayfa mock fallback veya empty state ile açılıyor.
+- [ ] Read-only repository logları secret/key/token/şifre içermiyor.
 
 ## Logging
 
@@ -156,3 +161,4 @@
 - [ ] Test kullanıcıları production ortamında kullanılmıyor.
 - [ ] Test kullanıcıları production öncesi silindi veya devre dışı bırakıldı.
 - [ ] Server guard + RLS doğrulaması, UI görünürlüğünden bağımsız olarak geçerli.
+- [ ] `npm run test:supabase` production öncesi `Security warning: 0` veriyor.

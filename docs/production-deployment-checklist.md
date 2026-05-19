@@ -22,6 +22,8 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] İlk Super Admin hesabı güvenli şekilde oluşturuldu.
 - [ ] Staging test kullanıcıları production verisi veya gerçek kişi bilgisi içermiyor.
 - [ ] Test kullanıcıları production öncesi silindi veya devre dışı bırakıldı.
+- [ ] Public içerik tabloları (`projects`, `news_posts`, `reports`) read-only olarak doğrulandı.
+- [ ] Hassas tablolar public read-only entegrasyona dahil edilmedi.
 
 ## Auth ve Route Guard
 
@@ -38,6 +40,15 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Test kullanıcı şifreleri `.env.local`/staging secret dışında hiçbir yere yazılmadı.
 - [ ] Metadata tek başına güvenlik kaynağı olarak kullanılmıyor; server guard + RLS asıl sınır.
 - [ ] Her rol kendi paneliyle sınırlı ve yasaklı paneller manuel checklist ile doğrulandı.
+
+## Read-only Public Data
+
+- [ ] Supabase env yokken public sayfalar mock fallback ile build oluyor.
+- [ ] Supabase hata/timeout durumunda public sayfalar beyaz ekran vermiyor.
+- [ ] Supabase başarılı ama public içerik boşsa empty state gösteriliyor.
+- [ ] Admin içerik listelerinde sadece read-only veri gösteriliyor; CRUD butonları demo kalıyor.
+- [ ] Dashboard gerçek bağış/gönüllü/mesaj/görev verisine bağlanmadı; yalnızca public içerik sayaçları okundu.
+- [ ] Repository hata logları secret/key/token/şifre içermiyor.
 
 ## Veri Güvenliği ve KVKK
 

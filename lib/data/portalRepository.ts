@@ -9,6 +9,9 @@ import {
   mockVolunteerProfile
 } from "@/data/portalMock";
 
+// 8F notu: Portal verileri hassas kullanıcı kapsamı içerdiği için bu repository şimdilik
+// mock-only kalır. CRUD veya Supabase hassas tablo sorgusu bu aşamada yapılmaz.
+
 export function getCurrentPortalUser() {
   // TODO: Supabase Auth session + user_accounts tablosundan beslenecek.
   return mockPortalUser;

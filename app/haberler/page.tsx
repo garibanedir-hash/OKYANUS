@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
-import { news } from "@/data/news";
 import { NewsCard } from "@/components/NewsCard";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
+import { getNewsPosts } from "@/lib/data/newsRepository";
 
 export const metadata: Metadata = {
   title: "Haberler ve Duyurular",
   description: "Okyanus Derneği faaliyet haberleri, gönüllü buluşmaları ve kampanya duyuruları."
 };
 
-export default function NewsPage() {
+export default async function NewsPage() {
+  const news = await getNewsPosts();
+
   return (
     <>
       <PageHero
@@ -26,9 +28,15 @@ export default function NewsPage() {
             description="Detay sayfası mimarisi için link yapısı hazırlandı; mock haber verileri ileride CMS içerikleriyle değiştirilebilir."
           />
           <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {news.map((item) => (
-              <NewsCard key={item.slug} {...item} />
-            ))}
+            {news.length ? (
+              news.map((item) => (
+                <NewsCard key={item.slug} {...item} />
+              ))
+            ) : (
+              <div className="rounded-brand border border-border-soft bg-white p-6 text-sm font-semibold leading-6 text-ink-muted md:col-span-3">
+                Yayında olan haber bulunmuyor.
+              </div>
+            )}
           </div>
         </Container>
       </section>

@@ -20,7 +20,7 @@ export function ProjectCard({
   raised: number;
   visualTone: string;
 }) {
-  const progress = Math.min(Math.round((raised / goal) * 100), 100);
+  const progress = goal > 0 ? Math.min(Math.round((raised / goal) * 100), 100) : 0;
 
   return (
     <article className="overflow-hidden rounded-brand border border-border-soft bg-white shadow-card transition hover:-translate-y-1 hover:shadow-soft">

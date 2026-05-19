@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CalendarDays, ClipboardCheck, HandHeart, MapPin, ShieldCheck } from "lucide-react";
-import { projects } from "@/data/projects";
+import { projects as fallbackProjects } from "@/data/projects";
 import { formatCurrency } from "@/lib/format";
+import { getProjectBySlug, getProjects } from "@/lib/data/projectsRepository";
 import { Container } from "@/components/ui/Container";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -18,12 +19,12 @@ type ProjectPageProps = {
 };
 
 export function generateStaticParams() {
-  return projects.map((project) => ({ slug: project.slug }));
+  return fallbackProjects.map((project) => ({ slug: project.slug }));
 }
 
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const project = projects.find((item) => item.slug === slug);
+  const project = await getProjectBySlug(slug);
 
   return {
     title: project?.title ?? "Proje Detayı",
@@ -33,13 +34,14 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 
 export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   const { slug } = await params;
-  const project = projects.find((item) => item.slug === slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) {
     notFound();
   }
 
-  const progress = Math.min(Math.round((project.raised / project.goal) * 100), 100);
+  const progress = project.goal > 0 ? Math.min(Math.round((project.raised / project.goal) * 100), 100) : 0;
+  const projects = await getProjects();
   const similar = projects.filter((item) => item.slug !== project.slug && item.category === project.category).slice(0, 3);
   const fallbackSimilar = similar.length ? similar : projects.filter((item) => item.slug !== project.slug).slice(0, 3);
 

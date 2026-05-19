@@ -1,10 +1,12 @@
-import { reports } from "@/data/reports";
+import { getPublishedReportsWithSource } from "@/lib/data/reportsRepository";
 import { AdminActionButton } from "@/components/admin/AdminActionButton";
 import { AdminSectionHeader } from "@/components/admin/AdminSectionHeader";
 import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
 import { AdminTable } from "@/components/admin/AdminTable";
 
-export default function AdminReportsPage() {
+export default async function AdminReportsPage() {
+  const { data: reports, source } = await getPublishedReportsWithSource();
+
   return (
     <div className="grid gap-6">
       <AdminSectionHeader
@@ -13,10 +15,13 @@ export default function AdminReportsPage() {
         description="Raporlar şeffaflık sayfasıyla ilişkilidir. PDF yükleme alanı ileride gerçek dosya yönetimine bağlanacaktır."
         actionLabel="Yeni Rapor Ekle"
       />
+      <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
+        Veri kaynağı: {source === "supabase" ? "Supabase read-only" : "Demo fallback"}
+      </div>
       <div className="rounded-brand border border-border-soft bg-soft-blue p-4 text-sm font-bold leading-6 text-deep-blue">
         PDF yükleme alanı ileride eklenecek. Bu ekran şeffaflık sayfasında yayınlanacak raporların demo yönetimidir.
       </div>
-      <AdminTable headers={["Rapor adı", "Dönem", "Kategori", "Durum", "PDF durumu", "Öne çıkan metrikler", "İşlemler"]}>
+      <AdminTable headers={["Rapor adı", "Dönem", "Kategori", "Durum", "PDF durumu", "Öne çıkan metrikler", "İşlemler"]} recordCount={reports.length} empty={!reports.length}>
         {reports.map((report) => (
           <tr key={report.id}>
             <td className="px-4 py-3 font-bold text-dark-navy">{report.title}</td>

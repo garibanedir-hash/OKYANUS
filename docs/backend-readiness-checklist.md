@@ -70,3 +70,15 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Donor + volunteer hesabı `/panel` ortak girişine yönleniyor.
 - [ ] Koordinatör `/koordinator`, personel `/personel` ile sınırlı.
 - [ ] `npm run test:supabase-auth` env yoksa kontrollü atlıyor, env varsa login/profile/account/route doğrulaması yapıyor.
+
+## 8F Read-only Veri Bağlantısı Kontrolleri
+
+- [ ] `projects`, `news_posts` ve `reports` public read-only repository üzerinden okunuyor.
+- [ ] Supabase env yoksa public sayfalar mock fallback ile açılıyor.
+- [ ] Supabase hata/timeout/RLS engelinde uygulama beyaz ekran vermeden mock fallback'e dönüyor.
+- [ ] Supabase başarılı ama kayıt boşsa sayfalarda düzgün empty state gösteriliyor.
+- [ ] Admin içerik listeleri sadece public içerik tablolarını read-only okuyor; CRUD yok.
+- [ ] Admin dashboard yalnızca public içerik sayaçlarını Supabase'ten okuyor.
+- [ ] Bağış, gönüllü, mesaj, görev, kullanıcı ve sponsorluk gibi hassas tablolar 8F'de gerçek veri kaynağına bağlanmadı.
+- [ ] Repository logları secret/key/token/şifre bilgisi yazmıyor.
+- [ ] `npm run test:supabase` sonucu `Security warning: 0` olarak korunuyor.

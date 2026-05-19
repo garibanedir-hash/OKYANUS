@@ -3,13 +3,16 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ProjectFilterGrid } from "@/components/ProjectFilterGrid";
 import { PageHero } from "@/components/sections/PageHero";
+import { getProjects } from "@/lib/data/projectsRepository";
 
 export const metadata: Metadata = {
   title: "Projeler",
   description: "Okyanus Derneği'nin proje bazlı bağış ve destek kampanyaları."
 };
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const projects = await getProjects();
+
   return (
     <>
       <PageHero
@@ -24,7 +27,7 @@ export default function ProjectsPage() {
             title="Kategoriye göre inceleyin, uygun projeye destek olun"
             description="Filtreleme ve progress yapısı frontend olarak hazırlandı. Gerçek bağış ve raporlama entegrasyonu sonraki aşamada bağlanabilir."
           />
-          <ProjectFilterGrid />
+          <ProjectFilterGrid projects={projects} />
         </Container>
       </section>
     </>
