@@ -89,3 +89,44 @@ export function getDefaultPanelPathForRole(roleOrAccountType?: AppRole | Account
       return "/giris";
   }
 }
+
+export function getDefaultPanelPathForRoles(roleOrAccountTypes: Array<AppRole | AccountType | string | null | undefined>) {
+  const roles = new Set(
+    roleOrAccountTypes
+      .map((roleOrAccountType) => normalizeRole(roleOrAccountType) ?? roleOrAccountType)
+      .filter(Boolean)
+  );
+
+  if (roles.has("super_admin") || roles.has("admin")) {
+    return "/admin";
+  }
+
+  if (roles.has("content_editor") || roles.has("donation_manager") || roles.has("volunteer_coordinator") || roles.has("reporting_manager")) {
+    return "/admin";
+  }
+
+  if (roles.has("coordinator") || roles.has("koordinator")) {
+    return "/koordinator";
+  }
+
+  if (roles.has("staff") || roles.has("personnel") || roles.has("personel")) {
+    return "/personel";
+  }
+
+  const hasDonor = roles.has("donor") || roles.has("bagisci") || roles.has("Bağışçı");
+  const hasVolunteer = roles.has("volunteer") || roles.has("gonullu") || roles.has("Gönüllü");
+
+  if (roles.has("Bağışçı + Gönüllü") || (hasDonor && hasVolunteer)) {
+    return "/panel";
+  }
+
+  if (hasDonor) {
+    return "/panel/bagisci";
+  }
+
+  if (hasVolunteer) {
+    return "/panel/gonullu";
+  }
+
+  return "/giris";
+}

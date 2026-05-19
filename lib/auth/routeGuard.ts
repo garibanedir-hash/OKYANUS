@@ -2,7 +2,7 @@ import type { User } from "@supabase/supabase-js";
 import { isAdminDemoMode } from "@/config/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { AppRole, AuthAccount, AuthUser, PanelScope, PermissionAction, PermissionModule, RolePermission, RouteGuardResult } from "@/types/domain";
-import { getDefaultPanelPathForRole, normalizeRole } from "@/lib/auth/roleRedirect";
+import { getDefaultPanelPathForRoles, normalizeRole } from "@/lib/auth/roleRedirect";
 
 type QueryResult<T> = Promise<{ data: T | null; error: { message?: string; code?: string } | null }>;
 
@@ -263,21 +263,19 @@ export async function getCurrentRoles() {
 }
 
 export async function getRolesForUser(user: User): Promise<AppRole[]> {
-  const metadataRoles = getRolesFromUser(user);
   const account = await getAccountForUser(user);
   const accountRoles = account ? getRolesFromUserLikeValues([account.role, account.accountType]) : [];
   const profileRoles = await getProfileRolesForUser(user);
 
-  return Array.from(new Set([...metadataRoles, ...accountRoles, ...profileRoles]));
+  return Array.from(new Set([...accountRoles, ...profileRoles]));
 }
 
 export async function getRolesForUserWithClient(user: User, client: ReadOnlySupabaseClient): Promise<AppRole[]> {
-  const metadataRoles = getRolesFromUser(user);
   const account = await getAccountForUser(user, client);
   const accountRoles = account ? getRolesFromUserLikeValues([account.role, account.accountType]) : [];
   const profileRoles = await getProfileRolesForUser(user, client);
 
-  return Array.from(new Set([...metadataRoles, ...accountRoles, ...profileRoles]));
+  return Array.from(new Set([...accountRoles, ...profileRoles]));
 }
 
 export async function verifyAdminAccessForUser(user: User, client?: ReadOnlySupabaseClient): Promise<AdminAccessResult> {
@@ -413,10 +411,10 @@ export async function requireAnyRole(allowedRoles: AppRole[]): Promise<RouteGuar
 
   const roles = await getRolesForUser(user);
   if (!hasAnyRole(roles, allowedRoles)) {
-    return { allowed: false, mode: "forbidden", reason: "Bu panele erişim yetkiniz yok.", loginPath: "/giris" };
+    return { allowed: false, mode: "forbidden", reason: "Bu alana erişmek için yetkili hesabınızla giriş yapmanız gerekiyor.", loginPath: "/giris" };
   }
 
-  return { allowed: true, mode: "authenticated", user: toAuthUser(user), roles, redirectTo: getDefaultPanelPathForRole(roles[0]) };
+  return { allowed: true, mode: "authenticated", user: toAuthUser(user), roles, redirectTo: getDefaultPanelPathForRoles(roles) };
 }
 
 export async function requirePanelAccess(scope: PanelScope) {

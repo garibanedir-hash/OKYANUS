@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { isAdminDemoMode } from "@/config/admin";
 import { getRolesForUser } from "@/lib/auth/routeGuard";
-import { getDefaultPanelPathForRole } from "@/lib/auth/roleRedirect";
+import { getDefaultPanelPathForRoles } from "@/lib/auth/roleRedirect";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function loginDemoAction() {
@@ -37,7 +37,12 @@ export async function signInPublic(formData: FormData) {
   }
 
   const roles = await getRolesForUser(data.user);
+  const redirectTo = getDefaultPanelPathForRoles(roles);
 
-  // TODO: 8D'de `user_accounts`, `donor_profiles` ve `volunteer_profiles` üzerinden gerçek account type doğrulanacak.
-  redirect(roles.length ? getDefaultPanelPathForRole(roles[0]) : "/panel/profil");
+  if (!roles.length || redirectTo === "/giris") {
+    await supabase.auth.signOut();
+    redirect("/giris?durum=yetkisiz");
+  }
+
+  redirect(redirectTo);
 }

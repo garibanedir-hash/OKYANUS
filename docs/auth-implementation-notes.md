@@ -41,7 +41,7 @@ Koruma dışında kalan route'lar:
 - `/api`
 - `/_next` ve statik assetler
 
-`NEXT_PUBLIC_ADMIN_DEMO_MODE=true` iken tüm paneller demo önizleme için açık kalır. `false` olduğunda Supabase session ve rol metadata kontrolü devreye girer.
+`NEXT_PUBLIC_ADMIN_DEMO_MODE=true` iken local/dev ortamda tüm paneller demo önizleme için açık kalır. Production runtime'da `NEXT_PUBLIC_ADMIN_DEMO_MODE=true` verilmiş olsa bile demo bypass etkisiz kalır; korumalı route'lar Supabase session ve database rol kontrolü ister.
 
 ## Admin route guard
 
@@ -100,12 +100,23 @@ Route guard erişim katmanıdır; asıl veri güvenliği RLS ile sağlanmalıdı
 
 8D ile `lib/auth/routeGuard.ts` şu kaynaklardan rol okumaya hazırlanmıştır:
 
-- Supabase Auth metadata (`role`, `roles`, `account_type`)
 - `user_accounts.role` ve `user_accounts.account_type`
 - `profiles.role`
 - `role_permissions` üzerinden modül/aksiyon yetkileri
+- Supabase Auth metadata (`role`, `roles`, `account_type`) yalnızca yardımcı sinyal olarak değerlendirilebilir; metadata tek başına güvenlik kaynağı değildir.
 
-Demo mode açıkken bu sorgular erişimi engellemez. Demo mode kapatıldığında Supabase session yoksa veya read-only rol sorguları yetkili rol döndürmezse erişim reddedilir. Production seviyesinde metadata yalnız başına güvenlik kaynağı kabul edilmemeli; database + RLS doğrulaması esas alınmalıdır.
+Demo mode açıkken local/dev sorguları erişimi engellemez. Demo mode kapatıldığında Supabase session yoksa veya read-only database rol sorguları yetkili rol döndürmezse erişim reddedilir. Production seviyesinde asıl güvenlik server guard + RLS doğrulamasıdır.
+
+## 8E Rol Bazlı Test Kullanıcıları
+
+8E aşamasında test kullanıcıları yalnızca staging rol/yönlendirme doğrulaması için hazırlanır. Bu kullanıcılar gerçek kullanıcı değildir; gerçek bağış, gerçek CRUD, dosya upload veya production kişisel verisiyle ilişkilendirilmez.
+
+- Test şifreleri `.env.local` veya güvenli staging env içinde kalır, GitHub'a yazılmaz.
+- Test kullanıcıları production öncesi silinir veya devre dışı bırakılır.
+- Her rol kendi paneliyle sınırlıdır: bağışçı `/panel/bagisci`, gönüllü `/panel/gonullu`, ikili hesap `/panel`, koordinatör `/koordinator`, personel `/personel`, admin/super admin `/admin`.
+- Yetkisiz veya eksik role sahip kullanıcı güvenli giriş ekranına yönlendirilir.
+- Kurulum rehberi: `docs/role-test-users-setup.md`
+- Manuel route checklist: `docs/role-route-test-checklist.md`
 
 ## Profile ve admin_roles ilişkisi
 

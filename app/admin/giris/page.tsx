@@ -22,8 +22,8 @@ export default async function AdminLoginPage({
     demo: "Demo mod aktif. Gerçek giriş yapılmaz; /admin route'u önizleme için açıktır.",
     "env-eksik": "Supabase env değişkenleri eksik. Giriş akışı başlatılamadı.",
     hata: "Giriş bilgileri doğrulanamadı.",
-    yetkisiz: "Bu hesap yönetim paneline erişim yetkisine sahip değil.",
-    "rol-dogrulanamadi": "Rol bilgisi doğrulanamadı. Lütfen yöneticiyle iletişime geçin."
+    yetkisiz: "Bu alana erişmek için yetkili hesabınızla giriş yapmanız gerekiyor.",
+    "rol-dogrulanamadi": "Bu alana erişmek için yetkili hesabınızla giriş yapmanız gerekiyor."
   };
   const statusMessage = params?.durum ? statusMessages[params.durum] : null;
 

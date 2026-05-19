@@ -10,6 +10,8 @@
 - [ ] Supabase env değişkenleri tanımlandı mı?
 - [ ] Session refresh test edildi mi?
 - [ ] Password reset flow planlandı mı?
+- [ ] Rol bazlı test kullanıcıları yalnızca staging/dev ortamda kullanılıyor mu?
+- [ ] Test kullanıcı şifreleri sadece `.env.local` veya güvenli staging secret yönetiminde tutuluyor mu?
 
 ## RBAC
 
@@ -21,6 +23,8 @@
 - [ ] Bilinmeyen rol güvenli fallback route'a yönlendiriliyor.
 - [ ] Admin role validation database (`profiles`, `user_accounts`, `role_permissions`) üzerinden geliyor mu?
 - [ ] Metadata tek başına nihai güvenlik kaynağı olarak kullanılmıyor mu?
+- [ ] Her rol yalnızca kendi paneline yönleniyor ve diğer panellere erişimi server-side reddediliyor mu?
+- [ ] `profiles.role` ve `user_accounts.account_type` uyumu test kullanıcılarıyla doğrulandı mı?
 
 ## RLS
 
@@ -99,6 +103,8 @@
 - [ ] /tadilat redirect loop dışında mı?
 - [ ] `/admin/giris`, `/giris` ve `/kayit` route'ları auth guard dışında kalıyor mu?
 - [ ] Demo mode production'da kapatılıyor mu?
+- [ ] Production'da `NEXT_PUBLIC_ADMIN_DEMO_MODE=true` verilse bile demo bypass etkisiz kalıyor mu?
+- [ ] Yetkisiz route mesajı kullanıcı dostu ve teknik detaylardan arındırılmış mı?
 
 ## Environment variables
 
@@ -107,6 +113,7 @@
 - [ ] Secret rotation planlandı.
 - [ ] Secret/service role key client tarafına sızmıyor mu?
 - [ ] Production secret management planlandı mı?
+- [ ] Test kullanıcı env değerleri GitHub'a veya public deploy loglarına yazılmıyor mu?
 
 ## Error handling
 
@@ -147,3 +154,5 @@
 - [ ] Dependency audit süreci var.
 - [ ] Production build doğrulanıyor.
 - [ ] Test kullanıcıları production ortamında kullanılmıyor.
+- [ ] Test kullanıcıları production öncesi silindi veya devre dışı bırakıldı.
+- [ ] Server guard + RLS doğrulaması, UI görünürlüğünden bağımsız olarak geçerli.

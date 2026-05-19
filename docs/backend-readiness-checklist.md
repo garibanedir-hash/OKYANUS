@@ -1,6 +1,6 @@
 # Backend Readiness Checklist
 
-8C'ye geçmeden önce backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek için kullanılır.
+Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek için kullanılır.
 
 ## Supabase Key Kullanımı
 
@@ -57,3 +57,16 @@
 - [ ] Personel yalnızca kendi görev/mesaj kayıtlarını görebiliyor.
 - [ ] Koordinatör yalnızca kendi ekip/faaliyet kapsamına erişiyor.
 - [ ] Public lockdown hâlâ korunuyor ve `npm run test:supabase` Security warning 0 veriyor.
+
+## 8E Rol Test Kullanıcı Kontrolleri
+
+- [ ] Test kullanıcıları gerçek kullanıcı veya production kişisel verisiyle ilişkilendirilmedi.
+- [ ] Test kullanıcı e-posta/şifreleri yalnızca `.env.local` veya güvenli staging env içinde tutuluyor.
+- [ ] Test kullanıcıları production öncesi silinecek veya devre dışı bırakılacak.
+- [ ] Metadata tek başına güvenlik kaynağı kabul edilmiyor; server guard + RLS esas alınıyor.
+- [ ] `profiles.role` ve `user_accounts.account_type` değerleri rol bazlı test hesaplarında uyumlu.
+- [ ] Super Admin/Admin `/admin` dışındaki yetkisiz route davranışlarıyla test edildi.
+- [ ] Bağışçı yalnızca bağışçı paneline, gönüllü yalnızca gönüllü paneline yönleniyor.
+- [ ] Donor + volunteer hesabı `/panel` ortak girişine yönleniyor.
+- [ ] Koordinatör `/koordinator`, personel `/personel` ile sınırlı.
+- [ ] `npm run test:supabase-auth` env yoksa kontrollü atlıyor, env varsa login/profile/account/route doğrulaması yapıyor.

@@ -65,6 +65,16 @@ console.log(`NEXT_PUBLIC_ADMIN_DEMO_MODE: ${process.env.NEXT_PUBLIC_ADMIN_DEMO_M
 console.log(`SITE_MAINTENANCE_MODE: ${process.env.SITE_MAINTENANCE_MODE ?? "tanımsız (false default)"}`);
 console.log(`TEST_AUTH_EMAIL: ${status(process.env.TEST_AUTH_EMAIL)}`);
 console.log(`TEST_AUTH_PASSWORD: ${status(process.env.TEST_AUTH_PASSWORD)}`);
+console.log(`TEST_SUPER_ADMIN_EMAIL: ${status(process.env.TEST_SUPER_ADMIN_EMAIL)}`);
+console.log(`TEST_SUPER_ADMIN_PASSWORD: ${status(process.env.TEST_SUPER_ADMIN_PASSWORD)}`);
+console.log(`TEST_DONOR_EMAIL: ${status(process.env.TEST_DONOR_EMAIL)}`);
+console.log(`TEST_DONOR_PASSWORD: ${status(process.env.TEST_DONOR_PASSWORD)}`);
+console.log(`TEST_VOLUNTEER_EMAIL: ${status(process.env.TEST_VOLUNTEER_EMAIL)}`);
+console.log(`TEST_VOLUNTEER_PASSWORD: ${status(process.env.TEST_VOLUNTEER_PASSWORD)}`);
+console.log(`TEST_COORDINATOR_EMAIL: ${status(process.env.TEST_COORDINATOR_EMAIL)}`);
+console.log(`TEST_COORDINATOR_PASSWORD: ${status(process.env.TEST_COORDINATOR_PASSWORD)}`);
+console.log(`TEST_STAFF_EMAIL: ${status(process.env.TEST_STAFF_EMAIL)}`);
+console.log(`TEST_STAFF_PASSWORD: ${status(process.env.TEST_STAFF_PASSWORD)}`);
 
 if (!publicUrl || (!publishableKey && !anonKey)) {
   console.log("Public Supabase env eksik. Proje demo/mock modda çalışmaya devam eder.");

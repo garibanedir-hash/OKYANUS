@@ -89,7 +89,7 @@ export async function requireAdmin(allowedRoles: AdminPermission[] = []): Promis
   }
 
   if (!hasAdminRole(profile, allowedRoles)) {
-    return { allowed: false, mode: "forbidden", reason: "Bu işlem için rol yetkisi yok." };
+    return { allowed: false, mode: "forbidden", reason: "Bu alana erişmek için yetkili hesabınızla giriş yapmanız gerekiyor." };
   }
 
   return { allowed: true, mode: "authenticated", profile };

@@ -62,49 +62,6 @@ function getGuardedRoute(pathname: string) {
   );
 }
 
-function readStringArray(value: unknown): string[] {
-  if (Array.isArray(value)) {
-    return value.filter((item): item is string => typeof item === "string");
-  }
-
-  if (typeof value === "string" && value.trim()) {
-    return [value];
-  }
-
-  return [];
-}
-
-function getRolesFromAuthMetadata(user: { app_metadata?: Record<string, unknown>; user_metadata?: Record<string, unknown> }) {
-  const metadata = {
-    ...user.user_metadata,
-    ...user.app_metadata
-  };
-
-  return [
-    ...readStringArray(metadata.roles),
-    ...readStringArray(metadata.role),
-    ...readStringArray(metadata.account_type),
-    ...readStringArray(metadata.accountType)
-  ]
-    .flatMap((role) => {
-      const normalized = normalizeRole(role);
-
-      if (normalized === "Bağışçı + Gönüllü") {
-        return ["donor", "volunteer"];
-      }
-
-      if (normalized === "Bağışçı") {
-        return ["donor"];
-      }
-
-      if (normalized === "Gönüllü") {
-        return ["volunteer"];
-      }
-
-      return normalized ? [normalized] : [];
-    });
-}
-
 async function getAdminRolesFromDatabase(client: ProxyReadClient, userId: string) {
   const roles: string[] = [];
 
@@ -233,18 +190,19 @@ export async function updateSession(request: NextRequest) {
     guardedRoute.scope !== "admin"
       ? await getAccountRolesFromDatabase(supabase as unknown as ProxyReadClient, user.id)
       : null;
-  const roles = databaseAdminCheck
-    ? databaseAdminCheck.roles
-    : Array.from(new Set([...getRolesFromAuthMetadata(user), ...(databaseAccountCheck?.roles ?? [])]));
+  const roles = databaseAdminCheck ? databaseAdminCheck.roles : databaseAccountCheck?.roles ?? [];
 
   if (!roles.some((role) => (guardedRoute.allowedRoles as readonly string[]).includes(role))) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = guardedRoute.loginPath;
-    redirectUrl.searchParams.set("durum", databaseAdminCheck?.verified === false || databaseAccountCheck?.verified === false ? "rol-dogrulanamadi" : "yetkisiz");
+    redirectUrl.searchParams.set(
+      "durum",
+      databaseAdminCheck?.verified === false || databaseAccountCheck?.verified === false ? "rol-dogrulanamadi" : "yetkisiz"
+    );
     redirectUrl.searchParams.set("redirectedFrom", pathname);
     return NextResponse.redirect(redirectUrl);
   }
 
-  // TODO: 8D'de profiles/user_accounts/role_permissions üzerinden server-side rol ve kapsam kontrolü eklenecek.
+  // Kapsam içi veri erişimi RLS ve ilgili server action guard'larında doğrulanır.
   return response;
 }
