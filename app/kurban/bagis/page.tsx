@@ -39,7 +39,7 @@ export default async function QurbanDonationDemoPage({ searchParams }: QurbanDon
       <PageHero
         eyebrow="Kurban Başvurusu"
         title="Kurban bağışı ve vekalet akışı"
-        description="Kurban başvurunuz güvenli server action ile alınır, vekalet kabulü kaydedilir ve hisse/adet rezervasyonu ödeme bekliyor durumunda tutulur."
+        description="Kurban bağış başvurunuz alınır, vekalet kabulünüz kaydedilir ve seçtiğiniz hisse/adet ödeme bekliyor durumunda takip edilir."
       />
 
       <section className="bg-soft-gray py-16 sm:py-20">
@@ -54,15 +54,17 @@ export default async function QurbanDonationDemoPage({ searchParams }: QurbanDon
                     <p className="mt-3 text-lg font-black text-deep-blue">Sipariş No: {params.siparis}</p>
                   ) : null}
                   <p className="mt-3 text-sm font-semibold leading-7 text-ink-muted">
-                    Ödeme entegrasyonu tamamlanana kadar bu kayıt ödeme bekliyor durumunda kalacaktır.
+                    Vekalet kabulünüz ve başvuru bilgileriniz kurban kayıt akışına alınmıştır.
                   </p>
                 </div>
                 <div className="mt-5 grid gap-3 text-sm font-semibold leading-6 text-ink-muted">
                   {params?.adet ? <p>Rezerve edilen hisse/adet: <strong className="text-dark-navy">{params.adet}</strong></p> : null}
                   {totalAmount > 0 ? <p>Ödeme bekleyen tutar: <strong className="text-dark-navy">{formatCurrency(totalAmount)}</strong></p> : null}
-                  <p>Yeni başvuru admin kurban bağışları ekranında görünür.</p>
+                  <p>Vekalet durumu: <strong className="text-dark-navy">Kaydedildi</strong></p>
+                  <p>Ödeme durumu: <strong className="text-dark-navy">Ödeme bekleniyor</strong></p>
+                  <p>Ödeme entegrasyonu tamamlandığında ödeme adımı aktifleşecek ve süreç ilgili durumlarla ilerletilecektir.</p>
+                  <p>Başvurunuz dernek yönetim ekranlarında kayıt altına alınmıştır.</p>
                   <p>Bağışçı hesabınızla giriş yaptıysanız kayıt Kurbanlarım panelinde listelenebilir.</p>
-                  <p>Ödeme altyapısı yakında aktif olacaktır.</p>
                 </div>
                 <div className="mt-6 flex flex-wrap gap-3">
                   <Link href="/panel/kurbanlarim" className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full bg-deep-blue px-5 py-2.5 text-sm font-extrabold text-white transition hover:bg-dark-navy">
@@ -77,7 +79,7 @@ export default async function QurbanDonationDemoPage({ searchParams }: QurbanDon
               <div className="grid gap-4">
                 {params?.durum === "hata" ? (
                   <div className="rounded-lg border border-warm-accent/30 bg-warm-accent/10 p-4 text-sm font-bold leading-6 text-dark-navy">
-                    {params.mesaj ?? "Kurban başvurusu oluşturulamadı. Lütfen tekrar deneyin."}
+                    {params.mesaj ?? "Kurban başvurusu alınamadı. Lütfen bilgilerinizi kontrol edip tekrar deneyin."}
                   </div>
                 ) : null}
                 <QurbanDonationForm

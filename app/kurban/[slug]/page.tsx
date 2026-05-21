@@ -39,6 +39,15 @@ export default async function QurbanCampaignDetailPage({ params }: QurbanDetailP
 
   const reservedRatio = campaign.quotaTotal > 0 ? Math.min(100, Math.round((campaign.quotaReserved / campaign.quotaTotal) * 100)) : 0;
   const completedRatio = campaign.quotaTotal > 0 ? Math.min(100, Math.round((campaign.quotaCompleted / campaign.quotaTotal) * 100)) : 0;
+  const remainingQuota = campaign.quotaTotal > 0 ? Math.max(0, campaign.quotaTotal - campaign.quotaReserved) : null;
+  const isCampaignOpen = campaign.status === "active";
+  const hasAvailableQuota = remainingQuota === null || remainingQuota > 0;
+  const canDonate = isCampaignOpen && hasAvailableQuota;
+  const donationHref = `/kurban/bagis?kampanya=${encodeURIComponent(campaign.slug)}`;
+  const delegationPreview =
+    campaign.delegationText.length > 360
+      ? `${campaign.delegationText.slice(0, 360).trim()}...`
+      : campaign.delegationText;
   const relatedCampaigns = activeCampaigns.filter((item) => item.slug !== campaign.slug).slice(0, 2);
 
   return (
@@ -49,9 +58,11 @@ export default async function QurbanCampaignDetailPage({ params }: QurbanDetailP
         description={campaign.shortDescription}
       >
         <div className="flex flex-wrap gap-3">
-          <Button href={`/kurban/bagis?kampanya=${campaign.slug}`} showIcon>
-            Bu Kampanyaya Kurban Bağışı Yap
-          </Button>
+          {canDonate ? (
+            <Button href={donationHref} showIcon>
+              Bu Kampanyaya Kurban Bağışı Yap
+            </Button>
+          ) : null}
           <Button href="/kurban" variant="ghost">
             Tüm Kurban Çalışmaları
           </Button>
@@ -67,7 +78,9 @@ export default async function QurbanCampaignDetailPage({ params }: QurbanDetailP
                   { icon: MapPin, label: "Bölge/ülke", value: `${campaign.country} · ${campaign.cityOrRegion}` },
                   { icon: CalendarDays, label: "Tarih aralığı", value: `${formatDate(campaign.startDate)} - ${formatDate(campaign.endDate)}` },
                   { icon: ClipboardCheck, label: "Kurban türü", value: campaign.typeLabel },
-                  { icon: ShieldCheck, label: "Birim bedel", value: formatCurrency(campaign.unitPrice) }
+                  { icon: ShieldCheck, label: "Birim bedel", value: formatCurrency(campaign.unitPrice) },
+                  { icon: ClipboardCheck, label: "Kontenjan", value: campaign.quotaTotal > 0 ? `${campaign.quotaTotal} hisse/adet` : "Kontenjan bilgisi güncellenecek" },
+                  { icon: CheckCircle2, label: "Kalan", value: remainingQuota === null ? "Kontenjan bilgisi güncellenecek" : `${remainingQuota} hisse/adet` }
                 ].map(({ icon: Icon, label, value }) => (
                   <div key={label} className="rounded-lg bg-soft-gray p-4">
                     <Icon aria-hidden className="h-5 w-5 text-ocean-green" />
@@ -84,7 +97,10 @@ export default async function QurbanCampaignDetailPage({ params }: QurbanDetailP
 
               <div className="mt-7 rounded-lg border border-border-soft bg-soft-gray p-5">
                 <h2 className="text-lg font-extrabold text-dark-navy">Vekalet Metni Önizlemesi</h2>
-                <p className="mt-3 text-sm leading-7 text-ink-muted">{campaign.delegationText}</p>
+                <p className="mt-3 text-sm leading-7 text-ink-muted">{delegationPreview}</p>
+                <p className="mt-3 text-xs font-bold leading-6 text-ink-muted">
+                  Bu önizleme taslak niteliktedir; production öncesi dernek yönetimi, hukuk danışmanı ve dini danışman onayı gerekir.
+                </p>
               </div>
 
               <div className="mt-7 rounded-lg border border-ocean-green/20 bg-mint-green/40 p-5">
@@ -118,9 +134,17 @@ export default async function QurbanCampaignDetailPage({ params }: QurbanDetailP
                     </div>
                   </div>
                 </div>
-                <Button href={`/kurban/bagis?kampanya=${campaign.slug}`} className="mt-6 w-full" showIcon>
-                  Kurban Bağışı Akışına Geç
-                </Button>
+                {canDonate ? (
+                  <Button href={donationHref} className="mt-6 w-full" showIcon>
+                    Kurban Bağışı Akışına Geç
+                  </Button>
+                ) : (
+                  <div className="mt-6 rounded-lg border border-border-soft bg-soft-gray p-4 text-sm font-semibold leading-6 text-ink-muted">
+                    {isCampaignOpen
+                      ? "Bu kampanyada şu an uygun kontenjan bulunmuyor. Yeni kontenjan açıldığında bağış akışı yeniden aktif edilir."
+                      : "Bu kampanya bağış başvurusuna açık değildir. Aktif kampanyalar üzerinden başvuru oluşturabilirsiniz."}
+                  </div>
+                )}
               </div>
 
               <div className="rounded-brand border border-border-soft bg-white p-6 shadow-card">

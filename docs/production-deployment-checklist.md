@@ -66,19 +66,23 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 
 ## Kurban Çalışmaları
 
-- [ ] Public `/kurban`, `/kurban/[slug]` ve `/kurban/bagis` sayfaları demo/read-only davranışla doğrulandı.
+- [ ] Public `/kurban`, `/kurban/[slug]` ve `/kurban/bagis` sayfaları ödeme öncesi başvuru akışıyla doğrulandı.
 - [ ] `011_qurban_order_flow.sql` staging ortamında uygulandı.
 - [ ] `/kurban/bagis` ödeme öncesi başvuru, vekalet kabulü ve hisse rezervasyonu oluşturuyor.
 - [ ] `/kurban/bagis` gerçek online ödeme, makbuz veya bildirim üretmiyor.
 - [ ] Vekalet/KVKK checkbox olmadan başvuru oluşturulamıyor.
+- [ ] Başarı ekranı sipariş no, vekalet kaydı, "Ödeme bekleniyor" durumu ve admin kayıt notu gösteriyor.
 - [ ] `qurban_campaigns.quota_reserved` kontenjan aşımı olmadan artıyor.
 - [ ] Vekalet metni dernek yönetimi, hukuk danışmanı ve dini danışman tarafından onaylandı.
+- [ ] Guest kurban başvurularının donor panelinde otomatik görünmeyeceği biliniyor ve destek süreci planlandı.
 - [ ] Bağışçı `/panel/kurbanlarim` yalnızca kendi kurban durumlarını görebiliyor.
 - [ ] Koordinatör `/koordinator/kurban-operasyon` yalnızca atanmış operasyonları görebiliyor.
 - [ ] Personel `/personel/kurban-gorevleri` yalnızca atanmış görevleri görebiliyor.
 - [ ] Kurban export kişisel veri maskeleme varsayılan açık şekilde test edildi.
 - [ ] Gerçek ödeme/SMS/e-posta/makbuz entegrasyonları ayrı güvenlik testinden geçmeden açılmadı.
 - [ ] Kurban smoke test kapsamı `qurban_campaigns` public, diğer kurban tabloları protected olacak şekilde geçti.
+- [ ] `docs/qurban-manual-test-checklist.md` staging ortamında tamamlandı.
+- [ ] 9D ödeme entegrasyonu için webhook signature, idempotency, server-side tutar doğrulama ve quota release planı hazır.
 
 ## Veri Güvenliği ve KVKK
 

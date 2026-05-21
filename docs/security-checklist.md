@@ -52,12 +52,16 @@
 - [ ] Kurban başvuru yazımı public tablo insert yerine server-side `create_qurban_order` RPC ile yapılıyor mu?
 - [ ] `create_qurban_order` RPC anon/authenticated rollerden revoke edildi mi?
 - [ ] Kurban kontenjan rezervasyonu transaction içinde satır kilidiyle kontrol ediliyor mu?
+- [ ] 9C.1 sonrası public kurban sayfalarında gereksiz teknik veri kaynağı veya hassas operasyon detayı gösterilmiyor mu?
+- [ ] Guest kurban başvuruları panelde e-posta ile otomatik eşleştirilmiyor mu?
 
 ## Form validation
 
 - [ ] Client-side validasyon eklendi.
 - [ ] Server-side validasyon eklendi.
 - [ ] Hata mesajları erişilebilir yazıldı.
+- [ ] Kurban formunda vekalet ve KVKK onayı olmadan kayıt oluşmuyor mu?
+- [ ] Kurban formu honeypot alanı bot submitlerini gerçek kayıt oluşturmadan karşılıyor mu?
 
 ## Rate limiting
 
@@ -90,6 +94,7 @@
 - [ ] Public içerik create/update/archive işlemleri audit helper'a best-effort yazılıyor mu?
 - [ ] Kurban vekalet, ödeme, kesim, dağıtım ve export işlemleri production öncesi audit planına eklendi mi?
 - [ ] Kurban order create, vekalet kabulü, hisse rezervasyonu ve quota rezervasyonu status/audit log'a düşüyor mu?
+- [ ] Kurban başarı ekranında ödeme bekliyor durumu ve admin kayıt notu teknik detay vermeden gösteriliyor mu?
 
 ## PII masking
 
@@ -99,6 +104,7 @@
 - [ ] Export kişisel verileri maskeliyor mu?
 - [ ] Kurban bağışçı ekranlarında e-posta/telefon maskeli gösteriliyor mu?
 - [ ] Kurban export ekranında kişisel veri maskeleme varsayılan açık mı?
+- [ ] Admin kurban bağışları ekranında donor adı, e-posta ve telefon maskeli mi?
 - [ ] İç mesajlarda hassas veri paylaşımı engelleniyor mu?
 
 ## Backup
@@ -135,6 +141,7 @@
 - [ ] Read-only public sorgular yalnızca publishable/anon key ile yapılıyor; service role key kullanılmıyor.
 - [ ] Kurban write akışı service role kullanıyorsa sadece server-only repository içinde mi?
 - [ ] Kurban form client component'i secret veya service role env import etmiyor mu?
+- [ ] Kurban order write repository `server-only` sınırında kalıyor mu?
 
 ## Error handling
 
@@ -143,6 +150,7 @@
 - [ ] Kritik hatalar loglanıyor.
 - [ ] Supabase read-only hata/timeout durumunda public sayfa mock fallback veya empty state ile açılıyor.
 - [ ] Read-only repository logları secret/key/token/şifre içermiyor.
+- [ ] Kurban Supabase read hatalarında admin/panel ekranları güvenli mock fallback veya boş state ile açılıyor mu?
 
 ## Logging
 

@@ -118,3 +118,16 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Girişsiz başvurularda `donor_account_id` null kalıyor ve panelde otomatik görünmüyor.
 - [ ] Girişli bağışçı başvuruları `donor_account_id` ile panelde görünüyor.
 - [ ] Yeni kurban tabloları smoke testte public/protected kapsamına eklendi ve `Security warning: 0` korunuyor.
+
+## 9C.1 Kurban Stabilizasyon Kontrolleri
+
+- [ ] Public `/kurban` sayfası kampanya, kurban türleri, vekalet, kesim, dağıtım ve bilgilendirme sürecini teknik detay göstermeden açıklıyor.
+- [ ] `/kurban/[slug]` kampanya adı, türü, bölgesi, birim bedeli, kontenjanı ve bağış CTA davranışını doğru gösteriyor.
+- [ ] `/kurban/bagis?kampanya=slug` doğru kampanyayı önden seçiyor.
+- [ ] Başarı ekranı sipariş no, vekalet kaydı, ödeme bekliyor durumu ve admin kayıt notunu gösteriyor.
+- [ ] Admin kurban bağışları ekranı maskeli kişisel veri ve anlaşılır durum rozetleriyle read-only çalışıyor.
+- [ ] Admin kurban dashboard metrikleri Supabase okunabiliyorsa gerçek kayıtları, okunamıyorsa güvenli mock fallback'i gösteriyor.
+- [ ] `/panel/kurbanlarim` girişli donor kayıtlarını gösteriyor; guest kayıtların otomatik görünmeyeceğini açıklıyor.
+- [ ] Koordinatör/personel kurban ekranları demo/read-only olduğunu belli ediyor ve bağışçı kişisel verisi göstermiyor.
+- [ ] `docs/qurban-manual-test-checklist.md` staging manuel testlerinde kullanılıyor.
+- [ ] 9D ödeme entegrasyonu öncesi webhook signature, idempotency, server-side tutar doğrulama ve quota release planı hazır.

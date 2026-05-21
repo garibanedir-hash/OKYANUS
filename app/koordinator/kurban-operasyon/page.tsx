@@ -14,6 +14,9 @@ export default async function CoordinatorQurbanOperationPage() {
         title="Kurban Operasyonları"
         description="Sorumlu olduğunuz kurban operasyonlarının kesim planı, ekip ataması, hisse/adet durumu ve dağıtım takibi demo/read-only olarak gösterilir."
       />
+      <div className="rounded-lg border border-border-soft bg-white p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
+        Bu ekran 9C.1 kapsamında operasyon takip mantığını gösterir; bağışçı kişisel verisi veya gerçek saha dosyası içermez.
+      </div>
       <section className="grid gap-4 md:grid-cols-3">
         <div className="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
           <p className="text-xs font-extrabold uppercase text-ink-muted">Sorumlu operasyon</p>
@@ -44,10 +47,10 @@ export default async function CoordinatorQurbanOperationPage() {
       </AdminTable>
       <section className="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
         <h2 className="text-xl font-extrabold text-dark-navy">Koordinasyon notları</h2>
-        <ul className="mt-4 grid gap-2 text-sm font-semibold leading-6 text-ink-muted">
-          <li>- Kesim listesi ödeme ve vekalet onayları netleşmeden kilitlenmez.</li>
-          <li>- Personel rapor alanı bu aşamada demo olarak tutulur.</li>
-          <li>- Gerçek saha verisi ve fotoğraf/PDF upload sonraki aşamada ayrıca korunacaktır.</li>
+        <ul className="mt-4 grid list-disc gap-2 pl-5 text-sm font-semibold leading-6 text-ink-muted">
+          <li>Kesim listesi ödeme ve vekalet onayları netleşmeden kilitlenmez.</li>
+          <li>Personel rapor alanı bu aşamada demo/read-only olarak tutulur.</li>
+          <li>Gerçek saha verisi ve fotoğraf/PDF upload sonraki aşamada ayrıca korunacaktır.</li>
         </ul>
       </section>
     </div>

@@ -505,7 +505,7 @@ export async function getQurbanStats(): Promise<QurbanStats> {
     scheduled: orders.filter((order) => order.orderStatus === "scheduled").length,
     slaughtered: orders.filter((order) => ["slaughtered", "distributed", "completed"].includes(order.orderStatus)).length,
     distributed: orders.filter((order) => ["distributed", "completed"].includes(order.orderStatus)).length,
-    notificationPending: mockQurbanStats.notificationPending,
+    notificationPending: orders.filter((order) => !["completed", "cancelled"].includes(order.orderStatus)).length,
     regionBreakdown: mockQurbanStats.regionBreakdown,
     typeBreakdown: mockQurbanStats.typeBreakdown
   };

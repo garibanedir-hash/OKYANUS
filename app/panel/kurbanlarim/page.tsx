@@ -23,12 +23,15 @@ export default async function PanelQurbanOrdersPage() {
       <AdminSectionHeader
         eyebrow="Bağışçı Paneli"
         title="Kurbanlarım"
-        description="Kurban bağışlarınızın vekalet, ödeme, kesim, dağıtım, makbuz ve bilgilendirme durumu bu alanda izlenir. Girişsiz oluşturulan kayıtlar donor hesabıyla eşleşmediği için otomatik görünmeyebilir."
+        description="Kurban bağışlarınızın vekalet, ödeme, kesim, dağıtım, makbuz ve bilgilendirme durumu bu alanda izlenir. Girişsiz oluşturulan kayıtlar bağışçı hesabıyla eşleşmediği için otomatik görünmez."
         actionLabel="Kurban Bağışı"
         actionHref="/kurban/bagis"
       />
       <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
-        Veri kaynağı: {source === "supabase" ? "Supabase authenticated read" : "Demo fallback"}
+        {source === "supabase" ? "Hesabınıza bağlı kayıtlar" : "Demo takip görünümü"}
+      </div>
+      <div className="rounded-lg border border-border-soft bg-white p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
+        Güvenlik nedeniyle e-posta adresi tek başına hesap eşleştirme için kullanılmaz. Girişsiz başvurular admin kayıtlarında görünür; panelde otomatik görünmesi için sonraki aşamada güvenli eşleştirme akışı gerekir.
       </div>
       <section className="grid gap-4 md:grid-cols-3">
         <div className="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
@@ -41,7 +44,7 @@ export default async function PanelQurbanOrdersPage() {
         </div>
         <div className="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
           <p className="text-xs font-extrabold uppercase text-ink-muted">Bilgilendirme</p>
-          <p className="mt-2 text-lg font-black text-dark-navy">Demo takip aktif</p>
+          <p className="mt-2 text-lg font-black text-dark-navy">Ödeme sonrası aktifleşir</p>
         </div>
       </section>
       <AdminTable headers={["Sipariş No", "Kurban türü", "Kampanya", "Hisse/adet", "Durum", "Ödeme", "Vekalet", "Makbuz", "Tarih", "Detay"]} recordCount={orders.length} empty={!orders.length}>
@@ -62,6 +65,9 @@ export default async function PanelQurbanOrdersPage() {
       </AdminTable>
       <section className="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
         <h2 className="text-xl font-extrabold text-dark-navy">Durum zaman çizelgesi</h2>
+        <p className="mt-2 text-sm font-semibold leading-6 text-ink-muted">
+          Bu çizelge bağışçıya gerekli durum bilgisini verir; saha operasyonuna ait hassas detaylar panelde açılmaz.
+        </p>
         <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           {timelineSteps.map((step, index) => (
             <div key={step} className="rounded-lg bg-soft-gray p-4">

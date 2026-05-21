@@ -21,7 +21,7 @@ export function QurbanDonationForm({
   campaigns: QurbanCampaign[];
   selectedSlug?: string;
   donorDefaults?: DonorDefaults;
-  action: (formData: FormData) => void;
+  action: (formData: FormData) => void | Promise<void>;
 }) {
   const initialCampaign = campaigns.find((campaign) => campaign.slug === selectedSlug) ?? campaigns[0];
   const [campaignSlug, setCampaignSlug] = useState(initialCampaign?.slug ?? "");
@@ -32,10 +32,13 @@ export function QurbanDonationForm({
     () => campaigns.find((campaign) => campaign.slug === campaignSlug) ?? initialCampaign,
     [campaignSlug, campaigns, initialCampaign]
   );
-  const totalAmount = (selectedCampaign?.unitPrice ?? 0) * shareCount;
   const quotaRemaining = selectedCampaign && selectedCampaign.quotaTotal > 0
     ? Math.max(0, selectedCampaign.quotaTotal - selectedCampaign.quotaReserved)
     : null;
+  const campaignIsFull = quotaRemaining !== null && quotaRemaining < 1;
+  const maxShareCount = campaignIsFull ? 1 : Math.min(20, quotaRemaining ?? 20);
+  const selectedShareCount = Math.min(shareCount, maxShareCount);
+  const totalAmount = (selectedCampaign?.unitPrice ?? 0) * selectedShareCount;
 
   if (!campaigns.length) {
     return (
@@ -80,6 +83,11 @@ export function QurbanDonationForm({
               <option key={campaign.id} value={campaign.slug}>{campaign.title}</option>
             ))}
           </select>
+          {selectedCampaign ? (
+            <span className="mt-2 block text-xs font-semibold leading-5 text-ink-muted">
+              {selectedCampaign.regionLabel} · {selectedCampaign.country} · Birim bedel {formatCurrency(selectedCampaign.unitPrice)}
+            </span>
+          ) : null}
         </label>
         <label className="text-sm font-bold text-dark-navy">
           Hisse/adet
@@ -87,14 +95,18 @@ export function QurbanDonationForm({
             name="shareCount"
             type="number"
             min="1"
-            max="20"
-            value={shareCount}
+            max={maxShareCount}
+            value={selectedShareCount}
+            disabled={campaignIsFull}
             onChange={(event) => {
               const nextValue = Number.parseInt(event.target.value, 10);
-              setShareCount(Number.isFinite(nextValue) ? Math.min(20, Math.max(1, nextValue)) : 1);
+              setShareCount(Number.isFinite(nextValue) ? Math.min(maxShareCount, Math.max(1, nextValue)) : 1);
             }}
             className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3"
           />
+          <span className="mt-2 block text-xs font-semibold leading-5 text-ink-muted">
+            {campaignIsFull ? "Bu kampanyada uygun kontenjan kalmadı." : `Bu başvuruda en fazla ${maxShareCount} hisse/adet seçilebilir.`}
+          </span>
         </label>
         <div className="rounded-2xl border border-border-soft bg-soft-gray p-4">
           <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-ink-muted">Tutar önizlemesi</p>
@@ -102,6 +114,9 @@ export function QurbanDonationForm({
           <p className="mt-1 text-xs font-semibold text-ink-muted">
             Birim bedel: {formatCurrency(selectedCampaign?.unitPrice ?? 0)}
             {quotaRemaining !== null ? ` · Kalan kontenjan: ${quotaRemaining}` : ""}
+          </p>
+          <p className="mt-2 text-xs font-semibold leading-5 text-ink-muted">
+            Kesin tutar kampanya bedeli üzerinden kayıt sırasında yeniden doğrulanır.
           </p>
         </div>
         <label className="text-sm font-bold text-dark-navy">
@@ -111,10 +126,12 @@ export function QurbanDonationForm({
         <label className="text-sm font-bold text-dark-navy">
           E-posta
           <input name="email" type="email" defaultValue={donorDefaults?.email} required className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="ornek@example.org" />
+          <span className="mt-2 block text-xs font-semibold leading-5 text-ink-muted">Başvuru ve bilgilendirme takibi için kullanılır.</span>
         </label>
         <label className="text-sm font-bold text-dark-navy">
           Telefon
           <input name="phone" defaultValue={donorDefaults?.phone} required className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="+90 5** *** ** **" />
+          <span className="mt-2 block text-xs font-semibold leading-5 text-ink-muted">Sadece kurban süreciyle ilgili zorunlu iletişim için alınır.</span>
         </label>
         <label className="text-sm font-bold text-dark-navy">
           Şehir
@@ -132,7 +149,7 @@ export function QurbanDonationForm({
           {selectedCampaign?.delegationText ?? "Vekalet metni kampanya bilgisi üzerinden hazırlanır."}
         </p>
         <p className="mt-3 text-xs font-bold leading-6 text-ink-muted">
-          Vekalet metni dernek tarafından onaylandıktan sonra production&apos;da kesin metin olarak kullanılmalıdır.
+          Bu metin taslak önizlemedir; production öncesi dernek yönetimi, hukuk danışmanı ve dini danışman onayı gerekir.
         </p>
       </div>
 
@@ -151,8 +168,12 @@ export function QurbanDonationForm({
         </label>
       </div>
 
-      <button type="submit" className="focus-ring mt-7 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-ocean-green px-5 py-3 text-sm font-extrabold text-white transition hover:bg-deep-blue">
-        Kurban Başvurusu Oluştur
+      <button
+        type="submit"
+        disabled={campaignIsFull}
+        className="focus-ring mt-7 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-ocean-green px-5 py-3 text-sm font-extrabold text-white transition hover:bg-deep-blue disabled:cursor-not-allowed disabled:bg-ink-muted"
+      >
+        Kurban Bağış Başvurusu Gönder
       </button>
     </form>
   );

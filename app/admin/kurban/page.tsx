@@ -2,7 +2,6 @@ import { AdminActionButton } from "@/components/admin/AdminActionButton";
 import { AdminChartCard } from "@/components/admin/AdminChartCard";
 import { AdminSectionHeader } from "@/components/admin/AdminSectionHeader";
 import { AdminTable } from "@/components/admin/AdminTable";
-import { mockQurbanDelegations } from "@/data/qurbanMock";
 import {
   getAdminQurbanOperationsWithSource,
   getAdminQurbanOrdersWithSource,
@@ -15,14 +14,14 @@ export default async function AdminQurbanPage() {
   const stats = await getQurbanStats();
   const { data: orders, source: ordersSource } = await getAdminQurbanOrdersWithSource();
   const { data: operations, source: operationsSource } = await getAdminQurbanOperationsWithSource();
-  const pendingDelegations = mockQurbanDelegations.filter((delegation) => delegation.status === "pending");
+  const pendingDelegations = orders.filter((order) => order.delegationStatus === "pending");
 
   return (
     <div className="grid gap-6">
       <AdminSectionHeader
         eyebrow="Kurban Çalışmaları"
         title="Kurban Operasyon Merkezi"
-        description="Vekalet, ödeme durumu, kesim planı, dağıtım ve bilgilendirme akışları bu modülde demo/read-only olarak izlenir. Gerçek kayıt ve ödeme işlemleri kapalıdır."
+        description="Vekalet, ödeme durumu, kesim planı, dağıtım ve bilgilendirme akışları bu modülde read-only izlenir. Başvuru kaydı alınabilir; ödeme, makbuz ve operasyon write işlemleri henüz kapalıdır."
       />
       <div className="flex flex-wrap gap-2">
         <QurbanDataSourceBadge source={ordersSource} />
@@ -42,7 +41,7 @@ export default async function AdminQurbanPage() {
       />
 
       <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <AdminTable headers={["Sipariş No", "Bağışçı", "Kurban", "Tutar", "Ödeme", "Vekalet", "Durum", "Tarih"]} recordCount={orders.slice(0, 5).length}>
+        <AdminTable headers={["Sipariş No", "Bağışçı", "Kurban", "Tutar", "Ödeme", "Vekalet", "Durum", "Tarih"]} recordCount={orders.slice(0, 5).length} empty={!orders.length}>
           {orders.slice(0, 5).map((order) => (
             <tr key={order.id}>
               <td className="font-bold text-dark-navy">{order.orderNo}</td>
@@ -57,11 +56,11 @@ export default async function AdminQurbanPage() {
           ))}
         </AdminTable>
 
-        <AdminChartCard title="Bekleyen vekaletler" description="Demo vekalet kayıtları gerçek kişisel veri içermez.">
+        <AdminChartCard title="Bekleyen vekaletler" description="Kişisel veri maskeli tutulur; bu kart sadece takip önceliği verir.">
           <div className="grid gap-3">
             {pendingDelegations.length ? pendingDelegations.map((delegation) => (
               <div key={delegation.id} className="rounded-lg border border-border-soft bg-soft-gray p-4">
-                <p className="text-xs font-extrabold uppercase text-ocean-green">{delegation.delegationNo}</p>
+                <p className="text-xs font-extrabold uppercase text-ocean-green">{delegation.orderNo}</p>
                 <h2 className="mt-1 font-extrabold text-dark-navy">{delegation.donorDisplayName}</h2>
                 <p className="mt-1 text-sm text-ink-muted">{delegation.campaignTitle}</p>
               </div>
@@ -73,9 +72,9 @@ export default async function AdminQurbanPage() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
-        <AdminChartCard title="Kesim planı" description="Sorumlu koordinatör ve personel atamaları demo kapsamındadır.">
+        <AdminChartCard title="Kesim planı" description="Sorumlu koordinatör ve personel atamaları read-only izlenir.">
           <div className="grid gap-3">
-            {operations.slice(0, 4).map((operation) => (
+            {operations.length ? operations.slice(0, 4).map((operation) => (
               <div key={operation.id} className="rounded-lg border border-border-soft bg-soft-gray p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
@@ -88,7 +87,9 @@ export default async function AdminQurbanPage() {
                   <QurbanProgress completed={operation.completedShares} total={operation.totalShares} />
                 </div>
               </div>
-            ))}
+            )) : (
+              <p className="text-sm font-semibold text-ink-muted">Planlanmış kurban operasyonu bulunmuyor.</p>
+            )}
           </div>
         </AdminChartCard>
 

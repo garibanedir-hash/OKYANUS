@@ -4,8 +4,8 @@ import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { getActiveQurbanCampaignsWithSource } from "@/lib/data/qurbanRepository";
-import { formatCurrency, formatDate } from "@/lib/format";
+import { getActiveQurbanCampaigns } from "@/lib/data/qurbanRepository";
+import { formatCurrency } from "@/lib/format";
 
 export const metadata: Metadata = {
   title: "Kurban Çalışmaları",
@@ -15,30 +15,48 @@ export const metadata: Metadata = {
 const qurbanTypes = ["Vacip", "Adak", "Akika", "Şükür", "Nafile"];
 
 const processSteps = [
-  "Kurban türü seçilir",
-  "Vekalet onayı alınır",
-  "Bağış kaydı oluşturulur",
-  "Kesim planlanır",
-  "Dağıtım yapılır",
-  "Bağışçı bilgilendirilir"
+  {
+    title: "Kurban türü ve kampanya seçilir",
+    text: "Bağışçı uygun kampanyayı, bölgeyi ve hisse/adet bilgisini görerek başvuruya başlar."
+  },
+  {
+    title: "Vekalet onayı kaydedilir",
+    text: "Vekalet kabulü ayrı kayıt olarak tutulur ve bağış başvurusu ile ilişkilendirilir."
+  },
+  {
+    title: "Başvuru ödeme bekliyor durumuna alınır",
+    text: "Ödeme entegrasyonu açılana kadar sipariş ve hisse/adet rezervasyonu takipte kalır."
+  },
+  {
+    title: "Kesim planlaması yapılır",
+    text: "Ödeme ve operasyon onayları netleştikçe kesim listeleri kontrollü şekilde hazırlanır."
+  },
+  {
+    title: "Dağıtım ve raporlama izlenir",
+    text: "Dağıtım özetleri ve saha raporları operasyon ekibi tarafından takip edilir."
+  },
+  {
+    title: "Bağışçı bilgilendirilir",
+    text: "Bildirim ve makbuz süreçleri ödeme entegrasyonu tamamlandığında gerçek kanallara bağlanır."
+  }
 ];
 
 export default async function QurbanPage() {
-  const { data: campaigns, source } = await getActiveQurbanCampaignsWithSource();
+  const campaigns = await getActiveQurbanCampaigns();
 
   return (
     <>
       <PageHero
         eyebrow="Kurban Çalışmaları"
         title="Kurban Bağışlarınız Emanet Bilinciyle Takip Edilir"
-        description="Okyanus İnsani Yardım Derneği olarak kurban bağışlarınızı vekalet, kesim ve dağıtım süreçleriyle kayıt altına alınabilir bir yapıda takip ediyoruz."
+        description="Okyanus İnsani Yardım Derneği olarak kurban bağışlarınızı vekalet, kesim, dağıtım ve bilgilendirme süreçleriyle kayıt altına alınabilir bir yapıda takip ediyoruz."
       >
         <div className="flex flex-wrap gap-3">
           <Button href="/kurban/bagis" showIcon>
             Kurban Bağışı Yap
           </Button>
           <Button href="#surec" variant="ghost" showIcon>
-            Kurban Sürecini İncele
+            Süreci İncele
           </Button>
         </div>
       </PageHero>
@@ -49,11 +67,8 @@ export default async function QurbanPage() {
             <SectionHeading
               eyebrow="Aktif Kampanyalar"
               title="Kurban kampanyalarını inceleyin"
-              description="Bu aşamada ödeme ve gerçek kayıt oluşturma kapalıdır; sayfalar kurban operasyon akışını demo/read-only olarak gösterir."
+              description="Aktif kampanyalarda kurban türü, bölge, birim bedel ve kalan kontenjan bilgilerini inceleyerek başvuru oluşturabilirsiniz."
             />
-            <span className="rounded-full bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
-              Veri kaynağı: {source === "supabase" ? "Supabase read-only" : "Demo fallback"}
-            </span>
           </div>
 
           <div className="mt-8 grid gap-5 lg:grid-cols-3">
@@ -89,10 +104,10 @@ export default async function QurbanPage() {
                   </div>
                   <div className="mt-5 flex flex-wrap gap-2">
                     <Button href={`/kurban/${campaign.slug}`} variant="secondary" showIcon>
-                      İncele
+                      Süreci İncele
                     </Button>
                     <Button href={`/kurban/bagis?kampanya=${campaign.slug}`} variant="ghost">
-                      Bağış Akışı
+                      Kurban Bağışı Yap
                     </Button>
                   </div>
                 </article>
@@ -103,7 +118,12 @@ export default async function QurbanPage() {
           {!campaigns.length ? (
             <div className="mt-8 rounded-brand border border-border-soft bg-white p-8 text-center shadow-card">
               <h2 className="text-xl font-extrabold text-dark-navy">Aktif kurban kampanyası yok</h2>
-              <p className="mt-2 text-ink-muted">Yeni kampanyalar yayına alındığında bu alanda listelenecektir.</p>
+              <p className="mt-2 text-ink-muted">Yeni kurban kampanyaları yayına alındığında bu alanda listelenecektir. Dilerseniz genel bağış çalışmalarımızı inceleyebilirsiniz.</p>
+              <div className="mt-5">
+                <Button href="/bagis" variant="secondary">
+                  Genel Bağış Sayfası
+                </Button>
+              </div>
             </div>
           ) : null}
         </Container>
@@ -116,7 +136,7 @@ export default async function QurbanPage() {
               <SectionHeading
                 eyebrow="Vekalet ve Takip"
                 title="Kurban süreci aşama aşama izlenir"
-                description="Her aşama ayrı bir durum olarak kurgulanır. Gerçek ödeme, makbuz ve bildirim entegrasyonları sonraki fazlarda açılacaktır."
+                description="Vekalet kabulü, başvuru kaydı, kesim planı, dağıtım ve bilgilendirme süreçleri birbirinden ayrılmış durumlarla takip edilir."
               />
               <div className="mt-7 grid grid-cols-2 gap-3">
                 {qurbanTypes.map((type) => (
@@ -128,11 +148,12 @@ export default async function QurbanPage() {
             </div>
             <div className="grid gap-3 md:grid-cols-2">
               {processSteps.map((step, index) => (
-                <div key={step} className="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
+                <div key={step.title} className="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
                   <span className="flex h-9 w-9 items-center justify-center rounded-full bg-mint-green text-sm font-black text-ocean-green">
                     {index + 1}
                   </span>
-                  <h3 className="mt-4 font-extrabold text-dark-navy">{step}</h3>
+                  <h3 className="mt-4 font-extrabold text-dark-navy">{step.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-ink-muted">{step.text}</p>
                 </div>
               ))}
             </div>
@@ -146,8 +167,8 @@ export default async function QurbanPage() {
             {[
               { icon: HandHeart, title: "Emanet Bilinci", text: "Vekalet ve bağış akışı ayrı takip edilir." },
               { icon: ClipboardCheck, title: "Operasyon Takibi", text: "Kesim planı ve dağıtım durumu izlenir." },
-              { icon: ReceiptText, title: "Rapor Hazırlığı", text: "Export ve raporlama için veri modeli hazırdır." },
-              { icon: ShieldCheck, title: "Güvenli Kapsam", text: "Bu fazda gerçek kayıt veya ödeme oluşturulmaz." }
+              { icon: ReceiptText, title: "Rapor Hazırlığı", text: "Makbuz ve bildirim süreçleri ödeme entegrasyonu sonrası bağlanacaktır." },
+              { icon: ShieldCheck, title: "Güvenli Kapsam", text: "Başvurular kayıt altına alınır; online ödeme henüz başlatılmaz." }
             ].map(({ icon: Icon, title, text }) => (
               <div key={title} className="rounded-lg border border-white/10 bg-white/5 p-5">
                 <Icon aria-hidden className="h-6 w-6 text-mint-green" />

@@ -103,7 +103,8 @@ export async function createQurbanOrderAction(formData: FormData) {
     redirectWithStatus("alindi");
   }
 
-  let success: { orderNo: string; shareCount: number; totalAmount: number } | null = null;
+  const attemptedCampaignSlug = getString(formData, "campaign") || getString(formData, "campaignSlug") || getString(formData, "campaignId");
+  let success: { orderNo: string; shareCount: number; totalAmount: number; campaignSlug: string } | null = null;
 
   try {
     const input = parseQurbanOrderForm(formData);
@@ -154,17 +155,19 @@ export async function createQurbanOrderAction(formData: FormData) {
     success = {
       orderNo: result.orderNo,
       shareCount: result.shareCount,
-      totalAmount: result.totalAmount
+      totalAmount: result.totalAmount,
+      campaignSlug: campaign.slug
     };
   } catch (error) {
-    redirectWithStatus("hata", { mesaj: getFriendlyError(error) });
+    redirectWithStatus("hata", { mesaj: getFriendlyError(error), kampanya: attemptedCampaignSlug });
   }
 
   if (success) {
     redirectWithStatus("basarili", {
       siparis: success.orderNo,
       adet: success.shareCount,
-      tutar: Math.round(success.totalAmount)
+      tutar: Math.round(success.totalAmount),
+      kampanya: success.campaignSlug
     });
   }
 }

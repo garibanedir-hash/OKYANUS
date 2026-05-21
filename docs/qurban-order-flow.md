@@ -74,6 +74,18 @@ Varsayılan durumlar:
 
 Ödeme yapılmadan kesim ve dağıtım durumları ilerletilmez.
 
+## 9C.1 Stabilizasyon Notları
+
+9C.1 ödeme öncesi kayıt akışını kullanıcı ve operasyon ekipleri için daha anlaşılır hale getirir:
+
+- `/kurban`, `/kurban/[slug]` ve `/kurban/bagis` metinleri "kayıt alınıyor, ödeme bekliyor" durumuna göre güncellendi.
+- Kampanya seçimi `?kampanya=slug` query'sini kullanır ve seçilen kampanya formda önden seçilir.
+- Hisse/adet seçimi kalan kontenjan ve 20 adet sınırına göre kullanıcıya açıklanır.
+- Başarı ekranında "Kurban bağış başvurunuz alınmıştır.", sipariş no, vekalet kaydı, ödeme bekliyor bilgisi ve admin kayıt notu gösterilir.
+- Admin bağışları ekranında kişisel veriler maskeli kalır; filtreler demo/read-only olarak işaretlenir.
+- Bağışçı panelinde guest kayıtların otomatik görünmeyeceği açıklanır.
+- Koordinatör ve personel ekranları demo/read-only operasyon takip yüzeyi olarak kalır.
+
 ## Guest Donor ve Logged-in Donor Farkı
 
 Girişsiz kullanıcı:
@@ -145,3 +157,5 @@ Audit log hatası ana başvuru akışını patlatmaz. Guest başvurularda audit 
 - Başarısız/iptal ödeme için quota release stratejisi belirlenmeli.
 - Makbuz ve bildirim entegrasyonu audit log ile bağlanmalı.
 - Guest kayıtları donor hesabıyla eşleştirme süreci tasarlanmalı.
+- Vekalet metni dernek yönetimi, hukuk danışmanı ve dini danışman onayı olmadan production'da kesin metin olarak kullanılmamalı.
+- `docs/qurban-manual-test-checklist.md` staging ortamında tamamlanmalı.

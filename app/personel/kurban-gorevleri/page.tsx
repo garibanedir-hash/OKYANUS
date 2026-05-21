@@ -14,6 +14,9 @@ export default async function StaffQurbanTasksPage() {
         title="Kurban Görevleri"
         description="Size atanan kurban kesim/dağıtım görevleri demo/read-only olarak listelenir. Rapor girilecek alan bu aşamada gerçek kayıt oluşturmaz."
       />
+      <div className="rounded-lg border border-border-soft bg-white p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
+        Bu ekran görev ve saha takip mantığını gösterir; bağışçı kişisel verisi veya hassas operasyon dosyası içermez.
+      </div>
       <AdminTable headers={["Görev", "Tarih", "Bölge", "Kesim/Dağıtım", "Hisse durumu", "Durum", "Notlar"]} recordCount={tasks.length} empty={!tasks.length}>
         {tasks.map((task) => (
           <tr key={task.id}>
@@ -30,11 +33,11 @@ export default async function StaffQurbanTasksPage() {
       <section className="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
         <h2 className="text-xl font-extrabold text-dark-navy">Rapor girilecek alan demo</h2>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
-          <label className="text-sm font-bold text-dark-navy">Kısa saha notu<textarea rows={4} className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="Demo not alanı" /></label>
-          <label className="text-sm font-bold text-dark-navy">Dağıtım özeti<textarea rows={4} className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="Gerçek kayıt oluşturmaz" /></label>
+          <label className="text-sm font-bold text-dark-navy">Kısa saha notu<textarea rows={4} disabled className="focus-ring mt-2 w-full rounded-2xl border border-border-soft bg-soft-gray px-4 py-3" placeholder="Demo not alanı" /></label>
+          <label className="text-sm font-bold text-dark-navy">Dağıtım özeti<textarea rows={4} disabled className="focus-ring mt-2 w-full rounded-2xl border border-border-soft bg-soft-gray px-4 py-3" placeholder="Gerçek kayıt oluşturmaz" /></label>
         </div>
-        <button type="button" className="focus-ring mt-5 rounded-md bg-deep-blue px-4 py-2 text-sm font-extrabold text-white hover:bg-dark-navy">
-          Demo Rapor Kaydet
+        <button type="button" disabled className="focus-ring mt-5 cursor-not-allowed rounded-md bg-ink-muted px-4 py-2 text-sm font-extrabold text-white">
+          Rapor Kaydı Kapalı
         </button>
       </section>
     </div>
