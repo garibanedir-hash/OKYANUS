@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CheckSquare, Home, Mail, UserRound, Waves } from "lucide-react";
+import { CheckSquare, Home, Mail, ShieldCheck, UserRound, Waves } from "lucide-react";
 import { OfficialLogo } from "@/components/brand/OfficialLogo";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +10,7 @@ const items = [
   { label: "Özet", href: "/personel", icon: Home },
   { label: "Görevlerim", href: "/personel/gorevler", icon: CheckSquare },
   { label: "Kurban Görevleri", href: "/personel/kurban-gorevleri", icon: CheckSquare },
+  { label: "Yetim Görevleri", href: "/personel/yetim-gorevleri", icon: ShieldCheck },
   { label: "Mesajlarım", href: "/personel/mesajlar", icon: Mail },
   { label: "Faaliyetlerim", href: "/personel/faaliyetlerim", icon: Waves },
   { label: "Profil", href: "/personel/profil", icon: UserRound }

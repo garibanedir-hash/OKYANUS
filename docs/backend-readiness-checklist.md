@@ -131,3 +131,18 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Koordinatör/personel kurban ekranları demo/read-only olduğunu belli ediyor ve bağışçı kişisel verisi göstermiyor.
 - [ ] `docs/qurban-manual-test-checklist.md` staging manuel testlerinde kullanılıyor.
 - [ ] 9D ödeme entegrasyonu öncesi webhook signature, idempotency, server-side tutar doğrulama ve quota release planı hazır.
+
+## 9D Yetim Hamiliği / Sponsorluk Kontrolleri
+
+- [ ] `012_orphan_sponsorship_module.sql` staging ortamında çalıştırıldı.
+- [ ] Public/anon yalnızca aktif `sponsorship_programs` kayıtlarını okuyabiliyor.
+- [ ] Public/anon `orphan_profiles`, `sponsorships`, `sponsorship_payments`, `orphan_updates`, `orphan_sponsorship_notes`, `orphan_assignments`, `sponsorship_notifications` ve `sponsorship_exports` tablolarını okuyamıyor.
+- [ ] Sponsor yalnızca kendi `sponsor_account_id` ilişkili sponsorluk kayıtlarını okuyabiliyor.
+- [ ] Sponsor güvenli yetim özetini yalnızca `sponsored_orphans_safe_view` üzerinden görebiliyor.
+- [ ] Admin/super_admin yetim hamiliği yönetim ekranlarını okuyabiliyor.
+- [ ] Koordinatör/personel yalnızca kendisine atanmış yetim/sponsorluk görevlerini okuyabiliyor.
+- [ ] Public `/yetim-hamiligi`, `/yetim-hamiligi/surec` ve `/yetim-hamiligi/basvuru` sayfaları açılıyor.
+- [ ] `/yetim-hamiligi/basvuru` gerçek ödeme, düzenli talimat veya sponsorship kaydı oluşturmuyor.
+- [ ] Bağışçı `/panel/yetim-sponsorluk` yalnızca güvenli özet gösteriyor.
+- [ ] Admin, koordinatör ve personel yetim ekranlarında açık kimlik, açık adres, okul adı, telefon ve aile detayı gösterilmiyor.
+- [ ] Service role key client tarafına taşınmadan mock/read-only akış korunuyor.

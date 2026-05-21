@@ -9,6 +9,8 @@ const quickLinks = [
   ["Faaliyetler", "/faaliyetler"],
   ["Projeler", "/projeler"],
   ["Kurban", "/kurban"],
+  ["Yetim Hamiliği", "/yetim-hamiligi"],
+  ["Sponsorluk Süreci", "/yetim-hamiligi/surec"],
   ["Bağış Yap", "/bagis-yap"],
   ["Gönüllü Ol", "/gonullu-ol"],
   ["Şeffaflık", "/seffaflik"],
@@ -16,7 +18,7 @@ const quickLinks = [
   ["İletişim", "/iletisim"]
 ];
 
-const activityLinks = ["Acil Yardım", "Gıda Desteği", "Eğitim Desteği", "Yetim Destekleri", "Kurban Çalışmaları"];
+const activityLinks = ["Acil Yardım", "Gıda Desteği", "Eğitim Desteği", "Yetim Hamiliği", "Kurban Çalışmaları"];
 const legalLinks = [
   ["Gizlilik Politikası", "/gizlilik-politikasi"],
   ["KVKK Aydınlatma Metni", "/kvkk-aydinlatma-metni"],

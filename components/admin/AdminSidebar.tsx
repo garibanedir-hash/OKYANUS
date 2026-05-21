@@ -7,6 +7,7 @@ import {
   BellRing,
   CalendarClock,
   CheckSquare,
+  ClipboardCheck,
   CreditCard,
   FileText,
   HeartHandshake,
@@ -76,6 +77,20 @@ const navGroups = [
       { label: "Bildirimler", href: "/admin/kurban/bildirimler", icon: BellRing, badge: "demo" },
       { label: "Raporlar", href: "/admin/kurban/raporlar", icon: FileText, badge: "demo" },
       { label: "Export", href: "/admin/kurban/export", icon: FileText, badge: "demo" }
+    ]
+  },
+  {
+    title: "Yetim Hamiliği",
+    items: [
+      { label: "Genel Bakış", href: "/admin/yetim-hamiligi", icon: LayoutDashboard, badge: "demo" },
+      { label: "Yetim Profilleri", href: "/admin/yetim-hamiligi/yetimler", icon: ShieldCheck, badge: "demo" },
+      { label: "Sponsorluklar", href: "/admin/yetim-hamiligi/sponsorluklar", icon: HeartHandshake, badge: "demo" },
+      { label: "Başvurular", href: "/admin/yetim-hamiligi/basvurular", icon: ClipboardCheck, badge: "demo" },
+      { label: "Güncellemeler", href: "/admin/yetim-hamiligi/guncellemeler", icon: BellRing, badge: "demo" },
+      { label: "Görevler", href: "/admin/yetim-hamiligi/gorevler", icon: CheckSquare, badge: "demo" },
+      { label: "Bildirimler", href: "/admin/yetim-hamiligi/bildirimler", icon: Mail, badge: "demo" },
+      { label: "Raporlar", href: "/admin/yetim-hamiligi/raporlar", icon: FileText, badge: "demo" },
+      { label: "Export", href: "/admin/yetim-hamiligi/export", icon: FileText, badge: "demo" }
     ]
   },
   {

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, CheckSquare, Home, Mail, Route, UsersRound, Waves } from "lucide-react";
+import { BarChart3, CheckSquare, Home, Mail, Route, ShieldCheck, UsersRound, Waves } from "lucide-react";
 import { OfficialLogo } from "@/components/brand/OfficialLogo";
 import { cn } from "@/lib/utils";
 
@@ -12,6 +12,7 @@ const items = [
   { label: "Ekip", href: "/koordinator/ekip", icon: UsersRound },
   { label: "Faaliyetler", href: "/koordinator/faaliyetler", icon: Waves },
   { label: "Kurban Operasyon", href: "/koordinator/kurban-operasyon", icon: Route },
+  { label: "Yetim Sponsorluk", href: "/koordinator/yetim-sponsorluk", icon: ShieldCheck },
   { label: "Mesajlar", href: "/koordinator/mesajlar", icon: Mail },
   { label: "Raporlar", href: "/koordinator/raporlar", icon: BarChart3 }
 ];

@@ -15,6 +15,7 @@ const navItems = [
   { label: "Faaliyetler", href: "/faaliyetler" },
   { label: "Projeler", href: "/projeler" },
   { label: "Kurban", href: "/kurban" },
+  { label: "Yetim Hamiliği", href: "/yetim-hamiligi" },
   { label: "Gönüllü Ol", href: "/gonullu-ol" },
   { label: "Haberler", href: "/haberler" },
   { label: "İletişim", href: "/iletisim" }

@@ -54,6 +54,10 @@
 - [ ] Kurban kontenjan rezervasyonu transaction içinde satır kilidiyle kontrol ediliyor mu?
 - [ ] 9C.1 sonrası public kurban sayfalarında gereksiz teknik veri kaynağı veya hassas operasyon detayı gösterilmiyor mu?
 - [ ] Guest kurban başvuruları panelde e-posta ile otomatik eşleştirilmiyor mu?
+- [ ] Yetim hamiliği modülünde public/anon yalnızca aktif `sponsorship_programs` kayıtlarını okuyabiliyor mu?
+- [ ] `orphan_profiles`, `sponsorships`, `sponsorship_payments`, `orphan_updates`, `orphan_sponsorship_notes`, `orphan_assignments`, `sponsorship_notifications` ve `sponsorship_exports` public erişime kapalı mı?
+- [ ] Sponsor güvenli yetim özetini yalnızca kendi sponsorship ilişkisi üzerinden okuyabiliyor mu?
+- [ ] Koordinatör/personel yalnızca kendisine atanmış yetim/sponsorluk görevlerini okuyabiliyor mu?
 
 ## Form validation
 
@@ -105,6 +109,8 @@
 - [ ] Kurban bağışçı ekranlarında e-posta/telefon maskeli gösteriliyor mu?
 - [ ] Kurban export ekranında kişisel veri maskeleme varsayılan açık mı?
 - [ ] Admin kurban bağışları ekranında donor adı, e-posta ve telefon maskeli mi?
+- [ ] Yetim hamiliği admin ve panel ekranlarında çocuk açık kimliği, açık adresi, okul adı, telefon ve aile detayı gösterilmiyor mu?
+- [ ] Sponsor panelinde yalnızca yetim kodu, güvenli ad/rumuz, yaş grubu, bölge ve eğitim özeti gösteriliyor mu?
 - [ ] İç mesajlarda hassas veri paylaşımı engelleniyor mu?
 
 ## Backup
@@ -142,6 +148,7 @@
 - [ ] Kurban write akışı service role kullanıyorsa sadece server-only repository içinde mi?
 - [ ] Kurban form client component'i secret veya service role env import etmiyor mu?
 - [ ] Kurban order write repository `server-only` sınırında kalıyor mu?
+- [ ] Yetim hamiliği repository'si read-only/mock çalışıyor ve client tarafına service role taşımıyor mu?
 
 ## Error handling
 
@@ -151,6 +158,7 @@
 - [ ] Supabase read-only hata/timeout durumunda public sayfa mock fallback veya empty state ile açılıyor.
 - [ ] Read-only repository logları secret/key/token/şifre içermiyor.
 - [ ] Kurban Supabase read hatalarında admin/panel ekranları güvenli mock fallback veya boş state ile açılıyor mu?
+- [ ] Yetim hamiliği Supabase read hatalarında public/admin/panel ekranları güvenli mock fallback veya boş state ile açılıyor mu?
 
 ## Logging
 
@@ -171,6 +179,7 @@
 - [ ] Bağışçı yalnızca kendi kurban siparişi ve vekalet durumunu görebiliyor mu?
 - [ ] Sponsor yalnızca kendi sponsorluklarını görebiliyor mu?
 - [ ] Yetim/çocuk verileri maskeleniyor mu?
+- [ ] Yetim hamiliği güncellemelerinde açık adres, okul adı, kimlik, telefon, aile detayı ve hassas fotoğraf engelleniyor mu?
 - [ ] Gönüllü yalnızca kendi başvurularını ve görevlerini görebiliyor mu?
 - [ ] Personel yalnızca kendi görevlerine erişiyor mu?
 - [ ] Koordinatör sadece kendi ekibine erişiyor mu?

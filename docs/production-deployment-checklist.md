@@ -27,6 +27,9 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] `010_qurban_module.sql` staging ortamında çalıştırıldı ve kurban RLS policy'leri test edildi.
 - [ ] Kurban modülünde public/anon yalnızca aktif kampanyaları okuyabiliyor.
 - [ ] Kurban siparişi, vekalet, hisse, operasyon, bildirim ve export tabloları public erişime kapalı.
+- [ ] `012_orphan_sponsorship_module.sql` staging ortamında çalıştırıldı ve yetim hamiliği RLS policy'leri test edildi.
+- [ ] Yetim hamiliği modülünde public/anon yalnızca aktif sponsorluk programlarını okuyabiliyor.
+- [ ] Yetim profilleri, sponsorluklar, ödeme hazırlığı, notlar, görevler, bildirimler ve export tabloları public erişime kapalı.
 
 ## Auth ve Route Guard
 
@@ -83,6 +86,19 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Kurban smoke test kapsamı `qurban_campaigns` public, diğer kurban tabloları protected olacak şekilde geçti.
 - [ ] `docs/qurban-manual-test-checklist.md` staging ortamında tamamlandı.
 - [ ] 9D ödeme entegrasyonu için webhook signature, idempotency, server-side tutar doğrulama ve quota release planı hazır.
+
+## Yetim Hamiliği
+
+- [ ] Public `/yetim-hamiligi`, `/yetim-hamiligi/surec` ve `/yetim-hamiligi/basvuru` sayfaları açılıyor.
+- [ ] `/yetim-hamiligi/basvuru` gerçek ödeme, düzenli talimat veya sponsorship kaydı oluşturmuyor.
+- [ ] Admin `/admin/yetim-hamiligi` ve alt ekranları maskeli/read-only çalışıyor.
+- [ ] Bağışçı `/panel/yetim-sponsorluk` yalnızca kendi güvenli sponsorluk özetlerini gösteriyor.
+- [ ] Koordinatör `/koordinator/yetim-sponsorluk` yalnızca atanmış görev mantığını gösteriyor.
+- [ ] Personel `/personel/yetim-gorevleri` yalnızca atanmış görev mantığını gösteriyor.
+- [ ] Çocuk açık kimliği, açık adres, okul adı, telefon, aile detayı ve hassas sağlık verisi public/admin olmayan panel görünümünde yok.
+- [ ] Fotoğraf kullanımı açık rıza ve kurum politikası olmadan açılmadı.
+- [ ] Yetim hamiliği metinleri hukuk danışmanı, kurum yönetimi ve çocuk koruma ilkeleri açısından incelendi.
+- [ ] Gerçek ödeme/SMS/e-posta/makbuz/dosya entegrasyonları ayrı güvenlik testinden geçmeden açılmadı.
 
 ## Veri Güvenliği ve KVKK
 

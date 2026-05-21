@@ -112,3 +112,17 @@ Server-side doğrulama yapılır:
 - Koordinatör/personel kurban operasyon ve görev ekranları.
 
 9B'de gerçek kurban order create, ödeme, makbuz, SMS/e-posta gönderimi veya dosya upload yapılmaz. Bu işlemler audit, RLS ve provider güvenlik testleri tamamlandıktan sonra ayrı aşamada açılmalıdır.
+
+## 9D Yetim Hamiliği Modülü Notu
+
+9D'de yetim hamiliği/sponsorluk ayrı ve yüksek hassasiyetli bir operasyon modülü olarak başlatıldı. Bu modül public içerik CRUD kapsamına dahil değildir; çünkü çocuk mahremiyeti, sponsor ilişkisi, güvenli güncelleme ve saha görevleri hassas veri içerir.
+
+9D kapsamı:
+
+- `012_orphan_sponsorship_module.sql` ile veri modeli ve read policy hazırlığı.
+- Public `/yetim-hamiligi`, `/yetim-hamiligi/surec`, `/yetim-hamiligi/basvuru` sayfaları.
+- Admin yetim hamiliği operasyon ekranları.
+- Bağışçı `/panel/yetim-sponsorluk` güvenli takip alanı.
+- Koordinatör/personel yetim sponsorluk görev ekranları.
+
+9D'de gerçek ödeme, düzenli ödeme talimatı, sponsor-yetim eşleştirme write action'ı, makbuz, SMS/e-posta gönderimi veya dosya upload yapılmaz. Çocuk açık kimliği, açık adres, okul adı, telefon, aile detayı ve hassas sağlık verisi public veya sponsor panelinde gösterilmemelidir.

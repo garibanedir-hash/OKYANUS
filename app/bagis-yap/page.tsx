@@ -89,6 +89,20 @@ export default async function DonatePage({ searchParams }: DonatePageProps) {
                 </div>
               </div>
               <div className="mt-6 rounded-brand border border-border-soft bg-white p-6 shadow-card">
+                <h2 className="text-xl font-bold text-dark-navy">Yetim hamiliği</h2>
+                <p className="mt-2 leading-7 text-slate-600">
+                  Düzenli destekle bir yetimin hayatına umut olun. Çocuk mahremiyetini koruyan sponsorluk süreci ayrı modülde takip edilir.
+                </p>
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <Button href="/yetim-hamiligi" variant="secondary" showIcon>
+                    Yetim Hamiliği
+                  </Button>
+                  <Button href="/yetim-hamiligi/basvuru" variant="ghost">
+                    Başvuru
+                  </Button>
+                </div>
+              </div>
+              <div className="mt-6 rounded-brand border border-border-soft bg-white p-6 shadow-card">
                 <h2 className="text-xl font-bold text-dark-navy">Güven notları</h2>
                 <div className="mt-5 grid gap-3">
                   {trustNotes.map(({ icon: Icon, text }) => (
