@@ -1,4 +1,3 @@
-import { AdminActionButton } from "@/components/admin/AdminActionButton";
 import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
 import { AdminPanelNotice } from "@/components/admin/AdminPanelNotice";
 import { AdminSectionHeader } from "@/components/admin/AdminSectionHeader";
@@ -48,6 +47,18 @@ function matchesDateRange(createdAt: string, dateFrom?: string, dateTo?: string)
   if (dateTo && date > new Date(`${dateTo}T23:59:59.999Z`)) return false;
 
   return true;
+}
+
+function DisabledDemoButton({ children }: { children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      disabled
+      className="inline-flex min-h-8 cursor-not-allowed items-center justify-center rounded-md border border-border-soft bg-soft-gray px-2.5 py-1 text-[0.72rem] font-extrabold text-ink-muted"
+    >
+      {children}
+    </button>
+  );
 }
 
 export default async function AdminPaymentRecordsPage({ searchParams }: AdminPaymentRecordsPageProps) {
@@ -156,12 +167,12 @@ export default async function AdminPaymentRecordsPage({ searchParams }: AdminPay
             </td>
             <td><AdminStatusBadge status={payment.statusLabel} /></td>
             <td>{formatDate(payment.createdAt)}</td>
-            <td><AdminActionButton>Manuel ödendi demo</AdminActionButton></td>
+            <td><DisabledDemoButton>Manuel ödendi demo</DisabledDemoButton></td>
           </tr>
         ))}
       </AdminTable>
       <AdminPanelNotice title="9E ödeme altyapısı">
-        Bu ekran `payment_intents` tablosuna göre hazırlanmıştır. Provider webhook, canlı ödeme doğrulama ve kart bilgisi saklama yoktur; manuel aksiyonlar gerçek veri değiştirmeyen demo kontrol olarak kalır.
+        Bu ekran `payment_intents` tablosuna göre hazırlanmıştır. Provider webhook, canlı ödeme doğrulama ve kart bilgisi saklama yoktur; manuel aksiyonlar 9E.1 boyunca pasif demo kontrol olarak kalır.
       </AdminPanelNotice>
     </div>
   );

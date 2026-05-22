@@ -76,6 +76,8 @@ Varsayılan durumlar:
 
 Kurban siparişi ileride `payment_intents.context_type = qurban_order` ve `context_id = qurban_orders.id` ile ortak ödeme modeline bağlanır. Bu aşamada public başvuru sonrası payment intent otomatik oluşturulması zorunlu değildir.
 
+9E.1 stabilizasyonunda admin ve panel ekranları ödeme bekliyor durumunu read-only gösterir; gerçek ödeme butonu, provider API çağrısı veya webhook doğrulaması yoktur.
+
 ## 9C.1 Stabilizasyon Notları
 
 9C.1 ödeme öncesi kayıt akışını kullanıcı ve operasyon ekipleri için daha anlaşılır hale getirir:
@@ -157,7 +159,10 @@ Audit log hatası ana başvuru akışını patlatmaz. Guest başvurularda audit 
 - Idempotency key tasarımı yapılmalı.
 - Ödeme başarılıysa `payment_status`, `order_status` ve hisse durumları atomik güncellenmeli.
 - 9E ortak modelde payment paid olduğunda `qurban_orders.payment_status = paid`, `qurban_orders.order_status = payment_confirmed`, `qurban_shares.status = payment_confirmed` ve `quota_reserved` değerinden `quota_completed` finalizasyonu server-side transaction ile yapılmalı.
-- Başarısız/iptal ödeme için quota release stratejisi belirlenmeli.
+- Payment paid sonrası `receipts.status` en az `pending` veya `prepared` durumuna alınmalı.
+- Payment paid sonrası `notification_queue` içine ödeme/makbuz bilgilendirme kaydı eklenmeli.
+- Başarısız/iptal ödeme için `qurban_shares.status` geri alma, `qurban_orders.payment_status = failed/cancelled` ve gerekirse `quota_reserved` azaltma stratejisi belirlenmeli.
+- Quota release işlemi ödeme başarısız/iptal event'i ile aynı transaction veya idempotent job içinde yapılmalı.
 - Makbuz ve bildirim entegrasyonu audit log ile bağlanmalı.
 - Guest kayıtları donor hesabıyla eşleştirme süreci tasarlanmalı.
 - Vekalet metni dernek yönetimi, hukuk danışmanı ve dini danışman onayı olmadan production'da kesin metin olarak kullanılmamalı.

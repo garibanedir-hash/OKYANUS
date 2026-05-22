@@ -174,3 +174,13 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Gerçek provider API çağrısı, webhook doğrulaması, PDF makbuz üretimi ve SMS/e-posta gönderimi yapılmıyor.
 - [ ] Admin ödeme kayıtları, makbuzlar ve bildirim kuyruğu Supabase okunamazsa mock fallback ile açılıyor.
 - [ ] Smoke test yeni ödeme tablolarını protected kapsamda doğruluyor ve `Security warning: 0` korunuyor.
+
+## 9E.1 Ödeme Stabilizasyon Kontrolleri
+
+- [ ] `015_fix_sponsored_orphans_safe_view_security.sql` staging ortamında çalıştırıldı.
+- [ ] `sponsored_orphans_safe_view` `security_invoker = true` olarak doğrulandı.
+- [ ] `sponsored_orphans_safe_view` anon/publishable key ile okunamıyor.
+- [ ] `/admin/odeme-kayitlari`, `/admin/makbuzlar` ve `/admin/bildirim-kuyrugu` read-only/mock fallback ile açılıyor.
+- [ ] Admin ödeme/makbuz/bildirim ekranlarında canlı aksiyon butonu yok; aksiyonlar pasif/demo.
+- [ ] `/panel/bagislarim`, `/panel/kurbanlarim` ve `/panel/yetim-sponsorluk` gerçek ödeme yapılmadığını açıkça gösteriyor.
+- [ ] `docs/payment-security-stabilization-checklist.md` ve `docs/payment-manual-test-checklist.md` staging kontrolünde kullanılıyor.

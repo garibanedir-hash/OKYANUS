@@ -107,7 +107,7 @@ export type PaymentStats = {
 
 export const paymentContextTypeLabels: Record<PaymentContextType, string> = {
   general_donation: "Genel Bağış",
-  qurban_order: "Kurban",
+  qurban_order: "Kurban Bağışı",
   orphan_sponsorship: "Yetim Hamiliği",
   project_donation: "Proje Bağışı",
   campaign_donation: "Kampanya Bağışı",
@@ -126,23 +126,23 @@ export const paymentProviderLabels: Record<PaymentProvider, string> = {
 
 export const paymentIntentStatusLabels: Record<PaymentIntentStatus, string> = {
   draft: "Taslak",
-  pending: "Ödeme bekliyor",
+  pending: "Ödeme Bekliyor",
   initiated: "Başlatıldı",
   requires_action: "Ek işlem gerekli",
   paid: "Ödendi",
   failed: "Başarısız",
-  cancelled: "İptal edildi",
+  cancelled: "İptal Edildi",
   expired: "Süresi doldu",
-  refunded: "İade edildi"
+  refunded: "İade Edildi"
 };
 
 export const receiptStatusLabels: Record<ReceiptStatus, string> = {
   not_required: "Gerekli değil",
-  pending: "Bekliyor",
+  pending: "Hazırlanıyor",
   prepared: "Hazırlandı",
   issued: "Kesildi",
-  cancelled: "İptal edildi",
-  failed: "Hatalı"
+  cancelled: "İptal",
+  failed: "Hata"
 };
 
 export const notificationChannelLabels: Record<NotificationChannel, string> = {

@@ -76,6 +76,14 @@ Provider callback entegrasyonu açıldığında `payment_provider_events.provide
 - Insert/update/delete public veya client tarafına açılmaz.
 - Service role client component'e veya public bundle'a taşınmaz.
 
+## 9E.1 Stabilizasyon Notları
+
+- `payment_intents`, `receipts`, `notification_queue`, `payment_events`, `payment_provider_events` ve `payment_status_logs` smoke test protected kapsamındadır.
+- `sponsored_orphans_safe_view` anon erişime kapalı tutulur ve `security_invoker = true` migration ile sabitlenir.
+- Admin ödeme, makbuz ve bildirim kuyruğu ekranlarında gerçek veri değişikliği yapan aksiyonlar pasif/demo görünür.
+- Mock fallback, Supabase env eksikliği, RLS engeli, timeout veya migration eksikliğinde beyaz ekran yerine güvenli demo veri döndürür.
+- Hata mesajları SQL detayı, secret, token, provider raw payload veya hassas ödeme verisi göstermemelidir.
+
 ## Provider Seçilmeden Önce
 
 - Provider callback signature doğrulama yöntemi netleşmeli.
@@ -83,6 +91,9 @@ Provider callback entegrasyonu açıldığında `payment_provider_events.provide
 - Kurban, yetim ve genel bağış bağlamları için final durum geçişleri transaction içinde yapılmalı.
 - Başarısız/iptal ödeme için quota release ve sponsorluk pasifleştirme stratejisi yazılmalı.
 - Bildirim retry ve makbuz PDF üretimi ayrı güvenlik testinden geçmeli.
+- PDF makbuz için private storage, erişim süresi, dosya silme ve audit stratejisi hazırlanmalı.
+- Bildirim gönderimi için provider credential yönetimi, rate limit, retry ve opt-out/KVKK kuralları hazırlanmalı.
+- Kart numarası, CVV, banka şifresi veya hassas ödeme payload saklanmayacağı tekrar doğrulanmalı.
 
 ## 10. Aşama
 

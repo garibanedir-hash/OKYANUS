@@ -60,6 +60,7 @@ Eşleştirme action akışı:
 - Match sonrası güvenli yetim özeti ve ödeme bekliyor durumu gösterilir.
 - Makbuz ve gerçek ödeme takibi ödeme entegrasyonu sonrası aktifleşecektir.
 - Sponsorluk ileride `payment_intents.context_type = orphan_sponsorship` ve `context_id = sponsorships.id` ile ortak ödeme modeline bağlanır.
+- 9E.1 stabilizasyonunda ödeme altyapısının sonraki aşamada aktifleşeceği kurumsal dille gösterilir; gerçek ödeme butonu veya düzenli talimat yoktur.
 
 ## Audit ve Status Log
 
@@ -82,6 +83,8 @@ Eşleştirme action akışı:
 - Idempotency key tasarlanmalıdır.
 - Sponsorship, application ve program tutarı server-side eşleştirilmelidir.
 - 9E ortak modelde payment paid olduğunda `sponsorships.payment_status = paid`, `sponsorships.status = active` ve `next_payment_date` periyoda göre server-side hesaplanmalıdır.
+- Payment paid sonrası `receipts.status` en az `pending` veya `prepared` durumuna alınmalıdır.
+- Payment paid sonrası `notification_queue` içine sponsorluk ödeme/makbuz bilgilendirme kaydı eklenmelidir.
 - Düzenli ödeme başarısız/iptal/yenileme durumları ayrı state machine ile yönetilmelidir.
 - Makbuz ve bildirim üretimi audit/status log ile bağlanmalıdır.
 - Rate limiting ve kötüye kullanım koruması production öncesi eklenmelidir.

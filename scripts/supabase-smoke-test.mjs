@@ -109,6 +109,7 @@ const restrictedTables = [
   "sponsorship_notifications",
   "sponsorship_exports",
   "sponsorship_status_logs",
+  "sponsored_orphans_safe_view",
   "payment_intents",
   "payment_events",
   "payment_provider_events",

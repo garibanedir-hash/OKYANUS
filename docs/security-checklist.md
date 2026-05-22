@@ -63,6 +63,8 @@
 - [ ] Ortak ödeme tabloları (`payment_intents`, `payment_events`, `payment_provider_events`, `receipts`, `notification_queue`, `payment_status_logs`) public/anon erişime kapalı mı?
 - [ ] Authenticated donor yalnızca kendi `donor_account_id` ilişkili payment intent ve receipt kayıtlarını okuyabiliyor mu?
 - [ ] Admin/super_admin dışında payment event, provider event, notification queue ve payment status log okunamıyor mu?
+- [ ] `sponsored_orphans_safe_view` `security_invoker = true` ve anon erişime kapalı mı?
+- [ ] Supabase Security Advisor 9E.1 sonrası payment ve safe view için uyarısız mı?
 
 ## Form validation
 
@@ -96,6 +98,7 @@
 - [ ] Payment intent ve provider event idempotency alanları hazırlandı.
 - [ ] Tutar ve para birimi server-side doğrulama planı hazırlandı.
 - [ ] Kart numarası, CVV veya banka şifresi gibi hassas ödeme verisi saklanmadığı doğrulandı.
+- [ ] Provider raw payload yalnızca güvenli özet olarak tutulacak; secret veya tam kart verisi loglanmayacak.
 
 ## Audit logs
 
@@ -162,6 +165,8 @@
 - [ ] Yetim hamiliği write repository `server-only` sınırında kalıyor ve service role client tarafına taşınmıyor mu?
 - [ ] Payment write repository `server-only` sınırında kalıyor ve service role client tarafına taşınmıyor mu?
 - [ ] Public bağış, kurban ve yetim formları payment tablolara doğrudan client-side yazmıyor mu?
+- [ ] `.env.local` Git'e dahil değil ve Vercel production env değerleri public/server ayrımıyla tanımlı mı?
+- [ ] Production öncesi `NEXT_PUBLIC_ADMIN_DEMO_MODE=false` ve `SITE_MAINTENANCE_MODE` durumu doğrulanıyor mu?
 
 ## Error handling
 

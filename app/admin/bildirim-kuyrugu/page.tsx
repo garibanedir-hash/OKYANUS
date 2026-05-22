@@ -1,4 +1,3 @@
-import { AdminActionButton } from "@/components/admin/AdminActionButton";
 import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
 import { AdminPanelNotice } from "@/components/admin/AdminPanelNotice";
 import { AdminSectionHeader } from "@/components/admin/AdminSectionHeader";
@@ -14,6 +13,18 @@ type AdminNotificationQueuePageProps = {
 
 function formatOptionalDate(value?: string) {
   return value ? formatDate(value) : "-";
+}
+
+function DisabledDemoButton({ children }: { children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      disabled
+      className="inline-flex min-h-8 cursor-not-allowed items-center justify-center rounded-md border border-border-soft bg-soft-gray px-2.5 py-1 text-[0.72rem] font-extrabold text-ink-muted"
+    >
+      {children}
+    </button>
+  );
 }
 
 export default async function AdminNotificationQueuePage({ searchParams }: AdminNotificationQueuePageProps) {
@@ -99,12 +110,12 @@ export default async function AdminNotificationQueuePage({ searchParams }: Admin
             <td>{formatOptionalDate(item.scheduledAt)}</td>
             <td>{formatOptionalDate(item.sentAt)}</td>
             <td>{item.errorMessage ?? "-"}</td>
-            <td><AdminActionButton>Gönderim demo</AdminActionButton></td>
+            <td><DisabledDemoButton>Tekrar gönder demo</DisabledDemoButton></td>
           </tr>
         ))}
       </AdminTable>
       <AdminPanelNotice title="Bildirim kuyruğu notu">
-        Bu sayfa yalnızca kuyruk kayıtlarını gösterir. SMTP, SMS, WhatsApp provider bağlantısı ve otomatik retry işleyicisi sonraki entegrasyon aşamasında eklenecektir.
+        Bu sayfa yalnızca kuyruk kayıtlarını gösterir. SMTP, SMS, WhatsApp provider bağlantısı ve otomatik retry işleyicisi sonraki entegrasyon aşamasında eklenecektir; tekrar gönderim aksiyonu pasif demodur.
       </AdminPanelNotice>
     </div>
   );

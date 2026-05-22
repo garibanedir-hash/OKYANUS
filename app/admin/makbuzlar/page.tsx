@@ -1,4 +1,3 @@
-import { AdminActionButton } from "@/components/admin/AdminActionButton";
 import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
 import { AdminPanelNotice } from "@/components/admin/AdminPanelNotice";
 import { AdminSectionHeader } from "@/components/admin/AdminSectionHeader";
@@ -40,6 +39,18 @@ function matchesDateRange(createdAt: string, dateFrom?: string, dateTo?: string)
   return true;
 }
 
+function DisabledDemoButton({ children }: { children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      disabled
+      className="inline-flex min-h-8 cursor-not-allowed items-center justify-center rounded-md border border-border-soft bg-soft-gray px-2.5 py-1 text-[0.72rem] font-extrabold text-ink-muted"
+    >
+      {children}
+    </button>
+  );
+}
+
 export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsPageProps) {
   const params = await searchParams;
   const { data: receipts, source } = await getAdminReceiptsWithSource();
@@ -57,7 +68,6 @@ export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsP
         eyebrow="Bağış ve destek"
         title="Makbuzlar"
         description="Makbuz hazırlık kayıtları ortak `receipts` tablosundan read-only izlenir. Bu aşamada gerçek PDF üretimi veya muhasebe entegrasyonu yoktur."
-        actionLabel="PDF hazırla demo"
       />
       <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
         {source === "supabase" ? "Supabase receipts" : "Demo/mock fallback"}
@@ -130,12 +140,12 @@ export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsP
             <td>{formatMoney(receipt.amount, receipt.currency)}</td>
             <td><AdminStatusBadge status={receipt.statusLabel} /></td>
             <td>{formatDate(receipt.createdAt)}</td>
-            <td><AdminActionButton>PDF demo</AdminActionButton></td>
+            <td><DisabledDemoButton>PDF demo</DisabledDemoButton></td>
           </tr>
         ))}
       </AdminTable>
       <AdminPanelNotice title="Makbuz hazırlık notu">
-        `receipts` kayıtları ödeme niyetiyle ilişkilendirilebilir, ancak PDF üretimi, dosya saklama ve e-posta gönderimi 9E kapsamında kapalıdır.
+        `receipts` kayıtları ödeme niyetiyle ilişkilendirilebilir, ancak PDF üretimi, dosya saklama ve e-posta gönderimi 9E.1 kapsamında kapalıdır; PDF aksiyonu pasif demo olarak gösterilir.
       </AdminPanelNotice>
     </div>
   );

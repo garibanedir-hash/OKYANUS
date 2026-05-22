@@ -32,7 +32,9 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Yetim hamiliği modülünde public/anon yalnızca aktif sponsorluk programlarını okuyabiliyor.
 - [ ] Yetim profilleri, sponsorluklar, başvurular, eşleştirmeler, durum logları, ödeme hazırlığı, notlar, görevler, bildirimler ve export tabloları public erişime kapalı.
 - [ ] `014_common_payment_receipt_notification_infrastructure.sql` staging ortamında çalıştırıldı ve ortak ödeme RLS policy'leri test edildi.
+- [ ] `015_fix_sponsored_orphans_safe_view_security.sql` staging ortamında çalıştırıldı.
 - [ ] Ödeme niyetleri, eventler, provider eventleri, makbuzlar, bildirim kuyruğu ve ödeme durum logları public/anon erişime kapalı.
+- [ ] `sponsored_orphans_safe_view` `security_invoker = true` ve anon erişime kapalı.
 
 ## Auth ve Route Guard
 
@@ -120,6 +122,10 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Payment provider API çağrısı, canlı webhook endpoint'i, PDF makbuz üretimi ve gerçek SMS/e-posta gönderimi production'a açılmadı.
 - [ ] Kart numarası, CVV, banka şifresi veya hassas payment payload saklanmıyor.
 - [ ] 10. aşama öncesi provider signature doğrulama, idempotency ve paid finalization planı tamamlandı.
+- [ ] `docs/payment-security-stabilization-checklist.md` Security Advisor ve env kontrolü için tamamlandı.
+- [ ] `docs/payment-manual-test-checklist.md` staging manuel testinde tamamlandı.
+- [ ] PDF makbuz için private storage, erişim yetkisi, dosya silme ve audit planı hazır olmadan production'a açılmadı.
+- [ ] Bildirim provider credential, retry, rate limit ve opt-out/KVKK planı hazır olmadan production'a açılmadı.
 
 ## Veri Güvenliği ve KVKK
 
