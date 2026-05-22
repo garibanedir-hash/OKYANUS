@@ -7,15 +7,20 @@ import {
   mockOrphanUpdates,
   mockSponsorshipNotifications,
   mockSponsorshipPayments,
+  mockSponsorshipApplications,
+  mockSponsorshipMatches,
   mockSponsorshipPrograms,
   mockSponsorshipStats,
   mockSponsorships,
   orphanAssignmentStatusLabels,
   orphanProfileStatusLabels,
   orphanUpdateStatusLabels,
+  sponsorshipApplicationStatusLabels,
+  sponsorshipMatchStatusLabels,
   sponsorshipPaymentStatusLabels,
   sponsorshipProgramStatusLabels,
   sponsorshipStatusLabels,
+  sponsorshipSupportPeriodLabels,
   type DonorSponsoredOrphan,
   type OrphanAssignment,
   type OrphanAssignmentStatus,
@@ -23,6 +28,10 @@ import {
   type OrphanProfileStatus,
   type OrphanUpdate,
   type OrphanUpdateStatus,
+  type SponsorshipApplication,
+  type SponsorshipApplicationStatus,
+  type SponsorshipMatch,
+  type SponsorshipMatchStatus,
   type Sponsorship,
   type SponsorshipNotification,
   type SponsorshipPayment,
@@ -30,7 +39,8 @@ import {
   type SponsorshipProgram,
   type SponsorshipProgramStatus,
   type SponsorshipStats,
-  type SponsorshipStatus
+  type SponsorshipStatus,
+  type SponsorshipSupportPeriod
 } from "@/data/orphanSponsorshipMock";
 import {
   createReadOnlyAbortSignal,
@@ -102,6 +112,45 @@ type SponsorshipRow = {
   sponsorship_programs?: { title?: string | null } | Array<{ title?: string | null }> | null;
 };
 
+type SponsorshipApplicationRow = {
+  id: string;
+  application_no: string;
+  sponsor_account_id: string | null;
+  applicant_name: string;
+  applicant_email: string;
+  applicant_phone: string | null;
+  applicant_city: string | null;
+  program_id: string | null;
+  requested_amount: number | string | null;
+  currency: string | null;
+  support_period: string | null;
+  note: string | null;
+  status: SponsorshipApplicationStatus;
+  kvkk_accepted: boolean | null;
+  contact_permission: boolean | null;
+  source: string | null;
+  reviewed_at: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  sponsorship_programs?: { title?: string | null } | Array<{ title?: string | null }> | null;
+};
+
+type SponsorshipMatchRow = {
+  id: string;
+  application_id: string | null;
+  sponsorship_id: string | null;
+  orphan_id: string | null;
+  sponsor_account_id: string | null;
+  status: SponsorshipMatchStatus;
+  approved_at: string | null;
+  note: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  sponsorship_applications?: { application_no?: string | null } | Array<{ application_no?: string | null }> | null;
+  sponsorships?: { sponsorship_no?: string | null } | Array<{ sponsorship_no?: string | null }> | null;
+  orphan_profiles?: { code?: string | null; safe_name?: string | null; display_name?: string | null } | Array<{ code?: string | null; safe_name?: string | null; display_name?: string | null }> | null;
+};
+
 type PaymentRow = {
   id: string;
   sponsorship_id: string | null;
@@ -159,6 +208,23 @@ type SafeOrphanRow = {
   sponsorship_status: SponsorshipStatus;
   sponsor_account_id: string | null;
   sponsorship_id: string;
+};
+
+type UserAccountRow = {
+  id: string;
+  auth_user_id: string | null;
+  full_name: string;
+  email: string;
+  phone: string | null;
+  city: string | null;
+  account_type: string;
+  role: string;
+  status: string;
+};
+
+export type SponsorshipDonorContext = {
+  userId: string;
+  account: UserAccountRow | null;
 };
 
 type AuthenticatedReadClient = {
@@ -239,6 +305,45 @@ const sponsorshipColumns = [
   "sponsorship_programs(title)"
 ].join(", ");
 
+const applicationColumns = [
+  "id",
+  "application_no",
+  "sponsor_account_id",
+  "applicant_name",
+  "applicant_email",
+  "applicant_phone",
+  "applicant_city",
+  "program_id",
+  "requested_amount",
+  "currency",
+  "support_period",
+  "note",
+  "status",
+  "kvkk_accepted",
+  "contact_permission",
+  "source",
+  "reviewed_at",
+  "created_at",
+  "updated_at",
+  "sponsorship_programs(title)"
+].join(", ");
+
+const matchColumns = [
+  "id",
+  "application_id",
+  "sponsorship_id",
+  "orphan_id",
+  "sponsor_account_id",
+  "status",
+  "approved_at",
+  "note",
+  "created_at",
+  "updated_at",
+  "sponsorship_applications(application_no)",
+  "sponsorships(sponsorship_no)",
+  "orphan_profiles(code, safe_name, display_name)"
+].join(", ");
+
 function parseNumber(value: number | string | null | undefined) {
   if (typeof value === "number") return value;
   if (typeof value === "string") {
@@ -246,6 +351,11 @@ function parseNumber(value: number | string | null | undefined) {
     return Number.isFinite(parsed) ? parsed : 0;
   }
   return 0;
+}
+
+function normalizeSupportPeriod(value: string | null | undefined): SponsorshipSupportPeriod {
+  if (value === "quarterly" || value === "yearly") return value;
+  return "monthly";
 }
 
 function firstRelation<T>(value: T | T[] | null | undefined): T | undefined {
@@ -345,6 +455,60 @@ function mapSponsorship(row: SponsorshipRow): Sponsorship {
   };
 }
 
+function mapApplication(row: SponsorshipApplicationRow): SponsorshipApplication {
+  const program = firstRelation(row.sponsorship_programs);
+  const supportPeriod = normalizeSupportPeriod(row.support_period);
+
+  return {
+    id: row.id,
+    applicationNo: row.application_no,
+    sponsorAccountId: row.sponsor_account_id ?? "",
+    applicantDisplayName: maskName(row.applicant_name),
+    applicantEmailMasked: maskEmail(row.applicant_email),
+    applicantPhoneMasked: maskPhone(row.applicant_phone),
+    applicantCity: row.applicant_city ?? "Şehir belirtilmedi",
+    programId: row.program_id ?? "",
+    programTitle: program?.title ?? "Yetim hamiliği programı",
+    requestedAmount: parseNumber(row.requested_amount),
+    currency: row.currency ?? "TRY",
+    supportPeriod,
+    supportPeriodLabel: sponsorshipSupportPeriodLabels[supportPeriod],
+    note: row.note ?? "",
+    status: row.status,
+    statusLabel: sponsorshipApplicationStatusLabels[row.status],
+    kvkkAccepted: Boolean(row.kvkk_accepted),
+    contactPermission: Boolean(row.contact_permission),
+    source: row.source ?? "web",
+    reviewedAt: row.reviewed_at ?? undefined,
+    createdAt: row.created_at ?? "Tarih güncellenecek",
+    updatedAt: row.updated_at ?? "Tarih güncellenecek"
+  };
+}
+
+function mapMatch(row: SponsorshipMatchRow): SponsorshipMatch {
+  const application = firstRelation(row.sponsorship_applications);
+  const sponsorship = firstRelation(row.sponsorships);
+  const orphan = firstRelation(row.orphan_profiles);
+
+  return {
+    id: row.id,
+    applicationId: row.application_id ?? "",
+    applicationNo: application?.application_no ?? "YHB-****",
+    sponsorshipId: row.sponsorship_id ?? undefined,
+    sponsorshipNo: sponsorship?.sponsorship_no ?? undefined,
+    orphanId: row.orphan_id ?? "",
+    orphanCode: orphan?.code ?? "YTM-****",
+    orphanSafeName: orphan?.safe_name ?? orphan?.display_name ?? "Güvenli profil adı",
+    sponsorAccountId: row.sponsor_account_id ?? "",
+    status: row.status,
+    statusLabel: sponsorshipMatchStatusLabels[row.status],
+    approvedAt: row.approved_at ?? undefined,
+    note: row.note ?? "",
+    createdAt: row.created_at ?? "Tarih güncellenecek",
+    updatedAt: row.updated_at ?? "Tarih güncellenecek"
+  };
+}
+
 function mapPayment(row: PaymentRow): SponsorshipPayment {
   const sponsorship = firstRelation(row.sponsorships);
 
@@ -438,6 +602,38 @@ async function createAuthenticatedReadClient() {
   return supabase as unknown as AuthenticatedReadClient;
 }
 
+export async function getCurrentSponsorshipDonorContext(): Promise<SponsorshipDonorContext | null> {
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) return null;
+
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  const db = supabase as unknown as {
+    from: <T>(table: string) => {
+      select: (columns?: string) => {
+        eq: (column: string, value: string) => {
+          maybeSingle: () => Promise<{ data: T | null; error: { code?: string; message?: string } | null }>;
+        };
+      };
+    };
+  };
+
+  const { data, error } = await db
+    .from<UserAccountRow>("user_accounts")
+    .select("id, auth_user_id, full_name, email, phone, city, account_type, role, status")
+    .eq("auth_user_id", user.id)
+    .maybeSingle();
+
+  return {
+    userId: user.id,
+    account: error ? null : data
+  };
+}
+
 async function fetchActivePrograms() {
   const supabase = createSupabaseReadOnlyClient();
   if (!supabase) return null;
@@ -504,6 +700,16 @@ async function fetchAdminOrphans() {
 async function fetchAdminSponsorships() {
   const rows = await fetchAuthenticatedRows<SponsorshipRow>("sponsorships", sponsorshipColumns, "updated_at");
   return rows?.map((row) => mapSponsorship(row)) ?? null;
+}
+
+async function fetchAdminApplications() {
+  const rows = await fetchAuthenticatedRows<SponsorshipApplicationRow>("sponsorship_applications", applicationColumns, "created_at");
+  return rows?.map((row) => mapApplication(row)) ?? null;
+}
+
+async function fetchAdminMatches() {
+  const rows = await fetchAuthenticatedRows<SponsorshipMatchRow>("sponsorship_matches", matchColumns, "created_at");
+  return rows?.map((row) => mapMatch(row)) ?? null;
 }
 
 async function fetchAdminPayments() {
@@ -594,6 +800,19 @@ export async function getAdminSponsorships(): Promise<Sponsorship[]> {
   return (await fetchAdminSponsorships()) ?? mockSponsorships;
 }
 
+export async function getAdminSponsorshipApplications(): Promise<SponsorshipApplication[]> {
+  return (await fetchAdminApplications()) ?? mockSponsorshipApplications;
+}
+
+export async function getAdminSponsorshipApplicationById(id: string): Promise<SponsorshipApplication | undefined> {
+  const applications = (await fetchAdminApplications()) ?? mockSponsorshipApplications;
+  return applications.find((item) => item.id === id || item.applicationNo === id);
+}
+
+export async function getAdminSponsorshipMatches(): Promise<SponsorshipMatch[]> {
+  return (await fetchAdminMatches()) ?? mockSponsorshipMatches;
+}
+
 export async function getAdminSponsorshipPayments(): Promise<SponsorshipPayment[]> {
   return (await fetchAdminPayments()) ?? mockSponsorshipPayments;
 }
@@ -614,6 +833,12 @@ export async function getDonorSponsorships(accountId: string): Promise<Sponsorsh
   const sponsorships = await fetchAdminSponsorships();
   const source = sponsorships ?? mockSponsorships;
   return source.filter((item) => item.sponsorAccountId === accountId);
+}
+
+export async function getDonorSponsorshipApplications(accountId: string): Promise<SponsorshipApplication[]> {
+  const applications = await fetchAdminApplications();
+  const source = applications ?? mockSponsorshipApplications;
+  return source.filter((item) => item.sponsorAccountId === accountId && item.status !== "archived");
 }
 
 export async function getDonorSponsoredOrphans(accountId: string): Promise<DonorSponsoredOrphan[]> {

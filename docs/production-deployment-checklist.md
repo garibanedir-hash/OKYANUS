@@ -28,8 +28,9 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Kurban modülünde public/anon yalnızca aktif kampanyaları okuyabiliyor.
 - [ ] Kurban siparişi, vekalet, hisse, operasyon, bildirim ve export tabloları public erişime kapalı.
 - [ ] `012_orphan_sponsorship_module.sql` staging ortamında çalıştırıldı ve yetim hamiliği RLS policy'leri test edildi.
+- [ ] `013_orphan_sponsorship_application_flow.sql` staging ortamında çalıştırıldı ve başvuru/eşleştirme RLS policy'leri test edildi.
 - [ ] Yetim hamiliği modülünde public/anon yalnızca aktif sponsorluk programlarını okuyabiliyor.
-- [ ] Yetim profilleri, sponsorluklar, ödeme hazırlığı, notlar, görevler, bildirimler ve export tabloları public erişime kapalı.
+- [ ] Yetim profilleri, sponsorluklar, başvurular, eşleştirmeler, durum logları, ödeme hazırlığı, notlar, görevler, bildirimler ve export tabloları public erişime kapalı.
 
 ## Auth ve Route Guard
 
@@ -90,8 +91,13 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 ## Yetim Hamiliği
 
 - [ ] Public `/yetim-hamiligi`, `/yetim-hamiligi/surec` ve `/yetim-hamiligi/basvuru` sayfaları açılıyor.
-- [ ] `/yetim-hamiligi/basvuru` gerçek ödeme, düzenli talimat veya sponsorship kaydı oluşturmuyor.
+- [ ] `/yetim-hamiligi/basvuru` server action ile başvuru kaydı oluşturuyor; gerçek ödeme, düzenli talimat veya otomatik sponsorship aktivasyonu yapmıyor.
+- [ ] KVKK onayı olmadan yetim hamiliği başvurusu oluşturulmuyor.
+- [ ] Girişli sponsor başvurusu panel takibi için `sponsor_account_id` ile ilişkilendiriliyor.
+- [ ] Misafir başvuruların panelde otomatik görünmeyeceği operasyon ekibi tarafından biliniyor.
 - [ ] Admin `/admin/yetim-hamiligi` ve alt ekranları maskeli/read-only çalışıyor.
+- [ ] Admin `/admin/yetim-hamiligi/basvurular/[id]/eslestir` eşleştirme action'ı yalnızca admin/super_admin hesabıyla çalışıyor.
+- [ ] Eşleştirme sonrası `sponsorships`, `sponsorship_matches`, `sponsorship_status_logs` ve `orphan_profiles.status` staging'de doğrulandı.
 - [ ] Bağışçı `/panel/yetim-sponsorluk` yalnızca kendi güvenli sponsorluk özetlerini gösteriyor.
 - [ ] Koordinatör `/koordinator/yetim-sponsorluk` yalnızca atanmış görev mantığını gösteriyor.
 - [ ] Personel `/personel/yetim-gorevleri` yalnızca atanmış görev mantığını gösteriyor.
@@ -99,6 +105,7 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Fotoğraf kullanımı açık rıza ve kurum politikası olmadan açılmadı.
 - [ ] Yetim hamiliği metinleri hukuk danışmanı, kurum yönetimi ve çocuk koruma ilkeleri açısından incelendi.
 - [ ] Gerçek ödeme/SMS/e-posta/makbuz/dosya entegrasyonları ayrı güvenlik testinden geçmeden açılmadı.
+- [ ] Yetim hamiliği smoke test kapsamı `sponsorship_programs` public, hassas yetim tabloları protected olacak şekilde geçti.
 
 ## Veri Güvenliği ve KVKK
 

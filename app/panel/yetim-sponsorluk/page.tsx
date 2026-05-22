@@ -3,6 +3,8 @@ import { AdminTable } from "@/components/admin/AdminTable";
 import { Button } from "@/components/ui/Button";
 import { PortalStatCard } from "@/components/portal/PortalStatCard";
 import {
+  getCurrentSponsorshipDonorContext,
+  getDonorSponsorshipApplications,
   getDonorSponsoredOrphans,
   getDonorSponsorships
 } from "@/lib/data/orphanSponsorshipRepository";
@@ -10,9 +12,16 @@ import { formatDate } from "@/lib/format";
 import { formatSponsorshipMoney, SponsorshipStatusCell } from "@/app/admin/yetim-hamiligi/_components/OrphanAdminShared";
 
 export default async function SponsorshipPage() {
-  const sponsorships = await getDonorSponsorships("demo-donor-account");
-  const sponsoredOrphans = await getDonorSponsoredOrphans("demo-donor-account");
+  const donorContext = await getCurrentSponsorshipDonorContext();
+  const accountId = donorContext?.account?.status === "active" ? donorContext.account.id : "demo-donor-account";
+  const isDemoFallback = accountId === "demo-donor-account" && !donorContext?.account;
+  const [sponsorships, sponsoredOrphans, applications] = await Promise.all([
+    getDonorSponsorships(accountId),
+    getDonorSponsoredOrphans(accountId),
+    getDonorSponsorshipApplications(accountId)
+  ]);
   const firstUpdate = sponsoredOrphans.find((item) => item.lastUpdate)?.lastUpdate;
+  const openApplications = applications.filter((item) => !["matched", "archived", "cancelled"].includes(item.status));
 
   return (
     <div className="grid gap-6">
@@ -22,13 +31,33 @@ export default async function SponsorshipPage() {
         <p className="mt-2 max-w-3xl leading-7 text-ink-muted">
           Sponsor yalnızca kendi sponsorluk kayıtlarını ve güvenli yetim özetlerini görebilir. Çocuğun tam adı, açık adresi, okul adı, kimlik bilgisi, telefon ve aile detayları gösterilmez.
         </p>
+        {isDemoFallback ? (
+          <p className="mt-3 rounded-lg bg-soft-blue px-4 py-3 text-sm font-bold text-deep-blue">
+            Girişli sponsor hesabı bulunmadığında ekran güvenli demo verisiyle gösterilir. Misafir başvurular panelde otomatik görünmeyebilir.
+          </p>
+        ) : null}
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
         <PortalStatCard label="Aktif sponsorluk" value={sponsorships.filter((item) => item.status === "active").length} />
+        <PortalStatCard label="Değerlendirme aşaması" value={openApplications.length} />
         <PortalStatCard label="Son güncelleme" value={firstUpdate ? formatDate(firstUpdate) : "-"} />
-        <PortalStatCard label="Güvenlik modu" value="Sınırlı görünüm" />
       </section>
+
+      {openApplications.length ? (
+        <AdminTable headers={["Başvuru No", "Program", "Tutar", "Periyot", "Durum", "Tarih"]} recordCount={openApplications.length}>
+          {openApplications.map((item) => (
+            <tr key={item.id}>
+              <td className="font-bold text-dark-navy">{item.applicationNo}</td>
+              <td>{item.programTitle}</td>
+              <td>{formatSponsorshipMoney(item.requestedAmount, item.currency)}</td>
+              <td>{item.supportPeriodLabel}</td>
+              <td><SponsorshipStatusCell status={item.statusLabel} /></td>
+              <td>{formatDate(item.createdAt)}</td>
+            </tr>
+          ))}
+        </AdminTable>
+      ) : null}
 
       <AdminTable headers={["Sponsorluk No", "Yetim kodu", "Güvenli ad", "Yaş grubu", "Bölge", "Eğitim", "Aylık destek", "Ödeme", "Sonraki destek", "Durum"]} recordCount={sponsorships.length} empty={!sponsorships.length}>
         {sponsorships.map((item) => {

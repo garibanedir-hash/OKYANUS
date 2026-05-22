@@ -55,7 +55,9 @@
 - [ ] 9C.1 sonrası public kurban sayfalarında gereksiz teknik veri kaynağı veya hassas operasyon detayı gösterilmiyor mu?
 - [ ] Guest kurban başvuruları panelde e-posta ile otomatik eşleştirilmiyor mu?
 - [ ] Yetim hamiliği modülünde public/anon yalnızca aktif `sponsorship_programs` kayıtlarını okuyabiliyor mu?
-- [ ] `orphan_profiles`, `sponsorships`, `sponsorship_payments`, `orphan_updates`, `orphan_sponsorship_notes`, `orphan_assignments`, `sponsorship_notifications` ve `sponsorship_exports` public erişime kapalı mı?
+- [ ] `orphan_profiles`, `sponsorships`, `sponsorship_applications`, `sponsorship_matches`, `sponsorship_payments`, `orphan_updates`, `orphan_sponsorship_notes`, `orphan_assignments`, `sponsorship_notifications`, `sponsorship_exports` ve `sponsorship_status_logs` public erişime kapalı mı?
+- [ ] Yetim hamiliği başvuru yazımı public insert policy yerine server-side action ve server-only repository ile yapılıyor mu?
+- [ ] Sponsor yalnızca kendi `sponsor_account_id` veya hesap e-postasıyla ilişkili başvuruları okuyabiliyor mu?
 - [ ] Sponsor güvenli yetim özetini yalnızca kendi sponsorship ilişkisi üzerinden okuyabiliyor mu?
 - [ ] Koordinatör/personel yalnızca kendisine atanmış yetim/sponsorluk görevlerini okuyabiliyor mu?
 
@@ -66,6 +68,8 @@
 - [ ] Hata mesajları erişilebilir yazıldı.
 - [ ] Kurban formunda vekalet ve KVKK onayı olmadan kayıt oluşmuyor mu?
 - [ ] Kurban formu honeypot alanı bot submitlerini gerçek kayıt oluşturmadan karşılıyor mu?
+- [ ] Yetim hamiliği başvuru formunda KVKK onayı olmadan kayıt oluşmuyor mu?
+- [ ] Yetim hamiliği başvuru formu honeypot alanı bot submitlerini gerçek kayıt oluşturmadan karşılıyor mu?
 
 ## Rate limiting
 
@@ -99,6 +103,7 @@
 - [ ] Kurban vekalet, ödeme, kesim, dağıtım ve export işlemleri production öncesi audit planına eklendi mi?
 - [ ] Kurban order create, vekalet kabulü, hisse rezervasyonu ve quota rezervasyonu status/audit log'a düşüyor mu?
 - [ ] Kurban başarı ekranında ödeme bekliyor durumu ve admin kayıt notu teknik detay vermeden gösteriliyor mu?
+- [ ] Yetim hamiliği başvuru, eşleştirme, sponsorship oluşturma ve orphan sponsorlu durum geçişleri status/audit log'a düşüyor mu?
 
 ## PII masking
 
@@ -149,6 +154,7 @@
 - [ ] Kurban form client component'i secret veya service role env import etmiyor mu?
 - [ ] Kurban order write repository `server-only` sınırında kalıyor mu?
 - [ ] Yetim hamiliği repository'si read-only/mock çalışıyor ve client tarafına service role taşımıyor mu?
+- [ ] Yetim hamiliği write repository `server-only` sınırında kalıyor ve service role client tarafına taşınmıyor mu?
 
 ## Error handling
 

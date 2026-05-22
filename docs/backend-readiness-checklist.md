@@ -146,3 +146,19 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Bağışçı `/panel/yetim-sponsorluk` yalnızca güvenli özet gösteriyor.
 - [ ] Admin, koordinatör ve personel yetim ekranlarında açık kimlik, açık adres, okul adı, telefon ve aile detayı gösterilmiyor.
 - [ ] Service role key client tarafına taşınmadan mock/read-only akış korunuyor.
+
+## 9D.1 Yetim Hamiliği Başvuru ve Eşleştirme Kontrolleri
+
+- [ ] `013_orphan_sponsorship_application_flow.sql` staging ortamında çalıştırıldı.
+- [ ] `/yetim-hamiligi/basvuru` formu server action üzerinden `sponsorship_applications` kaydı oluşturuyor.
+- [ ] Program aktifliği ve aylık destek tutarı server tarafında `sponsorship_programs` kaydından doğrulanıyor.
+- [ ] KVKK onayı olmadan başvuru oluşturulmuyor.
+- [ ] Honeypot submit gerçek kayıt oluşturmadan güvenli şekilde karşılanıyor.
+- [ ] Girişli sponsor başvurusu `sponsor_account_id` ile ilişkilendiriliyor.
+- [ ] Misafir başvuruların panelde otomatik görünmeyebileceği dokümante edildi.
+- [ ] Admin `/admin/yetim-hamiligi/basvurular` gerçek başvuruları maskeli kişisel veriyle okuyor.
+- [ ] Admin eşleştirme action'ı `requireAdminUser()` ile korunuyor.
+- [ ] Eşleştirme sonrası `sponsorships`, `sponsorship_matches`, `sponsorship_status_logs` oluşuyor.
+- [ ] Eşleştirme sonrası `orphan_profiles.status = sponsored` güncelleniyor.
+- [ ] Sponsor panelinde yalnızca kendi başvuru/sponsorluk ve güvenli yetim özeti görünüyor.
+- [ ] Yeni yetim tabloları smoke test protected kapsamına eklendi ve `Security warning: 0` korunuyor.

@@ -60,7 +60,8 @@ const publicReadTables = [
   { table: "activity_areas" },
   { table: "site_settings" },
   { table: "legal_pages" },
-  { table: "qurban_campaigns", okLabel: "public active read" }
+  { table: "qurban_campaigns", okLabel: "public active read" },
+  { table: "sponsorship_programs", okLabel: "public active read" }
 ];
 const restrictedTables = [
   "donations",
@@ -97,7 +98,17 @@ const restrictedTables = [
   "qurban_distribution_logs",
   "qurban_status_logs",
   "qurban_notifications",
-  "qurban_exports"
+  "qurban_exports",
+  "orphan_profiles",
+  "sponsorship_applications",
+  "sponsorship_matches",
+  "sponsorship_payments",
+  "orphan_updates",
+  "orphan_sponsorship_notes",
+  "orphan_assignments",
+  "sponsorship_notifications",
+  "sponsorship_exports",
+  "sponsorship_status_logs"
 ];
 
 function isMissingTable(error) {
@@ -196,6 +207,7 @@ await reportPublicContentCount(supabase, "projects", { in: { column: "status", v
 await reportPublicContentCount(supabase, "news_posts", { eq: { column: "status", value: "published" } });
 await reportPublicContentCount(supabase, "reports", { eq: { column: "status", value: "published" } });
 await reportPublicContentCount(supabase, "qurban_campaigns", { eq: { column: "status", value: "active" } });
+await reportPublicContentCount(supabase, "sponsorship_programs", { eq: { column: "status", value: "active" } });
 
 for (const table of restrictedTables) {
   summary[await checkTable(supabase, table, false)] += 1;

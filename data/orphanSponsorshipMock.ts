@@ -4,6 +4,9 @@ export type SponsorshipStatus = "pending" | "active" | "payment_pending" | "paym
 export type SponsorshipPaymentStatus = "pending" | "paid" | "failed" | "refunded" | "cancelled";
 export type OrphanUpdateStatus = "draft" | "published" | "hidden" | "archived";
 export type OrphanAssignmentStatus = "assigned" | "in_progress" | "reported" | "closed" | "cancelled";
+export type SponsorshipApplicationStatus = "pending" | "reviewing" | "approved" | "matched" | "rejected" | "cancelled" | "archived";
+export type SponsorshipMatchStatus = "proposed" | "approved" | "active" | "cancelled" | "archived";
+export type SponsorshipSupportPeriod = "monthly" | "quarterly" | "yearly";
 
 export type SponsorshipProgram = {
   id: string;
@@ -70,6 +73,49 @@ export type Sponsorship = {
   nextPaymentDate?: string;
   receiptStatus: string;
   note: string;
+  updatedAt: string;
+};
+
+export type SponsorshipApplication = {
+  id: string;
+  applicationNo: string;
+  sponsorAccountId: string;
+  applicantDisplayName: string;
+  applicantEmailMasked: string;
+  applicantPhoneMasked: string;
+  applicantCity: string;
+  programId: string;
+  programTitle: string;
+  requestedAmount: number;
+  currency: string;
+  supportPeriod: SponsorshipSupportPeriod;
+  supportPeriodLabel: string;
+  note: string;
+  status: SponsorshipApplicationStatus;
+  statusLabel: string;
+  kvkkAccepted: boolean;
+  contactPermission: boolean;
+  source: string;
+  reviewedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type SponsorshipMatch = {
+  id: string;
+  applicationId: string;
+  applicationNo: string;
+  sponsorshipId?: string;
+  sponsorshipNo?: string;
+  orphanId: string;
+  orphanCode: string;
+  orphanSafeName: string;
+  sponsorAccountId: string;
+  status: SponsorshipMatchStatus;
+  statusLabel: string;
+  approvedAt?: string;
+  note: string;
+  createdAt: string;
   updatedAt: string;
 };
 
@@ -214,6 +260,30 @@ export const orphanAssignmentStatusLabels: Record<OrphanAssignmentStatus, string
   reported: "Raporlandı",
   closed: "Kapandı",
   cancelled: "İptal edildi"
+};
+
+export const sponsorshipApplicationStatusLabels: Record<SponsorshipApplicationStatus, string> = {
+  pending: "Başvuru alındı",
+  reviewing: "İncelemede",
+  approved: "Onaylandı",
+  matched: "Eşleştirildi",
+  rejected: "Reddedildi",
+  cancelled: "İptal edildi",
+  archived: "Arşivlendi"
+};
+
+export const sponsorshipMatchStatusLabels: Record<SponsorshipMatchStatus, string> = {
+  proposed: "Eşleşme önerildi",
+  approved: "Eşleşme onaylandı",
+  active: "Aktif eşleşme",
+  cancelled: "İptal edildi",
+  archived: "Arşivlendi"
+};
+
+export const sponsorshipSupportPeriodLabels: Record<SponsorshipSupportPeriod, string> = {
+  monthly: "Aylık destek",
+  quarterly: "3 aylık takip",
+  yearly: "Yıllık planlama"
 };
 
 export const mockSponsorshipPrograms: SponsorshipProgram[] = [
@@ -382,6 +452,99 @@ export const mockSponsorships: Sponsorship[] = [
     receiptStatus: "Ödeme sonrası hazırlanacak",
     note: "Ödeme entegrasyonu bekliyor.",
     updatedAt: "2026-05-18"
+  }
+];
+
+export const mockSponsorshipApplications: SponsorshipApplication[] = [
+  {
+    id: "application-001",
+    applicationNo: "YHB-2026-DEMO01",
+    sponsorAccountId: "demo-donor-account",
+    applicantDisplayName: "A*** K.",
+    applicantEmailMasked: "a***@example.org",
+    applicantPhoneMasked: "+90 5** *** 20 01",
+    applicantCity: "İstanbul",
+    programId: "sp-regular-education",
+    programTitle: "Düzenli Yetim Eğitim Desteği",
+    requestedAmount: 1250,
+    currency: "TRY",
+    supportPeriod: "monthly",
+    supportPeriodLabel: sponsorshipSupportPeriodLabels.monthly,
+    note: "Demo başvuru; gerçek ödeme entegrasyonu bekleniyor.",
+    status: "matched",
+    statusLabel: sponsorshipApplicationStatusLabels.matched,
+    kvkkAccepted: true,
+    contactPermission: true,
+    source: "web",
+    reviewedAt: "2026-05-20",
+    createdAt: "2026-05-18",
+    updatedAt: "2026-05-20"
+  },
+  {
+    id: "application-002",
+    applicationNo: "YHB-2026-DEMO02",
+    sponsorAccountId: "demo-donor-account",
+    applicantDisplayName: "G*** S.",
+    applicantEmailMasked: "g***@example.org",
+    applicantPhoneMasked: "+90 5** *** 20 03",
+    applicantCity: "Ankara",
+    programId: "sp-regional-care",
+    programTitle: "Bölgesel Yetim Hamiliği",
+    requestedAmount: 1500,
+    currency: "TRY",
+    supportPeriod: "monthly",
+    supportPeriodLabel: sponsorshipSupportPeriodLabels.monthly,
+    note: "İnceleme ve güvenli eşleştirme bekliyor.",
+    status: "pending",
+    statusLabel: sponsorshipApplicationStatusLabels.pending,
+    kvkkAccepted: true,
+    contactPermission: false,
+    source: "web",
+    createdAt: "2026-05-21",
+    updatedAt: "2026-05-21"
+  },
+  {
+    id: "application-003",
+    applicationNo: "YHB-2026-DEMO03",
+    sponsorAccountId: "demo-donor-account-2",
+    applicantDisplayName: "M*** T.",
+    applicantEmailMasked: "m***@example.org",
+    applicantPhoneMasked: "+90 5** *** 20 02",
+    applicantCity: "Bursa",
+    programId: "sp-regional-care",
+    programTitle: "Bölgesel Yetim Hamiliği",
+    requestedAmount: 1500,
+    currency: "TRY",
+    supportPeriod: "quarterly",
+    supportPeriodLabel: sponsorshipSupportPeriodLabels.quarterly,
+    note: "Ödeme altyapısı açılınca düzenli destek başlayacak.",
+    status: "reviewing",
+    statusLabel: sponsorshipApplicationStatusLabels.reviewing,
+    kvkkAccepted: true,
+    contactPermission: true,
+    source: "web",
+    createdAt: "2026-05-19",
+    updatedAt: "2026-05-20"
+  }
+];
+
+export const mockSponsorshipMatches: SponsorshipMatch[] = [
+  {
+    id: "match-001",
+    applicationId: "application-001",
+    applicationNo: "YHB-2026-DEMO01",
+    sponsorshipId: "sponsorship-001",
+    sponsorshipNo: "YSP-2026-0001",
+    orphanId: "orphan-001",
+    orphanCode: "YTM-2026-001",
+    orphanSafeName: "Güvenli profil adı A",
+    sponsorAccountId: "demo-donor-account",
+    status: "active",
+    statusLabel: sponsorshipMatchStatusLabels.active,
+    approvedAt: "2026-05-20",
+    note: "Demo eşleşme; çocuk mahremiyeti ilkeleri korunur.",
+    createdAt: "2026-05-20",
+    updatedAt: "2026-05-20"
   }
 ];
 
