@@ -44,6 +44,10 @@ export default async function SponsorshipPage() {
         <PortalStatCard label="Son güncelleme" value={firstUpdate ? formatDate(firstUpdate) : "-"} />
       </section>
 
+      <section className="rounded-lg border border-ocean-green/15 bg-mint-green/35 p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
+        Ödeme altyapısı sonraki aşamada aktifleşecektir. 9E ile sponsorluklar ortak payment intent ve makbuz hazırlık modeline bağlanabilecek hale geldi; canlı ödeme, düzenli talimat, PDF makbuz ve SMS/e-posta gönderimi henüz yapılmaz.
+      </section>
+
       {openApplications.length ? (
         <AdminTable headers={["Başvuru No", "Program", "Tutar", "Periyot", "Durum", "Tarih"]} recordCount={openApplications.length}>
           {openApplications.map((item) => (
@@ -72,7 +76,7 @@ export default async function SponsorshipPage() {
               <td>{orphan?.educationStatus ?? "Sınırlı"}</td>
               <td>{formatSponsorshipMoney(item.monthlyAmount, item.currency)}</td>
               <td><SponsorshipStatusCell status={item.paymentStatusLabel} /></td>
-              <td>{item.nextPaymentDate ? formatDate(item.nextPaymentDate) : "Ödeme altyapısı bekleniyor"}</td>
+              <td>{item.nextPaymentDate ? formatDate(item.nextPaymentDate) : "Ödeme altyapısı sonraki aşamada aktifleşecek"}</td>
               <td><SponsorshipStatusCell status={item.statusLabel} /></td>
             </tr>
           );
@@ -99,7 +103,7 @@ export default async function SponsorshipPage() {
           <div className="mt-3 grid gap-2 text-sm font-semibold leading-6 text-ink-muted">
             <p>Gösterilen bilgiler: yetim kodu, güvenli ad/rumuz, yaş grubu, ülke/bölge, eğitim durumu ve güncelleme tarihi.</p>
             <p>Gösterilmeyen bilgiler: açık adres, okul adı, kimlik numarası, telefon, aile detayları, hassas sağlık verisi ve izinsiz fotoğraf.</p>
-            <p>Makbuz ve gerçek ödeme takibi ödeme entegrasyonu sonrası aktifleşecektir.</p>
+            <p>Payment paid olduğunda sponsorluk ödeme durumu ödendi, sponsorluk durumu aktif ve sonraki ödeme tarihi server-side hesaplanmış şekilde güncellenecektir.</p>
           </div>
           <div className="mt-5">
             <Button href="/yetim-hamiligi/basvuru" variant="secondary">

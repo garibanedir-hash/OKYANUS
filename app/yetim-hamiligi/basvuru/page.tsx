@@ -56,7 +56,8 @@ export default async function OrphanSponsorshipApplicationPage({ searchParams }:
                     </p>
                   ) : null}
                   <p>KVKK onayınız ve iletişim tercihiniz başvuru kaydına işlenmiştir.</p>
-                  <p>Ödeme durumu: Ödeme ve düzenli destek altyapısı sonraki aşamada aktif hale getirilecektir.</p>
+                  <p>Ödeme durumu: İlk destek ödemesi için ödeme bekliyor akışına hazırlanır.</p>
+                  <p>Ortak payment intent ve makbuz altyapısı hazırdır; bu aşamada otomatik online ödeme veya düzenli ödeme talimatı başlatılmaz.</p>
                   <p>Başvuru admin tarafında değerlendirme ve eşleştirme süreci için kayıt altına alınmıştır.</p>
                   {params?.panel === "1" ? (
                     <p>Girişli sponsor hesabınızla panelde başvuru ve sponsorluk durumunu takip edebilirsiniz.</p>
@@ -89,9 +90,9 @@ export default async function OrphanSponsorshipApplicationPage({ searchParams }:
                 <div className="flex items-start gap-3">
                   <AlertCircle aria-hidden className="mt-1 h-5 w-5 text-ocean-green" />
                   <div>
-                    <h2 className="text-xl font-extrabold text-dark-navy">Gerçek ödeme henüz yok</h2>
+                    <h2 className="text-xl font-extrabold text-dark-navy">Ödeme altyapısı hazırlık modunda</h2>
                     <p className="mt-2 text-sm leading-7 text-ink-muted">
-                      Bu form sponsor başvuru deneyimini hazırlar. Gerçek sponsorluk kaydı, düzenli ödeme, makbuz, SMS/e-posta ve dosya yükleme bu aşamada yapılmaz.
+                      Bu form sponsor başvuru deneyimini hazırlar. Ortak payment intent, makbuz ve bildirim modeli hazırlandı; düzenli ödeme, gerçek makbuz PDF, SMS/e-posta ve dosya yükleme bu aşamada yapılmaz.
                     </p>
                   </div>
                 </div>

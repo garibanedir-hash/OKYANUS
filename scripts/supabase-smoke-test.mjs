@@ -108,7 +108,13 @@ const restrictedTables = [
   "orphan_assignments",
   "sponsorship_notifications",
   "sponsorship_exports",
-  "sponsorship_status_logs"
+  "sponsorship_status_logs",
+  "payment_intents",
+  "payment_events",
+  "payment_provider_events",
+  "receipts",
+  "notification_queue",
+  "payment_status_logs"
 ];
 
 function isMissingTable(error) {

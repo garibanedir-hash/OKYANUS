@@ -162,3 +162,15 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Eşleştirme sonrası `orphan_profiles.status = sponsored` güncelleniyor.
 - [ ] Sponsor panelinde yalnızca kendi başvuru/sponsorluk ve güvenli yetim özeti görünüyor.
 - [ ] Yeni yetim tabloları smoke test protected kapsamına eklendi ve `Security warning: 0` korunuyor.
+
+## 9E Ortak Ödeme, Makbuz ve Bildirim Kontrolleri
+
+- [ ] `014_common_payment_receipt_notification_infrastructure.sql` staging ortamında çalıştırıldı.
+- [ ] `payment_intents`, `payment_events`, `payment_provider_events`, `receipts`, `notification_queue` ve `payment_status_logs` public/anon erişime kapalı.
+- [ ] Authenticated donor yalnızca kendi `donor_account_id` ilişkili payment intent ve receipt kayıtlarını okuyabiliyor.
+- [ ] Admin/super_admin ödeme, makbuz, bildirim ve event kayıtlarını okuyabiliyor.
+- [ ] Public formlar doğrudan ödeme tablolarına client-side insert yapmıyor.
+- [ ] Service role yalnızca `lib/data/paymentWriteRepository.ts` gibi server-only write katmanında kullanılıyor.
+- [ ] Gerçek provider API çağrısı, webhook doğrulaması, PDF makbuz üretimi ve SMS/e-posta gönderimi yapılmıyor.
+- [ ] Admin ödeme kayıtları, makbuzlar ve bildirim kuyruğu Supabase okunamazsa mock fallback ile açılıyor.
+- [ ] Smoke test yeni ödeme tablolarını protected kapsamda doğruluyor ve `Security warning: 0` korunuyor.

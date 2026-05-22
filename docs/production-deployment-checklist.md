@@ -31,6 +31,8 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] `013_orphan_sponsorship_application_flow.sql` staging ortamında çalıştırıldı ve başvuru/eşleştirme RLS policy'leri test edildi.
 - [ ] Yetim hamiliği modülünde public/anon yalnızca aktif sponsorluk programlarını okuyabiliyor.
 - [ ] Yetim profilleri, sponsorluklar, başvurular, eşleştirmeler, durum logları, ödeme hazırlığı, notlar, görevler, bildirimler ve export tabloları public erişime kapalı.
+- [ ] `014_common_payment_receipt_notification_infrastructure.sql` staging ortamında çalıştırıldı ve ortak ödeme RLS policy'leri test edildi.
+- [ ] Ödeme niyetleri, eventler, provider eventleri, makbuzlar, bildirim kuyruğu ve ödeme durum logları public/anon erişime kapalı.
 
 ## Auth ve Route Guard
 
@@ -106,6 +108,18 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Yetim hamiliği metinleri hukuk danışmanı, kurum yönetimi ve çocuk koruma ilkeleri açısından incelendi.
 - [ ] Gerçek ödeme/SMS/e-posta/makbuz/dosya entegrasyonları ayrı güvenlik testinden geçmeden açılmadı.
 - [ ] Yetim hamiliği smoke test kapsamı `sponsorship_programs` public, hassas yetim tabloları protected olacak şekilde geçti.
+
+## Ortak Ödeme, Makbuz ve Bildirim
+
+- [ ] `/admin/odeme-kayitlari` ortak `payment_intents` read-only ekranı olarak çalışıyor.
+- [ ] `/admin/makbuzlar` ortak `receipts` read-only ekranı olarak çalışıyor.
+- [ ] `/admin/bildirim-kuyrugu` ortak `notification_queue` read-only ekranı olarak çalışıyor.
+- [ ] Supabase env/RLS/migration eksikse bu ekranlar mock fallback ile beyaz ekran vermeden açılıyor.
+- [ ] `paymentWriteRepository` server-only kalıyor; service role client tarafına taşınmıyor.
+- [ ] Genel bağış, kurban ve yetim ekranları gerçek ödeme yapılmadığını açıkça belirtiyor.
+- [ ] Payment provider API çağrısı, canlı webhook endpoint'i, PDF makbuz üretimi ve gerçek SMS/e-posta gönderimi production'a açılmadı.
+- [ ] Kart numarası, CVV, banka şifresi veya hassas payment payload saklanmıyor.
+- [ ] 10. aşama öncesi provider signature doğrulama, idempotency ve paid finalization planı tamamlandı.
 
 ## Veri Güvenliği ve KVKK
 

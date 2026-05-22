@@ -63,7 +63,7 @@ Format:
 
 ## Payment Pending Durumu
 
-Bu aşamada ödeme entegrasyonu yoktur.
+9E ile ortak payment intent altyapısı hazırlanmıştır; bu hâlâ gerçek ödeme entegrasyonu değildir.
 
 Varsayılan durumlar:
 
@@ -73,6 +73,8 @@ Varsayılan durumlar:
 - `receipt_status = payment_pending`
 
 Ödeme yapılmadan kesim ve dağıtım durumları ilerletilmez.
+
+Kurban siparişi ileride `payment_intents.context_type = qurban_order` ve `context_id = qurban_orders.id` ile ortak ödeme modeline bağlanır. Bu aşamada public başvuru sonrası payment intent otomatik oluşturulması zorunlu değildir.
 
 ## 9C.1 Stabilizasyon Notları
 
@@ -154,6 +156,7 @@ Audit log hatası ana başvuru akışını patlatmaz. Guest başvurularda audit 
 - Payment provider webhook signature doğrulanmalı.
 - Idempotency key tasarımı yapılmalı.
 - Ödeme başarılıysa `payment_status`, `order_status` ve hisse durumları atomik güncellenmeli.
+- 9E ortak modelde payment paid olduğunda `qurban_orders.payment_status = paid`, `qurban_orders.order_status = payment_confirmed`, `qurban_shares.status = payment_confirmed` ve `quota_reserved` değerinden `quota_completed` finalizasyonu server-side transaction ile yapılmalı.
 - Başarısız/iptal ödeme için quota release stratejisi belirlenmeli.
 - Makbuz ve bildirim entegrasyonu audit log ile bağlanmalı.
 - Guest kayıtları donor hesabıyla eşleştirme süreci tasarlanmalı.

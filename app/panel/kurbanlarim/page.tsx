@@ -33,6 +33,9 @@ export default async function PanelQurbanOrdersPage() {
       <div className="rounded-lg border border-border-soft bg-white p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
         Güvenlik nedeniyle e-posta adresi tek başına hesap eşleştirme için kullanılmaz. Girişsiz başvurular admin kayıtlarında görünür; panelde otomatik görünmesi için sonraki aşamada güvenli eşleştirme akışı gerekir.
       </div>
+      <div className="rounded-lg border border-ocean-green/15 bg-mint-green/35 p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
+        Ödeme bekleyen kurban kayıtları ortak payment intent altyapısına bağlanabilecek şekilde hazırlanmıştır. Canlı ödeme sağlayıcısı açılmadan ödeme alma, makbuz PDF üretimi veya SMS/e-posta gönderimi yapılmaz.
+      </div>
       <section className="grid gap-4 md:grid-cols-3">
         <div className="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
           <p className="text-xs font-extrabold uppercase text-ink-muted">Kurban bağışlarım</p>
@@ -44,7 +47,7 @@ export default async function PanelQurbanOrdersPage() {
         </div>
         <div className="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
           <p className="text-xs font-extrabold uppercase text-ink-muted">Bilgilendirme</p>
-          <p className="mt-2 text-lg font-black text-dark-navy">Ödeme sonrası aktifleşir</p>
+          <p className="mt-2 text-lg font-black text-dark-navy">Ortak kuyruk hazır</p>
         </div>
       </section>
       <AdminTable headers={["Sipariş No", "Kurban türü", "Kampanya", "Hisse/adet", "Durum", "Ödeme", "Vekalet", "Makbuz", "Tarih", "Detay"]} recordCount={orders.length} empty={!orders.length}>

@@ -41,7 +41,7 @@ export function DonationForm({ initialProjectSlug }: { initialProjectSlug?: stri
         <div className="mb-6 flex gap-3 rounded-2xl bg-mint-green p-4 text-ocean-green">
           <CheckCircle2 aria-hidden className="mt-0.5 h-5 w-5" />
           <p className="text-sm font-semibold">
-            Bağış ön kaydınız bize ulaştı. Ödeme entegrasyonu eklendiğinde bu akış güvenli ödeme ve proje takibiyle tamamlanacaktır.
+            Bağış ön kaydınız bize ulaştı. Ortak ödeme altyapısı gerçek sağlayıcı entegrasyonu açıldığında güvenli ödeme ve makbuz takibiyle tamamlanacaktır.
           </p>
         </div>
       ) : null}

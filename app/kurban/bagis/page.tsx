@@ -61,8 +61,9 @@ export default async function QurbanDonationDemoPage({ searchParams }: QurbanDon
                   {params?.adet ? <p>Rezerve edilen hisse/adet: <strong className="text-dark-navy">{params.adet}</strong></p> : null}
                   {totalAmount > 0 ? <p>Ödeme bekleyen tutar: <strong className="text-dark-navy">{formatCurrency(totalAmount)}</strong></p> : null}
                   <p>Vekalet durumu: <strong className="text-dark-navy">Kaydedildi</strong></p>
-                  <p>Ödeme durumu: <strong className="text-dark-navy">Ödeme bekleniyor</strong></p>
-                  <p>Ödeme entegrasyonu tamamlandığında ödeme adımı aktifleşecek ve süreç ilgili durumlarla ilerletilecektir.</p>
+                  <p>Ödeme durumu: <strong className="text-dark-navy">Ödeme bekliyor</strong></p>
+                  <p>Ortak payment intent altyapısı hazırdır; bu aşamada otomatik online ödeme başlatılmaz.</p>
+                  <p>Ödeme entegrasyonu tamamlandığında ödeme adımı aktifleşecek ve sipariş durumu ödeme onayıyla ilerletilecektir.</p>
                   <p>Başvurunuz dernek yönetim ekranlarında kayıt altına alınmıştır.</p>
                   <p>Bağışçı hesabınızla giriş yaptıysanız kayıt Kurbanlarım panelinde listelenebilir.</p>
                 </div>
@@ -96,9 +97,9 @@ export default async function QurbanDonationDemoPage({ searchParams }: QurbanDon
                 <div className="flex items-start gap-3">
                   <AlertCircle aria-hidden className="mt-1 h-5 w-5 text-ocean-green" />
                   <div>
-                    <h2 className="text-xl font-extrabold text-dark-navy">Ödeme entegrasyonu henüz kapalı</h2>
+                    <h2 className="text-xl font-extrabold text-dark-navy">Ödeme altyapısı hazırlık modunda</h2>
                     <p className="mt-2 text-sm leading-7 text-ink-muted">
-                      Bu form başvuru, vekalet kabulü ve hisse/adet rezervasyonu oluşturur. Online ödeme, makbuz, SMS/e-posta ve dosya yükleme bu aşamada yapılmaz.
+                      Bu form başvuru, vekalet kabulü ve hisse/adet rezervasyonu oluşturur. Ortak ödeme niyeti, makbuz ve bildirim modeli hazırlandı; online ödeme, makbuz PDF, SMS/e-posta ve dosya yükleme bu aşamada yapılmaz.
                     </p>
                   </div>
                 </div>

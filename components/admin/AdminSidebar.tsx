@@ -62,6 +62,7 @@ const navGroups = [
       { label: "Makbuzlar", href: "/admin/makbuzlar", icon: ReceiptText, badge: "demo" },
       { label: "Kampanyalar", href: "/admin/projeler", icon: BarChart3 },
       { label: "Ödeme Kayıtları", href: "/admin/odeme-kayitlari", icon: CreditCard, badge: "demo" },
+      { label: "Bildirim Kuyruğu", href: "/admin/bildirim-kuyrugu", icon: BellRing, badge: "demo" },
       { label: "Bağışçı Listesi", href: "/admin/bagisci-listesi", icon: UsersRound, badge: "demo" }
     ]
   },

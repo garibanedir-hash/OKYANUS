@@ -1,56 +1,141 @@
+import { AdminActionButton } from "@/components/admin/AdminActionButton";
+import { AdminFilterBar } from "@/components/admin/AdminFilterBar";
 import { AdminPanelNotice } from "@/components/admin/AdminPanelNotice";
 import { AdminSectionHeader } from "@/components/admin/AdminSectionHeader";
 import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
 import { AdminTable } from "@/components/admin/AdminTable";
-import { mockReceipts } from "@/data/adminOperationsMock";
+import { paymentContextTypeLabels, receiptStatusLabels } from "@/data/paymentMock";
+import { getAdminReceiptsWithSource } from "@/lib/data/paymentRepository";
+import { formatDate } from "@/lib/format";
+
+type AdminReceiptsPageProps = {
+  searchParams?: Promise<{ context_type?: string; status?: string; date_from?: string; date_to?: string }>;
+};
 
 function SummaryCard({ label, value }: { label: string; value: string | number }) {
   return (
-    <article className="rounded-brand border border-border-soft bg-white p-5 shadow-card">
-      <p className="text-sm font-bold text-ink-muted">{label}</p>
-      <p className="mt-2 text-3xl font-extrabold text-dark-navy">{value}</p>
+    <article className="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
+      <p className="text-xs font-extrabold uppercase text-ink-muted">{label}</p>
+      <p className="mt-2 text-2xl font-black text-dark-navy">{value}</p>
     </article>
   );
 }
 
-export default function AdminReceiptsPage() {
+function formatMoney(amount: number, currency: string) {
+  return new Intl.NumberFormat("tr-TR", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0
+  }).format(amount);
+}
+
+function matchesDateRange(createdAt: string, dateFrom?: string, dateTo?: string) {
+  if (!dateFrom && !dateTo) return true;
+  const date = new Date(createdAt);
+  if (Number.isNaN(date.valueOf())) return true;
+
+  if (dateFrom && date < new Date(`${dateFrom}T00:00:00.000Z`)) return false;
+  if (dateTo && date > new Date(`${dateTo}T23:59:59.999Z`)) return false;
+
+  return true;
+}
+
+export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsPageProps) {
+  const params = await searchParams;
+  const { data: receipts, source } = await getAdminReceiptsWithSource();
+  const filteredReceipts = receipts.filter((receipt) => {
+    const contextMatch = !params?.context_type || params.context_type === "all" || receipt.contextType === params.context_type;
+    const statusMatch = !params?.status || params.status === "all" || receipt.status === params.status;
+    const dateMatch = matchesDateRange(receipt.createdAt, params?.date_from, params?.date_to);
+
+    return contextMatch && statusMatch && dateMatch;
+  });
+
   return (
     <div className="grid gap-6">
       <AdminSectionHeader
         eyebrow="Bağış ve destek"
         title="Makbuzlar"
-        description="Bağış makbuzu süreçlerini izlemek için hazırlanmış demo yönetim ekranı."
-        actionLabel="PDF Hazırla demo"
+        description="Makbuz hazırlık kayıtları ortak `receipts` tablosundan read-only izlenir. Bu aşamada gerçek PDF üretimi veya muhasebe entegrasyonu yoktur."
+        actionLabel="PDF hazırla demo"
       />
-      <section className="grid gap-4 md:grid-cols-4">
-        <SummaryCard label="Toplam makbuz" value={mockReceipts.length} />
-        <SummaryCard label="Bekleyen makbuz" value={1} />
-        <SummaryCard label="Kesilen makbuz" value={1} />
-        <SummaryCard label="Hatalı / iptal" value={0} />
-      </section>
-      <div className="grid gap-3 rounded-brand border border-border-soft bg-white p-4 shadow-card md:grid-cols-4">
-        {["Tarih aralığı", "Proje", "Makbuz durumu", "Bağışçı"].map((label) => (
-          <label key={label} className="text-sm font-bold text-dark-navy">
-            {label}
-            <input className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="Demo filtre" />
-          </label>
-        ))}
+      <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
+        {source === "supabase" ? "Supabase receipts" : "Demo/mock fallback"}
       </div>
-      <AdminTable headers={["Makbuz No", "Bağışçı", "Tutar", "Proje", "Durum", "Tarih", "İşlem"]}>
-        {mockReceipts.map((receipt) => (
-          <tr key={receipt.receiptNo}>
-            <td className="px-4 py-4 font-bold text-dark-navy">{receipt.receiptNo}</td>
-            <td className="px-4 py-4">{receipt.donor}</td>
-            <td className="px-4 py-4">{receipt.amount}</td>
-            <td className="px-4 py-4">{receipt.project}</td>
-            <td className="px-4 py-4"><AdminStatusBadge status={receipt.status} /></td>
-            <td className="px-4 py-4">{receipt.date}</td>
-            <td className="px-4 py-4 text-sm font-bold text-ocean-green">Makbuzu Gör / Demo</td>
+      <section className="grid gap-4 md:grid-cols-4">
+        <SummaryCard label="Toplam makbuz" value={receipts.length} />
+        <SummaryCard label="Bekleyen" value={receipts.filter((item) => item.status === "pending").length} />
+        <SummaryCard label="Hazırlanan" value={receipts.filter((item) => item.status === "prepared").length} />
+        <SummaryCard label="Kesilen" value={receipts.filter((item) => item.status === "issued").length} />
+      </section>
+      <form>
+        <AdminFilterBar>
+          <label>
+            Bağlam
+            <select name="context_type" defaultValue={params?.context_type ?? "all"}>
+              <option value="all">Tümü</option>
+              {Object.entries(paymentContextTypeLabels).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Durum
+            <select name="status" defaultValue={params?.status ?? "all"}>
+              <option value="all">Tümü</option>
+              {Object.entries(receiptStatusLabels).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Başlangıç
+            <input name="date_from" type="date" defaultValue={params?.date_from ?? ""} />
+          </label>
+          <label>
+            Bitiş
+            <input name="date_to" type="date" defaultValue={params?.date_to ?? ""} />
+          </label>
+          <div className="flex items-end gap-2">
+            <button type="submit" className="focus-ring inline-flex h-8 items-center rounded-md bg-ocean-green px-3 text-xs font-extrabold text-white">
+              Filtrele
+            </button>
+            <a href="/admin/makbuzlar" className="focus-ring inline-flex h-8 items-center rounded-md border border-border-soft bg-white px-3 text-xs font-extrabold text-deep-blue">
+              Temizle
+            </a>
+          </div>
+        </AdminFilterBar>
+      </form>
+      <AdminTable
+        headers={["Makbuz No", "Ödeme No", "Bağışçı maskeli", "Bağlam", "Tutar", "Durum", "Tarih", "İşlem"]}
+        recordCount={filteredReceipts.length}
+        empty={!filteredReceipts.length}
+      >
+        {filteredReceipts.map((receipt) => (
+          <tr key={receipt.id}>
+            <td className="font-bold text-dark-navy">{receipt.receiptNo}</td>
+            <td>{receipt.paymentIntentNo ?? "Ödeme bağlantısı yok"}</td>
+            <td>
+              {receipt.donorDisplayName}
+              <span className="block text-xs text-ink-muted">{receipt.donorEmailMasked}</span>
+            </td>
+            <td>
+              {receipt.contextTypeLabel}
+              {receipt.contextId ? <span className="block text-xs text-ink-muted">{receipt.contextId.slice(0, 8)}</span> : null}
+            </td>
+            <td>{formatMoney(receipt.amount, receipt.currency)}</td>
+            <td><AdminStatusBadge status={receipt.statusLabel} /></td>
+            <td>{formatDate(receipt.createdAt)}</td>
+            <td><AdminActionButton>PDF demo</AdminActionButton></td>
           </tr>
         ))}
       </AdminTable>
-      <AdminPanelNotice title="Demo makbuz alanı">
-        Gerçek ödeme ve muhasebe entegrasyonu yapılmadan makbuz üretimi yalnızca arayüz önizlemesi olarak gösterilir.
+      <AdminPanelNotice title="Makbuz hazırlık notu">
+        `receipts` kayıtları ödeme niyetiyle ilişkilendirilebilir, ancak PDF üretimi, dosya saklama ve e-posta gönderimi 9E kapsamında kapalıdır.
       </AdminPanelNotice>
     </div>
   );

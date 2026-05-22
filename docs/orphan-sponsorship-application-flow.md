@@ -9,7 +9,8 @@ Bu doküman Okyanus İnsani Yardım Derneği yetim hamiliği modülünde public 
 - Aylık destek tutarı client girdisine güvenmeden server tarafında program `monthly_amount` değerinden doğrulanır.
 - Başvuru `sponsorship_applications` tablosuna `status = pending` ve `source = web` olarak yazılır.
 - Başarılı işlem sonrası kullanıcıya `application_no` gösterilir.
-- Gerçek ödeme, düzenli talimat, makbuz, SMS/e-posta veya dosya upload bu aşamada yapılmaz.
+- 9E ile ortak payment intent, makbuz ve bildirim hazırlık altyapısına bağlanabilecek hale gelir.
+- Gerçek ödeme, düzenli talimat, makbuz PDF, SMS/e-posta veya dosya upload bu aşamada yapılmaz.
 
 ## KVKK Kayıt İzi
 
@@ -58,6 +59,7 @@ Eşleştirme action akışı:
 - Sadece application varsa "değerlendirme aşaması" görünür.
 - Match sonrası güvenli yetim özeti ve ödeme bekliyor durumu gösterilir.
 - Makbuz ve gerçek ödeme takibi ödeme entegrasyonu sonrası aktifleşecektir.
+- Sponsorluk ileride `payment_intents.context_type = orphan_sponsorship` ve `context_id = sponsorships.id` ile ortak ödeme modeline bağlanır.
 
 ## Audit ve Status Log
 
@@ -79,6 +81,7 @@ Eşleştirme action akışı:
 - Payment provider webhook signature doğrulanmalıdır.
 - Idempotency key tasarlanmalıdır.
 - Sponsorship, application ve program tutarı server-side eşleştirilmelidir.
+- 9E ortak modelde payment paid olduğunda `sponsorships.payment_status = paid`, `sponsorships.status = active` ve `next_payment_date` periyoda göre server-side hesaplanmalıdır.
 - Düzenli ödeme başarısız/iptal/yenileme durumları ayrı state machine ile yönetilmelidir.
 - Makbuz ve bildirim üretimi audit/status log ile bağlanmalıdır.
 - Rate limiting ve kötüye kullanım koruması production öncesi eklenmelidir.

@@ -60,6 +60,9 @@
 - [ ] Sponsor yalnızca kendi `sponsor_account_id` veya hesap e-postasıyla ilişkili başvuruları okuyabiliyor mu?
 - [ ] Sponsor güvenli yetim özetini yalnızca kendi sponsorship ilişkisi üzerinden okuyabiliyor mu?
 - [ ] Koordinatör/personel yalnızca kendisine atanmış yetim/sponsorluk görevlerini okuyabiliyor mu?
+- [ ] Ortak ödeme tabloları (`payment_intents`, `payment_events`, `payment_provider_events`, `receipts`, `notification_queue`, `payment_status_logs`) public/anon erişime kapalı mı?
+- [ ] Authenticated donor yalnızca kendi `donor_account_id` ilişkili payment intent ve receipt kayıtlarını okuyabiliyor mu?
+- [ ] Admin/super_admin dışında payment event, provider event, notification queue ve payment status log okunamıyor mu?
 
 ## Form validation
 
@@ -88,9 +91,11 @@
 
 ## Payment webhook security
 
-- [ ] Webhook signature doğrulama eklendi.
-- [ ] Idempotency kontrolü eklendi.
-- [ ] Tutar ve para birimi server-side doğrulandı.
+- [ ] 9E'de canlı provider webhook endpoint'i açılmadığı doğrulandı.
+- [ ] Gelecek webhook için signature doğrulama planı eklendi.
+- [ ] Payment intent ve provider event idempotency alanları hazırlandı.
+- [ ] Tutar ve para birimi server-side doğrulama planı hazırlandı.
+- [ ] Kart numarası, CVV veya banka şifresi gibi hassas ödeme verisi saklanmadığı doğrulandı.
 
 ## Audit logs
 
@@ -155,6 +160,8 @@
 - [ ] Kurban order write repository `server-only` sınırında kalıyor mu?
 - [ ] Yetim hamiliği repository'si read-only/mock çalışıyor ve client tarafına service role taşımıyor mu?
 - [ ] Yetim hamiliği write repository `server-only` sınırında kalıyor ve service role client tarafına taşınmıyor mu?
+- [ ] Payment write repository `server-only` sınırında kalıyor ve service role client tarafına taşınmıyor mu?
+- [ ] Public bağış, kurban ve yetim formları payment tablolara doğrudan client-side yazmıyor mu?
 
 ## Error handling
 
