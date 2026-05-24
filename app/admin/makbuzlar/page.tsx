@@ -116,7 +116,7 @@ export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsP
       <AdminSectionHeader
         eyebrow="Bağış ve destek"
         title="Makbuzlar"
-        description="Makbuz hazırlık kayıtları ortak `receipts` tablosundan izlenir. 10D ile paid ödemeler için private storage PDF hazırlığı yapılır; mali onay/issued süreci ayrı kalır."
+        description="Makbuz hazırlık kayıtları ortak `receipts` tablosundan izlenir. Paid ödemeler için kurumsal PDF private storage içinde hazırlanır; görüntüleme yetki kontrollüdür."
       />
       {params?.durum ? (
         <div className="rounded-lg border border-ocean-green/20 bg-mint-green/35 p-4 text-sm font-bold text-dark-navy">
@@ -230,7 +230,7 @@ export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsP
         })}
       </AdminTable>
       <AdminPanelNotice title="Makbuz hazırlık notu">
-        10D akışında PDF yalnızca paid ödeme ilişkili, iptal edilmemiş makbuzlar için hazırlanır. Dosya receipts-private bucket içinde saklanır; gerçek mali onay/issued süreci ve e-posta gönderimi sonraki aşamadadır. PDF dosyası hazırlanmış ancak kayıt bilgisi eksikse sistem PDF Hazırla işleminde otomatik onarım dener.
+        PDF yalnızca paid ödeme ilişkili, iptal edilmemiş makbuzlar için hazırlanır. Kurumsal tasarımlı dosya receipts-private bucket içinde saklanır; gerçek mali onay/issued süreci ve e-posta gönderimi sonraki aşamadadır. PDF dosyası hazırlanmış ancak kayıt bilgisi eksikse sistem PDF Hazırla işleminde otomatik onarım dener.
       </AdminPanelNotice>
     </div>
   );

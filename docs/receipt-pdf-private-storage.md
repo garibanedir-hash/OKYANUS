@@ -1,8 +1,8 @@
-# 10D Makbuz PDF ve Private Storage Altyapısı
+# 10D/10E Makbuz PDF ve Private Storage Altyapısı
 
 ## Amaç
 
-10D aşaması, ödeme sonrası oluşan `receipts` kayıtları için PDF hazırlanmasını, dosyanın Supabase private storage içinde saklanmasını ve yalnızca yetkili admin/bağışçı erişimiyle görüntülenmesini hazırlar. Bu aşama canlı ödeme veya gerçek muhasebe entegrasyonu değildir.
+10D aşaması, ödeme sonrası oluşan `receipts` kayıtları için PDF hazırlanmasını, dosyanın Supabase private storage içinde saklanmasını ve yalnızca yetkili admin/bağışçı erişimiyle görüntülenmesini hazırlar. 10E aşaması aynı güvenli akışı bozmadan PDF çıktısını Okyanus kurumsal kimliğine uygun, profesyonel bir bağış makbuzu şablonuna taşır. Bu aşama canlı ödeme veya gerçek muhasebe entegrasyonu değildir.
 
 ## Makbuz PDF Akışı
 
@@ -83,16 +83,19 @@ receipts/2026/RCPT-2026-000001/v1.pdf
 
 PDF içinde yer alır:
 
-- Okyanus İnsani Yardım Derneği marka alanı
+- Okyanus İnsani Yardım Derneği marka alanı ve mümkünse `public/brand/logo.png` resmi logo asset'i
 - Makbuz No
 - Ödeme No
 - Tarih
 - Bağışçı adı soyadı
 - Bağışçı e-posta
+- Bağışçı telefon bilgisi varsa
 - Bağış türü
+- Ödeme yöntemi/provider etiketi
 - Tutar ve para birimi
 - Ödeme durumu
 - Makbuz durumu
+- Bağış özeti ve toplam tutar vurgusu
 - Kurumsal not
 
 PDF içinde yer almaz:
@@ -107,7 +110,26 @@ PDF içinde yer almaz:
 
 ## Türkçe Karakter Notu
 
-Bu aşamada yeni PDF paketi eklenmedi. Minimal server-side PDF üretici standart PDF fontu kullandığı için Türkçe karakterler güvenli ASCII karşılıklarına normalize edilir. Production öncesi Türkçe karakterli resmi çıktı için font embed destekli PDF çözümü değerlendirilebilir.
+Bu aşamada yeni PDF paketi eklenmedi. Minimal server-side PDF üretici standart PDF fontu kullandığı için Türkçe karakterler güvenli ASCII karşılıklarına normalize edilir. Gilroy font dosyaları repoda bulunmadığı için PDF içinde Helvetica/Helvetica-Bold tabanlı geometrik sans-serif fallback kullanılır. Production öncesi Türkçe karakterli resmi çıktı ve Gilroy font kullanımı için font embed destekli PDF çözümü değerlendirilebilir.
+
+## 10E Kurumsal Şablon
+
+10E ile PDF şablonu A4 portre düzeninde şu kurumsal bölümlere ayrıldı:
+
+- Üst header: resmi Okyanus logosu, makbuz no, ödeme no, tarih ve durum.
+- Ana başlık: `BAĞIŞ MAKBUZU` ve kısa teşekkür/açıklama metni.
+- Bağışçı bilgileri paneli: bağışçı adı, e-posta, telefon, bağış türü, proje/kampanya, ödeme yöntemi ve ödeme durumu.
+- Bağış özeti tablosu: açıklama, tutar, adet ve toplam.
+- Toplam tutar alanı: turkuaz vurgulu güçlü toplam bedel gösterimi.
+- Kurumsal şeffaflık notu: bağışın kayıt altına alındığını ve mali/yasal süreçlerin dernek tarafından yürütüldüğünü açıklayan kısa not.
+- Footer: teşekkür metni, web/e-posta/telefon/adres ve mevzuat notu.
+
+Kurumsal renkler:
+
+- Koyu Lacivert: `#0F2547`
+- Turkuaz: `#1F8083`
+
+Logo embed akışı `public/brand/logo.png` dosyasını server-side okur, PDF'e uygun RGB image object olarak gömer ve oranını korur. PNG okunamazsa PDF üretimi durmaz; metinsel Okyanus marka lockup fallback'i kullanılır ve server log'a güvenli uyarı yazılır.
 
 ## Receipt Status Lifecycle
 
@@ -192,4 +214,4 @@ Repository snake_case Supabase alanlarını camelCase modele map eder.
 
 ## Sonraki Aşama
 
-10E veya sonraki aşamada gerçek makbuz issued/onay akışı, iptal nedeni, muhasebe entegrasyonu, e-posta ile gönderim ve PDF font/şablon iyileştirmesi planlanmalıdır.
+Sonraki aşamada gerçek makbuz issued/onay akışı, iptal nedeni, muhasebe entegrasyonu, e-posta ile gönderim, mevcut hazırlanmış PDF'ler için kontrollü yeniden üretim/versioning ve font embed destekli Türkçe karakter/Gilroy iyileştirmesi planlanmalıdır.

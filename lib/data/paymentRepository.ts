@@ -82,7 +82,26 @@ type ReceiptRow = {
   last_downloaded_at: string | null;
   created_at: string | null;
   updated_at: string | null;
-  payment_intents?: { intent_no?: string | null; status?: PaymentIntentStatus | null } | Array<{ intent_no?: string | null; status?: PaymentIntentStatus | null }> | null;
+  payment_intents?:
+    | {
+        intent_no?: string | null;
+        status?: PaymentIntentStatus | null;
+        provider?: PaymentProvider | null;
+        paid_at?: string | null;
+        donor_name?: string | null;
+        donor_email?: string | null;
+        donor_phone?: string | null;
+      }
+    | Array<{
+        intent_no?: string | null;
+        status?: PaymentIntentStatus | null;
+        provider?: PaymentProvider | null;
+        paid_at?: string | null;
+        donor_name?: string | null;
+        donor_email?: string | null;
+        donor_phone?: string | null;
+      }>
+    | null;
 };
 
 export type ReceiptWithPayment = {
@@ -91,6 +110,11 @@ export type ReceiptWithPayment = {
   paymentIntentId: string | null;
   paymentIntentNo: string | null;
   paymentIntentStatus: PaymentIntentStatus | null;
+  paymentProvider: PaymentProvider | null;
+  paymentPaidAt: string | null;
+  paymentDonorName: string | null;
+  paymentDonorEmail: string | null;
+  paymentDonorPhone: string | null;
   contextType: PaymentContextType;
   contextId: string | null;
   donorAccountId: string | null;
@@ -197,7 +221,7 @@ const receiptColumns = [
   "last_downloaded_at",
   "created_at",
   "updated_at",
-  "payment_intents(intent_no, status)"
+  "payment_intents(intent_no, status, provider, paid_at, donor_name, donor_email, donor_phone)"
 ].join(", ");
 
 const notificationQueueColumns = [
@@ -346,6 +370,11 @@ function mapReceiptWithPayment(row: ReceiptRow): ReceiptWithPayment {
     paymentIntentId: row.payment_intent_id,
     paymentIntentNo: paymentIntent?.intent_no ?? null,
     paymentIntentStatus: paymentIntent?.status ?? null,
+    paymentProvider: paymentIntent?.provider ?? null,
+    paymentPaidAt: paymentIntent?.paid_at ?? null,
+    paymentDonorName: paymentIntent?.donor_name ?? null,
+    paymentDonorEmail: paymentIntent?.donor_email ?? null,
+    paymentDonorPhone: paymentIntent?.donor_phone ?? null,
     contextType: row.context_type,
     contextId: row.context_id,
     donorAccountId: row.donor_account_id,
@@ -380,6 +409,11 @@ function mockReceiptWithPayment(receiptNo: string): ReceiptWithPayment | null {
     paymentIntentId: receipt.paymentIntentId ?? null,
     paymentIntentNo: receipt.paymentIntentNo ?? null,
     paymentIntentStatus: receipt.paymentIntentStatus ?? null,
+    paymentProvider: null,
+    paymentPaidAt: null,
+    paymentDonorName: null,
+    paymentDonorEmail: null,
+    paymentDonorPhone: null,
     contextType: receipt.contextType,
     contextId: receipt.contextId ?? null,
     donorAccountId: receipt.donorAccountId || null,

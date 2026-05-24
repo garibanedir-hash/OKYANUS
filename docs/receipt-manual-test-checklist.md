@@ -27,6 +27,20 @@ Bu checklist 10D makbuz PDF ve private storage altyapısını staging ortamında
 - [ ] İşlem sonrası `/admin/makbuzlar?durum=pdf-hazirlandi` veya `pdf-onarildi` sonucuyla dönüyor.
 - [ ] Sayfa yenilenince “PDF Görüntüle” linki görünüyor.
 
+## 10E Kurumsal PDF Tasarım Kontrolü
+
+- [ ] PDF A4 portre düzeninde tek sayfaya sığıyor.
+- [ ] Üst alanda resmi `public/brand/logo.png` logosu oranı bozulmadan görünüyor.
+- [ ] Logo embed edilemezse metinsel marka fallback'i oluşuyor ve PDF üretimi kırılmıyor.
+- [ ] Makbuz No, Ödeme No, Tarih ve Durum üst sağ meta alanında okunaklı.
+- [ ] Ana başlık `BAĞIŞ MAKBUZU` lacivert kurumsal hiyerarşiyle görünüyor.
+- [ ] Bağışçı bilgileri panelinde eksik alanlar `-` olarak görünüyor.
+- [ ] Bağış özeti tablosunda açıklama, tutar, adet ve toplam alanları hizalı.
+- [ ] Toplam tutar turkuaz vurgulu alanda tek bakışta bulunuyor.
+- [ ] Kurumsal şeffaflık ve teşekkür notları okunaklı.
+- [ ] PDF içinde kart bilgisi, PayTR hash, merchant key/salt, raw payload, service role veya internal user id yok.
+- [ ] Gilroy font dosyası yoksa Helvetica/Helvetica-Bold fallback ile çıktı okunaklı kalıyor.
+
 ## Repair Senaryoları
 
 - [ ] Storage içinde expected path object var ama `receipts.file_path` boşsa PDF Hazırla metadata repair yapıyor.
