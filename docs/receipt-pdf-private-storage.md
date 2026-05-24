@@ -108,9 +108,25 @@ PDF içinde yer almaz:
 - Service role key
 - IP ve hassas teknik callback detayı
 
-## Türkçe Karakter Notu
+## 10E.1 Font ve Türkçe Karakter Notu
 
-Bu aşamada yeni PDF paketi eklenmedi. Minimal server-side PDF üretici standart PDF fontu kullandığı için Türkçe karakterler güvenli ASCII karşılıklarına normalize edilir. Gilroy font dosyaları repoda bulunmadığı için PDF içinde Helvetica/Helvetica-Bold tabanlı geometrik sans-serif fallback kullanılır. Production öncesi Türkçe karakterli resmi çıktı ve Gilroy font kullanımı için font embed destekli PDF çözümü değerlendirilebilir.
+Kurumsal font dosyaları için standart klasör:
+
+```text
+app/fonts/Gilroy-Bold.woff2
+app/fonts/Gilroy-Black.woff2
+```
+
+TTF fallback:
+
+```text
+app/fonts/Gilroy-Bold.ttf
+app/fonts/Gilroy-Black.ttf
+```
+
+Web arayüzünde font tokenları hazırdır. Dosyalar yokken build kırılmaması için `next/font/local` aktif import edilmez; dosyalar eklendikten sonra `app/layout.tsx` içinde sabit module-scope `localFont` çağrısıyla `--font-gilroy` değişkeni aktif edilmelidir. Dosyalar yoksa Inter/Arial/system fallback kullanılır.
+
+PDF üretiminde bu aşamada yeni PDF paketi eklenmedi. Minimal server-side PDF üretici standart PDF fontu kullandığı için Türkçe karakterler güvenli ASCII karşılıklarına normalize edilir. Gilroy font dosyaları repoya eklense bile mevcut raw PDF motoru font embed yapmaz; generator dosyaları algılar fakat PDF tarafında standart font fallback kullanır. Production öncesi Türkçe karakterli resmi çıktı ve Gilroy embed için `pdf-lib` + fontkit gibi hafif bir çözüm sonraki aşamada değerlendirilebilir.
 
 ## 10E Kurumsal Şablon
 
@@ -130,6 +146,15 @@ Kurumsal renkler:
 - Turkuaz: `#1F8083`
 
 Logo embed akışı `public/brand/logo.png` dosyasını server-side okur, PDF'e uygun RGB image object olarak gömer ve oranını korur. PNG okunamazsa PDF üretimi durmaz; metinsel Okyanus marka lockup fallback'i kullanılır ve server log'a güvenli uyarı yazılır.
+
+10E.1 ile layout kaymalarını azaltmak için:
+
+- Uzun makbuz no, ödeme no ve e-posta alanları güvenli genişlik içinde kısaltılır.
+- Boşluksuz uzun metinler satır genişliğine göre parçalanır.
+- Bağışçı bilgileri paneli daha yüksek iki kolonlu düzene alınır.
+- Tutar ve toplam alanları sağ hizalı, maksimum genişlik kontrollü çizilir.
+- Logo PDF içine daha düşük çözünürlükte gömülerek dosya boyutu kontrol edilir.
+- Footer ve kurumsal şeffaflık alanları tek sayfa hedefiyle sabit güvenli bölgelerde tutulur.
 
 ## Receipt Status Lifecycle
 

@@ -66,6 +66,8 @@ type DecodedRgbImage = {
   rgb: Buffer;
 };
 
+type PdfFontName = "F1" | "F2" | "F3";
+
 const PAGE_WIDTH = 595;
 const PAGE_HEIGHT = 842;
 const NAVY = "#0F2547";
@@ -76,6 +78,7 @@ const BORDER = "#DDE7EA";
 const SOFT = "#F7FAFB";
 const SOFT_TURQUOISE = "#EAF7F7";
 const WHITE = "#FFFFFF";
+const FONT_DIR = path.join(process.cwd(), "app", "fonts");
 
 const TURKISH_CHAR_MAP: Record<string, string> = {
   "ç": "c",
@@ -138,7 +141,7 @@ export function formatReceiptDate(date: string) {
 }
 
 function getPaymentProviderLabel(provider?: PaymentProvider | null) {
-  if (!provider) return "Ortak ödeme kaydı";
+  if (!provider) return "Online Ödeme";
   return paymentProviderLabels[provider] ?? provider;
 }
 
@@ -207,9 +210,27 @@ function line(x1: number, y1: number, x2: number, y2: number, color = BORDER, st
   return `q ${strokeColor(color)} ${n(strokeWidth)} w ${n(x1)} ${n(y1)} m ${n(x2)} ${n(y2)} l S Q\n`;
 }
 
-function estimateTextWidth(value: string, size: number, font = "F1") {
+function hasGilroyPdfFontFiles() {
+  const bold = fs.existsSync(path.join(FONT_DIR, "Gilroy-Bold.woff2")) || fs.existsSync(path.join(FONT_DIR, "Gilroy-Bold.ttf"));
+  const black = fs.existsSync(path.join(FONT_DIR, "Gilroy-Black.woff2")) || fs.existsSync(path.join(FONT_DIR, "Gilroy-Black.ttf"));
+  return { bold, black };
+}
+
+function estimateTextWidth(value: string, size: number, font: PdfFontName = "F1") {
   const ratio = font === "F2" ? 0.56 : 0.5;
   return toPdfSafeText(value).length * size * ratio;
+}
+
+function truncateText(value: string, maxWidth: number, size: number, font: PdfFontName = "F1") {
+  const safe = toPdfSafeText(value || "-");
+  if (estimateTextWidth(safe, size, font) <= maxWidth) return safe;
+
+  let result = safe;
+  while (result.length > 1 && estimateTextWidth(`${result}...`, size, font) > maxWidth) {
+    result = result.slice(0, -1);
+  }
+
+  return `${result.trim()}...`;
 }
 
 function text(
@@ -217,54 +238,81 @@ function text(
   x: number,
   y: number,
   size: number,
-  options: { font?: "F1" | "F2" | "F3"; color?: string; align?: "left" | "right" | "center" } = {}
+  options: { font?: PdfFontName; color?: string; align?: "left" | "right" | "center"; maxWidth?: number } = {}
 ) {
   const font = options.font ?? "F1";
-  const safe = escapePdfText(value);
-  const width = estimateTextWidth(value, size, font);
+  const displayValue = options.maxWidth ? truncateText(value, options.maxWidth, size, font) : value;
+  const safe = escapePdfText(displayValue);
+  const width = estimateTextWidth(displayValue, size, font);
   const tx = options.align === "right" ? x - width : options.align === "center" ? x - width / 2 : x;
   return `BT ${fillColor(options.color ?? INK)} /${font} ${n(size)} Tf ${n(tx)} ${n(y)} Td (${safe}) Tj ET\n`;
 }
 
-function wrapText(value: string, maxWidth: number, size: number, font: "F1" | "F2" | "F3" = "F1") {
-  const words = toPdfSafeText(value).split(" ").filter(Boolean);
-  const lines: string[] = [];
+function splitLongWord(word: string, maxWidth: number, size: number, font: PdfFontName) {
+  const chunks: string[] = [];
   let current = "";
 
-  words.forEach((word) => {
-    const next = current ? `${current} ${word}` : word;
-    if (estimateTextWidth(next, size, font) > maxWidth && current) {
-      lines.push(current);
-      current = word;
+  Array.from(word).forEach((char) => {
+    const next = `${current}${char}`;
+    if (current && estimateTextWidth(next, size, font) > maxWidth) {
+      chunks.push(current);
+      current = char;
     } else {
       current = next;
     }
   });
 
-  if (current) lines.push(current);
-  return lines;
+  if (current) chunks.push(current);
+  return chunks;
 }
 
-function wrappedText(value: string, x: number, y: number, maxWidth: number, size: number, options: { color?: string; font?: "F1" | "F2" | "F3"; maxLines?: number; leading?: number } = {}) {
+function wrapText(value: string, maxWidth: number, size: number, font: PdfFontName = "F1") {
+  const words = toPdfSafeText(value).split(" ").filter(Boolean);
+  const lines: string[] = [];
+  let current = "";
+
+  words.forEach((word) => {
+    const pieces = estimateTextWidth(word, size, font) > maxWidth ? splitLongWord(word, maxWidth, size, font) : [word];
+    pieces.forEach((piece) => {
+      const next = current ? `${current} ${piece}` : piece;
+      if (estimateTextWidth(next, size, font) > maxWidth && current) {
+        lines.push(current);
+        current = piece;
+      } else {
+        current = next;
+      }
+    });
+  });
+
+  if (current) lines.push(current);
+  return lines.length ? lines : ["-"];
+}
+
+function wrappedText(value: string, x: number, y: number, maxWidth: number, size: number, options: { color?: string; font?: PdfFontName; maxLines?: number; leading?: number } = {}) {
   const font = options.font ?? "F1";
   const leading = options.leading ?? size + 4;
-  return wrapText(value, maxWidth, size, font)
-    .slice(0, options.maxLines ?? 5)
-    .map((lineValue, index) => text(lineValue, x, y - index * leading, size, { color: options.color, font }))
+  const maxLines = options.maxLines ?? 5;
+  const lines = wrapText(value, maxWidth, size, font).slice(0, maxLines);
+  if (lines.length === maxLines && wrapText(value, maxWidth, size, font).length > maxLines) {
+    lines[lines.length - 1] = truncateText(lines[lines.length - 1], maxWidth, size, font);
+  }
+
+  return lines
+    .map((lineValue, index) => text(lineValue, x, y - index * leading, size, { color: options.color, font, maxWidth }))
     .join("");
 }
 
 function labelValue(label: string, value: string, x: number, y: number, valueWidth = 170) {
   return [
     text(label.toUpperCase(), x, y, 7.5, { font: "F2", color: MUTED }),
-    wrappedText(value || "-", x, y - 14, valueWidth, 10, { font: "F2", color: INK, maxLines: 1 })
+    text(value || "-", x, y - 14, 9.5, { font: "F2", color: INK, maxWidth: valueWidth })
   ].join("");
 }
 
 function metaRow(label: string, value: string, y: number) {
   return [
     text(label, 382, y, 7.5, { font: "F2", color: MUTED }),
-    text(value, 548, y, 9.2, { font: "F2", color: NAVY, align: "right" })
+    text(value, 548, y, 8.8, { font: "F2", color: NAVY, align: "right", maxWidth: 142 })
   ].join("");
 }
 
@@ -408,7 +456,7 @@ function downsampleImage(image: DecodedRgbImage, maxWidth: number): DecodedRgbIm
 function loadOfficialLogo(): PdfImage | null {
   const logoPath = path.join(process.cwd(), "public", "brand", "logo.png");
   try {
-    const decoded = downsampleImage(parsePng(fs.readFileSync(logoPath)), 900);
+    const decoded = downsampleImage(parsePng(fs.readFileSync(logoPath)), 480);
     return {
       width: decoded.width,
       height: decoded.height,
@@ -461,56 +509,57 @@ function drawTitle(data: ReceiptPdfData) {
 
 function drawDonorPanel(data: ReceiptPdfData) {
   return [
-    rect(42, 544, 511, 116, { fill: SOFT, stroke: BORDER, strokeWidth: 1 }),
+    rect(42, 510, 511, 150, { fill: SOFT, stroke: BORDER, strokeWidth: 1 }),
     rect(42, 636, 511, 24, { fill: NAVY }),
     text("BAĞIŞÇI BİLGİLERİ", 56, 644, 9, { font: "F2", color: WHITE }),
     labelValue("Bağışçı Adı Soyadı", data.donorName, 58, 617, 210),
-    labelValue("E-posta", data.donorEmail, 58, 581, 210),
-    labelValue("Telefon", data.donorPhone, 58, 553, 210),
-    labelValue("Bağış Türü", data.contextLabel, 305, 617, 190),
-    labelValue("Proje / Kampanya", data.projectOrCampaign, 305, 581, 190),
-    labelValue("Ödeme Yöntemi", data.paymentProviderLabel, 305, 553, 190),
-    text("Ödeme Durumu", 452, 617, 7.5, { font: "F2", color: MUTED }),
-    rect(452, 591, 78, 18, { fill: SOFT_TURQUOISE, stroke: "#B9E1E2", strokeWidth: 0.8 }),
-    text(data.paymentStatusLabel, 491, 597, 8.4, { font: "F2", color: TURQUOISE, align: "center" })
+    labelValue("E-posta", data.donorEmail, 58, 588, 210),
+    labelValue("Telefon", data.donorPhone, 58, 559, 210),
+    labelValue("Tutar", data.amountLabel, 58, 530, 210),
+    labelValue("Bağış Türü", data.contextLabel, 305, 617, 205),
+    labelValue("Proje / Kampanya", data.projectOrCampaign, 305, 588, 205),
+    labelValue("Ödeme Yöntemi", data.paymentProviderLabel, 305, 559, 205),
+    text("ÖDEME DURUMU", 305, 530, 7.5, { font: "F2", color: MUTED }),
+    rect(305, 508, 108, 17, { fill: SOFT_TURQUOISE, stroke: "#B9E1E2", strokeWidth: 0.8 }),
+    text(data.paymentStatusLabel, 359, 513.5, 8.1, { font: "F2", color: TURQUOISE, align: "center", maxWidth: 92 })
   ].join("");
 }
 
 function drawSummaryTable(data: ReceiptPdfData) {
   return [
-    text("BAĞIŞ ÖZETİ", 42, 507, 12, { font: "F2", color: NAVY }),
-    rect(42, 412, 511, 78, { fill: WHITE, stroke: BORDER, strokeWidth: 1 }),
-    rect(42, 464, 511, 26, { fill: "#F2F7F8" }),
-    text("AÇIKLAMA", 56, 474, 8, { font: "F2", color: MUTED }),
-    text("TUTAR", 332, 474, 8, { font: "F2", color: MUTED }),
-    text("ADET", 424, 474, 8, { font: "F2", color: MUTED }),
-    text("TOPLAM", 530, 474, 8, { font: "F2", color: MUTED, align: "right" }),
-    line(42, 464, 553, 464, BORDER),
-    line(310, 412, 310, 490, BORDER),
-    line(406, 412, 406, 490, BORDER),
-    line(462, 412, 462, 490, BORDER),
-    wrappedText(data.description, 56, 446, 228, 9.2, { color: INK, font: "F2", maxLines: 2 }),
-    text(data.amountLabel, 332, 438, 9.4, { font: "F2", color: INK }),
-    text("1", 434, 438, 9.4, { font: "F2", color: INK }),
-    text(data.amountLabel, 530, 438, 9.4, { font: "F2", color: NAVY, align: "right" })
+    text("BAĞIŞ ÖZETİ", 42, 478, 12, { font: "F2", color: NAVY }),
+    rect(42, 386, 511, 74, { fill: WHITE, stroke: BORDER, strokeWidth: 1 }),
+    rect(42, 435, 511, 25, { fill: "#F2F7F8" }),
+    text("AÇIKLAMA", 56, 445, 8, { font: "F2", color: MUTED }),
+    text("TUTAR", 326, 445, 8, { font: "F2", color: MUTED }),
+    text("ADET", 418, 445, 8, { font: "F2", color: MUTED }),
+    text("TOPLAM", 531, 445, 8, { font: "F2", color: MUTED, align: "right" }),
+    line(42, 435, 553, 435, BORDER),
+    line(306, 386, 306, 460, BORDER),
+    line(400, 386, 400, 460, BORDER),
+    line(456, 386, 456, 460, BORDER),
+    wrappedText(data.description, 56, 419, 226, 8.6, { color: INK, font: "F2", maxLines: 2, leading: 11 }),
+    text(data.amountLabel, 326, 410, 8.8, { font: "F2", color: INK, maxWidth: 64 }),
+    text("1", 428, 410, 8.8, { font: "F2", color: INK }),
+    text(data.amountLabel, 531, 410, 8.8, { font: "F2", color: NAVY, align: "right", maxWidth: 70 })
   ].join("");
 }
 
 function drawTotal(data: ReceiptPdfData) {
   return [
-    rect(42, 334, 511, 54, { fill: SOFT_TURQUOISE, stroke: "#B9E1E2", strokeWidth: 1 }),
-    text("TOPLAM TUTAR", 58, 360, 9, { font: "F2", color: NAVY }),
-    text("Bağış kayıt toplamı", 58, 345, 8.3, { color: MUTED }),
-    text(data.amountLabel, 535, 350, 23, { font: "F2", color: TURQUOISE, align: "right" })
+    rect(42, 317, 511, 52, { fill: SOFT_TURQUOISE, stroke: "#B9E1E2", strokeWidth: 1 }),
+    text("TOPLAM TUTAR", 58, 343, 9, { font: "F2", color: NAVY }),
+    text("Bağış kayıt toplamı", 58, 328, 8.3, { color: MUTED }),
+    text(data.amountLabel, 535, 333, 21, { font: "F2", color: TURQUOISE, align: "right", maxWidth: 250 })
   ].join("");
 }
 
 function drawTransparency(data: ReceiptPdfData) {
   return [
-    rect(42, 208, 511, 92, { fill: WHITE, stroke: BORDER, strokeWidth: 1 }),
-    rect(42, 296, 511, 4, { fill: TURQUOISE }),
-    text("KURUMSAL ŞEFFAFLIK", 58, 276, 10.5, { font: "F2", color: NAVY }),
-    wrappedText(data.transparencyNote, 58, 255, 475, 8.6, { color: INK, maxLines: 5, leading: 12 })
+    rect(42, 204, 511, 90, { fill: WHITE, stroke: BORDER, strokeWidth: 1 }),
+    rect(42, 290, 511, 4, { fill: TURQUOISE }),
+    text("KURUMSAL ŞEFFAFLIK", 58, 270, 10.2, { font: "F2", color: NAVY }),
+    wrappedText(data.transparencyNote, 58, 250, 475, 8.2, { color: INK, maxLines: 5, leading: 11 })
   ].join("");
 }
 
@@ -590,6 +639,14 @@ function buildPdf(objects: Array<string | Buffer>) {
 
 export function generateReceiptPdfBuffer(data: ReceiptPdfData): Buffer {
   const logo = loadOfficialLogo();
+  const gilroyFontFiles = hasGilroyPdfFontFiles();
+  if (gilroyFontFiles.bold || gilroyFontFiles.black) {
+    console.info("[receipt-pdf] gilroy_font_files_detected", {
+      bold: gilroyFontFiles.bold,
+      black: gilroyFontFiles.black,
+      pdfFontMode: "standard-pdf-font-fallback"
+    });
+  }
   const hasLogo = Boolean(logo);
   const logoObjectNumber = hasLogo ? 7 : null;
   const contentObjectNumber = hasLogo ? 8 : 7;

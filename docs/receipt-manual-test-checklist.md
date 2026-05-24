@@ -41,6 +41,18 @@ Bu checklist 10D makbuz PDF ve private storage altyapısını staging ortamında
 - [ ] PDF içinde kart bilgisi, PayTR hash, merchant key/salt, raw payload, service role veya internal user id yok.
 - [ ] Gilroy font dosyası yoksa Helvetica/Helvetica-Bold fallback ile çıktı okunaklı kalıyor.
 
+## 10E.1 Font ve Layout Kontrolü
+
+- [ ] `app/fonts/Gilroy-Bold.woff2` ve `app/fonts/Gilroy-Black.woff2` lisanslı dosyalarla eklendiyse build başarılı.
+- [ ] Font dosyaları yoksa build kırılmıyor ve site Inter/Arial/system fallback ile açılıyor.
+- [ ] Başlık, buton ve güçlü UI alanları `var(--font-brand)` tokenından besleniyor.
+- [ ] Gövde metinleri sadece Bold/Black dosyaları varken aşırı kalın görünmüyor.
+- [ ] PDF içinde uzun e-posta/makbuz/ödeme no alanları panel dışına taşmıyor.
+- [ ] Bağış özeti tablosunda tutar, adet ve toplam kolonları üst üste binmiyor.
+- [ ] Toplam tutar kutusu sağ hizalı ve okunaklı.
+- [ ] Footer sayfa dışına taşmıyor.
+- [ ] Mevcut eski PDF dosyalarının yeniden üretilmeden otomatik değişmediği doğrulandı.
+
 ## Repair Senaryoları
 
 - [ ] Storage içinde expected path object var ama `receipts.file_path` boşsa PDF Hazırla metadata repair yapıyor.

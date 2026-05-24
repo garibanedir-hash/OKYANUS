@@ -71,6 +71,18 @@ async function logDiagnostic(receiptNo: string, phase: string) {
   return diagnostic;
 }
 
+function receiptProjectOrCampaignLabel(receipt: ReceiptWithPayment) {
+  const metadata = receipt.paymentMetadata;
+  if (!metadata) return null;
+
+  for (const key of ["campaignTitle", "projectTitle", "campaignName", "projectName", "orderNo", "sponsorshipNo", "donationType", "summary"]) {
+    const value = metadata[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+
+  return null;
+}
+
 export async function generateReceiptPdfAction(formData: FormData) {
   let uploadedFilePath: string | null = null;
   let outcome: { durum: string; mesaj?: string } | null = null;
@@ -150,6 +162,7 @@ export async function generateReceiptPdfAction(formData: FormData) {
           receiptStatus: "prepared",
           paymentStatus: receipt.paymentIntentStatus,
           paymentProvider: receipt.paymentProvider,
+          projectOrCampaign: receiptProjectOrCampaignLabel(receipt),
           issuedAt: receipt.issuedAt,
           generatedAt: new Date().toISOString(),
           createdAt: receipt.createdAt,

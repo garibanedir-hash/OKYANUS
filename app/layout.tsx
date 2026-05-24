@@ -15,9 +15,9 @@ const faviconPath = faviconSvgExists
     ? "/brand/favicon.png"
     : markWhitePngExists
       ? "/brand/mark-white.png"
-      : markPngExists
-        ? "/brand/mark.png"
-        : undefined;
+        : markPngExists
+          ? "/brand/mark.png"
+          : undefined;
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://okyanusyardim.org"),

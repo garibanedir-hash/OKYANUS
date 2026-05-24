@@ -62,13 +62,22 @@ Kurumsal rehberde temel yazı tipleri:
 - Gilroy-Bold
 - Brittany Signature
 
-Font dosyaları projede sağlanmadığı için web arayüzü güvenli fallback kullanır:
+Kurumsal font dosyaları için proje standardı:
 
 ```text
-Gilroy, Inter, Arial, system-ui, sans-serif
+app/fonts/Gilroy-Bold.woff2
+app/fonts/Gilroy-Black.woff2
 ```
 
-Font dosyaları sağlandığında `next/font/local` ile bağlanacaktır. Başlıklarda güçlü, modern ve net sans-serif yapı korunmalıdır. Brittany Signature dijital UI içinde ana metin fontu olarak kullanılmamalı; gerekiyorsa sınırlı marka uygulamalarında değerlendirilmelidir.
+TTF fallback dosyaları `app/fonts/Gilroy-Bold.ttf` ve `app/fonts/Gilroy-Black.ttf` olarak kabul edilir. Dosyalar projede yoksa web arayüzü güvenli fallback kullanır:
+
+```text
+Inter, Arial, system-ui, sans-serif
+```
+
+Dosyalar sağlandığında `next/font/local` entegrasyonu `app/layout.tsx` içinde sabit module-scope çağrı olarak aktif edilmelidir; font dosyaları henüz olmadığı için aktif import eklenmez, aksi halde build kırılır. Sadece Bold/Black ağırlıkları olduğu için gövde metinleri Inter/sistem sans ile kalır; başlıklar, butonlar ve güçlü UI alanları `var(--font-brand)` üzerinden Gilroy karakterine hazırlanmıştır. Brittany Signature dijital UI içinde ana metin fontu olarak kullanılmamalı; gerekiyorsa sınırlı marka uygulamalarında değerlendirilmelidir.
+
+PDF makbuz üreticisi mevcut aşamada standart PDF font fallback kullanır. Gilroy dosyaları bulunduğunda generator bunu güvenli log ile algılar; gerçek Gilroy embed ve tam Türkçe karakter desteği için sonraki aşamada font embed destekli PDF motoru değerlendirilebilir.
 
 ## Dijital Uygulama İlkeleri
 

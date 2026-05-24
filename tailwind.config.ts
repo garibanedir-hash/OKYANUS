@@ -29,7 +29,8 @@ const config: Config = {
         brand: "1.25rem"
       },
       fontFamily: {
-        sans: ["Gilroy", "Inter", "Arial", "ui-sans-serif", "system-ui", "sans-serif"]
+        sans: ["var(--font-body)", "Inter", "Arial", "ui-sans-serif", "system-ui", "sans-serif"],
+        brand: ["var(--font-brand)", "Inter", "Arial", "ui-sans-serif", "system-ui", "sans-serif"]
       }
     }
   },

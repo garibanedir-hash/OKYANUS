@@ -16,6 +16,8 @@
   --color-border-soft: #dde7e8;
   --shadow-soft-brand: 0 20px 50px color-mix(in srgb, var(--color-dark-navy) 12%, transparent);
   --shadow-card-brand: 0 12px 30px color-mix(in srgb, var(--color-dark-navy) 9%, transparent);
+  --font-brand: var(--font-gilroy, Gilroy), Inter, Arial, system-ui, sans-serif;
+  --font-body: Inter, Arial, system-ui, sans-serif;
 }
 
 * {
@@ -31,8 +33,21 @@ body {
   background: var(--color-warm-white);
   color: var(--color-dark-navy);
   text-rendering: optimizeLegibility;
-  font-family: Gilroy, Inter, Arial, system-ui, sans-serif;
+  font-family: var(--font-body);
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+h1,
+h2,
+h3,
+.brand-heading {
+  font-family: var(--font-brand);
+  font-weight: 900;
+}
+
+button,
+.brand-strong {
+  font-family: var(--font-brand);
 }
 
 ::selection {

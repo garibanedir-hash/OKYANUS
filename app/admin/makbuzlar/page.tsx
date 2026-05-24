@@ -230,7 +230,7 @@ export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsP
         })}
       </AdminTable>
       <AdminPanelNotice title="Makbuz hazırlık notu">
-        PDF yalnızca paid ödeme ilişkili, iptal edilmemiş makbuzlar için hazırlanır. Kurumsal tasarımlı dosya receipts-private bucket içinde saklanır; gerçek mali onay/issued süreci ve e-posta gönderimi sonraki aşamadadır. PDF dosyası hazırlanmış ancak kayıt bilgisi eksikse sistem PDF Hazırla işleminde otomatik onarım dener.
+        PDF yalnızca paid ödeme ilişkili, iptal edilmemiş makbuzlar için hazırlanır. Kurumsal şablonlu dosya receipts-private bucket içinde saklanır ve yetki kontrollü görüntülenir. Mevcut eski PDF dosyaları yeniden üretilmeden yeni tasarıma geçmez; Gilroy font dosyaları eklenirse site font sistemi otomatik kullanır. Gerçek mali onay/issued süreci ve e-posta gönderimi sonraki aşamadadır.
       </AdminPanelNotice>
     </div>
   );
