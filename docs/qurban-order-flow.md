@@ -176,3 +176,12 @@ Audit log hatası ana başvuru akışını patlatmaz. Guest başvurularda audit 
 - Kurban iş kuralı finalizasyonu sonraki aşamada atomik işlem olmalıdır: `qurban_orders.payment_status = paid`, `qurban_orders.order_status = payment_confirmed`, `qurban_shares.status = payment_confirmed`, `quota_reserved -> quota_completed`.
 - Failed/cancelled callback sonrası quota release planı idempotent ve transaction güvenli tasarlanmalıdır.
 - Ok/fail dönüş sayfaları kurban siparişini onaylamaz veya iptal etmez; karar yalnızca callback ile verilir.
+
+## 10B Kurban Payment Intent Akışı
+
+- `createQurbanOrderAction` başarılı order sonrası `buildQurbanPaymentContext` ile PayTR provider'lı payment intent oluşturur.
+- Payment intent oluşturulamazsa kurban siparişi bozulmaz; başarı ekranında ödeme bağlantısının daha sonra hazırlanabileceği belirtilir.
+- Başarı ekranında varsa Ödeme No ve `/odeme/paytr/[intentNo]` bağlantısı gösterilir.
+- Aynı `qurban_orders.id` için bekleyen/başlatılmış payment intent varsa yeni kayıt açılmaz, mevcut intent tekrar kullanılır.
+- PayTR paid callback sonrası sipariş ödeme durumu ve hisse durumları sınırlı olarak güncellenir.
+- `quota_completed` artışı ve failed/cancelled quota release işlemi 10C aşamasında transaction güvenli RPC/job ile yapılmalıdır.

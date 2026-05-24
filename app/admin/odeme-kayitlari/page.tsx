@@ -61,6 +61,21 @@ function DisabledDemoButton({ children }: { children: React.ReactNode }) {
   );
 }
 
+function PaymentAction({ intentNo, canOpen }: { intentNo: string; canOpen: boolean }) {
+  if (canOpen) {
+    return (
+      <a
+        href={`/odeme/paytr/${intentNo}`}
+        className="focus-ring inline-flex min-h-8 items-center justify-center rounded-md bg-deep-blue px-2.5 py-1 text-[0.72rem] font-extrabold text-white"
+      >
+        Ödeme sayfasını aç
+      </a>
+    );
+  }
+
+  return <DisabledDemoButton>Manuel ödendi demo</DisabledDemoButton>;
+}
+
 export default async function AdminPaymentRecordsPage({ searchParams }: AdminPaymentRecordsPageProps) {
   const params = await searchParams;
   const { data: paymentIntents, source } = await getAdminPaymentIntentsWithSource();
@@ -147,7 +162,10 @@ export default async function AdminPaymentRecordsPage({ searchParams }: AdminPay
         recordCount={filteredPayments.length}
         empty={!filteredPayments.length}
       >
-        {filteredPayments.map((payment) => (
+        {filteredPayments.map((payment) => {
+          const canOpenPaymentPage = payment.provider === "paytr" && ["pending", "initiated", "requires_action"].includes(payment.status);
+
+          return (
           <tr key={payment.id}>
             <td className="font-bold text-dark-navy">{payment.intentNo}</td>
             <td>
@@ -158,6 +176,7 @@ export default async function AdminPaymentRecordsPage({ searchParams }: AdminPay
             <td>
               {payment.contextTypeLabel}
               {payment.contextId ? <span className="block text-xs text-ink-muted">{payment.contextId.slice(0, 8)}</span> : null}
+              <span className="block text-xs text-ink-muted">{payment.metadataSummary}</span>
             </td>
             <td>{formatMoney(payment.amount, payment.currency)}</td>
             <td>{payment.currency}</td>
@@ -170,9 +189,10 @@ export default async function AdminPaymentRecordsPage({ searchParams }: AdminPay
             </td>
             <td><AdminStatusBadge status={payment.statusLabel} /></td>
             <td>{formatDate(payment.createdAt)}</td>
-            <td><DisabledDemoButton>Manuel ödendi demo</DisabledDemoButton></td>
+            <td><PaymentAction intentNo={payment.intentNo} canOpen={canOpenPaymentPage} /></td>
           </tr>
-        ))}
+          );
+        })}
       </AdminTable>
       <AdminPanelNotice title="9E ödeme altyapısı">
         Bu ekran `payment_intents` tablosuna göre hazırlanmıştır. PayTR test entegrasyonunda kesin onay yalnızca `/api/paytr/callback`

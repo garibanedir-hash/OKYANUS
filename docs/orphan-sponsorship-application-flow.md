@@ -108,3 +108,12 @@ Eşleştirme action akışı:
 - Sponsorluk iş kuralı finalizasyonu sonraki aşamada atomik işlem olmalıdır: `sponsorships.payment_status = paid`, `sponsorships.status = active`, `next_payment_date` periyoda göre hesaplanır.
 - Failed/cancelled callback sonrası sponsor bilgilendirme, retry ve pasifleştirme state machine'i ayrı tasarlanmalıdır.
 - Ok/fail dönüş sayfaları sponsorluk aktivasyonu yapmaz; karar yalnızca callback ile verilir.
+
+## 10B Sponsorluk Payment Intent Akışı
+
+- Admin eşleştirme action'ı sponsorship oluşturduktan sonra `buildOrphanSponsorshipPaymentContext` ile PayTR provider'lı payment intent oluşturur.
+- Payment intent oluşturulamazsa sponsorluk kaydı bozulmaz; admin eşleştirme ekranında ödeme bağlantısının sonradan hazırlanabileceği belirtilir.
+- Aynı `sponsorships.id` için bekleyen/başlatılmış payment intent varsa yeni kayıt açılmaz, mevcut intent tekrar kullanılır.
+- Sponsor panelinde payment intent varsa “Ödemeye Devam Et” bağlantısı gösterilir.
+- PayTR paid callback sonrası `sponsorships.payment_status = paid`, `sponsorships.status = active` ve `last_payment_date` güncellenir.
+- `next_payment_date` yenileme, düzenli ödeme retry ve pasifleştirme state machine'i 10C/10D aşamalarında netleştirilmelidir.

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BookOpen, CheckCircle2, HeartHandshake, Package, ShieldCheck, Utensils } from "lucide-react";
+import { AlertCircle, BookOpen, CheckCircle2, HeartHandshake, Package, ShieldCheck, Utensils } from "lucide-react";
 import { projects } from "@/data/projects";
 import { Button } from "@/components/ui/Button";
 import { SelectField, TextAreaField, TextField } from "@/components/ui/FormField";
@@ -23,26 +23,31 @@ const donationTypes = [
   { label: "Kış Yardımları", icon: Package }
 ];
 
-export function DonationForm({ initialProjectSlug }: { initialProjectSlug?: string }) {
+type DonationFormProps = {
+  initialProjectSlug?: string;
+  action: (formData: FormData) => void | Promise<void>;
+  formError?: string;
+  formNotice?: string;
+};
+
+export function DonationForm({ initialProjectSlug, action, formError, formNotice }: DonationFormProps) {
   const [amount, setAmount] = useState<number | "custom">(250);
   const [donationType, setDonationType] = useState("Genel Bağış");
   const [selectedProject, setSelectedProject] = useState(initialProjectSlug ?? "genel");
-  const [success, setSuccess] = useState(false);
 
   return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault();
-        setSuccess(true);
-      }}
-      className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-soft sm:p-8"
-    >
-      {success ? (
+    <form action={action} className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-soft sm:p-8">
+      {formNotice ? (
         <div className="mb-6 flex gap-3 rounded-2xl bg-mint-green p-4 text-ocean-green">
           <CheckCircle2 aria-hidden className="mt-0.5 h-5 w-5" />
-          <p className="text-sm font-semibold">
-            Bağış ön kaydınız bize ulaştı. Ortak ödeme altyapısı gerçek sağlayıcı entegrasyonu açıldığında güvenli ödeme ve makbuz takibiyle tamamlanacaktır.
-          </p>
+          <p className="text-sm font-semibold">{formNotice}</p>
+        </div>
+      ) : null}
+
+      {formError ? (
+        <div className="mb-6 flex gap-3 rounded-2xl bg-warm-accent/10 p-4 text-dark-navy">
+          <AlertCircle aria-hidden className="mt-0.5 h-5 w-5 text-warm-accent" />
+          <p className="text-sm font-semibold">{formError}</p>
         </div>
       ) : null}
 
@@ -79,8 +84,9 @@ export function DonationForm({ initialProjectSlug }: { initialProjectSlug?: stri
       </fieldset>
 
       {amount === "custom" ? (
-        <TextField label="Özel Tutar" type="number" placeholder="Tutar giriniz" className="mt-4" />
+        <TextField label="Özel Tutar" name="customAmount" type="number" min={10} step="0.01" placeholder="Tutar giriniz" required className="mt-4" />
       ) : null}
+      <input type="hidden" name="amount" value={String(amount)} />
 
       <fieldset className="mt-7">
         <legend className="text-lg font-bold text-dark-navy">Bağış Türü</legend>
@@ -103,7 +109,7 @@ export function DonationForm({ initialProjectSlug }: { initialProjectSlug?: stri
       </fieldset>
 
       <input type="hidden" name="donationType" value={donationType} />
-      <SelectField label="Proje Seçimi" className="mt-6" value={selectedProject} onChange={(event) => setSelectedProject(event.target.value)}>
+      <SelectField label="Proje Seçimi" name="selectedProject" className="mt-6" value={selectedProject} onChange={(event) => setSelectedProject(event.target.value)}>
         <option value="genel">Genel bağış olarak değerlendirilsin</option>
         {projects.map((project) => (
           <option key={project.slug} value={project.slug}>
@@ -111,17 +117,34 @@ export function DonationForm({ initialProjectSlug }: { initialProjectSlug?: stri
           </option>
         ))}
       </SelectField>
-      <input type="hidden" name="selectedProject" value={selectedProject} />
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <TextField label="Ad Soyad" required />
-        <TextField label="E-posta" type="email" required />
-        <TextField label="Telefon" type="tel" />
-        <TextAreaField label="Not" placeholder="İsteğe bağlı notunuz" className="sm:col-span-2" />
+        <TextField label="Ad Soyad" name="fullName" required autoComplete="name" maxLength={120} />
+        <TextField label="E-posta" name="email" type="email" required autoComplete="email" maxLength={160} />
+        <TextField label="Telefon" name="phone" type="tel" autoComplete="tel" maxLength={30} />
+        <TextAreaField label="Not" name="note" placeholder="İsteğe bağlı notunuz" className="sm:col-span-2" maxLength={500} />
+      </div>
+
+      <div className="mt-6 grid gap-3 text-sm font-semibold leading-6 text-ink-muted">
+        <label className="flex items-start gap-3">
+          <input name="kvkkAccepted" type="checkbox" required className="mt-1 h-4 w-4 accent-ocean-green" />
+          <span>KVKK aydınlatma metnini okudum ve bağış ödeme niyeti oluşturulmasını onaylıyorum.</span>
+        </label>
+        <label className="flex items-start gap-3">
+          <input name="contactPermission" type="checkbox" className="mt-1 h-4 w-4 accent-ocean-green" />
+          <span>Bağış ve makbuz bilgilendirmeleri için benimle iletişime geçilmesine izin veriyorum.</span>
+        </label>
+      </div>
+
+      <div className="hidden" aria-hidden="true">
+        <label>
+          Website
+          <input name="website" tabIndex={-1} autoComplete="off" />
+        </label>
       </div>
 
       <Button type="submit" className="mt-7 w-full" showIcon>
-        Bağış Ön Kaydı Oluştur
+        Güvenli Ödeme Niyeti Oluştur
       </Button>
     </form>
   );

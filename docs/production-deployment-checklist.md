@@ -132,6 +132,10 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] PayTR ok/fail sayfalarının onay/iptal yapmadığı test edildi.
 - [ ] Duplicate callback ve hash doğrulama senaryoları production geçişinden önce test edildi.
 - [ ] `PAYTR_TEST_MODE=false` yalnızca yönetim, teknik sorumlu ve hukuk/mali süreç onayıyla açılacak.
+- [ ] Genel bağış, kurban ve yetim payment intent başlatma akışları staging'de test edildi.
+- [ ] PayTR env eksikken güvenli hata sayfası doğrulandı.
+- [ ] Paid callback sonrası kurban/sponsorluk sınırlı status update sonuçları staging'de kontrol edildi.
+- [ ] Kurban quota_completed ve failed/cancelled quota release işlemleri 10C transaction planı olmadan production'a açılmadı.
 
 ## Veri Güvenliği ve KVKK
 

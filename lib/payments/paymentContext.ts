@@ -1,4 +1,4 @@
-import type { PaymentContextType, PaymentProvider } from "@/data/paymentMock";
+import { paymentContextTypeLabels, type PaymentContextType, type PaymentProvider } from "@/data/paymentMock";
 
 export type { PaymentContextType };
 
@@ -11,6 +11,7 @@ export type PaymentContextInput = {
   donorPhone?: string | null;
   amount: number;
   currency?: string;
+  provider?: PaymentProvider;
   metadata?: Record<string, unknown>;
 };
 
@@ -36,9 +37,7 @@ function normalizeEmail(value: string | null | undefined) {
 }
 
 export function normalizePaymentContext(input: PaymentContextInput): PaymentIntentDraft {
-  if (!Number.isFinite(input.amount) || input.amount <= 0) {
-    throw new Error("Ödeme tutarı sıfırdan büyük olmalıdır.");
-  }
+  validatePaymentContextAmount(input);
 
   return {
     contextType: input.contextType,
@@ -49,9 +48,28 @@ export function normalizePaymentContext(input: PaymentContextInput): PaymentInte
     donorPhone: normalizeText(input.donorPhone),
     amount: input.amount,
     currency: input.currency ?? "TRY",
-    provider: "manual",
+    provider: input.provider ?? "manual",
     metadata: input.metadata ?? {}
   };
+}
+
+export function validatePaymentContextAmount(context: Pick<PaymentContextInput, "amount" | "currency">) {
+  if (!Number.isFinite(context.amount) || context.amount <= 0) {
+    throw new Error("Ödeme tutarı sıfırdan büyük olmalıdır.");
+  }
+
+  if (context.amount < 1) {
+    throw new Error("Ödeme tutarı en az 1 olmalıdır.");
+  }
+
+  const currency = context.currency ?? "TRY";
+  if (!/^[A-Z]{3}$/.test(currency)) {
+    throw new Error("Para birimi ISO formatında olmalıdır.");
+  }
+}
+
+export function getPaymentContextDisplayName(contextType: PaymentContextType) {
+  return paymentContextTypeLabels[contextType] ?? "Ödeme";
 }
 
 export function buildQurbanPaymentContext(input: {
@@ -73,6 +91,7 @@ export function buildQurbanPaymentContext(input: {
     donorPhone: input.donorPhone,
     amount: input.totalAmount,
     currency: input.currency,
+    provider: "paytr",
     metadata: {
       summary: "Kurban siparişi ödeme hazırlığı",
       orderNo: input.orderNo ?? null
@@ -101,6 +120,7 @@ export function buildOrphanSponsorshipPaymentContext(input: {
     donorPhone: input.donorPhone,
     amount: input.amount,
     currency: input.currency,
+    provider: "paytr",
     metadata: {
       summary: "Yetim hamiliği ödeme hazırlığı",
       sponsorshipNo: input.sponsorshipNo ?? null,
@@ -119,9 +139,11 @@ export function buildGeneralDonationPaymentContext(input: {
   currency?: string;
   donationType?: string | null;
   projectSlug?: string | null;
+  note?: string | null;
+  contactPermission?: boolean;
 }) {
   return normalizePaymentContext({
-    contextType: input.projectSlug ? "project_donation" : "general_donation",
+    contextType: "general_donation",
     contextId: input.donationId ?? null,
     donorAccountId: input.donorAccountId,
     donorName: input.donorName,
@@ -129,10 +151,13 @@ export function buildGeneralDonationPaymentContext(input: {
     donorPhone: input.donorPhone,
     amount: input.amount,
     currency: input.currency,
+    provider: "paytr",
     metadata: {
       summary: "Genel bağış ödeme hazırlığı",
       donationType: input.donationType ?? "Genel Bağış",
-      projectSlug: input.projectSlug ?? null
+      projectSlug: input.projectSlug ?? null,
+      note: input.note ?? null,
+      contactPermission: input.contactPermission ?? false
     }
   });
 }

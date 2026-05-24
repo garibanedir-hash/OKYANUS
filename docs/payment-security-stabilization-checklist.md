@@ -66,3 +66,12 @@ Bu checklist gerçek ödeme entegrasyonuna geçmeden önce ortak ödeme, makbuz 
 - [ ] Duplicate callback tekrar finalization çalıştırmıyor.
 - [ ] Callback response başarılı işlemde sadece düz metin `OK`.
 - [ ] Test mode kapatılmadan production ödeme açılmıyor.
+
+## 10B Payment Intent Başlatma Kontrolü
+
+- [ ] Genel bağış formu payment intent oluştururken amount/e-posta/KVKK server-side doğrulanıyor.
+- [ ] Kurban payment intent tutarı client input'tan değil oluşturulan order toplamından alınıyor.
+- [ ] Yetim sponsorship payment intent tutarı sponsorship/program kaydından alınıyor.
+- [ ] `paymentWriteRepository` aynı context için pending/initiated intent'i tekrar kullanıyor.
+- [ ] Client componentler `paymentWriteRepository`, service role veya PayTR secret import etmiyor.
+- [ ] Paid callback sonrası sınırlı context finalization duplicate callback ile tekrar çalışmıyor.

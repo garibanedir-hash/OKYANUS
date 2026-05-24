@@ -2,7 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { createPaymentIntentForContext, PaymentWriteError } from "@/lib/data/paymentWriteRepository";
 import { createQurbanOrder, getCampaignForOrder, getCurrentQurbanDonorContext, QurbanWriteError } from "@/lib/data/qurbanWriteRepository";
+import { buildQurbanPaymentContext } from "@/lib/payments/paymentContext";
 import type { QurbanType } from "@/data/qurbanMock";
 
 const qurbanTypes: QurbanType[] = ["vacip", "adak", "akika", "sukur", "nafile", "genel"];
@@ -90,7 +92,7 @@ function getDonorAccountId(context: Awaited<ReturnType<typeof getCurrentQurbanDo
 }
 
 function getFriendlyError(error: unknown) {
-  if (error instanceof QurbanWriteError || error instanceof Error) {
+  if (error instanceof QurbanWriteError || error instanceof PaymentWriteError || error instanceof Error) {
     return error.message;
   }
 
@@ -104,7 +106,14 @@ export async function createQurbanOrderAction(formData: FormData) {
   }
 
   const attemptedCampaignSlug = getString(formData, "campaign") || getString(formData, "campaignSlug") || getString(formData, "campaignId");
-  let success: { orderNo: string; shareCount: number; totalAmount: number; campaignSlug: string } | null = null;
+  let success: {
+    orderNo: string;
+    shareCount: number;
+    totalAmount: number;
+    campaignSlug: string;
+    paymentIntentNo?: string;
+    paymentIntentWarning?: string;
+  } | null = null;
 
   try {
     const input = parseQurbanOrderForm(formData);
@@ -145,18 +154,43 @@ export async function createQurbanOrderAction(formData: FormData) {
       }
     );
 
+    let paymentIntentNo: string | undefined;
+    let paymentIntentWarning: string | undefined;
+    try {
+      const paymentContext = buildQurbanPaymentContext({
+        orderId: result.orderId,
+        donorAccountId,
+        donorName: input.donorName,
+        donorEmail: input.donorEmail,
+        donorPhone: input.donorPhone,
+        totalAmount: result.totalAmount,
+        currency: campaign.currency,
+        orderNo: result.orderNo
+      });
+      const paymentIntent = await createPaymentIntentForContext(paymentContext, {
+        actorId: donorContext?.userId ?? null,
+        actorRole: donorAccountId ? "donor" : "guest"
+      });
+      paymentIntentNo = paymentIntent.intentNo;
+    } catch {
+      paymentIntentWarning = "Ödeme bağlantısı şu anda oluşturulamadı; başvurunuz alındı ve yönetim ekranından tekrar hazırlanabilir.";
+    }
+
     revalidatePath("/kurban");
     revalidatePath(`/kurban/${campaign.slug}`);
     revalidatePath("/kurban/bagis");
     revalidatePath("/admin/kurban");
     revalidatePath("/admin/kurban/bagislar");
+    revalidatePath("/admin/odeme-kayitlari");
     revalidatePath("/panel/kurbanlarim");
 
     success = {
       orderNo: result.orderNo,
       shareCount: result.shareCount,
       totalAmount: result.totalAmount,
-      campaignSlug: campaign.slug
+      campaignSlug: campaign.slug,
+      paymentIntentNo,
+      paymentIntentWarning
     };
   } catch (error) {
     redirectWithStatus("hata", { mesaj: getFriendlyError(error), kampanya: attemptedCampaignSlug });
@@ -167,7 +201,9 @@ export async function createQurbanOrderAction(formData: FormData) {
       siparis: success.orderNo,
       adet: success.shareCount,
       tutar: Math.round(success.totalAmount),
-      kampanya: success.campaignSlug
+      kampanya: success.campaignSlug,
+      odeme: success.paymentIntentNo,
+      odeme_hata: success.paymentIntentWarning ? "1" : undefined
     });
   }
 }

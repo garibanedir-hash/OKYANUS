@@ -86,6 +86,22 @@ merchant_oid:status:total_amount
 
 `payment_provider_events` içinde daha önce işlenmiş event varsa ödeme durumu tekrar güncellenmez. `payment_intents` zaten terminal durumda ise context finalization tekrar çalıştırılmaz.
 
+## 10B Payment Intent Başlatma
+
+10B ile payment intent oluşturma akışı modüllere bağlandı:
+
+- `/bagis-yap` genel bağış formu server action ile `general_donation` payment intent oluşturur ve `/odeme/paytr/[intentNo]` adresine yönlendirir.
+- `/kurban/bagis` kurban siparişi başarılı oluştuğunda `qurban_order` payment intent oluşturur.
+- Admin yetim eşleştirme akışı sponsorship oluşturduktan sonra `orphan_sponsorship` payment intent oluşturur.
+
+Tutarlar client güvenine bırakılmaz:
+
+- Genel bağışta tutar server action içinde normalize edilir ve minimum tutar doğrulanır.
+- Kurban tutarı `qurban_orders.total_amount` / kampanya birim bedeli üzerinden gelir.
+- Yetim sponsorluğu tutarı `sponsorships.monthly_amount` / program tutarı üzerinden gelir.
+
+PayTR test env eksikse ödeme sayfası güvenli şekilde “Ödeme sağlayıcı test bilgileri tanımlı değil” mesajı gösterir. Payment intent yine admin ekranında görülebilir.
+
 ## Finalization Hazırlığı
 
 `lib/payments/paymentFinalization.ts` içinde bağlam bazlı hazırlık fonksiyonları vardır:
@@ -94,10 +110,12 @@ merchant_oid:status:total_amount
 - `handleFailedPaymentIntent`
 - `handleCancelledPaymentIntent`
 
-Bu aşamada:
+10B itibarıyla:
 
-- Kurban kontenjan finalizasyonu tam iş kuralı olarak çalıştırılmaz.
-- Yetim sponsorluğu aktifleme tam iş kuralı olarak çalıştırılmaz.
+- Kurban için `qurban_orders.payment_status = paid`, `qurban_orders.order_status = payment_confirmed` ve `qurban_shares.status = payment_confirmed` güncellenebilir.
+- Kurban `quota_completed` finalizasyonu transaction güvenliği için 10C aşamasına bırakılır.
+- Yetim sponsorluğu için `sponsorships.payment_status = paid`, `sponsorships.status = active` ve `last_payment_date` güncellenebilir.
+- Yetim `next_payment_date` yenileme stratejisi 10C/10D aşamasında netleştirilecektir.
 - Makbuz hazırlık kaydı ve sistem bildirim kuyruğu hazırlanır.
 
 ## Production Öncesi

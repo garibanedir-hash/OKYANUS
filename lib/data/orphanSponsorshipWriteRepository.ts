@@ -103,6 +103,13 @@ export type MatchWorkflowResult = {
   matchId: string;
   sponsorshipId: string;
   sponsorshipNo: string;
+  applicationNo: string;
+  sponsorAccountId: string | null;
+  sponsorName: string;
+  sponsorEmail: string;
+  sponsorPhone: string | null;
+  monthlyAmount: number;
+  currency: string;
 };
 
 export class OrphanSponsorshipWriteError extends Error {
@@ -558,7 +565,14 @@ export async function createSponsorshipFromMatch(matchId: string, actorId: strin
   return {
     matchId: match.id,
     sponsorshipId: sponsorship.id,
-    sponsorshipNo: sponsorship.sponsorship_no
+    sponsorshipNo: sponsorship.sponsorship_no,
+    applicationNo: application.application_no,
+    sponsorAccountId: application.sponsor_account_id,
+    sponsorName: application.applicant_name,
+    sponsorEmail: application.applicant_email,
+    sponsorPhone: application.applicant_phone,
+    monthlyAmount: program.monthlyAmount,
+    currency: program.currency
   };
 }
 

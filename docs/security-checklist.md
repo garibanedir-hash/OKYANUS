@@ -227,3 +227,12 @@
 - [ ] Duplicate callback idempotent işleniyor.
 - [ ] Callback payload summary hassas secret veya tam kart verisi içermiyor.
 - [ ] Production öncesi `PAYTR_TEST_MODE=false` geçişi yazılı onay ve test tamamlanmadan yapılmıyor.
+
+## 10B Payment Intent Başlatma Güvenliği
+
+- [ ] Genel bağış payment intent server action ile oluşturuluyor; client doğrudan payment tablolarına yazmıyor.
+- [ ] Kurban payment intent tutarı server-side oluşturulan order toplamından geliyor.
+- [ ] Yetim sponsorship payment intent tutarı server-side sponsorship/program değerinden geliyor.
+- [ ] Aynı context için bekleyen intent tekrar kullanılıyor; duplicate pending kayıt oluşmuyor.
+- [ ] PayTR env eksikliği kullanıcıya güvenli ve teknik detay içermeyen mesajla gösteriliyor.
+- [ ] Public ödeme sayfasında merchant key/salt, hash veya teknik callback detayı gösterilmiyor.

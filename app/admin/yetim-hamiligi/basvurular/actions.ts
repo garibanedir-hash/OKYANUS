@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdminUser, AdminAuthorizationError } from "@/lib/auth/requireAdmin";
+import { createPaymentIntentForContext, PaymentWriteError } from "@/lib/data/paymentWriteRepository";
 import {
   approveSponsorshipMatch,
   createSponsorshipFromMatch,
@@ -10,6 +11,7 @@ import {
   OrphanSponsorshipWriteError,
   rejectSponsorshipApplication
 } from "@/lib/data/orphanSponsorshipWriteRepository";
+import { buildOrphanSponsorshipPaymentContext } from "@/lib/payments/paymentContext";
 
 function getString(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -29,7 +31,7 @@ function redirectToMatch(applicationId: string, durum: string, extra?: Record<st
 }
 
 function getFriendlyError(error: unknown) {
-  if (error instanceof AdminAuthorizationError || error instanceof OrphanSponsorshipWriteError || error instanceof Error) {
+  if (error instanceof AdminAuthorizationError || error instanceof OrphanSponsorshipWriteError || error instanceof PaymentWriteError || error instanceof Error) {
     return error.message;
   }
 
@@ -40,7 +42,7 @@ export async function approveAndMatchSponsorshipAction(formData: FormData) {
   const applicationId = getString(formData, "applicationId");
   const orphanId = getString(formData, "orphanId");
   const note = getString(formData, "note");
-  let success: { sponsorshipNo: string } | null = null;
+  let success: { sponsorshipNo: string; paymentIntentNo?: string; paymentIntentWarning?: string } | null = null;
 
   if (!applicationId) {
     redirectToMatch("eksik", "hata", { mesaj: "Başvuru kaydı seçilmelidir." });
@@ -58,21 +60,49 @@ export async function approveAndMatchSponsorshipAction(formData: FormData) {
     });
     const approvedMatch = await approveSponsorshipMatch(match.id, admin.user.id);
     const result = await createSponsorshipFromMatch(approvedMatch.id, admin.user.id);
+    let paymentIntentNo: string | undefined;
+    let paymentIntentWarning: string | undefined;
+
+    try {
+      const paymentContext = buildOrphanSponsorshipPaymentContext({
+        sponsorshipId: result.sponsorshipId,
+        donorAccountId: result.sponsorAccountId,
+        donorName: result.sponsorName,
+        donorEmail: result.sponsorEmail,
+        donorPhone: result.sponsorPhone,
+        amount: result.monthlyAmount,
+        currency: result.currency,
+        sponsorshipNo: result.sponsorshipNo,
+        applicationNo: result.applicationNo
+      });
+      const paymentIntent = await createPaymentIntentForContext(paymentContext, {
+        actorId: admin.user.id,
+        actorRole: "admin"
+      });
+      paymentIntentNo = paymentIntent.intentNo;
+    } catch {
+      paymentIntentWarning = "Sponsorluk oluşturuldu ancak ödeme bağlantısı şu anda hazırlanamadı.";
+    }
 
     revalidatePath("/admin/yetim-hamiligi");
     revalidatePath("/admin/yetim-hamiligi/basvurular");
     revalidatePath(`/admin/yetim-hamiligi/basvurular/${applicationId}/eslestir`);
     revalidatePath("/admin/yetim-hamiligi/sponsorluklar");
     revalidatePath("/admin/yetim-hamiligi/yetimler");
+    revalidatePath("/admin/odeme-kayitlari");
     revalidatePath("/panel/yetim-sponsorluk");
 
-    success = { sponsorshipNo: result.sponsorshipNo };
+    success = { sponsorshipNo: result.sponsorshipNo, paymentIntentNo, paymentIntentWarning };
   } catch (error) {
     redirectToMatch(applicationId, "hata", { mesaj: getFriendlyError(error) });
   }
 
   if (success) {
-    redirectToMatch(applicationId, "basarili", { sponsorluk: success.sponsorshipNo });
+    redirectToMatch(applicationId, "basarili", {
+      sponsorluk: success.sponsorshipNo,
+      odeme: success.paymentIntentNo,
+      odeme_hata: success.paymentIntentWarning ? "1" : undefined
+    });
   }
 }
 

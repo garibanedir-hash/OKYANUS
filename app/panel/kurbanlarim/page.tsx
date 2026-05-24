@@ -64,7 +64,7 @@ export default async function PanelQurbanOrdersPage() {
       <AdminTable headers={["Sipariş No", "Kurban türü", "Kampanya", "Hisse/adet", "Durum", "Ödeme", "Vekalet", "Makbuz", "Tarih", "Detay"]} recordCount={orders.length} empty={!orders.length}>
         {orders.map((order) => {
           const paymentIntent = paymentIntentsByOrder.get(order.id);
-          const canContinuePayment = paymentIntent && ["pending", "initiated", "requires_action"].includes(paymentIntent.status);
+          const canContinuePayment = paymentIntent && order.paymentStatus !== "paid" && ["pending", "initiated", "requires_action"].includes(paymentIntent.status);
 
           return (
             <tr key={order.id}>

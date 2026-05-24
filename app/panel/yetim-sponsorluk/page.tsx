@@ -72,7 +72,8 @@ export default async function SponsorshipPage() {
         {sponsorships.map((item) => {
           const orphan = sponsoredOrphans.find((safe) => safe.sponsorshipId === item.id);
           const paymentIntent = paymentIntentsBySponsorship.get(item.id);
-          const canContinuePayment = paymentIntent && ["pending", "initiated", "requires_action"].includes(paymentIntent.status);
+          const supportIsActive = item.status === "active" || item.paymentStatus === "paid" || paymentIntent?.status === "paid";
+          const canContinuePayment = paymentIntent && !supportIsActive && ["pending", "initiated", "requires_action"].includes(paymentIntent.status);
 
           return (
             <tr key={item.id}>
@@ -89,6 +90,8 @@ export default async function SponsorshipPage() {
                   <Button href={`/odeme/paytr/${paymentIntent.intentNo}`} variant="ghost" className="mt-2 min-h-8 rounded-md px-3 py-1 text-xs">
                     Ödemeye Devam Et
                   </Button>
+                ) : supportIsActive ? (
+                  <span className="mt-2 block text-xs font-bold text-ocean-green">Destek aktif</span>
                 ) : (
                   <span className="mt-2 block text-xs font-semibold text-ink-muted">
                     {paymentIntent ? paymentIntent.providerLabel : "PayTR test akışı payment intent oluşunca açılır."}

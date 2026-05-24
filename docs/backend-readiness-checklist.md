@@ -196,3 +196,15 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] `payment_provider_events`, `payment_events` ve `payment_status_logs` callback izini tutuyor.
 - [ ] Paid callback sonrası makbuz hazırlık ve bildirim kuyruğu taslağı oluşuyor.
 - [ ] Kurban/yetim/genel bağış finalization tam iş kuralı sonraki aşamaya kontrollü bırakıldı.
+
+## 10B Payment Intent Başlatma Kontrolleri
+
+- [ ] `/bagis-yap` formu server action ile `general_donation` payment intent oluşturuyor.
+- [ ] Genel bağışta amount, e-posta ve KVKK server-side doğrulanıyor.
+- [ ] Kurban order sonrası `qurban_order` payment intent oluşuyor ve başarı ekranında ödeme linki gösteriliyor.
+- [ ] Yetim eşleştirme sonrası `orphan_sponsorship` payment intent oluşuyor.
+- [ ] Aynı context için pending/initiated intent tekrar kullanılıyor.
+- [ ] Admin ödeme kayıtları yeni intent'leri PayTR provider ve Türkçe durum etiketiyle gösteriyor.
+- [ ] PayTR env eksikken ödeme sayfası güvenli hata gösteriyor.
+- [ ] Paid callback sonrası kurban ve sponsorluk için sınırlı status update çalışıyor.
+- [ ] Canlı ödeme, kart saklama, PDF makbuz ve gerçek bildirim gönderimi hala kapalı.

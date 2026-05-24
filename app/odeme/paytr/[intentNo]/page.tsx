@@ -10,12 +10,12 @@ import {
   markPaymentInitiated
 } from "@/lib/data/paymentWriteRepository";
 import {
-  createPaytrMerchantOid,
   PaytrConfigError,
   PaytrRequestError,
   requestPaytrIframeToken
 } from "@/lib/payments/paytr";
 import { formatCurrency, formatDate } from "@/lib/format";
+import { paymentIntentStatusLabels } from "@/data/paymentMock";
 
 export const metadata: Metadata = {
   title: "PayTR Test Ödeme",
@@ -79,7 +79,6 @@ export default async function PaytrPaymentPage({ params }: PaytrPaymentPageProps
 
   const requestHeaders = await headers();
   const amountLabel = formatCurrency(paymentIntent.amount);
-  const merchantOid = createPaytrMerchantOid(paymentIntent.intentNo);
   const siteUrl = getSiteUrl(requestHeaders);
   const canRequestToken = ["pending", "initiated", "requires_action"].includes(paymentIntent.status);
 
@@ -103,10 +102,13 @@ export default async function PaytrPaymentPage({ params }: PaytrPaymentPageProps
       iframeToken = result.token;
       await markPaymentInitiated(paymentIntent.id, result.merchantOid, { actorRole: "paytr_test_page" });
     } catch (error) {
-      setupError =
-        error instanceof PaytrConfigError || error instanceof PaytrRequestError
-          ? "PayTR test ödeme ekranı şu anda hazırlanamadı. Lütfen dernek yönetimiyle iletişime geçin."
-          : "Ödeme ekranı hazırlanırken beklenmeyen bir hata oluştu.";
+      if (error instanceof PaytrConfigError) {
+        setupError = "Ödeme sağlayıcı test bilgileri tanımlı değil. Lütfen yöneticiyle iletişime geçin.";
+      } else if (error instanceof PaytrRequestError) {
+        setupError = "PayTR test ödeme ekranı şu anda hazırlanamadı. Lütfen dernek yönetimiyle iletişime geçin.";
+      } else {
+        setupError = "Ödeme ekranı hazırlanırken beklenmeyen bir hata oluştu.";
+      }
 
       await appendPaymentStatusLog({
         paymentIntentId: paymentIntent.id,
@@ -136,16 +138,12 @@ export default async function PaytrPaymentPage({ params }: PaytrPaymentPageProps
                   <dd className="mt-1 font-black text-dark-navy">{paymentIntent.intentNo}</dd>
                 </div>
                 <div>
-                  <dt className="font-extrabold text-ink-muted">PayTR merchant_oid</dt>
-                  <dd className="mt-1 font-black text-dark-navy">{merchantOid}</dd>
-                </div>
-                <div>
                   <dt className="font-extrabold text-ink-muted">Tutar</dt>
                   <dd className="mt-1 font-black text-dark-navy">{amountLabel}</dd>
                 </div>
                 <div>
                   <dt className="font-extrabold text-ink-muted">Durum</dt>
-                  <dd className="mt-1 font-black text-dark-navy">{paymentIntent.status}</dd>
+                  <dd className="mt-1 font-black text-dark-navy">{paymentIntentStatusLabels[paymentIntent.status]}</dd>
                 </div>
                 <div>
                   <dt className="font-extrabold text-ink-muted">Oluşturma</dt>
@@ -163,15 +161,15 @@ export default async function PaytrPaymentPage({ params }: PaytrPaymentPageProps
             {paymentIntent.status === "paid" ? (
               <PaymentStatusCard
                 tone="success"
-                title="Bu ödeme daha önce onaylandı"
-                description="Ödeme kaydı paid durumunda. Yeni bir kart işlemi başlatılmaz."
+                title="Bu ödeme tamamlanmış görünüyor"
+                description="Ödeme kaydı ödendi durumunda. Yeni bir kart işlemi başlatılmaz."
               />
             ) : null}
             {["failed", "cancelled", "expired", "refunded"].includes(paymentIntent.status) ? (
               <PaymentStatusCard
                 tone="warning"
-                title="Bu ödeme için yeni işlem başlatılamaz"
-                description="Ödeme durumu tamamlanmış veya kapatılmış görünüyor. Gerekirse dernek yönetimi yeni bir ödeme niyeti oluşturmalıdır."
+                title="Bu ödeme bağlantısı geçerli değil"
+                description="Ödeme durumu kapatılmış görünüyor. Gerekirse dernek yönetimi yeni bir ödeme niyeti oluşturmalıdır."
               />
             ) : null}
             {setupError ? <PaymentStatusCard tone="warning" title="Test ödeme ekranı hazırlanamadı" description={setupError} /> : null}

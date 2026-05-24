@@ -108,3 +108,15 @@ Provider callback entegrasyonu açıldığında `payment_provider_events.provide
 - Kullanıcı ok/fail dönüş sayfaları sipariş veya bağış onayı yapmaz.
 - Kesin ödeme durumu `/api/paytr/callback` içinde hash doğrulaması ve idempotency kontrolüyle işlenir.
 - Kart bilgisi, CVV veya hassas ödeme verisi Okyanus sisteminde saklanmaz.
+
+## 10B Payment Intent Başlatma
+
+10B ile ortak payment intent modeli modüllere bağlandı.
+
+- Genel bağış formu `general_donation` payment intent oluşturur ve PayTR test ödeme sayfasına yönlendirir.
+- Kurban siparişi başarıyla oluşunca `qurban_order` context_id ile payment intent oluşturulur.
+- Yetim hamiliği admin eşleştirmesi sponsorship oluşturunca `orphan_sponsorship` context_id ile payment intent oluşturulur.
+- `lib/payments/paymentContext.ts` bağlam tutarı, para birimi ve metadata üretimini ortaklaştırır.
+- `createPaymentIntentForContext` aynı context için `draft/pending/initiated/requires_action` ödeme niyeti varsa onu tekrar kullanır.
+- `paid/failed/cancelled/refunded/expired` kayıtlar yeni denemeden ayrı değerlendirilir.
+- Genel bağışta ayrı donation tablosu kaydı bu aşamada açılmaz; bağış niyeti `payment_intents.metadata` içinde izlenir ve ileride genel bağış kayıt modeliyle ilişkilendirilecektir.

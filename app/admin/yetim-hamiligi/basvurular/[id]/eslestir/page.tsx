@@ -12,7 +12,7 @@ import { approveAndMatchSponsorshipAction, rejectSponsorshipApplicationAction } 
 
 type MatchApplicationPageProps = {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<{ durum?: string; mesaj?: string; sponsorluk?: string }>;
+  searchParams?: Promise<{ durum?: string; mesaj?: string; sponsorluk?: string; odeme?: string; odeme_hata?: string }>;
 };
 
 export default async function MatchApplicationPage({ params, searchParams }: MatchApplicationPageProps) {
@@ -37,6 +37,8 @@ export default async function MatchApplicationPage({ params, searchParams }: Mat
       {query?.durum === "basarili" ? (
         <div className="rounded-lg border border-ocean-green/20 bg-mint-green/45 p-4 text-sm font-bold leading-6 text-dark-navy">
           Eşleştirme tamamlandı. Sponsorluk No: {query.sponsorluk ?? "oluşturuldu"}.
+          {query.odeme ? <span className="block">Ödeme No: {query.odeme}</span> : null}
+          {query.odeme_hata === "1" ? <span className="block">Ödeme bağlantısı daha sonra yönetim ekranından hazırlanabilir.</span> : null}
         </div>
       ) : null}
       {query?.durum === "reddedildi" ? (

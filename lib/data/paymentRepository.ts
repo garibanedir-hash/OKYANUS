@@ -211,7 +211,7 @@ function maskReference(value: string | null | undefined) {
 function metadataSummary(metadata: Record<string, unknown> | null | undefined) {
   if (!metadata) return "Ortak ödeme altyapısı kaydı";
 
-  for (const key of ["summary", "description", "note", "context"]) {
+  for (const key of ["orderNo", "sponsorshipNo", "applicationNo", "donationType", "summary", "description", "note", "context"]) {
     const value = metadata[key];
     if (typeof value === "string" && value.trim()) return value.trim();
   }

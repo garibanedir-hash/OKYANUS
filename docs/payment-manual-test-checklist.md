@@ -116,3 +116,20 @@ insert into public.payment_intents (
   '{"summary":"10A PayTR test payment intent"}'::jsonb
 );
 ```
+
+## 10B Modül Bağlantı Testleri
+
+- [ ] `/bagis-yap` formunda ad soyad, e-posta, tutar ve KVKK olmadan submit engelleniyor.
+- [ ] Geçerli genel bağış formu `payment_intents.context_type = general_donation` ve `provider = paytr` kaydı oluşturuyor.
+- [ ] Genel bağış başarılı olunca `/odeme/paytr/[intentNo]` adresine yönleniyor.
+- [ ] PayTR env eksikken ödeme sayfası güvenli hata mesajı gösteriyor ve teknik merchant/hash detayı göstermiyor.
+- [ ] Yeni kurban başvurusu sonrası `payment_intents.context_type = qurban_order` ve `context_id = qurban_orders.id` oluşuyor.
+- [ ] Kurban başarı ekranında Ödeme No ve “Ödemeye Devam Et” bağlantısı görünüyor.
+- [ ] `/panel/kurbanlarim` pending/initiated payment intent için “Ödemeye Devam Et” gösteriyor; paid durumda göstermiyor.
+- [ ] Yetim eşleştirme sonrası `payment_intents.context_type = orphan_sponsorship` ve `context_id = sponsorships.id` oluşuyor.
+- [ ] `/panel/yetim-sponsorluk` payment_pending sponsorship için “Ödemeye Devam Et” gösteriyor; active/paid durumda “Destek aktif” gösteriyor.
+- [ ] Admin ödeme kayıtları ekranında yeni intent'ler PayTR provider ve doğru durum etiketiyle görünüyor.
+- [ ] PayTR success callback sonrası `payment_intents.status = paid`, receipt hazırlık kaydı ve notification_queue sistem kaydı oluşuyor.
+- [ ] Kurban paid callback sonrası `qurban_orders.payment_status = paid`, `qurban_orders.order_status = payment_confirmed`, `qurban_shares.status = payment_confirmed` doğrulanıyor.
+- [ ] Yetim paid callback sonrası `sponsorships.payment_status = paid`, `sponsorships.status = active` doğrulanıyor.
+- [ ] Duplicate callback finalization tekrar çalıştırmıyor.

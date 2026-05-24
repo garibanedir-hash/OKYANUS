@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
 import { Button } from "@/components/ui/Button";
+import { createGeneralDonationPaymentIntentAction } from "@/app/bagis-yap/actions";
 
 export const metadata: Metadata = {
   title: "Bağış Yap",
@@ -27,7 +28,7 @@ const trustNotes: Array<{ icon: LucideIcon; text: string }> = [
 ];
 
 type DonatePageProps = {
-  searchParams?: Promise<{ proje?: string }>;
+  searchParams?: Promise<{ proje?: string; durum?: string; mesaj?: string }>;
 };
 
 export default async function DonatePage({ searchParams }: DonatePageProps) {
@@ -120,7 +121,12 @@ export default async function DonatePage({ searchParams }: DonatePageProps) {
                 </div>
               </div>
             </div>
-            <DonationForm initialProjectSlug={params?.proje} />
+            <DonationForm
+              initialProjectSlug={params?.proje}
+              action={createGeneralDonationPaymentIntentAction}
+              formError={params?.durum === "hata" ? params?.mesaj ?? "Bağış ödeme niyeti oluşturulamadı." : undefined}
+              formNotice={params?.durum === "alindi" ? "Bağış ön kaydınız alındı." : undefined}
+            />
           </div>
         </Container>
       </section>

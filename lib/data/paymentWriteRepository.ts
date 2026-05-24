@@ -11,6 +11,11 @@ import type {
   NotificationChannel,
   NotificationQueueStatus
 } from "@/data/paymentMock";
+import {
+  getPaymentContextDisplayName,
+  validatePaymentContextAmount,
+  type PaymentIntentDraft
+} from "@/lib/payments/paymentContext";
 
 type PaymentEventType =
   | "created"
@@ -314,6 +319,10 @@ function validatePaymentIntentInput(input: CreatePaymentIntentInput) {
   }
 }
 
+function getReusablePaymentStatuses(): PaymentIntentStatus[] {
+  return ["draft", "pending", "initiated", "requires_action"];
+}
+
 export async function getPaymentIntentById(id: string): Promise<PaymentIntentRecord | null> {
   const db = getAdminDb();
   const { data, error } = await db
@@ -361,6 +370,41 @@ export async function getPaymentIntentByProviderReference(
   }
 
   return data ? mapPaymentIntent(data) : null;
+}
+
+export async function findExistingPendingIntent(
+  contextType: PaymentContextType,
+  contextId?: string | null
+): Promise<PaymentIntentRecord | null> {
+  if (!contextId) return null;
+
+  const db = getAdminDb();
+  const { data, error } = await db
+    .from<PaymentIntentWriteRow>("payment_intents")
+    .select(paymentIntentWriteColumns)
+    .eq("context_type", contextType)
+    .eq("context_id", contextId)
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  if (error) {
+    throw new PaymentWriteError(
+      friendlyPaymentWriteError(error, "Bağlama ait ödeme niyetleri okunamadı."),
+      error.code ?? "payment_context_read_failed"
+    );
+  }
+
+  const reusableStatuses = getReusablePaymentStatuses();
+  const existing = (data ?? []).map((row) => mapPaymentIntent(row)).find((paymentIntent) => reusableStatuses.includes(paymentIntent.status));
+
+  return existing ?? null;
+}
+
+export async function preventDuplicatePendingIntent(
+  contextType: PaymentContextType,
+  contextId?: string | null
+): Promise<PaymentIntentRecord | null> {
+  return findExistingPendingIntent(contextType, contextId);
 }
 
 export async function createPaymentIntent(
@@ -456,6 +500,49 @@ export async function createPaymentIntent(
   }
 
   return paymentIntent;
+}
+
+export async function createOrReusePendingPaymentIntent(
+  context: PaymentIntentDraft,
+  writeContext: PaymentWriteContext = {}
+): Promise<PaymentIntentRecord> {
+  try {
+    validatePaymentContextAmount(context);
+  } catch (error) {
+    throw new PaymentWriteError(error instanceof Error ? error.message : "Ödeme bağlamı geçersiz.", "payment_context_invalid");
+  }
+
+  const existing = await findExistingPendingIntent(context.contextType, context.contextId);
+  if (existing) return existing;
+
+  const metadata = {
+    ...context.metadata,
+    contextDisplayName: getPaymentContextDisplayName(context.contextType)
+  };
+
+  return createPaymentIntent(
+    {
+      contextType: context.contextType,
+      contextId: context.contextId,
+      donorAccountId: context.donorAccountId,
+      donorName: context.donorName,
+      donorEmail: context.donorEmail,
+      donorPhone: context.donorPhone,
+      amount: context.amount,
+      currency: context.currency,
+      provider: context.provider,
+      status: "pending",
+      metadata
+    },
+    writeContext
+  );
+}
+
+export async function createPaymentIntentForContext(
+  context: PaymentIntentDraft,
+  writeContext: PaymentWriteContext = {}
+): Promise<PaymentIntentRecord> {
+  return createOrReusePendingPaymentIntent(context, writeContext);
 }
 
 export async function attachProviderReferenceToPaymentIntent(

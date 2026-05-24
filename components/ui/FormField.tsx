@@ -5,42 +5,69 @@ const fieldClass =
 
 export function TextField({
   label,
+  name,
   type = "text",
   required = false,
   placeholder,
-  className
+  className,
+  min,
+  max,
+  step,
+  maxLength,
+  autoComplete
 }: {
   label: string;
+  name?: string;
   type?: string;
   required?: boolean;
   placeholder?: string;
   className?: string;
+  min?: number;
+  max?: number;
+  step?: number | string;
+  maxLength?: number;
+  autoComplete?: string;
 }) {
   return (
     <label className={cn("block text-sm font-bold text-dark-navy", className)}>
       {label}
-      <input required={required} type={type} placeholder={placeholder} className={fieldClass} />
+      <input
+        name={name}
+        required={required}
+        type={type}
+        placeholder={placeholder}
+        min={min}
+        max={max}
+        step={step}
+        maxLength={maxLength}
+        autoComplete={autoComplete}
+        className={fieldClass}
+      />
     </label>
   );
 }
 
 export function TextAreaField({
   label,
+  name,
   required = false,
   placeholder,
   className,
-  rows = 4
+  rows = 4,
+  maxLength
 }: {
   label: string;
+  name?: string;
   required?: boolean;
   placeholder?: string;
   className?: string;
   rows?: number;
+  maxLength?: number;
 }) {
   return (
     <label className={cn("block text-sm font-bold text-dark-navy", className)}>
       {label}
-      <textarea required={required} rows={rows} placeholder={placeholder} className={cn(fieldClass, "min-h-28 resize-y")} />
+      <textarea name={name} required={required} rows={rows} maxLength={maxLength} placeholder={placeholder} className={cn(fieldClass, "min-h-28 resize-y")} />
     </label>
   );
 }
@@ -49,19 +76,23 @@ export function SelectField({
   label,
   children,
   className,
+  name,
   value,
-  onChange
+  onChange,
+  required = false
 }: {
   label: string;
   children: React.ReactNode;
   className?: string;
+  name?: string;
   value?: string;
   onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  required?: boolean;
 }) {
   return (
     <label className={cn("block text-sm font-bold text-dark-navy", className)}>
       {label}
-      <select value={value} onChange={onChange} className={cn(fieldClass, "appearance-none")}>
+      <select name={name} value={value} onChange={onChange} required={required} className={cn(fieldClass, "appearance-none")}>
         {children}
       </select>
     </label>

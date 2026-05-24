@@ -15,7 +15,17 @@ export const metadata: Metadata = {
 };
 
 type QurbanDonationPageProps = {
-  searchParams?: Promise<{ durum?: string; kampanya?: string; campaign?: string; siparis?: string; adet?: string; tutar?: string; mesaj?: string }>;
+  searchParams?: Promise<{
+    durum?: string;
+    kampanya?: string;
+    campaign?: string;
+    siparis?: string;
+    adet?: string;
+    tutar?: string;
+    mesaj?: string;
+    odeme?: string;
+    odeme_hata?: string;
+  }>;
 };
 
 export default async function QurbanDonationDemoPage({ searchParams }: QurbanDonationPageProps) {
@@ -62,13 +72,24 @@ export default async function QurbanDonationDemoPage({ searchParams }: QurbanDon
                   {totalAmount > 0 ? <p>Ödeme bekleyen tutar: <strong className="text-dark-navy">{formatCurrency(totalAmount)}</strong></p> : null}
                   <p>Vekalet durumu: <strong className="text-dark-navy">Kaydedildi</strong></p>
                   <p>Ödeme durumu: <strong className="text-dark-navy">Ödeme bekliyor</strong></p>
-                  <p>Ortak payment intent altyapısı hazırdır; bu aşamada otomatik online ödeme başlatılmaz.</p>
-                  <p>Admin/manual test için PayTR provider referanslı payment intent oluşturulursa Kurbanlarım panelinde “Ödemeye Devam Et” bağlantısı görünebilir.</p>
+                  {params?.odeme ? (
+                    <p>Ödeme No: <strong className="text-dark-navy">{params.odeme}</strong></p>
+                  ) : null}
+                  {params?.odeme_hata === "1" ? (
+                    <p>Ödeme bağlantısı şu anda oluşturulamadı; başvurunuz alındı ve yönetim ekranından tekrar hazırlanabilir.</p>
+                  ) : (
+                    <p>Ortak payment intent oluşturuldu; PayTR test ödeme sayfasında canlı tahsilat yapılmadan güvenli test akışı başlatılır.</p>
+                  )}
                   <p>PayTR test entegrasyonunda sipariş durumu yalnızca doğrulanmış callback sonrası ilerletilecektir.</p>
                   <p>Başvurunuz dernek yönetim ekranlarında kayıt altına alınmıştır.</p>
                   <p>Bağışçı hesabınızla giriş yaptıysanız kayıt Kurbanlarım panelinde listelenebilir.</p>
                 </div>
                 <div className="mt-6 flex flex-wrap gap-3">
+                  {params?.odeme ? (
+                    <Link href={`/odeme/paytr/${params.odeme}`} className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full bg-ocean-green px-5 py-2.5 text-sm font-extrabold text-white transition hover:bg-deep-blue">
+                      Ödemeye Devam Et
+                    </Link>
+                  ) : null}
                   <Link href="/panel/kurbanlarim" className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full bg-deep-blue px-5 py-2.5 text-sm font-extrabold text-white transition hover:bg-dark-navy">
                     Kurbanlarım
                   </Link>
