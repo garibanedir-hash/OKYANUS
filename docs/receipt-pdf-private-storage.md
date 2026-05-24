@@ -127,6 +127,61 @@ Bu aşamada yeni PDF paketi eklenmedi. Minimal server-side PDF üretici standart
 
 Bu aşamada admin ekranı dosya yoksa PDF hazırlar. Yeniden oluşturma/iptal/onay politikası sonraki aşamada ayrı action olarak netleştirilecektir.
 
+## Diagnostic ve Repair Akışı
+
+PDF üretimi sırasında sistem önce `diagnoseReceiptPdfState(receiptNo)` ile güvenli bir durum özeti çıkarır. Bu özet secret, signed URL, raw provider payload veya service key içermez.
+
+Kontrol edilenler:
+
+- Receipt kaydı var mı?
+- Payment intent ilişkisi ve status değeri nedir?
+- `file_bucket`, `file_path`, `file_sha256`, `generated_at` dolu mu?
+- `receipts-private` bucket var mı ve public mi?
+- Beklenen storage path nedir?
+- Beklenen path içinde object var mı?
+- `receiptNo` içeren başka object var mı?
+
+## Storage Object Var, DB Metadata Yoksa
+
+Önce `repairReceiptPdfMetadata(receipt)` çalışır:
+
+1. `file_path` boşsa expected path hesaplanır.
+2. Expected path yoksa `storage.objects` içinde receipt no içeren object aranır.
+3. Object bulunursa dosya private bucket'tan indirilir.
+4. `file_size_bytes` ve `file_sha256` yeniden hesaplanır.
+5. `receipts` kaydı service role ile güncellenir.
+6. `status = pending` ise `prepared` yapılır.
+7. Sayfa `pdf-onarildi` sonucu ile revalidate edilir.
+
+Bu akış “PDF Yok” görünürken storage tarafında `v1.pdf` bulunduğu durumları onarmak için tasarlanmıştır.
+
+## DB Metadata Var, Storage Object Yoksa
+
+Download endpoint yetki kontrolünden sonra dosyayı okuyamazsa 404 döner. Admin kullanıcısına teknik olmayan şu durum bildirilir:
+
+```text
+Dosya kaydı var ama storage dosyası bulunamadı. PDF hazırlama işlemini tekrar çalıştırın.
+```
+
+Bu durumda admin tarafında metadata temizliği/yeniden oluşturma politikası bir sonraki sürümde daha görünür hale getirilebilir. Mevcut action `file_path` doluysa tekrar üretmez; veri bütünlüğü için öncelik metadata ile storage'ın tutarlı kalmasıdır.
+
+## Kontrollü Upsert Kullanımı
+
+`uploadReceiptPdf` kontrollü `upsert` desteğine sahiptir. Generate action önce repair dener. Repair object bulamazsa PDF üretir ve upload sırasında `upsert: true` kullanabilir. Upload sonrası DB metadata tekrar okunur; `file_path` hâlâ boşsa işlem hata kabul edilir ve diagnostic log yazılır.
+
+Bu yaklaşım yalnızca `upsert true` ile hatayı gizlemez; DB metadata güncellemesi doğrulanmadan işlem başarılı sayılmaz.
+
+## UI İçin Tek Kaynak
+
+UI tarafında PDF hazır kabulü `filePath`/`file_path` metadata varlığıyla yapılır. Uzun vadeli standart camelCase modeldir:
+
+- `filePath`
+- `fileBucket`
+- `fileSha256`
+- `generatedAt`
+
+Repository snake_case Supabase alanlarını camelCase modele map eder.
+
 ## Production Öncesi Kontroller
 
 - Mali müşavir ve dernek yönetimi PDF metnini onaylamalı.

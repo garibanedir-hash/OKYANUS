@@ -8,6 +8,9 @@ import { getAdminReceiptsWithSource } from "@/lib/data/paymentRepository";
 import { formatDate } from "@/lib/format";
 import { generateReceiptPdfAction } from "./actions";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 type AdminReceiptsPageProps = {
   searchParams?: Promise<{ context_type?: string; status?: string; date_from?: string; date_to?: string; durum?: string; mesaj?: string }>;
 };
@@ -78,11 +81,22 @@ function PdfViewLink({ receiptNo }: { receiptNo: string }) {
   );
 }
 
-function getPdfStatusLabel(receipt: { hasPdf?: boolean; status: string }) {
-  if (!receipt.hasPdf) return "PDF Yok";
+function receiptHasPdf(receipt: { hasPdf?: boolean; filePath?: string; file_path?: string }) {
+  return Boolean(receipt.hasPdf || receipt.filePath || receipt.file_path);
+}
+
+function getPdfStatusLabel(receipt: { hasPdf?: boolean; filePath?: string; file_path?: string; status: string }) {
+  if (!receiptHasPdf(receipt)) return "PDF Yok";
   if (receipt.status === "issued") return "Kesildi";
   if (receipt.status === "cancelled") return "İptal";
   return "Hazırlandı";
+}
+
+function statusMessage(durum?: string, mesaj?: string) {
+  if (durum === "pdf-hazirlandi") return "Makbuz PDF private storage içinde hazırlandı.";
+  if (durum === "pdf-onarildi") return "Makbuz PDF dosyası bulundu ve DB metadata kaydı onarıldı.";
+  if (durum === "pdf-zaten-hazir") return "Makbuz PDF zaten hazır.";
+  return mesaj ?? "Makbuz işlemi tamamlanamadı.";
 }
 
 export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsPageProps) {
@@ -105,7 +119,7 @@ export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsP
       />
       {params?.durum ? (
         <div className="rounded-lg border border-ocean-green/20 bg-mint-green/35 p-4 text-sm font-bold text-dark-navy">
-          {params.durum === "pdf-hazirlandi" ? "Makbuz PDF private storage içinde hazırlandı." : params.mesaj ?? "Makbuz işlemi tamamlanamadı."}
+          {statusMessage(params.durum, params.mesaj)}
         </div>
       ) : null}
       <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
@@ -166,7 +180,8 @@ export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsP
       >
         {filteredReceipts.map((receipt) => {
           const paymentIsPaid = receipt.paymentIntentStatus === "paid";
-          const canGeneratePdf = !receipt.hasPdf && paymentIsPaid && ["pending", "prepared"].includes(receipt.status);
+          const hasPdf = receiptHasPdf(receipt);
+          const canGeneratePdf = source === "supabase" && !hasPdf && paymentIsPaid && ["pending", "prepared"].includes(receipt.status);
 
           return (
             <tr key={receipt.id}>
@@ -176,7 +191,7 @@ export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsP
               </td>
               <td>
                 {receipt.paymentIntentNo ?? "Ödeme bağlantısı yok"}
-                <span className="block text-xs text-ink-muted">{receipt.paymentIntentStatusLabel ?? "Ödeme durumu yok"}</span>
+                <span className="block text-xs text-ink-muted">{receipt.paymentIntentStatusLabel ?? "Ödeme bilgisi okunamadı"}</span>
               </td>
               <td>
                 {receipt.donorDisplayName}
@@ -199,7 +214,7 @@ export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsP
               <td>
                 {source === "demo" ? (
                   <DisabledDemoButton>Supabase kaydı gerekir</DisabledDemoButton>
-                ) : receipt.hasPdf ? (
+                ) : hasPdf ? (
                   <PdfViewLink receiptNo={receipt.receiptNo} />
                 ) : canGeneratePdf ? (
                   <PdfGenerateButton receiptNo={receipt.receiptNo} disabled={false} />
@@ -214,7 +229,7 @@ export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsP
         })}
       </AdminTable>
       <AdminPanelNotice title="Makbuz hazırlık notu">
-        10D akışında PDF yalnızca paid ödeme ilişkili, iptal edilmemiş makbuzlar için hazırlanır. Dosya `receipts-private` bucket içinde saklanır; gerçek mali onay/issued süreci ve e-posta gönderimi sonraki aşamadadır.
+        10D akışında PDF yalnızca paid ödeme ilişkili, iptal edilmemiş makbuzlar için hazırlanır. Dosya receipts-private bucket içinde saklanır; gerçek mali onay/issued süreci ve e-posta gönderimi sonraki aşamadadır. PDF dosyası hazırlanmış ancak kayıt bilgisi eksikse sistem PDF Hazırla işleminde otomatik onarım dener.
       </AdminPanelNotice>
     </div>
   );

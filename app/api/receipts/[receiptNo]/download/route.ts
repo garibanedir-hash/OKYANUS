@@ -1,5 +1,5 @@
 import { logAdminAction } from "@/lib/audit/auditLogger";
-import { getReceiptWithPayment } from "@/lib/data/paymentRepository";
+import { getSupabaseReceiptWithPayment } from "@/lib/data/paymentRepository";
 import { asAdminWriteClient } from "@/lib/data/adminWriteClient";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -84,9 +84,9 @@ export async function GET(_request: Request, context: RouteContext) {
 
   if (error || !user) return textResponse("AUTH REQUIRED", 401);
 
-  const receipt = await getReceiptWithPayment(receiptNo);
+  const receipt = await getSupabaseReceiptWithPayment(receiptNo);
   if (!receipt) return textResponse("NOT FOUND", 404);
-  if (!receipt.filePath) return textResponse("PDF NOT FOUND", 404);
+  if (!receipt.filePath) return textResponse("Makbuz PDF'i henüz oluşturulmamış.", 404);
 
   const viewer = await resolveViewerContext(user.id);
   const allowedAsDonor = Boolean(viewer.accountId && receipt.donorAccountId && viewer.accountId === receipt.donorAccountId);
@@ -99,7 +99,10 @@ export async function GET(_request: Request, context: RouteContext) {
       file_path: receipt.filePath
     });
   } catch {
-    return textResponse("PDF NOT FOUND", 404);
+    return textResponse(
+      viewer.isAdmin ? "Dosya kaydı var ama storage dosyası bulunamadı. PDF hazırlama işlemini tekrar çalıştırın." : "PDF NOT FOUND",
+      404
+    );
   }
 
   await markReceiptDownloaded(receipt.id);

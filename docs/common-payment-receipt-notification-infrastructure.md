@@ -159,3 +159,5 @@ Bu aşama canlı ödeme açmaz; gerçek PDF makbuz ve gerçek bildirim gönderim
 PDF dosyaları `receipts-private` Supabase Storage bucket içinde saklanır. Bucket public değildir; dosyalar public URL ile paylaşılmaz. Admin veya bağışçı erişimi `/api/receipts/[receiptNo]/download` route'u üzerinden session, rol ve `donor_account_id` kontrolünden sonra verilir.
 
 Admin PDF hazırlama akışı `app/admin/makbuzlar/actions.ts` içinde server action olarak çalışır. Sadece paid payment intent ilişkili, iptal edilmemiş receipt için PDF üretilebilir. Bu aşamada PDF status `prepared` olur; resmi/mali `issued` onayı sonraki aşamada tasarlanacaktır.
+
+PDF üretim action'ı önce diagnostic/repair çalıştırır. Storage içinde PDF object var ama `receipts.file_path` boşsa dosya indirilip hash ve boyut tekrar hesaplanır, DB metadata onarılır ve admin ekranı `pdf-onarildi` sonucu ile yenilenir. Upload sonrası DB tekrar okunur; `file_path` doğrulanmadan işlem başarılı sayılmaz.

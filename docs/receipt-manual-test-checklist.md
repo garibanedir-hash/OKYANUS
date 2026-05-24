@@ -15,6 +15,7 @@ Bu checklist 10D makbuz PDF ve private storage altyapısını staging ortamında
 
 - [ ] Paid payment intent için receipt kaydı oluştu.
 - [ ] Admin `/admin/makbuzlar` ekranında PDF Hazırla butonunu görüyor.
+- [ ] Ekran veri kaynağı badge'i `Supabase receipts` gösteriyor; demo ise PDF üretimi kapalı.
 - [ ] Payment paid değilse PDF Hazırla disabled veya güvenli hata veriyor.
 - [ ] Cancelled receipt için PDF üretilemiyor.
 - [ ] PDF Hazırla sonrası `file_path` doluyor.
@@ -23,6 +24,17 @@ Bu checklist 10D makbuz PDF ve private storage altyapısını staging ortamında
 - [ ] `file_size_bytes` doluyor.
 - [ ] `generated_at` doluyor.
 - [ ] Receipt status `prepared` oluyor.
+- [ ] İşlem sonrası `/admin/makbuzlar?durum=pdf-hazirlandi` veya `pdf-onarildi` sonucuyla dönüyor.
+- [ ] Sayfa yenilenince “PDF Görüntüle” linki görünüyor.
+
+## Repair Senaryoları
+
+- [ ] Storage içinde expected path object var ama `receipts.file_path` boşsa PDF Hazırla metadata repair yapıyor.
+- [ ] Expected path yok ama `receipt_no` içeren object varsa repair o object ile metadata güncelliyor.
+- [ ] Repair sonrası `file_bucket`, `file_path`, `file_sha256`, `file_size_bytes`, `generated_at` doluyor.
+- [ ] Upload başarılı ama metadata update başarısız olursa işlem başarılı sayılmıyor ve diagnostic log yazıyor.
+- [ ] İkinci denemede var olan storage object DB metadata ile eşleştirilebiliyor.
+- [ ] `file_path` doluysa tekrar üretim yapılmıyor ve “PDF zaten hazır” davranışı görülüyor.
 
 ## Görüntüleme
 
@@ -33,6 +45,7 @@ Bu checklist 10D makbuz PDF ve private storage altyapısını staging ortamında
 - [ ] `donor_account_id = null` kayıt donor panelinde otomatik açılmıyor.
 - [ ] Download response `Content-Type: application/pdf`.
 - [ ] Download response `Content-Disposition: inline`.
+- [ ] `file_path` dolu ama storage object yoksa admin download 404 ile dosya kaydı/storage tutarsızlığını bildiriyor.
 
 ## Audit ve Güvenlik
 

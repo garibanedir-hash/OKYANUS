@@ -632,6 +632,10 @@ export async function getReceiptWithPayment(receiptNo: string): Promise<ReceiptW
   return receipt ?? mockReceiptWithPayment(receiptNo);
 }
 
+export async function getSupabaseReceiptWithPayment(receiptNo: string): Promise<ReceiptWithPayment | null> {
+  return fetchReceiptByNoWithAdmin(receiptNo);
+}
+
 export async function getReceiptForDownload(
   receiptNo: string,
   viewerContext: {

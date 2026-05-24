@@ -1,6 +1,7 @@
 import "server-only";
 
 import crypto from "node:crypto";
+import type { ReceiptStatus } from "@/data/paymentMock";
 import { asAdminWriteClient, type DbError } from "@/lib/data/adminWriteClient";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
@@ -22,6 +23,16 @@ type ReceiptFileRecord = {
   version?: number | null;
 };
 
+type RepairableReceipt = {
+  id: string;
+  receiptNo: string;
+  status: ReceiptStatus;
+  version?: number | null;
+  generatedAt?: string | null;
+  fileBucket?: string | null;
+  filePath?: string | null;
+};
+
 type ReceiptMetadataRow = {
   id: string;
   receipt_no: string;
@@ -33,6 +44,38 @@ type ReceiptMetadataRow = {
   file_sha256: string | null;
   generated_at: string | null;
   version: number | null;
+};
+
+type StorageBucketInfo = {
+  id: string;
+  name: string;
+  public: boolean;
+};
+
+type StorageObjectRow = {
+  id: string;
+  bucket_id: string;
+  name: string;
+  metadata: Record<string, unknown> | null;
+  created_at: string | null;
+  updated_at: string | null;
+  last_accessed_at: string | null;
+};
+
+type StorageObjectQuery<T> = {
+  select: (columns?: string) => StorageObjectQuery<T>;
+  eq: (column: string, value: string) => StorageObjectQuery<T>;
+  ilike: (column: string, pattern: string) => StorageObjectQuery<T>;
+  order: (column: string, options?: { ascending?: boolean; nullsFirst?: boolean }) => StorageObjectQuery<T>;
+  limit: (count: number) => StorageObjectQuery<T>;
+  maybeSingle: () => Promise<{ data: T | null; error: DbError | null }>;
+  then: Promise<{ data: T[] | null; error: DbError | null }>["then"];
+};
+
+type StorageSchemaClient = {
+  schema: (schemaName: "storage") => {
+    from: <T>(table: "objects") => StorageObjectQuery<T>;
+  };
 };
 
 function getAdminStorageClient() {
@@ -78,24 +121,106 @@ export function calculateSha256(buffer: Buffer) {
   return crypto.createHash("sha256").update(buffer).digest("hex");
 }
 
+function getStorageObjectsClient() {
+  const supabase = getAdminStorageClient();
+  return (supabase as unknown as StorageSchemaClient).schema("storage").from<StorageObjectRow>("objects");
+}
+
+function storageObjectColumns() {
+  return "id, bucket_id, name, metadata, created_at, updated_at, last_accessed_at";
+}
+
+function parseObjectSize(metadata: Record<string, unknown> | null | undefined) {
+  const size = metadata?.size;
+  if (typeof size === "number" && Number.isFinite(size)) return size;
+  if (typeof size === "string") {
+    const parsed = Number(size);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return null;
+}
+
+function versionFromPath(path: string, fallback: number) {
+  const match = path.match(/\/v(\d+)\.pdf$/i);
+  if (!match) return fallback;
+  const parsed = Number(match[1]);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function uniqueSearchTerms(receiptNo: string) {
+  const safeNo = safeReceiptPathSegment(receiptNo);
+  return Array.from(new Set([receiptNo, safeNo].filter(Boolean)));
+}
+
+export async function ensureReceiptBucketExists(): Promise<StorageBucketInfo> {
+  const supabase = getAdminStorageClient();
+  const { data, error } = await supabase.storage.getBucket(RECEIPT_PRIVATE_BUCKET);
+
+  if (error || !data) {
+    throw new Error("receipts-private bucket bulunamadı. 017 migration uygulanmalı.");
+  }
+
+  const bucket = data as StorageBucketInfo;
+  if (bucket.public) {
+    throw new Error("receipts-private bucket public görünüyor. Makbuz PDF üretimi güvenlik nedeniyle durduruldu.");
+  }
+
+  return bucket;
+}
+
+export async function getReceiptStorageObjectByPath(path: string) {
+  await ensureReceiptBucketExists();
+  const { data, error } = await getStorageObjectsClient()
+    .select(storageObjectColumns())
+    .eq("bucket_id", RECEIPT_PRIVATE_BUCKET)
+    .eq("name", path)
+    .maybeSingle();
+
+  if (error) return null;
+  return data;
+}
+
+export async function findReceiptStorageObject(receiptNo: string, expectedPath: string) {
+  const exact = await getReceiptStorageObjectByPath(expectedPath);
+  if (exact) return { object: exact, matchedBy: "expected_path" as const };
+
+  for (const term of uniqueSearchTerms(receiptNo)) {
+    const { data, error } = await getStorageObjectsClient()
+      .select(storageObjectColumns())
+      .eq("bucket_id", RECEIPT_PRIVATE_BUCKET)
+      .ilike("name", `%${term}%`)
+      .order("updated_at", { ascending: false, nullsFirst: false })
+      .limit(5);
+
+    if (!error && data?.length) {
+      return { object: data[0], matchedBy: "receipt_no_search" as const };
+    }
+  }
+
+  return null;
+}
+
 export async function uploadReceiptPdf({
   receiptNo,
   version,
   pdfBuffer,
-  metadata = {}
+  metadata = {},
+  upsert = false
 }: {
   receiptNo: string;
   version: number;
   pdfBuffer: Buffer;
   metadata?: Record<string, string>;
+  upsert?: boolean;
 }): Promise<ReceiptFileInfo> {
+  await ensureReceiptBucketExists();
   const supabase = getAdminStorageClient();
   const path = getReceiptFilePath(receiptNo, version);
   const sha256 = calculateSha256(pdfBuffer);
 
-  const { error } = await supabase.storage.from(RECEIPT_PRIVATE_BUCKET).upload(path, pdfBuffer as unknown as ArrayBuffer, {
+  const { error } = await supabase.storage.from(RECEIPT_PRIVATE_BUCKET).upload(path, new Uint8Array(pdfBuffer), {
     contentType: "application/pdf",
-    upsert: false,
+    upsert,
     metadata: {
       receiptNo,
       version: String(version),
@@ -116,6 +241,14 @@ export async function uploadReceiptPdf({
     sha256,
     version
   };
+}
+
+export async function deleteOrphanedReceiptFile(filePath: string): Promise<void> {
+  const supabase = getAdminStorageClient();
+  const { error } = await supabase.storage.from(RECEIPT_PRIVATE_BUCKET).remove([filePath]);
+  if (error) {
+    throw new Error(friendlyStorageError(error, "Orphan makbuz dosyası temizlenemedi."));
+  }
 }
 
 export async function getReceiptSignedUrl(receipt: Pick<ReceiptFileRecord, "file_bucket" | "file_path">, expiresInSeconds = 60) {
@@ -149,7 +282,8 @@ export async function updateReceiptFileMetadata(
   fileInfo: ReceiptFileInfo,
   options: {
     generatedBy?: string | null;
-    status?: "pending" | "prepared" | "issued";
+    generatedAt?: string | null;
+    status?: Extract<ReceiptStatus, "pending" | "prepared" | "issued">;
   } = {}
 ) {
   const supabase = getAdminStorageClient();
@@ -162,7 +296,7 @@ export async function updateReceiptFileMetadata(
       file_mime_type: fileInfo.mimeType,
       file_size_bytes: fileInfo.sizeBytes,
       file_sha256: fileInfo.sha256,
-      generated_at: new Date().toISOString(),
+      generated_at: options.generatedAt ?? new Date().toISOString(),
       generated_by: options.generatedBy ?? null,
       version: fileInfo.version,
       status: options.status ?? "prepared",
@@ -176,7 +310,57 @@ export async function updateReceiptFileMetadata(
     throw new Error(friendlyReceiptUpdateError(error, "Makbuz dosya metadata bilgileri güncellenemedi."));
   }
 
+  if (!data.file_path) {
+    throw new Error("Makbuz dosya metadata güncellendi ancak file_path boş döndü.");
+  }
+
   return data;
+}
+
+export async function repairReceiptPdfMetadata(receipt: RepairableReceipt): Promise<
+  | { status: "already_ready"; filePath: string }
+  | { status: "not_eligible"; reason: string }
+  | { status: "not_found"; expectedPath: string }
+  | { status: "repaired"; filePath: string; matchedBy: "expected_path" | "receipt_no_search" }
+> {
+  if (receipt.filePath) return { status: "already_ready", filePath: receipt.filePath };
+  if (receipt.status === "cancelled") return { status: "not_eligible", reason: "receipt_cancelled" };
+
+  const version = receipt.version && receipt.version > 0 ? receipt.version : 1;
+  const expectedPath = getReceiptFilePath(receipt.receiptNo, version);
+  const match = await findReceiptStorageObject(receipt.receiptNo, expectedPath);
+  if (!match) return { status: "not_found", expectedPath };
+
+  const pdfBuffer = await downloadReceiptPdf({
+    file_bucket: RECEIPT_PRIVATE_BUCKET,
+    file_path: match.object.name
+  });
+  const resolvedVersion = versionFromPath(match.object.name, version);
+  const metadataSize = parseObjectSize(match.object.metadata);
+  const fileInfo: ReceiptFileInfo = {
+    bucket: RECEIPT_PRIVATE_BUCKET,
+    path: match.object.name,
+    mimeType: "application/pdf",
+    sizeBytes: metadataSize ?? pdfBuffer.byteLength,
+    sha256: calculateSha256(pdfBuffer),
+    version: resolvedVersion
+  };
+
+  const nextStatus = receipt.status === "pending" ? "prepared" : receipt.status === "issued" ? "issued" : "prepared";
+  const updated = await updateReceiptFileMetadata(receipt.id, fileInfo, {
+    generatedAt: receipt.generatedAt ?? new Date().toISOString(),
+    status: nextStatus
+  });
+  const repairedPath = updated.file_path;
+  if (!repairedPath) {
+    throw new Error("Makbuz metadata onarımı sonrası file_path boş döndü.");
+  }
+
+  return {
+    status: "repaired",
+    filePath: repairedPath,
+    matchedBy: match.matchedBy
+  };
 }
 
 export async function markReceiptDownloaded(receiptId: string) {
