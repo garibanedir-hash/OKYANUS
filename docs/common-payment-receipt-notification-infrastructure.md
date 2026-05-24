@@ -141,3 +141,21 @@ Provider callback entegrasyonu açıldığında `payment_provider_events.provide
 - Genel bağış için ayrı donation tablosu olmadığından finalization payment intent, receipt ve notification düzeyinde kalır.
 
 Bu aşama canlı ödeme açmaz; gerçek PDF makbuz ve gerçek bildirim gönderimi sonraki entegrasyon aşamasındadır.
+
+## 10D Makbuz PDF ve Private Storage
+
+10D ile `receipts` kayıtları PDF dosya metadata alanlarıyla güçlendirildi:
+
+- `file_bucket`
+- `file_path`
+- `file_mime_type`
+- `file_size_bytes`
+- `file_sha256`
+- `generated_at`
+- `generated_by`
+- `version`
+- `last_downloaded_at`
+
+PDF dosyaları `receipts-private` Supabase Storage bucket içinde saklanır. Bucket public değildir; dosyalar public URL ile paylaşılmaz. Admin veya bağışçı erişimi `/api/receipts/[receiptNo]/download` route'u üzerinden session, rol ve `donor_account_id` kontrolünden sonra verilir.
+
+Admin PDF hazırlama akışı `app/admin/makbuzlar/actions.ts` içinde server action olarak çalışır. Sadece paid payment intent ilişkili, iptal edilmemiş receipt için PDF üretilebilir. Bu aşamada PDF status `prepared` olur; resmi/mali `issued` onayı sonraki aşamada tasarlanacaktır.

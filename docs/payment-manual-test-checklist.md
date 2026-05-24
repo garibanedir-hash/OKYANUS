@@ -147,3 +147,17 @@ insert into public.payment_intents (
 - [ ] Paid callback sonrası aynı payment intent için tek receipt kaydı oluşuyor.
 - [ ] Paid/failed/cancelled callback sonrası aynı template/payment için duplicate notification oluşmuyor.
 - [ ] `docs/paytr-callback-idempotency-test.md` senaryoları staging testinde tamamlandı.
+
+## 10D Makbuz PDF Testleri
+
+- [ ] `017_receipt_pdf_private_storage.sql` staging ortamında çalıştırıldı.
+- [ ] `receipts-private` bucket var ve public değil.
+- [ ] Paid payment intent ilişkili receipt için admin PDF hazırlayabiliyor.
+- [ ] Payment paid değilse PDF üretimi engelleniyor.
+- [ ] Cancelled receipt için PDF üretimi engelleniyor.
+- [ ] PDF private bucket'a yükleniyor ve `file_path` doluyor.
+- [ ] `file_sha256`, `file_size_bytes`, `generated_at` ve `version` doluyor.
+- [ ] Admin `/api/receipts/[receiptNo]/download` ile PDF açabiliyor.
+- [ ] Donor yalnızca kendi `donor_account_id` ilişkili makbuzunu açabiliyor.
+- [ ] Anon ve farklı donor erişimi engelleniyor.
+- [ ] `docs/receipt-manual-test-checklist.md` tamamlandı.

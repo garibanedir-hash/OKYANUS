@@ -42,10 +42,10 @@ Bu checklist gerçek ödeme entegrasyonuna geçmeden önce ortak ödeme, makbuz 
 ## Admin Ekranları
 
 - [ ] `/admin/odeme-kayitlari` read-only çalışıyor.
-- [ ] `/admin/makbuzlar` read-only çalışıyor.
+- [ ] `/admin/makbuzlar` read-only listeyi gösteriyor; PDF üretimi yalnızca server action ile admin yetkisinden sonra çalışıyor.
 - [ ] `/admin/bildirim-kuyrugu` read-only çalışıyor.
 - [ ] Supabase okunamazsa mock fallback beyaz ekran vermeden açılıyor.
-- [ ] Manuel ödendi, PDF hazırla ve tekrar gönder aksiyonları pasif/demo olarak net.
+- [ ] Manuel ödendi ve tekrar gönder aksiyonları pasif/demo olarak net.
 
 ## Entegrasyon Öncesi Blokajlar
 
@@ -75,3 +75,12 @@ Bu checklist gerçek ödeme entegrasyonuna geçmeden önce ortak ödeme, makbuz 
 - [ ] `paymentWriteRepository` aynı context için pending/initiated intent'i tekrar kullanıyor.
 - [ ] Client componentler `paymentWriteRepository`, service role veya PayTR secret import etmiyor.
 - [ ] Paid callback sonrası sınırlı context finalization duplicate callback ile tekrar çalışmıyor.
+
+## 10D Receipt Private Storage Kontrolü
+
+- [ ] `receipts-private` bucket Supabase Storage panelinde `public = false`.
+- [ ] Smoke test storage bucket public durumunu otomatik doğrulamıyorsa manuel kontrol tamamlandı.
+- [ ] Receipt PDF download sadece `/api/receipts/[receiptNo]/download` üzerinden yapılıyor.
+- [ ] Anon/public makbuz dosyası okuyamıyor.
+- [ ] Admin/super_admin ve receipt sahibi donor dışında PDF erişimi yok.
+- [ ] Service role sadece server-only receipt storage servisinde kullanılıyor.

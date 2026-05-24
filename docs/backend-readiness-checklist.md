@@ -222,3 +222,16 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Admin ödeme kayıtları finalization durumunu read-only gösteriyor.
 - [ ] `docs/paytr-callback-idempotency-test.md` staging manuel testlerinde kullanılıyor.
 - [ ] Canlı ödeme, kart saklama, PDF makbuz ve gerçek bildirim gönderimi hala kapalı.
+
+## 10D Makbuz PDF ve Private Storage Kontrolleri
+
+- [ ] `017_receipt_pdf_private_storage.sql` staging ortamında çalıştırıldı.
+- [ ] `receipts-private` bucket private olarak oluşturuldu.
+- [ ] `lib/receipts/receiptPdfGenerator.ts` server-side PDF buffer üretiyor.
+- [ ] `lib/receipts/receiptStorage.ts` PDF upload, SHA-256, file metadata ve download helperlarını sağlıyor.
+- [ ] `/admin/makbuzlar` paid payment receipt için PDF Hazırla action'ını gösteriyor.
+- [ ] `/api/receipts/[receiptNo]/download` admin ve doğru donor dışındaki erişimi engelliyor.
+- [ ] `/panel/bagislarim`, `/panel/kurbanlarim`, `/panel/yetim-sponsorluk` yalnızca kullanıcının kendi makbuz linkini gösteriyor.
+- [ ] Receipt `file_path` public URL olarak kullanılmıyor.
+- [ ] `docs/receipt-pdf-private-storage.md` ve `docs/receipt-manual-test-checklist.md` staging testinde kullanılıyor.
+- [ ] Canlı ödeme, gerçek muhasebe entegrasyonu ve gerçek bildirim gönderimi hala kapalı.

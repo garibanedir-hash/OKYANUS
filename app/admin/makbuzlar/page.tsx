@@ -6,9 +6,10 @@ import { AdminTable } from "@/components/admin/AdminTable";
 import { paymentContextTypeLabels, receiptStatusLabels } from "@/data/paymentMock";
 import { getAdminReceiptsWithSource } from "@/lib/data/paymentRepository";
 import { formatDate } from "@/lib/format";
+import { generateReceiptPdfAction } from "./actions";
 
 type AdminReceiptsPageProps = {
-  searchParams?: Promise<{ context_type?: string; status?: string; date_from?: string; date_to?: string }>;
+  searchParams?: Promise<{ context_type?: string; status?: string; date_from?: string; date_to?: string; durum?: string; mesaj?: string }>;
 };
 
 function SummaryCard({ label, value }: { label: string; value: string | number }) {
@@ -51,6 +52,39 @@ function DisabledDemoButton({ children }: { children: React.ReactNode }) {
   );
 }
 
+function PdfGenerateButton({ receiptNo, disabled }: { receiptNo: string; disabled: boolean }) {
+  return (
+    <form action={generateReceiptPdfAction}>
+      <input type="hidden" name="receipt_no" value={receiptNo} />
+      <button
+        type="submit"
+        disabled={disabled}
+        className="inline-flex min-h-8 items-center justify-center rounded-md border border-border-soft bg-white px-2.5 py-1 text-[0.72rem] font-extrabold text-deep-blue disabled:cursor-not-allowed disabled:bg-soft-gray disabled:text-ink-muted"
+      >
+        PDF Hazırla
+      </button>
+    </form>
+  );
+}
+
+function PdfViewLink({ receiptNo }: { receiptNo: string }) {
+  return (
+    <a
+      href={`/api/receipts/${receiptNo}/download`}
+      className="focus-ring inline-flex min-h-8 items-center justify-center rounded-md bg-deep-blue px-2.5 py-1 text-[0.72rem] font-extrabold text-white"
+    >
+      PDF Görüntüle
+    </a>
+  );
+}
+
+function getPdfStatusLabel(receipt: { hasPdf?: boolean; status: string }) {
+  if (!receipt.hasPdf) return "PDF Yok";
+  if (receipt.status === "issued") return "Kesildi";
+  if (receipt.status === "cancelled") return "İptal";
+  return "Hazırlandı";
+}
+
 export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsPageProps) {
   const params = await searchParams;
   const { data: receipts, source } = await getAdminReceiptsWithSource();
@@ -67,8 +101,13 @@ export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsP
       <AdminSectionHeader
         eyebrow="Bağış ve destek"
         title="Makbuzlar"
-        description="Makbuz hazırlık kayıtları ortak `receipts` tablosundan read-only izlenir. Bu aşamada gerçek PDF üretimi veya muhasebe entegrasyonu yoktur."
+        description="Makbuz hazırlık kayıtları ortak `receipts` tablosundan izlenir. 10D ile paid ödemeler için private storage PDF hazırlığı yapılır; mali onay/issued süreci ayrı kalır."
       />
+      {params?.durum ? (
+        <div className="rounded-lg border border-ocean-green/20 bg-mint-green/35 p-4 text-sm font-bold text-dark-navy">
+          {params.durum === "pdf-hazirlandi" ? "Makbuz PDF private storage içinde hazırlandı." : params.mesaj ?? "Makbuz işlemi tamamlanamadı."}
+        </div>
+      ) : null}
       <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
         {source === "supabase" ? "Supabase receipts" : "Demo/mock fallback"}
       </div>
@@ -121,31 +160,59 @@ export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsP
         </AdminFilterBar>
       </form>
       <AdminTable
-        headers={["Makbuz No", "Ödeme No", "Bağışçı maskeli", "Bağlam", "Tutar", "Durum", "Tarih", "İşlem"]}
+        headers={["Makbuz No", "Ödeme No", "Bağışçı maskeli", "Bağlam", "Tutar", "Durum", "PDF durumu", "Oluşturulma", "İşlem"]}
         recordCount={filteredReceipts.length}
         empty={!filteredReceipts.length}
       >
-        {filteredReceipts.map((receipt) => (
-          <tr key={receipt.id}>
-            <td className="font-bold text-dark-navy">{receipt.receiptNo}</td>
-            <td>{receipt.paymentIntentNo ?? "Ödeme bağlantısı yok"}</td>
-            <td>
-              {receipt.donorDisplayName}
-              <span className="block text-xs text-ink-muted">{receipt.donorEmailMasked}</span>
-            </td>
-            <td>
-              {receipt.contextTypeLabel}
-              {receipt.contextId ? <span className="block text-xs text-ink-muted">{receipt.contextId.slice(0, 8)}</span> : null}
-            </td>
-            <td>{formatMoney(receipt.amount, receipt.currency)}</td>
-            <td><AdminStatusBadge status={receipt.statusLabel} /></td>
-            <td>{formatDate(receipt.createdAt)}</td>
-            <td><DisabledDemoButton>PDF demo</DisabledDemoButton></td>
-          </tr>
-        ))}
+        {filteredReceipts.map((receipt) => {
+          const paymentIsPaid = receipt.paymentIntentStatus === "paid";
+          const canGeneratePdf = !receipt.hasPdf && paymentIsPaid && ["pending", "prepared"].includes(receipt.status);
+
+          return (
+            <tr key={receipt.id}>
+              <td className="font-bold text-dark-navy">
+                {receipt.receiptNo}
+                {receipt.version ? <span className="block text-xs text-ink-muted">v{receipt.version}</span> : null}
+              </td>
+              <td>
+                {receipt.paymentIntentNo ?? "Ödeme bağlantısı yok"}
+                <span className="block text-xs text-ink-muted">{receipt.paymentIntentStatusLabel ?? "Ödeme durumu yok"}</span>
+              </td>
+              <td>
+                {receipt.donorDisplayName}
+                <span className="block text-xs text-ink-muted">{receipt.donorEmailMasked}</span>
+              </td>
+              <td>
+                {receipt.contextTypeLabel}
+                {receipt.contextId ? <span className="block text-xs text-ink-muted">{receipt.contextId.slice(0, 8)}</span> : null}
+              </td>
+              <td>{formatMoney(receipt.amount, receipt.currency)}</td>
+              <td>
+                <AdminStatusBadge status={receipt.statusLabel} />
+              </td>
+              <td>
+                <AdminStatusBadge status={getPdfStatusLabel(receipt)} />
+                {receipt.generatedAt ? <span className="mt-1 block text-xs text-ink-muted">{formatDate(receipt.generatedAt)}</span> : null}
+                {receipt.fileSizeBytes ? <span className="block text-xs text-ink-muted">{Math.ceil(receipt.fileSizeBytes / 1024)} KB</span> : null}
+              </td>
+              <td>{formatDate(receipt.createdAt)}</td>
+              <td>
+                {receipt.hasPdf ? (
+                  <PdfViewLink receiptNo={receipt.receiptNo} />
+                ) : canGeneratePdf ? (
+                  <PdfGenerateButton receiptNo={receipt.receiptNo} disabled={false} />
+                ) : paymentIsPaid ? (
+                  <DisabledDemoButton>PDF kapalı</DisabledDemoButton>
+                ) : (
+                  <PdfGenerateButton receiptNo={receipt.receiptNo} disabled />
+                )}
+              </td>
+            </tr>
+          );
+        })}
       </AdminTable>
       <AdminPanelNotice title="Makbuz hazırlık notu">
-        10C finalization akışı paid ödeme için idempotent `receipts` hazırlık kaydı üretir. PDF üretimi, dosya saklama ve e-posta gönderimi kapalıdır; PDF aksiyonu pasif demo olarak gösterilir.
+        10D akışında PDF yalnızca paid ödeme ilişkili, iptal edilmemiş makbuzlar için hazırlanır. Dosya `receipts-private` bucket içinde saklanır; gerçek mali onay/issued süreci ve e-posta gönderimi sonraki aşamadadır.
       </AdminPanelNotice>
     </div>
   );

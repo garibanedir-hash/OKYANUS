@@ -1,7 +1,7 @@
 import { AdminSectionHeader } from "@/components/admin/AdminSectionHeader";
 import { AdminTable } from "@/components/admin/AdminTable";
 import { Button } from "@/components/ui/Button";
-import { getDonorPayments } from "@/lib/data/paymentRepository";
+import { getDonorPayments, getDonorReceipts } from "@/lib/data/paymentRepository";
 import { getCurrentDonorQurbanOrdersWithSource } from "@/lib/data/qurbanRepository";
 import { getCurrentQurbanDonorContext } from "@/lib/data/qurbanWriteRepository";
 import { formatDate } from "@/lib/format";
@@ -24,10 +24,14 @@ export default async function PanelQurbanOrdersPage() {
   ]);
   const { data: orders, source } = ordersResult;
   const accountId = donorContext?.account?.status === "active" ? donorContext.account.id : "demo-donor-account";
-  const donorPayments = await getDonorPayments(accountId);
+  const [donorPayments, donorReceipts] = await Promise.all([
+    getDonorPayments(accountId),
+    getDonorReceipts(accountId)
+  ]);
   const paymentIntentsByOrder = new Map(
     donorPayments.filter((payment) => payment.contextType === "qurban_order" && payment.contextId).map((payment) => [payment.contextId, payment])
   );
+  const receiptsByPaymentIntent = new Map(donorReceipts.filter((receipt) => receipt.paymentIntentId).map((receipt) => [receipt.paymentIntentId, receipt]));
 
   return (
     <div className="grid gap-6">
@@ -45,7 +49,7 @@ export default async function PanelQurbanOrdersPage() {
         Güvenlik nedeniyle e-posta adresi tek başına hesap eşleştirme için kullanılmaz. Girişsiz başvurular admin kayıtlarında görünür; panelde otomatik görünmesi için sonraki aşamada güvenli eşleştirme akışı gerekir.
       </div>
       <div className="rounded-lg border border-ocean-green/15 bg-mint-green/35 p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
-        Ödeme bekleyen kurban kayıtları ortak payment intent altyapısına bağlıdır. PayTR test callback sonucu onaylandığında ödeme durumu ve kota finalizasyonu server-side işlenir; canlı ödeme, PDF makbuz ve gerçek bildirim gönderimi kapalıdır.
+        Ödeme bekleyen kurban kayıtları ortak payment intent altyapısına bağlıdır. PayTR test callback sonucu onaylandığında ödeme durumu ve kota finalizasyonu server-side işlenir; hazırlanmış PDF makbuzlar yetki kontrollü açılır, canlı ödeme ve gerçek bildirim gönderimi kapalıdır.
       </div>
       <section className="grid gap-4 md:grid-cols-3">
         <div className="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
@@ -64,6 +68,7 @@ export default async function PanelQurbanOrdersPage() {
       <AdminTable headers={["Sipariş No", "Kurban türü", "Kampanya", "Hisse/adet", "Durum", "Ödeme", "Vekalet", "Makbuz", "Tarih", "Detay"]} recordCount={orders.length} empty={!orders.length}>
         {orders.map((order) => {
           const paymentIntent = paymentIntentsByOrder.get(order.id);
+          const receipt = paymentIntent ? receiptsByPaymentIntent.get(paymentIntent.id) : undefined;
           const canContinuePayment = paymentIntent && order.paymentStatus !== "paid" && ["pending", "initiated", "requires_action"].includes(paymentIntent.status);
 
           return (
@@ -86,7 +91,22 @@ export default async function PanelQurbanOrdersPage() {
                 )}
               </td>
               <td><QurbanStatusCell status={order.delegationStatusLabel} /></td>
-              <td>{order.receiptStatus}</td>
+              <td>
+                {receipt ? (
+                  <>
+                    <span className="block font-semibold text-dark-navy">{receipt.statusLabel}</span>
+                    {receipt.hasPdf ? (
+                      <Button href={`/api/receipts/${receipt.receiptNo}/download`} variant="ghost" className="mt-2 min-h-8 rounded-md px-3 py-1 text-xs">
+                        Makbuzu Görüntüle
+                      </Button>
+                    ) : (
+                      <span className="mt-1 block text-xs text-ink-muted">PDF hazırlanıyor</span>
+                    )}
+                  </>
+                ) : (
+                  order.receiptStatus
+                )}
+              </td>
               <td>{formatDate(order.createdAt)}</td>
               <td><Button href="/kurban" variant="ghost" className="min-h-8 rounded-md px-3 py-1 text-xs">İncele</Button></td>
             </tr>

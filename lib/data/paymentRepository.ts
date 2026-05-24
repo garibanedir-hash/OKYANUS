@@ -27,6 +27,8 @@ import {
   logReadOnlyFallback,
   type RepositoryResult
 } from "@/lib/data/readOnlySupabase";
+import { asAdminWriteClient } from "@/lib/data/adminWriteClient";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type PaymentIntentRow = {
@@ -67,9 +69,49 @@ type ReceiptRow = {
   issued_at: string | null;
   cancelled_at: string | null;
   file_url: string | null;
+  file_bucket: string | null;
+  file_path: string | null;
+  file_mime_type: string | null;
+  file_size_bytes: number | string | null;
+  file_sha256: string | null;
+  generated_at: string | null;
+  generated_by: string | null;
+  issued_by: string | null;
+  version: number | null;
+  cancelled_reason: string | null;
+  last_downloaded_at: string | null;
   created_at: string | null;
   updated_at: string | null;
-  payment_intents?: { intent_no?: string | null } | Array<{ intent_no?: string | null }> | null;
+  payment_intents?: { intent_no?: string | null; status?: PaymentIntentStatus | null } | Array<{ intent_no?: string | null; status?: PaymentIntentStatus | null }> | null;
+};
+
+export type ReceiptWithPayment = {
+  id: string;
+  receiptNo: string;
+  paymentIntentId: string | null;
+  paymentIntentNo: string | null;
+  paymentIntentStatus: PaymentIntentStatus | null;
+  contextType: PaymentContextType;
+  contextId: string | null;
+  donorAccountId: string | null;
+  donorName: string | null;
+  donorEmail: string | null;
+  amount: number;
+  currency: string;
+  status: ReceiptStatus;
+  issuedAt: string | null;
+  cancelledAt: string | null;
+  generatedAt: string | null;
+  fileBucket: string | null;
+  filePath: string | null;
+  fileMimeType: string | null;
+  fileSizeBytes: number | null;
+  fileSha256: string | null;
+  version: number;
+  cancelledReason: string | null;
+  lastDownloadedAt: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
 };
 
 type NotificationQueueRow = {
@@ -142,9 +184,20 @@ const receiptColumns = [
   "issued_at",
   "cancelled_at",
   "file_url",
+  "file_bucket",
+  "file_path",
+  "file_mime_type",
+  "file_size_bytes",
+  "file_sha256",
+  "generated_at",
+  "generated_by",
+  "issued_by",
+  "version",
+  "cancelled_reason",
+  "last_downloaded_at",
   "created_at",
   "updated_at",
-  "payment_intents(intent_no)"
+  "payment_intents(intent_no, status)"
 ].join(", ");
 
 const notificationQueueColumns = [
@@ -256,6 +309,8 @@ function mapReceipt(row: ReceiptRow): Receipt {
     receiptNo: row.receipt_no,
     paymentIntentId: row.payment_intent_id ?? undefined,
     paymentIntentNo: paymentIntent?.intent_no ?? undefined,
+    paymentIntentStatus: paymentIntent?.status ?? undefined,
+    paymentIntentStatusLabel: paymentIntent?.status ? paymentIntentStatusLabels[paymentIntent.status] : undefined,
     contextType: row.context_type,
     contextTypeLabel: paymentContextTypeLabels[row.context_type],
     contextId: row.context_id ?? undefined,
@@ -268,9 +323,84 @@ function mapReceipt(row: ReceiptRow): Receipt {
     statusLabel: receiptStatusLabels[row.status],
     issuedAt: row.issued_at ?? undefined,
     cancelledAt: row.cancelled_at ?? undefined,
+    generatedAt: row.generated_at ?? undefined,
+    fileBucket: row.file_bucket ?? undefined,
+    filePath: row.file_path ?? undefined,
+    fileMimeType: row.file_mime_type ?? undefined,
+    fileSizeBytes: row.file_size_bytes ? parseNumber(row.file_size_bytes) : undefined,
+    fileSha256: row.file_sha256 ?? undefined,
+    version: row.version ?? 1,
+    hasPdf: Boolean(row.file_path),
     fileUrl: row.file_url ?? undefined,
     createdAt: row.created_at ?? "Tarih güncellenecek",
     updatedAt: row.updated_at ?? "Tarih güncellenecek"
+  };
+}
+
+function mapReceiptWithPayment(row: ReceiptRow): ReceiptWithPayment {
+  const paymentIntent = firstRelation(row.payment_intents);
+
+  return {
+    id: row.id,
+    receiptNo: row.receipt_no,
+    paymentIntentId: row.payment_intent_id,
+    paymentIntentNo: paymentIntent?.intent_no ?? null,
+    paymentIntentStatus: paymentIntent?.status ?? null,
+    contextType: row.context_type,
+    contextId: row.context_id,
+    donorAccountId: row.donor_account_id,
+    donorName: row.donor_name,
+    donorEmail: row.donor_email,
+    amount: parseNumber(row.amount),
+    currency: row.currency ?? "TRY",
+    status: row.status,
+    issuedAt: row.issued_at,
+    cancelledAt: row.cancelled_at,
+    generatedAt: row.generated_at,
+    fileBucket: row.file_bucket,
+    filePath: row.file_path,
+    fileMimeType: row.file_mime_type,
+    fileSizeBytes: row.file_size_bytes ? parseNumber(row.file_size_bytes) : null,
+    fileSha256: row.file_sha256,
+    version: row.version ?? 1,
+    cancelledReason: row.cancelled_reason,
+    lastDownloadedAt: row.last_downloaded_at,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at
+  };
+}
+
+function mockReceiptWithPayment(receiptNo: string): ReceiptWithPayment | null {
+  const receipt = mockReceipts.find((item) => item.receiptNo === receiptNo);
+  if (!receipt) return null;
+
+  return {
+    id: receipt.id,
+    receiptNo: receipt.receiptNo,
+    paymentIntentId: receipt.paymentIntentId ?? null,
+    paymentIntentNo: receipt.paymentIntentNo ?? null,
+    paymentIntentStatus: receipt.paymentIntentStatus ?? null,
+    contextType: receipt.contextType,
+    contextId: receipt.contextId ?? null,
+    donorAccountId: receipt.donorAccountId || null,
+    donorName: receipt.donorDisplayName,
+    donorEmail: receipt.donorEmailMasked,
+    amount: receipt.amount,
+    currency: receipt.currency,
+    status: receipt.status,
+    issuedAt: receipt.issuedAt ?? null,
+    cancelledAt: receipt.cancelledAt ?? null,
+    generatedAt: receipt.generatedAt ?? null,
+    fileBucket: receipt.fileBucket ?? null,
+    filePath: receipt.filePath ?? null,
+    fileMimeType: receipt.fileMimeType ?? null,
+    fileSizeBytes: receipt.fileSizeBytes ?? null,
+    fileSha256: receipt.fileSha256 ?? null,
+    version: receipt.version ?? 1,
+    cancelledReason: null,
+    lastDownloadedAt: null,
+    createdAt: receipt.createdAt,
+    updatedAt: receipt.updatedAt
   };
 }
 
@@ -422,4 +552,76 @@ export async function getDonorReceipts(accountId: string): Promise<Receipt[]> {
   const receipts = await fetchReceipts();
   const source = receipts ?? mockReceipts;
   return source.filter((item) => item.donorAccountId === accountId);
+}
+
+async function fetchReceiptByNoWithAdmin(receiptNo: string): Promise<ReceiptWithPayment | null> {
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) return null;
+
+  const db = asAdminWriteClient(supabase);
+  const { data, error } = await db
+    .from<ReceiptRow>("receipts")
+    .select(receiptColumns)
+    .eq("receipt_no", receiptNo)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return mapReceiptWithPayment(data);
+}
+
+export async function getReceiptByNo(receiptNo: string): Promise<Receipt | null> {
+  const receipt = await getReceiptWithPayment(receiptNo);
+  if (!receipt) return null;
+
+  return {
+    id: receipt.id,
+    receiptNo: receipt.receiptNo,
+    paymentIntentId: receipt.paymentIntentId ?? undefined,
+    paymentIntentNo: receipt.paymentIntentNo ?? undefined,
+    paymentIntentStatus: receipt.paymentIntentStatus ?? undefined,
+    paymentIntentStatusLabel: receipt.paymentIntentStatus ? paymentIntentStatusLabels[receipt.paymentIntentStatus] : undefined,
+    contextType: receipt.contextType,
+    contextTypeLabel: paymentContextTypeLabels[receipt.contextType],
+    contextId: receipt.contextId ?? undefined,
+    donorAccountId: receipt.donorAccountId ?? "",
+    donorDisplayName: maskName(receipt.donorName),
+    donorEmailMasked: maskEmail(receipt.donorEmail),
+    amount: receipt.amount,
+    currency: receipt.currency,
+    status: receipt.status,
+    statusLabel: receiptStatusLabels[receipt.status],
+    issuedAt: receipt.issuedAt ?? undefined,
+    cancelledAt: receipt.cancelledAt ?? undefined,
+    generatedAt: receipt.generatedAt ?? undefined,
+    fileBucket: receipt.fileBucket ?? undefined,
+    filePath: receipt.filePath ?? undefined,
+    fileMimeType: receipt.fileMimeType ?? undefined,
+    fileSizeBytes: receipt.fileSizeBytes ?? undefined,
+    fileSha256: receipt.fileSha256 ?? undefined,
+    version: receipt.version,
+    hasPdf: Boolean(receipt.filePath),
+    createdAt: receipt.createdAt ?? "Tarih güncellenecek",
+    updatedAt: receipt.updatedAt ?? "Tarih güncellenecek"
+  };
+}
+
+export async function getReceiptWithPayment(receiptNo: string): Promise<ReceiptWithPayment | null> {
+  const receipt = await fetchReceiptByNoWithAdmin(receiptNo);
+  return receipt ?? mockReceiptWithPayment(receiptNo);
+}
+
+export async function getReceiptForDownload(
+  receiptNo: string,
+  viewerContext: {
+    isAdmin?: boolean;
+    accountId?: string | null;
+  }
+): Promise<ReceiptWithPayment | null> {
+  const receipt = await getReceiptWithPayment(receiptNo);
+  if (!receipt) return null;
+
+  if (viewerContext.isAdmin) return receipt;
+  if (viewerContext.accountId && receipt.donorAccountId && viewerContext.accountId === receipt.donorAccountId) return receipt;
+
+  return null;
 }

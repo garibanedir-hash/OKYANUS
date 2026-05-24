@@ -56,6 +56,8 @@ export type Receipt = {
   receiptNo: string;
   paymentIntentId?: string;
   paymentIntentNo?: string;
+  paymentIntentStatus?: PaymentIntentStatus;
+  paymentIntentStatusLabel?: string;
   contextType: PaymentContextType;
   contextTypeLabel: string;
   contextId?: string;
@@ -68,6 +70,14 @@ export type Receipt = {
   statusLabel: string;
   issuedAt?: string;
   cancelledAt?: string;
+  generatedAt?: string;
+  fileBucket?: string;
+  filePath?: string;
+  fileMimeType?: string;
+  fileSizeBytes?: number;
+  fileSha256?: string;
+  version?: number;
+  hasPdf?: boolean;
   fileUrl?: string;
   createdAt: string;
   updatedAt: string;
@@ -246,6 +256,48 @@ export const mockPaymentIntents: PaymentIntent[] = [
     updatedAt: "2026-05-22T09:35:00.000Z",
     expiresAt: "2026-05-22T10:05:00.000Z",
     metadataSummary: "PayTR test iframe token ve callback bekleme örneği"
+  },
+  {
+    id: "payment-intent-005",
+    intentNo: "PAY-2026-000005",
+    contextType: "orphan_sponsorship",
+    contextTypeLabel: paymentContextTypeLabels.orphan_sponsorship,
+    contextId: "sponsorship-001",
+    donorAccountId: "demo-donor-account",
+    donorDisplayName: "A*** D.",
+    donorEmailMasked: "a***@example.org",
+    donorPhoneMasked: "+90 5** *** 20 05",
+    amount: 1500,
+    currency: "TRY",
+    provider: "paytr",
+    providerLabel: paymentProviderLabels.paytr,
+    providerReferenceMasked: "PAY***005",
+    status: "paid",
+    statusLabel: paymentIntentStatusLabels.paid,
+    createdAt: "2026-05-23T08:15:00.000Z",
+    updatedAt: "2026-05-23T08:25:00.000Z",
+    paidAt: "2026-05-23T08:25:00.000Z",
+    metadataSummary: "Yetim hamiliği paid test ödemesi"
+  },
+  {
+    id: "payment-intent-006",
+    intentNo: "PAY-2026-000006",
+    contextType: "campaign_donation",
+    contextTypeLabel: paymentContextTypeLabels.campaign_donation,
+    donorAccountId: "demo-donor-account",
+    donorDisplayName: "A*** D.",
+    donorEmailMasked: "a***@example.org",
+    donorPhoneMasked: "+90 5** *** 20 06",
+    amount: 250,
+    currency: "TRY",
+    provider: "manual",
+    providerLabel: paymentProviderLabels.manual,
+    status: "paid",
+    statusLabel: paymentIntentStatusLabels.paid,
+    createdAt: "2026-05-18T12:00:00.000Z",
+    updatedAt: "2026-05-18T12:05:00.000Z",
+    paidAt: "2026-05-18T12:05:00.000Z",
+    metadataSummary: "İptal edilmiş makbuz demo kaydı"
   }
 ];
 
@@ -255,6 +307,8 @@ export const mockReceipts: Receipt[] = [
     receiptNo: "RCPT-2026-000001",
     paymentIntentId: "payment-intent-001",
     paymentIntentNo: "PAY-2026-000001",
+    paymentIntentStatus: "paid",
+    paymentIntentStatusLabel: paymentIntentStatusLabels.paid,
     contextType: "general_donation",
     contextTypeLabel: paymentContextTypeLabels.general_donation,
     donorAccountId: "demo-donor-account",
@@ -264,6 +318,14 @@ export const mockReceipts: Receipt[] = [
     currency: "TRY",
     status: "prepared",
     statusLabel: receiptStatusLabels.prepared,
+    generatedAt: "2026-05-20T09:22:00.000Z",
+    fileBucket: "receipts-private",
+    filePath: "receipts/2026/RCPT-2026-000001/v1.pdf",
+    fileMimeType: "application/pdf",
+    fileSizeBytes: 14284,
+    fileSha256: "demo-sha256-prepared-receipt-001",
+    version: 1,
+    hasPdf: true,
     createdAt: "2026-05-20T09:21:00.000Z",
     updatedAt: "2026-05-20T09:21:00.000Z"
   },
@@ -272,6 +334,8 @@ export const mockReceipts: Receipt[] = [
     receiptNo: "RCPT-2026-000002",
     paymentIntentId: "payment-intent-002",
     paymentIntentNo: "PAY-2026-000002",
+    paymentIntentStatus: "pending",
+    paymentIntentStatusLabel: paymentIntentStatusLabels.pending,
     contextType: "qurban_order",
     contextTypeLabel: paymentContextTypeLabels.qurban_order,
     contextId: "qorder-001",
@@ -282,8 +346,61 @@ export const mockReceipts: Receipt[] = [
     currency: "TRY",
     status: "pending",
     statusLabel: receiptStatusLabels.pending,
+    version: 1,
+    hasPdf: false,
     createdAt: "2026-05-21T11:50:00.000Z",
     updatedAt: "2026-05-21T11:50:00.000Z"
+  },
+  {
+    id: "receipt-003",
+    receiptNo: "RCPT-2026-000003",
+    paymentIntentId: "payment-intent-005",
+    paymentIntentNo: "PAY-2026-000005",
+    paymentIntentStatus: "paid",
+    paymentIntentStatusLabel: paymentIntentStatusLabels.paid,
+    contextType: "orphan_sponsorship",
+    contextTypeLabel: paymentContextTypeLabels.orphan_sponsorship,
+    contextId: "sponsorship-001",
+    donorAccountId: "demo-donor-account",
+    donorDisplayName: "A*** D.",
+    donorEmailMasked: "a***@example.org",
+    amount: 1500,
+    currency: "TRY",
+    status: "issued",
+    statusLabel: receiptStatusLabels.issued,
+    issuedAt: "2026-05-23T09:00:00.000Z",
+    generatedAt: "2026-05-23T08:30:00.000Z",
+    fileBucket: "receipts-private",
+    filePath: "receipts/2026/RCPT-2026-000003/v1.pdf",
+    fileMimeType: "application/pdf",
+    fileSizeBytes: 15120,
+    fileSha256: "demo-sha256-issued-receipt-003",
+    version: 1,
+    hasPdf: true,
+    createdAt: "2026-05-23T08:27:00.000Z",
+    updatedAt: "2026-05-23T09:00:00.000Z"
+  },
+  {
+    id: "receipt-004",
+    receiptNo: "RCPT-2026-000004",
+    paymentIntentId: "payment-intent-006",
+    paymentIntentNo: "PAY-2026-000006",
+    paymentIntentStatus: "paid",
+    paymentIntentStatusLabel: paymentIntentStatusLabels.paid,
+    contextType: "campaign_donation",
+    contextTypeLabel: paymentContextTypeLabels.campaign_donation,
+    donorAccountId: "demo-donor-account",
+    donorDisplayName: "A*** D.",
+    donorEmailMasked: "a***@example.org",
+    amount: 250,
+    currency: "TRY",
+    status: "cancelled",
+    statusLabel: receiptStatusLabels.cancelled,
+    cancelledAt: "2026-05-18T13:00:00.000Z",
+    version: 1,
+    hasPdf: false,
+    createdAt: "2026-05-18T12:06:00.000Z",
+    updatedAt: "2026-05-18T13:00:00.000Z"
   }
 ];
 

@@ -8,7 +8,7 @@ import {
   paymentIntentStatusLabels,
   paymentProviderLabels
 } from "@/data/paymentMock";
-import { getAdminPaymentIntentsWithSource } from "@/lib/data/paymentRepository";
+import { getAdminPaymentIntentsWithSource, getAdminReceipts } from "@/lib/data/paymentRepository";
 import { formatDate } from "@/lib/format";
 
 type AdminPaymentRecordsPageProps = {
@@ -102,7 +102,11 @@ function getResultDate(payment: {
 
 export default async function AdminPaymentRecordsPage({ searchParams }: AdminPaymentRecordsPageProps) {
   const params = await searchParams;
-  const { data: paymentIntents, source } = await getAdminPaymentIntentsWithSource();
+  const [{ data: paymentIntents, source }, receipts] = await Promise.all([
+    getAdminPaymentIntentsWithSource(),
+    getAdminReceipts()
+  ]);
+  const receiptsByPaymentIntent = new Map(receipts.filter((receipt) => receipt.paymentIntentId).map((receipt) => [receipt.paymentIntentId, receipt]));
   const filteredPayments = paymentIntents.filter((payment) => {
     const contextMatch = !params?.context_type || params.context_type === "all" || payment.contextType === params.context_type;
     const statusMatch = !params?.status || params.status === "all" || payment.status === params.status;
@@ -182,13 +186,14 @@ export default async function AdminPaymentRecordsPage({ searchParams }: AdminPay
         </AdminFilterBar>
       </form>
       <AdminTable
-        headers={["Ödeme No", "Bağışçı maskeli", "Bağlam", "Tutar", "Para birimi", "Sağlayıcı", "Durum", "Finalizasyon", "Tarih", "İşlem"]}
+        headers={["Ödeme No", "Bağışçı maskeli", "Bağlam", "Tutar", "Para birimi", "Sağlayıcı", "Durum", "Finalizasyon", "Makbuz", "Tarih", "İşlem"]}
         recordCount={filteredPayments.length}
         empty={!filteredPayments.length}
       >
         {filteredPayments.map((payment) => {
           const canOpenPaymentPage = payment.provider === "paytr" && ["pending", "initiated", "requires_action"].includes(payment.status);
           const resultDate = getResultDate(payment);
+          const receipt = receiptsByPaymentIntent.get(payment.id);
 
           return (
             <tr key={payment.id}>
@@ -218,6 +223,20 @@ export default async function AdminPaymentRecordsPage({ searchParams }: AdminPay
               <td>
                 <AdminStatusBadge status={getFinalizationStatus(payment)} />
                 {resultDate ? <span className="mt-1 block text-xs text-ink-muted">Sonuç: {formatDate(resultDate)}</span> : null}
+              </td>
+              <td>
+                {receipt ? (
+                  <>
+                    <AdminStatusBadge status={receipt.statusLabel} />
+                    <a href="/admin/makbuzlar" className="mt-1 block text-xs font-bold text-deep-blue">
+                      {receipt.hasPdf ? "PDF hazır" : "PDF bekliyor"}
+                    </a>
+                  </>
+                ) : payment.status === "paid" ? (
+                  <span className="text-xs font-bold text-ink-muted">Makbuz bekliyor</span>
+                ) : (
+                  <span className="text-xs text-ink-muted">Ödeme bekleniyor</span>
+                )}
               </td>
               <td>{formatDate(payment.createdAt)}</td>
               <td>

@@ -145,6 +145,13 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Duplicate callback sponsorluk `next_payment_date` değerini ikinci kez ötelemiyor.
 - [ ] Receipt/notification duplicate oluşmadığı staging'de doğrulandı.
 - [ ] Canlı PayTR açmadan önce gerçek PDF makbuz, gerçek bildirim gönderimi ve muhasebe süreci ayrı onaydan geçti.
+- [ ] `017_receipt_pdf_private_storage.sql` staging ortamında çalıştırıldı.
+- [ ] `receipts-private` bucket public değil.
+- [ ] Admin PDF hazırlama akışı paid receipt için çalışıyor.
+- [ ] Donor kendi makbuzunu açabiliyor, başka donor ve anon açamıyor.
+- [ ] Makbuz PDF içinde hassas ödeme/provider bilgisi yok.
+- [ ] PDF metni, belge statüsü ve issued/onay süreci yönetim ve mali müşavir tarafından onaylandı.
+- [ ] PDF dosya saklama ve imha politikası KVKK kapsamında tanımlandı.
 
 ## Veri Güvenliği ve KVKK
 

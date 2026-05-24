@@ -1,0 +1,140 @@
+# 10D Makbuz PDF ve Private Storage Altyapısı
+
+## Amaç
+
+10D aşaması, ödeme sonrası oluşan `receipts` kayıtları için PDF hazırlanmasını, dosyanın Supabase private storage içinde saklanmasını ve yalnızca yetkili admin/bağışçı erişimiyle görüntülenmesini hazırlar. Bu aşama canlı ödeme veya gerçek muhasebe entegrasyonu değildir.
+
+## Makbuz PDF Akışı
+
+1. Payment intent paid olur.
+2. 10C finalization `receipts` hazırlık kaydı oluşturur.
+3. Admin `/admin/makbuzlar` ekranından PDF hazırlar.
+4. Server action receipt ve payment intent durumunu doğrular.
+5. PDF buffer server-side üretilir.
+6. Dosya `receipts-private` bucket içine yüklenir.
+7. `receipts.file_path`, `file_sha256`, `file_size_bytes`, `generated_at` ve `version` güncellenir.
+
+## Private Bucket Yaklaşımı
+
+Bucket adı:
+
+```text
+receipts-private
+```
+
+Bucket `public = false` olmalıdır. Storage dosyaları public URL ile paylaşılmaz. Erişim, server-side yetki kontrolünden sonra `/api/receipts/[receiptNo]/download` endpoint'i üzerinden sağlanır.
+
+## Neden Public URL Yok?
+
+Makbuz bağışçı adı, e-posta ve ödeme bilgisi içerir. Public bucket veya kalıcı public URL kullanılırsa linki bilen herkes dosyaya erişebilir. Bu nedenle dosya yolu client tarafında açık yetki olarak kullanılmaz.
+
+## Admin PDF Hazırlama Akışı
+
+- Admin/super_admin `requireAdminUser()` ile doğrulanır.
+- Sadece paid payment intent ilişkili receipt için PDF hazırlanır.
+- Cancelled receipt için PDF üretilmez.
+- PDF oluşturulunca status `prepared` olur.
+- Gerçek mali onay sonrası `issued` süreci sonraki aşamada ayrıca tasarlanacaktır.
+
+## Bağışçı PDF Görüntüleme Akışı
+
+- Bağışçı panelinde yalnızca kendi `donor_account_id` ile eşleşen receipt görünür.
+- Guest veya `donor_account_id = null` kayıtlar panelde otomatik makbuz olarak açılmaz.
+- Bağışçı linki `/api/receipts/[receiptNo]/download` endpoint'ine gider.
+- Endpoint session, hesap ve receipt sahipliği kontrolü yapar.
+
+## Yetki Kontrolü
+
+Erişebilir:
+
+- `admin` veya `super_admin`
+- Receipt `donor_account_id` değeri aktif kullanıcı hesabı ile eşleşen bağışçı
+
+Erişemez:
+
+- Anon/public
+- Farklı donor hesabı
+- `donor_account_id` boş olan guest kayıtlar
+
+## Signed URL / Stream Yaklaşımı
+
+Mevcut uygulama server-side streaming kullanır:
+
+- Service role dosyayı private bucket'tan okur.
+- Response `Content-Type: application/pdf` ile döner.
+- `Content-Disposition: inline` kullanılır.
+- Cache `private, no-store` olarak ayarlanır.
+
+`getReceiptSignedUrl()` yardımcı fonksiyonu kısa süreli signed URL üretimi için hazırdır; ancak varsayılan route streaming kullanır.
+
+## Dosya Yolu Standardı
+
+```text
+receipts/{year}/{receiptNo}/v{version}.pdf
+```
+
+Örnek:
+
+```text
+receipts/2026/RCPT-2026-000001/v1.pdf
+```
+
+## PDF İçeriği
+
+PDF içinde yer alır:
+
+- Okyanus İnsani Yardım Derneği marka alanı
+- Makbuz No
+- Ödeme No
+- Tarih
+- Bağışçı adı soyadı
+- Bağışçı e-posta
+- Bağış türü
+- Tutar ve para birimi
+- Ödeme durumu
+- Makbuz durumu
+- Kurumsal not
+
+PDF içinde yer almaz:
+
+- Kart numarası
+- CVV
+- PayTR merchant key/salt
+- Provider raw payload
+- Hash
+- Service role key
+- IP ve hassas teknik callback detayı
+
+## Türkçe Karakter Notu
+
+Bu aşamada yeni PDF paketi eklenmedi. Minimal server-side PDF üretici standart PDF fontu kullandığı için Türkçe karakterler güvenli ASCII karşılıklarına normalize edilir. Production öncesi Türkçe karakterli resmi çıktı için font embed destekli PDF çözümü değerlendirilebilir.
+
+## Receipt Status Lifecycle
+
+- `pending`: Makbuz hazırlık kaydı var.
+- `prepared`: PDF üretildi, private storage metadata dolu.
+- `issued`: Mali/resmi onay sonrası kullanılacak durum.
+- `cancelled`: Makbuz iptal edildi; yeni PDF üretilmez.
+- `failed`: PDF veya iş akışı hatası için kullanılabilir.
+
+## PDF Versioning
+
+`receipts.version` PDF sürümünü tutar. Var olan dosya üzerine yazmak yerine yeni sürüm yolu kullanılmalıdır:
+
+- `v1.pdf`
+- `v2.pdf`
+- `v3.pdf`
+
+Bu aşamada admin ekranı dosya yoksa PDF hazırlar. Yeniden oluşturma/iptal/onay politikası sonraki aşamada ayrı action olarak netleştirilecektir.
+
+## Production Öncesi Kontroller
+
+- Mali müşavir ve dernek yönetimi PDF metnini onaylamalı.
+- Makbuz numarası ve resmi belge statüsü netleşmeli.
+- Private bucket public olmadığını Security Advisor ve Storage panelinde doğrulayın.
+- Erişim audit logları gözden geçirilmeli.
+- Dosya saklama ve imha politikası KVKK kapsamında yazılmalı.
+
+## Sonraki Aşama
+
+10E veya sonraki aşamada gerçek makbuz issued/onay akışı, iptal nedeni, muhasebe entegrasyonu, e-posta ile gönderim ve PDF font/şablon iyileştirmesi planlanmalıdır.

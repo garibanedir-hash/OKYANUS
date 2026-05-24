@@ -249,3 +249,16 @@
 - [ ] Kurban quota ve sponsorluk tarih güncellemeleri idempotent RPC içinde yapılıyor.
 - [ ] Receipt ve notification queue kayıtları duplicate oluşmayacak şekilde hazırlanıyor.
 - [ ] Callback logları merchant key/salt, kart bilgisi veya hassas provider payload içermiyor.
+
+## 10D Makbuz PDF ve Private Storage Güvenliği
+
+- [ ] `receipts-private` bucket public değil.
+- [ ] Receipt PDF dosyaları public URL ile paylaşılmıyor.
+- [ ] `/api/receipts/[receiptNo]/download` anon/public erişimi reddediyor.
+- [ ] Admin/super_admin dışındaki kullanıcılar yalnızca kendi `donor_account_id` ilişkili makbuzunu açabiliyor.
+- [ ] `donor_account_id = null` guest kayıtlar donor e-postasıyla otomatik açılmıyor.
+- [ ] Client componentlere service role key veya storage bucket credential taşınmıyor.
+- [ ] Client HTML içinde `file_path` yetki bypass edecek şekilde kullanılmıyor.
+- [ ] PDF içinde kart bilgisi, provider raw payload, hash, merchant key/salt, service role key veya IP yok.
+- [ ] PDF üretimi ve download audit log best-effort yazıyor.
+- [ ] Storage bucket private kontrolü Supabase panelden manuel doğrulanıyor.

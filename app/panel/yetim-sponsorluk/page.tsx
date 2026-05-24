@@ -2,7 +2,7 @@ import { ShieldCheck } from "lucide-react";
 import { AdminTable } from "@/components/admin/AdminTable";
 import { Button } from "@/components/ui/Button";
 import { PortalStatCard } from "@/components/portal/PortalStatCard";
-import { getDonorPayments } from "@/lib/data/paymentRepository";
+import { getDonorPayments, getDonorReceipts } from "@/lib/data/paymentRepository";
 import {
   getCurrentSponsorshipDonorContext,
   getDonorSponsorshipApplications,
@@ -21,10 +21,14 @@ export default async function SponsorshipPage() {
     getDonorSponsoredOrphans(accountId),
     getDonorSponsorshipApplications(accountId)
   ]);
-  const donorPayments = await getDonorPayments(accountId);
+  const [donorPayments, donorReceipts] = await Promise.all([
+    getDonorPayments(accountId),
+    getDonorReceipts(accountId)
+  ]);
   const paymentIntentsBySponsorship = new Map(
     donorPayments.filter((payment) => payment.contextType === "orphan_sponsorship" && payment.contextId).map((payment) => [payment.contextId, payment])
   );
+  const receiptsByPaymentIntent = new Map(donorReceipts.filter((receipt) => receipt.paymentIntentId).map((receipt) => [receipt.paymentIntentId, receipt]));
   const firstUpdate = sponsoredOrphans.find((item) => item.lastUpdate)?.lastUpdate;
   const openApplications = applications.filter((item) => !["matched", "archived", "cancelled"].includes(item.status));
 
@@ -50,7 +54,7 @@ export default async function SponsorshipPage() {
       </section>
 
       <section className="rounded-lg border border-ocean-green/15 bg-mint-green/35 p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
-        Sponsorluklar ortak payment intent modeline bağlıdır. PayTR test callback sonucu onaylandığında destek aktiflenir ve sonraki destek tarihi server-side hesaplanır; canlı ödeme, düzenli talimat, PDF makbuz ve gerçek SMS/e-posta gönderimi henüz yapılmaz.
+        Sponsorluklar ortak payment intent modeline bağlıdır. PayTR test callback sonucu onaylandığında destek aktiflenir ve sonraki destek tarihi server-side hesaplanır; hazırlanmış PDF makbuzlar yetki kontrollü açılır, canlı ödeme, düzenli talimat ve gerçek SMS/e-posta gönderimi henüz yapılmaz.
       </section>
 
       {openApplications.length ? (
@@ -72,6 +76,7 @@ export default async function SponsorshipPage() {
         {sponsorships.map((item) => {
           const orphan = sponsoredOrphans.find((safe) => safe.sponsorshipId === item.id);
           const paymentIntent = paymentIntentsBySponsorship.get(item.id);
+          const receipt = paymentIntent ? receiptsByPaymentIntent.get(paymentIntent.id) : undefined;
           const supportIsActive = item.status === "active" || item.paymentStatus === "paid" || paymentIntent?.status === "paid";
           const canContinuePayment = paymentIntent && !supportIsActive && ["pending", "initiated", "requires_action"].includes(paymentIntent.status);
 
@@ -97,6 +102,15 @@ export default async function SponsorshipPage() {
                     {paymentIntent ? paymentIntent.providerLabel : "PayTR test akışı payment intent oluşunca açılır."}
                   </span>
                 )}
+                {receipt ? (
+                  receipt.hasPdf ? (
+                    <Button href={`/api/receipts/${receipt.receiptNo}/download`} variant="ghost" className="mt-2 min-h-8 rounded-md px-3 py-1 text-xs">
+                      Makbuzu Görüntüle
+                    </Button>
+                  ) : (
+                    <span className="mt-2 block text-xs font-semibold text-ink-muted">Makbuz: {receipt.statusLabel}</span>
+                  )
+                ) : null}
               </td>
               <td>{item.nextPaymentDate ? formatDate(item.nextPaymentDate) : "Ödeme altyapısı sonraki aşamada aktifleşecek"}</td>
               <td><SponsorshipStatusCell status={item.statusLabel} /></td>
