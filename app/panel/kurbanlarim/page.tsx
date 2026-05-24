@@ -45,7 +45,7 @@ export default async function PanelQurbanOrdersPage() {
         Güvenlik nedeniyle e-posta adresi tek başına hesap eşleştirme için kullanılmaz. Girişsiz başvurular admin kayıtlarında görünür; panelde otomatik görünmesi için sonraki aşamada güvenli eşleştirme akışı gerekir.
       </div>
       <div className="rounded-lg border border-ocean-green/15 bg-mint-green/35 p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
-        Ödeme bekleyen kurban kayıtları ortak payment intent altyapısına bağlanabilecek şekilde hazırlanmıştır. Canlı ödeme sağlayıcısı açılmadan ödeme alma, makbuz PDF üretimi veya SMS/e-posta gönderimi yapılmaz.
+        Ödeme bekleyen kurban kayıtları ortak payment intent altyapısına bağlıdır. PayTR test callback sonucu onaylandığında ödeme durumu ve kota finalizasyonu server-side işlenir; canlı ödeme, PDF makbuz ve gerçek bildirim gönderimi kapalıdır.
       </div>
       <section className="grid gap-4 md:grid-cols-3">
         <div className="rounded-lg border border-border-soft bg-white p-5 shadow-sm">

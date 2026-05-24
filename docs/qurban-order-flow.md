@@ -185,3 +185,18 @@ Audit log hatası ana başvuru akışını patlatmaz. Guest başvurularda audit 
 - Aynı `qurban_orders.id` için bekleyen/başlatılmış payment intent varsa yeni kayıt açılmaz, mevcut intent tekrar kullanılır.
 - PayTR paid callback sonrası sipariş ödeme durumu ve hisse durumları sınırlı olarak güncellenir.
 - `quota_completed` artışı ve failed/cancelled quota release işlemi 10C aşamasında transaction güvenli RPC/job ile yapılmalıdır.
+
+## 10C Kurban Payment Finalization
+
+10C ile kurban ödeme sonucu `016_payment_finalization_and_context_state.sql` içindeki RPC fonksiyonlarıyla transaction içinde uygulanır.
+
+- `finalize_qurban_payment` payment intent ve kurban order satırını kilitler.
+- Paid sonucunda `qurban_orders.payment_status = paid` ve `qurban_orders.order_status = payment_confirmed` yapılır.
+- İlgili `qurban_shares.status = payment_confirmed` olur.
+- `quota_reserved = greatest(quota_reserved - share_count, 0)` ve `quota_completed = quota_completed + share_count` uygulanır.
+- Duplicate paid callback order zaten `payment_confirmed` ise quota değerlerini tekrar değiştirmez.
+- `release_qurban_payment_reservation` failed/cancelled/refunded sonucunda order ve hisseleri cancelled yapar.
+- Release akışında `quota_reserved` azaltılır, `quota_completed` artırılmaz.
+- Receipt hazırlık kaydı ve `qurban_payment_confirmed` / failed-cancelled template bildirimi idempotent üretilir.
+
+Canlı ödeme, gerçek makbuz PDF ve gerçek SMS/e-posta gönderimi bu aşamada kapalıdır.

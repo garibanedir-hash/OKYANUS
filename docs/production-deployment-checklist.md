@@ -136,6 +136,15 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] PayTR env eksikken güvenli hata sayfası doğrulandı.
 - [ ] Paid callback sonrası kurban/sponsorluk sınırlı status update sonuçları staging'de kontrol edildi.
 - [ ] Kurban quota_completed ve failed/cancelled quota release işlemleri 10C transaction planı olmadan production'a açılmadı.
+- [ ] `016_payment_finalization_and_context_state.sql` staging ortamında çalıştırıldı.
+- [ ] PayTR callback replay testi `docs/paytr-callback-idempotency-test.md` ile tamamlandı.
+- [ ] Callback tutar/para birimi uyuşmazlığı paid finalization çalıştırmıyor.
+- [ ] Kurban paid callback sonrası `quota_reserved` azalıyor ve `quota_completed` yalnızca bir kez artıyor.
+- [ ] Kurban failed/cancelled callback sonrası reserved quota serbest kalıyor.
+- [ ] Yetim paid callback sonrası `last_payment_date` ve `next_payment_date` doğru set ediliyor.
+- [ ] Duplicate callback sponsorluk `next_payment_date` değerini ikinci kez ötelemiyor.
+- [ ] Receipt/notification duplicate oluşmadığı staging'de doğrulandı.
+- [ ] Canlı PayTR açmadan önce gerçek PDF makbuz, gerçek bildirim gönderimi ve muhasebe süreci ayrı onaydan geçti.
 
 ## Veri Güvenliği ve KVKK
 

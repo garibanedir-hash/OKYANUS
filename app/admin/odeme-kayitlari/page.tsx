@@ -76,6 +76,30 @@ function PaymentAction({ intentNo, canOpen }: { intentNo: string; canOpen: boole
   return <DisabledDemoButton>Manuel ödendi demo</DisabledDemoButton>;
 }
 
+function getFinalizationStatus(payment: {
+  status: string;
+  paidAt?: string | null;
+  failedAt?: string | null;
+  cancelledAt?: string | null;
+}) {
+  if (payment.status === "paid" && payment.paidAt) return "Tamamlandı";
+  if (["failed", "cancelled", "refunded"].includes(payment.status)) return "İşlendi";
+  if (["pending", "initiated", "requires_action"].includes(payment.status)) return "Bekliyor";
+  return "İşlenmedi";
+}
+
+function getResultDate(payment: {
+  status: string;
+  paidAt?: string | null;
+  failedAt?: string | null;
+  cancelledAt?: string | null;
+}) {
+  if (payment.status === "paid") return payment.paidAt;
+  if (payment.status === "failed") return payment.failedAt;
+  if (payment.status === "cancelled") return payment.cancelledAt;
+  return null;
+}
+
 export default async function AdminPaymentRecordsPage({ searchParams }: AdminPaymentRecordsPageProps) {
   const params = await searchParams;
   const { data: paymentIntents, source } = await getAdminPaymentIntentsWithSource();
@@ -93,7 +117,7 @@ export default async function AdminPaymentRecordsPage({ searchParams }: AdminPay
       <AdminSectionHeader
         eyebrow="Bağış ve destek"
         title="Ödeme Kayıtları"
-        description="Genel bağış, kurban ve yetim hamiliği için payment intent kayıtları read-only izlenir. 10A ile PayTR test merchant_oid ve callback bekleme durumu görünür; canlı ödeme alma kapalıdır."
+        description="Genel bağış, kurban ve yetim hamiliği için payment intent kayıtları read-only izlenir. 10C ile PayTR callback sonucu, provider referansı ve bağlam finalizasyon özeti görünür; canlı ödeme alma kapalıdır."
       />
       <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
         {source === "supabase" ? "Supabase payment_intents" : "Demo/mock fallback"}
@@ -158,45 +182,54 @@ export default async function AdminPaymentRecordsPage({ searchParams }: AdminPay
         </AdminFilterBar>
       </form>
       <AdminTable
-        headers={["Ödeme No", "Bağışçı maskeli", "Bağlam", "Tutar", "Para birimi", "Sağlayıcı", "Durum", "Tarih", "İşlem"]}
+        headers={["Ödeme No", "Bağışçı maskeli", "Bağlam", "Tutar", "Para birimi", "Sağlayıcı", "Durum", "Finalizasyon", "Tarih", "İşlem"]}
         recordCount={filteredPayments.length}
         empty={!filteredPayments.length}
       >
         {filteredPayments.map((payment) => {
           const canOpenPaymentPage = payment.provider === "paytr" && ["pending", "initiated", "requires_action"].includes(payment.status);
+          const resultDate = getResultDate(payment);
 
           return (
-          <tr key={payment.id}>
-            <td className="font-bold text-dark-navy">{payment.intentNo}</td>
-            <td>
-              {payment.donorDisplayName}
-              <span className="block text-xs text-ink-muted">{payment.donorEmailMasked}</span>
-              <span className="block text-xs text-ink-muted">{payment.donorPhoneMasked}</span>
-            </td>
-            <td>
-              {payment.contextTypeLabel}
-              {payment.contextId ? <span className="block text-xs text-ink-muted">{payment.contextId.slice(0, 8)}</span> : null}
-              <span className="block text-xs text-ink-muted">{payment.metadataSummary}</span>
-            </td>
-            <td>{formatMoney(payment.amount, payment.currency)}</td>
-            <td>{payment.currency}</td>
-            <td>
-              {payment.providerLabel}
-              {payment.providerReferenceMasked ? <span className="block text-xs text-ink-muted">Ref: {payment.providerReferenceMasked}</span> : null}
-              {payment.provider === "paytr" && payment.status === "initiated" ? (
-                <span className="block text-xs font-bold text-deep-blue">PayTR callback bekleniyor</span>
-              ) : null}
-            </td>
-            <td><AdminStatusBadge status={payment.statusLabel} /></td>
-            <td>{formatDate(payment.createdAt)}</td>
-            <td><PaymentAction intentNo={payment.intentNo} canOpen={canOpenPaymentPage} /></td>
-          </tr>
+            <tr key={payment.id}>
+              <td className="font-bold text-dark-navy">{payment.intentNo}</td>
+              <td>
+                {payment.donorDisplayName}
+                <span className="block text-xs text-ink-muted">{payment.donorEmailMasked}</span>
+                <span className="block text-xs text-ink-muted">{payment.donorPhoneMasked}</span>
+              </td>
+              <td>
+                {payment.contextTypeLabel}
+                {payment.contextId ? <span className="block text-xs text-ink-muted">{payment.contextId.slice(0, 8)}</span> : null}
+                <span className="block text-xs text-ink-muted">{payment.metadataSummary}</span>
+              </td>
+              <td>{formatMoney(payment.amount, payment.currency)}</td>
+              <td>{payment.currency}</td>
+              <td>
+                {payment.providerLabel}
+                {payment.providerReferenceMasked ? <span className="block text-xs text-ink-muted">Ref: {payment.providerReferenceMasked}</span> : null}
+                {payment.provider === "paytr" && payment.status === "initiated" ? (
+                  <span className="block text-xs font-bold text-deep-blue">PayTR callback bekleniyor</span>
+                ) : null}
+              </td>
+              <td>
+                <AdminStatusBadge status={payment.statusLabel} />
+              </td>
+              <td>
+                <AdminStatusBadge status={getFinalizationStatus(payment)} />
+                {resultDate ? <span className="mt-1 block text-xs text-ink-muted">Sonuç: {formatDate(resultDate)}</span> : null}
+              </td>
+              <td>{formatDate(payment.createdAt)}</td>
+              <td>
+                <PaymentAction intentNo={payment.intentNo} canOpen={canOpenPaymentPage} />
+              </td>
+            </tr>
           );
         })}
       </AdminTable>
-      <AdminPanelNotice title="9E ödeme altyapısı">
+      <AdminPanelNotice title="10C callback finalizasyonu">
         Bu ekran `payment_intents` tablosuna göre hazırlanmıştır. PayTR test entegrasyonunda kesin onay yalnızca `/api/paytr/callback`
-        hash doğrulamasıyla işlenir; manuel aksiyonlar pasif demo kontrol olarak kalır.
+        hash doğrulaması, tutar kontrolü ve idempotent finalization RPC akışıyla işlenir; manuel aksiyonlar pasif demo kontrol olarak kalır.
       </AdminPanelNotice>
     </div>
   );

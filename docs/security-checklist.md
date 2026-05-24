@@ -236,3 +236,16 @@
 - [ ] Aynı context için bekleyen intent tekrar kullanılıyor; duplicate pending kayıt oluşmuyor.
 - [ ] PayTR env eksikliği kullanıcıya güvenli ve teknik detay içermeyen mesajla gösteriliyor.
 - [ ] Public ödeme sayfasında merchant key/salt, hash veya teknik callback detayı gösterilmiyor.
+
+## 10C Callback Finalization Güvenliği
+
+- [ ] `016_payment_finalization_and_context_state.sql` RPC fonksiyonları public/anon/authenticated execute yetkisine kapalı.
+- [ ] RPC fonksiyonları `security definer` kullanıyorsa `search_path = public` olarak sabit.
+- [ ] PayTR callback hash doğrulaması payment intent güncellemesinden önce yapılıyor.
+- [ ] Callback `total_amount` server-side payment intent tutarıyla kuruş bazında karşılaştırılıyor.
+- [ ] Tutar/para birimi uyuşmazlığı paid finalization çalıştırmıyor.
+- [ ] Duplicate provider event `payment_provider_events.processed = true` ise tekrar finalization çalıştırmıyor.
+- [ ] Terminal payment intent durumları (`paid/failed/cancelled/refunded`) replay callback ile yeniden işlenmiyor.
+- [ ] Kurban quota ve sponsorluk tarih güncellemeleri idempotent RPC içinde yapılıyor.
+- [ ] Receipt ve notification queue kayıtları duplicate oluşmayacak şekilde hazırlanıyor.
+- [ ] Callback logları merchant key/salt, kart bilgisi veya hassas provider payload içermiyor.

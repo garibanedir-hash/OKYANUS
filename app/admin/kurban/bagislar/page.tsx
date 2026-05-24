@@ -29,7 +29,7 @@ export default async function AdminQurbanOrdersPage() {
       <AdminSectionHeader
         eyebrow="Kurban Çalışmaları"
         title="Kurban Bağışları"
-        description="Kurban bağış başvuruları maskeli/read-only gösterilir. İlgili ortak payment intent varsa ödeme hazırlık kaydıyla birlikte izlenebilir; gerçek ödeme onayı ve makbuz üretimi yapılmaz."
+        description="Kurban bağış başvuruları maskeli/read-only gösterilir. İlgili ortak payment intent varsa PayTR test callback sonucu, ödeme hazırlığı ve finalizasyon durumu birlikte izlenebilir; canlı ödeme açılmaz."
       />
       <QurbanDataSourceBadge source={source} />
       <div className="rounded-lg border border-border-soft bg-white p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
@@ -72,8 +72,8 @@ export default async function AdminQurbanOrdersPage() {
         })}
       </AdminTable>
       <div className="rounded-lg border border-ocean-green/15 bg-mint-green/35 p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
-        10A PayTR test callback doğrulaması hazırlandığında payment paid olduğunda `qurban_orders.payment_status = paid`, `qurban_orders.order_status = payment_confirmed`,
-        `qurban_shares.status = payment_confirmed` ve kontenjanın `quota_reserved` değerinden `quota_completed` değerine finalizasyonu server-side işlemle yapılacaktır.
+        10C finalization RPC akışıyla payment paid olduğunda `qurban_orders.payment_status = paid`, `qurban_orders.order_status = payment_confirmed`,
+        `qurban_shares.status = payment_confirmed` olur; `quota_reserved` azaltılıp `quota_completed` idempotent şekilde artırılır. Failed/cancelled sonucu rezervasyonu serbest bırakır.
       </div>
     </div>
   );

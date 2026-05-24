@@ -117,3 +117,16 @@ Eşleştirme action akışı:
 - Sponsor panelinde payment intent varsa “Ödemeye Devam Et” bağlantısı gösterilir.
 - PayTR paid callback sonrası `sponsorships.payment_status = paid`, `sponsorships.status = active` ve `last_payment_date` güncellenir.
 - `next_payment_date` yenileme, düzenli ödeme retry ve pasifleştirme state machine'i 10C/10D aşamalarında netleştirilmelidir.
+
+## 10C Sponsorluk Payment Finalization
+
+10C ile sponsorluk ödeme sonucu `016_payment_finalization_and_context_state.sql` içindeki RPC fonksiyonlarıyla transaction içinde uygulanır.
+
+- `finalize_orphan_sponsorship_payment` payment intent ve sponsorship satırını kilitler.
+- Paid sonucunda `sponsorships.payment_status = paid` ve `sponsorships.status = active` yapılır.
+- `last_payment_date = current_date` ve `next_payment_date = current_date + interval '1 month'` atanır.
+- Duplicate paid callback sponsorship zaten active/paid ise `next_payment_date` ikinci kez ötelenmez.
+- `handle_orphan_sponsorship_payment_failed` failed/cancelled/refunded sonucunda sponsorship kaydını active yapmaz ve `payment_pending` durumunda bırakır.
+- Receipt hazırlık kaydı ve `sponsorship_payment_confirmed` / failed-cancelled template bildirimi idempotent üretilir.
+
+Canlı ödeme, düzenli ödeme yenileme, gerçek makbuz PDF ve gerçek SMS/e-posta gönderimi sonraki aşamaya bırakılmıştır.

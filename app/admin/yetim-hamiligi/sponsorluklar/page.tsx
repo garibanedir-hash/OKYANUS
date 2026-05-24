@@ -18,7 +18,7 @@ export default async function AdminSponsorshipsPage() {
       <AdminSectionHeader
         eyebrow="Yetim Hamiliği"
         title="Sponsorluklar"
-        description="Sponsor, yetim güvenli özeti, ortak ödeme hazırlığı ve sponsorluk durumları maskeli/read-only olarak izlenir."
+        description="Sponsor, yetim güvenli özeti, PayTR test ödeme hazırlığı ve 10C finalizasyon sonucu maskeli/read-only olarak izlenir."
       />
       <PrivacyNotice />
       <AdminFilterBar>
@@ -54,8 +54,8 @@ export default async function AdminSponsorshipsPage() {
         })}
       </AdminTable>
       <div className="rounded-lg border border-ocean-green/15 bg-mint-green/35 p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
-        10A PayTR test callback doğrulaması hazırlandığında payment paid olduğunda `sponsorships.payment_status = paid`, `sponsorships.status = active` ve `next_payment_date`
-        periyoda göre server-side hesaplanarak güncellenecektir.
+        10C finalization RPC akışıyla payment paid olduğunda `sponsorships.payment_status = paid`, `sponsorships.status = active`, `last_payment_date` bugün ve
+        `next_payment_date` +1 ay olarak idempotent şekilde güncellenir. Failed/cancelled sonucu sponsorluk aktiflenmez.
       </div>
     </div>
   );

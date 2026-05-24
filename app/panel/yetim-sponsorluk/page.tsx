@@ -50,7 +50,7 @@ export default async function SponsorshipPage() {
       </section>
 
       <section className="rounded-lg border border-ocean-green/15 bg-mint-green/35 p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
-        Ödeme altyapısı sonraki aşamada aktifleşecektir. 9E ile sponsorluklar ortak payment intent ve makbuz hazırlık modeline bağlanabilecek hale geldi; canlı ödeme, düzenli talimat, PDF makbuz ve SMS/e-posta gönderimi henüz yapılmaz.
+        Sponsorluklar ortak payment intent modeline bağlıdır. PayTR test callback sonucu onaylandığında destek aktiflenir ve sonraki destek tarihi server-side hesaplanır; canlı ödeme, düzenli talimat, PDF makbuz ve gerçek SMS/e-posta gönderimi henüz yapılmaz.
       </section>
 
       {openApplications.length ? (

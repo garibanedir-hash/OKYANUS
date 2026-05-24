@@ -145,7 +145,7 @@ export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsP
         ))}
       </AdminTable>
       <AdminPanelNotice title="Makbuz hazırlık notu">
-        `receipts` kayıtları ödeme niyetiyle ilişkilendirilebilir, ancak PDF üretimi, dosya saklama ve e-posta gönderimi 9E.1 kapsamında kapalıdır; PDF aksiyonu pasif demo olarak gösterilir.
+        10C finalization akışı paid ödeme için idempotent `receipts` hazırlık kaydı üretir. PDF üretimi, dosya saklama ve e-posta gönderimi kapalıdır; PDF aksiyonu pasif demo olarak gösterilir.
       </AdminPanelNotice>
     </div>
   );

@@ -63,8 +63,13 @@ Provider callback entegrasyonu açıldığında `payment_provider_events.provide
 - `markPaymentPaid`
 - `markPaymentFailed`
 - `markPaymentCancelled`
+- `markPaymentRefunded`
 - `prepareReceiptForPayment`
+- `createReceiptIfMissing`
 - `enqueueNotification`
+- `enqueueNotificationIfMissing`
+- `appendPaymentProviderEvent`
+- `markProviderEventProcessed`
 
 `lib/data/paymentRepository.ts` read-only/admin görünüm için Supabase authenticated read dener, hata/timeout/RLS/migration eksikse güvenli mock fallback döner.
 
@@ -120,3 +125,19 @@ Provider callback entegrasyonu açıldığında `payment_provider_events.provide
 - `createPaymentIntentForContext` aynı context için `draft/pending/initiated/requires_action` ödeme niyeti varsa onu tekrar kullanır.
 - `paid/failed/cancelled/refunded/expired` kayıtlar yeni denemeden ayrı değerlendirilir.
 - Genel bağışta ayrı donation tablosu kaydı bu aşamada açılmaz; bağış niyeti `payment_intents.metadata` içinde izlenir ve ileride genel bağış kayıt modeliyle ilişkilendirilecektir.
+
+## 10C Finalization ve Callback Güvenliği
+
+10C ile ödeme sonucu bağlamlara transaction güvenli RPC fonksiyonlarıyla uygulanır.
+
+- PayTR callback event id formatı `paytr:merchant_oid:status:total_amount` olarak tutulur.
+- Callback hash doğrulanmadan payment intent veya bağlam güncellenmez.
+- `total_amount` server-side payment intent tutarıyla kuruş bazında karşılaştırılır.
+- Terminal durumdaki `paid/failed/cancelled/refunded` kayıtlar yeniden finalize edilmez.
+- Kurban paid sonucunda order/hisse durumları onaylanır, `quota_reserved` azalır ve `quota_completed` artar.
+- Kurban failed/cancelled/refunded sonucunda rezervasyon serbest bırakılır, `quota_completed` artmaz.
+- Yetim paid sonucunda sponsorship active olur, `last_payment_date` bugün ve `next_payment_date` +1 ay yapılır.
+- Yetim failed/cancelled/refunded sonucunda sponsorluk active yapılmaz.
+- Genel bağış için ayrı donation tablosu olmadığından finalization payment intent, receipt ve notification düzeyinde kalır.
+
+Bu aşama canlı ödeme açmaz; gerçek PDF makbuz ve gerçek bildirim gönderimi sonraki entegrasyon aşamasındadır.

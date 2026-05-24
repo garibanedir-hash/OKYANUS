@@ -701,7 +701,7 @@ export async function appendPaymentStatusLog(payload: {
 
 async function updatePaymentStatus(input: {
   paymentIntentId: string;
-  status: Extract<PaymentIntentStatus, "paid" | "failed" | "cancelled">;
+  status: Extract<PaymentIntentStatus, "paid" | "failed" | "cancelled" | "refunded">;
   eventType: PaymentEventType;
   providerReference?: string | null;
   actorId?: string | null;
@@ -718,7 +718,9 @@ async function updatePaymentStatus(input: {
       ? { paid_at: now, failed_at: null, cancelled_at: null }
       : input.status === "failed"
         ? { failed_at: now }
-        : { cancelled_at: now };
+        : input.status === "cancelled"
+          ? { cancelled_at: now }
+          : {};
 
   const db = getAdminDb();
   const { data, error } = await db
@@ -828,11 +830,29 @@ export async function markPaymentCancelled(input: {
   return updatePaymentStatus({
     paymentIntentId: input.paymentIntentId,
     status: "cancelled",
-    eventType: "manually_cancelled",
+    eventType: input.actorRole?.includes("callback") ? "cancelled" : "manually_cancelled",
     providerReference: input.providerReference ?? null,
     actorId: input.actorId ?? null,
     actorRole: input.actorRole ?? "admin",
     note: input.note ?? "Ödeme manuel olarak iptal edildi."
+  });
+}
+
+export async function markPaymentRefunded(input: {
+  paymentIntentId: string;
+  providerReference?: string | null;
+  actorId?: string | null;
+  actorRole?: string | null;
+  note?: string | null;
+}) {
+  return updatePaymentStatus({
+    paymentIntentId: input.paymentIntentId,
+    status: "refunded",
+    eventType: "refunded",
+    providerReference: input.providerReference ?? null,
+    actorId: input.actorId ?? null,
+    actorRole: input.actorRole ?? "admin",
+    note: input.note ?? "Ödeme iade edildi olarak işaretlendi."
   });
 }
 
@@ -882,6 +902,20 @@ export async function prepareReceiptForPayment(input: {
   }
 
   return mapReceipt(data);
+}
+
+export async function createReceiptIfMissing(
+  paymentIntent: PaymentIntentRecord,
+  options: {
+    status?: Extract<ReceiptStatus, "pending" | "prepared">;
+    metadata?: Record<string, unknown>;
+  } = {}
+) {
+  return prepareReceiptForPayment({
+    paymentIntentId: paymentIntent.id,
+    status: options.status ?? "pending",
+    metadata: options.metadata ?? { source: "payment_finalization" }
+  });
 }
 
 export async function getPaymentProviderEvent(
@@ -971,6 +1005,35 @@ export async function recordPaymentProviderEvent(input: {
   return { record: mapPaymentProviderEvent(data), duplicate: false };
 }
 
+export async function appendPaymentProviderEvent(input: {
+  provider: PaymentProvider;
+  providerEventId?: string | null;
+  eventType?: string | null;
+  signatureVerified?: boolean;
+  processed?: boolean;
+  processingError?: string | null;
+  payloadSummary?: Record<string, unknown>;
+}) {
+  return recordPaymentProviderEvent(input);
+}
+
+export async function markProviderEventProcessed(input: {
+  provider: PaymentProvider;
+  providerEventId: string;
+  eventType?: string | null;
+  payloadSummary?: Record<string, unknown>;
+}) {
+  return recordPaymentProviderEvent({
+    provider: input.provider,
+    providerEventId: input.providerEventId,
+    eventType: input.eventType ?? null,
+    signatureVerified: true,
+    processed: true,
+    processingError: null,
+    payloadSummary: input.payloadSummary ?? {}
+  });
+}
+
 export async function enqueueNotification(input: {
   contextType?: PaymentContextType | null;
   contextId?: string | null;
@@ -1015,4 +1078,51 @@ export async function enqueueNotification(input: {
   }
 
   return { id: data.id };
+}
+
+export async function enqueueNotificationIfMissing(input: {
+  contextType?: PaymentContextType | null;
+  contextId?: string | null;
+  paymentIntentId?: string | null;
+  donorAccountId?: string | null;
+  recipientEmail?: string | null;
+  recipientPhone?: string | null;
+  channel: NotificationChannel;
+  templateKey: string;
+  status?: NotificationQueueStatus;
+  payload?: Record<string, unknown>;
+  scheduledAt?: string | null;
+}) {
+  const templateKey = input.templateKey.trim();
+  if (!templateKey) {
+    throw new PaymentWriteError("Bildirim şablonu zorunludur.", "notification_template_required");
+  }
+
+  const db = getAdminDb();
+  let query = db
+    .from<{ id: string }>("notification_queue")
+    .select("id")
+    .eq("template_key", templateKey)
+    .limit(1);
+
+  if (input.paymentIntentId) {
+    query = query.eq("payment_intent_id", input.paymentIntentId);
+  } else if (input.contextType && input.contextId) {
+    query = query.eq("context_type", input.contextType).eq("context_id", input.contextId);
+  } else {
+    return enqueueNotification({ ...input, templateKey });
+  }
+
+  const { data: existing, error: existingError } = await query.maybeSingle();
+  if (existingError) {
+    throw new PaymentWriteError(
+      friendlyPaymentWriteError(existingError, "Bildirim kuyruğu idempotency kontrolü yapılamadı."),
+      existingError.code ?? "notification_idempotency_read_failed"
+    );
+  }
+
+  if (existing) return { id: existing.id, reused: true };
+
+  const created = await enqueueNotification({ ...input, templateKey });
+  return { ...created, reused: false };
 }

@@ -288,9 +288,9 @@ export function verifyPaytrCallbackHash(callback: PaytrCallbackPayload) {
   return timingSafeCompare(expected, callback.hash);
 }
 
-export function mapPaytrStatus(status: string): Extract<PaymentIntentStatus, "paid" | "failed" | "cancelled"> {
+export function mapPaytrStatus(status: string): Extract<PaymentIntentStatus, "paid" | "failed" | "cancelled" | "refunded"> {
   if (status === "success") return "paid";
   if (status === "cancelled") return "cancelled";
+  if (status === "refunded") return "refunded";
   return "failed";
 }
-

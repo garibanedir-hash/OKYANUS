@@ -208,3 +208,17 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] PayTR env eksikken ödeme sayfası güvenli hata gösteriyor.
 - [ ] Paid callback sonrası kurban ve sponsorluk için sınırlı status update çalışıyor.
 - [ ] Canlı ödeme, kart saklama, PDF makbuz ve gerçek bildirim gönderimi hala kapalı.
+
+## 10C Payment Finalization Kontrolleri
+
+- [ ] `016_payment_finalization_and_context_state.sql` staging ortamında çalıştırıldı.
+- [ ] `finalize_qurban_payment` paid callback sonrası order, share ve quota durumlarını transaction içinde güncelliyor.
+- [ ] `release_qurban_payment_reservation` failed/cancelled/refunded callback sonrası reserved quota değerini idempotent serbest bırakıyor.
+- [ ] `finalize_orphan_sponsorship_payment` paid callback sonrası sponsorship kaydını active yapıyor ve ödeme tarihlerini set ediyor.
+- [ ] `handle_orphan_sponsorship_payment_failed` başarısız/iptal ödeme sonrası sponsorship kaydını active yapmıyor.
+- [ ] `finalize_general_donation_payment` genel bağış için receipt ve notification hazırlık kaydı oluşturuyor.
+- [ ] PayTR callback `total_amount` ve `currency` doğrulaması yapıyor.
+- [ ] Duplicate callback payment intent, quota, receipt, notification ve sponsorship tarihlerini ikinci kez değiştirmiyor.
+- [ ] Admin ödeme kayıtları finalization durumunu read-only gösteriyor.
+- [ ] `docs/paytr-callback-idempotency-test.md` staging manuel testlerinde kullanılıyor.
+- [ ] Canlı ödeme, kart saklama, PDF makbuz ve gerçek bildirim gönderimi hala kapalı.

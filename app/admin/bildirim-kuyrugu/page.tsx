@@ -115,7 +115,7 @@ export default async function AdminNotificationQueuePage({ searchParams }: Admin
         ))}
       </AdminTable>
       <AdminPanelNotice title="Bildirim kuyruğu notu">
-        Bu sayfa yalnızca kuyruk kayıtlarını gösterir. SMTP, SMS, WhatsApp provider bağlantısı ve otomatik retry işleyicisi sonraki entegrasyon aşamasında eklenecektir; tekrar gönderim aksiyonu pasif demodur.
+        10C finalization akışı paid/failed/cancelled sonuçlarında context bazlı notification template kaydı üretir. SMTP, SMS, WhatsApp provider bağlantısı ve otomatik retry işleyicisi sonraki entegrasyon aşamasında eklenecektir; tekrar gönderim aksiyonu pasif demodur.
       </AdminPanelNotice>
     </div>
   );

@@ -133,3 +133,17 @@ insert into public.payment_intents (
 - [ ] Kurban paid callback sonrası `qurban_orders.payment_status = paid`, `qurban_orders.order_status = payment_confirmed`, `qurban_shares.status = payment_confirmed` doğrulanıyor.
 - [ ] Yetim paid callback sonrası `sponsorships.payment_status = paid`, `sponsorships.status = active` doğrulanıyor.
 - [ ] Duplicate callback finalization tekrar çalıştırmıyor.
+
+## 10C Finalization ve Callback Replay Testleri
+
+- [ ] `016_payment_finalization_and_context_state.sql` staging ortamında çalıştırıldı.
+- [ ] PayTR callback `provider_event_id = paytr:merchant_oid:status:total_amount` formatıyla kaydediliyor.
+- [ ] Yanlış hash `OK` dönmüyor ve ödeme durumunu değiştirmiyor.
+- [ ] `total_amount` uyuşmazlığı ödeme niyetini `paid` yapmıyor.
+- [ ] Duplicate paid callback kurban `quota_completed` değerini ikinci kez artırmıyor.
+- [ ] Duplicate paid callback sponsorluk `next_payment_date` değerini ikinci kez ötelemiyor.
+- [ ] Kurban failed/cancelled callback `quota_reserved` değerini serbest bırakıyor ve `quota_completed` değerini artırmıyor.
+- [ ] Yetim failed/cancelled callback sponsorluğu active yapmıyor.
+- [ ] Paid callback sonrası aynı payment intent için tek receipt kaydı oluşuyor.
+- [ ] Paid/failed/cancelled callback sonrası aynı template/payment için duplicate notification oluşmuyor.
+- [ ] `docs/paytr-callback-idempotency-test.md` senaryoları staging testinde tamamlandı.

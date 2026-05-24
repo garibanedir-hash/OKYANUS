@@ -81,10 +81,18 @@ Sonuç `PAYTR_MERCHANT_KEY` ile HMAC-SHA256 hesaplanıp base64 formatında karş
 Callback event referansı şu şekilde oluşturulur:
 
 ```text
-merchant_oid:status:total_amount
+paytr:merchant_oid:status:total_amount
 ```
 
 `payment_provider_events` içinde daha önce işlenmiş event varsa ödeme durumu tekrar güncellenmez. `payment_intents` zaten terminal durumda ise context finalization tekrar çalıştırılmaz.
+
+10C ile callback güvenliği sıkılaştırıldı:
+
+- Hash doğrulaması payment intent güncellemesinden önce yapılır.
+- `total_amount`, server-side `payment_intents.amount * 100` değeriyle karşılaştırılır.
+- `currency` geldiyse `TL/TRY` normalize edilerek doğrulanır.
+- Tutar veya para birimi uyuşmazlığında ödeme `paid` yapılmaz ve provider event processed sayılmaz.
+- Paid/failed/cancelled/refunded terminal durumlar tekrar finalization çalıştırmaz.
 
 ## 10B Payment Intent Başlatma
 
@@ -102,13 +110,14 @@ Tutarlar client güvenine bırakılmaz:
 
 PayTR test env eksikse ödeme sayfası güvenli şekilde “Ödeme sağlayıcı test bilgileri tanımlı değil” mesajı gösterir. Payment intent yine admin ekranında görülebilir.
 
-## Finalization Hazırlığı
+## 10B Finalization Hazırlığı
 
 `lib/payments/paymentFinalization.ts` içinde bağlam bazlı hazırlık fonksiyonları vardır:
 
 - `finalizePaidPaymentIntent`
 - `handleFailedPaymentIntent`
 - `handleCancelledPaymentIntent`
+- `handleRefundedPaymentIntent`
 
 10B itibarıyla:
 
@@ -117,6 +126,18 @@ PayTR test env eksikse ödeme sayfası güvenli şekilde “Ödeme sağlayıcı 
 - Yetim sponsorluğu için `sponsorships.payment_status = paid`, `sponsorships.status = active` ve `last_payment_date` güncellenebilir.
 - Yetim `next_payment_date` yenileme stratejisi 10C/10D aşamasında netleştirilecektir.
 - Makbuz hazırlık kaydı ve sistem bildirim kuyruğu hazırlanır.
+
+## 10C Finalization
+
+10C ile bağlam finalization işlemleri `016_payment_finalization_and_context_state.sql` içindeki transaction güvenli RPC fonksiyonlarına taşındı:
+
+- `finalize_qurban_payment`: kurban siparişini paid/payment_confirmed yapar, hisseleri onaylar, `quota_reserved` değerini azaltıp `quota_completed` değerini artırır.
+- `release_qurban_payment_reservation`: failed/cancelled/refunded ödemelerde rezervasyonu idempotent şekilde serbest bırakır.
+- `finalize_orphan_sponsorship_payment`: sponsorluğu active yapar, `last_payment_date` ve `next_payment_date` değerlerini ayarlar.
+- `handle_orphan_sponsorship_payment_failed`: başarısız/iptal ödemede sponsorluğu active yapmadan `payment_pending` durumunda bırakır.
+- `finalize_general_donation_payment`: genel bağış için payment intent, receipt ve notification düzeyinde finalization yapar.
+
+RPC fonksiyonları public/anon/authenticated tarafından doğrudan çalıştırılmaz; server-only service role katmanından çağrılır.
 
 ## Production Öncesi
 
