@@ -3,7 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/types";
 
-export type DbError = { code?: string; message?: string };
+export type DbError = { code?: string; message?: string; details?: string; hint?: string };
 export type DbResult<T> = Promise<{ data: T | null; error: DbError | null }>;
 export type DbListResult<T> = Promise<{ data: T[] | null; error: DbError | null }>;
 

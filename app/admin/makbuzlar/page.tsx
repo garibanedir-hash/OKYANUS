@@ -55,9 +55,10 @@ function DisabledDemoButton({ children }: { children: React.ReactNode }) {
   );
 }
 
-function PdfGenerateButton({ receiptNo, disabled }: { receiptNo: string; disabled: boolean }) {
+function PdfGenerateButton({ receiptId, receiptNo, disabled }: { receiptId: string; receiptNo: string; disabled: boolean }) {
   return (
     <form action={generateReceiptPdfAction}>
+      <input type="hidden" name="receipt_id" value={receiptId} />
       <input type="hidden" name="receipt_no" value={receiptNo} />
       <button
         type="submit"
@@ -217,11 +218,11 @@ export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsP
                 ) : hasPdf ? (
                   <PdfViewLink receiptNo={receipt.receiptNo} />
                 ) : canGeneratePdf ? (
-                  <PdfGenerateButton receiptNo={receipt.receiptNo} disabled={false} />
+                  <PdfGenerateButton receiptId={receipt.id} receiptNo={receipt.receiptNo} disabled={false} />
                 ) : paymentIsPaid ? (
                   <DisabledDemoButton>PDF kapalı</DisabledDemoButton>
                 ) : (
-                  <PdfGenerateButton receiptNo={receipt.receiptNo} disabled />
+                  <PdfGenerateButton receiptId={receipt.id} receiptNo={receipt.receiptNo} disabled />
                 )}
               </td>
             </tr>

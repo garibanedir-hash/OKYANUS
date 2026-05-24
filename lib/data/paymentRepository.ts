@@ -591,6 +591,21 @@ async function fetchReceiptByNoWithAdmin(receiptNo: string): Promise<ReceiptWith
   return mapReceiptWithPayment(data);
 }
 
+async function fetchReceiptByIdWithAdmin(receiptId: string): Promise<ReceiptWithPayment | null> {
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) return null;
+
+  const db = asAdminWriteClient(supabase);
+  const { data, error } = await db
+    .from<ReceiptRow>("receipts")
+    .select(receiptColumns)
+    .eq("id", receiptId)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return mapReceiptWithPayment(data);
+}
+
 export async function getReceiptByNo(receiptNo: string): Promise<Receipt | null> {
   const receipt = await getReceiptWithPayment(receiptNo);
   if (!receipt) return null;
@@ -634,6 +649,10 @@ export async function getReceiptWithPayment(receiptNo: string): Promise<ReceiptW
 
 export async function getSupabaseReceiptWithPayment(receiptNo: string): Promise<ReceiptWithPayment | null> {
   return fetchReceiptByNoWithAdmin(receiptNo);
+}
+
+export async function getSupabaseReceiptWithPaymentById(receiptId: string): Promise<ReceiptWithPayment | null> {
+  return fetchReceiptByIdWithAdmin(receiptId);
 }
 
 export async function getReceiptForDownload(

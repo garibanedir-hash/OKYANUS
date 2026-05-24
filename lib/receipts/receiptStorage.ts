@@ -81,7 +81,7 @@ type StorageSchemaClient = {
 function getAdminStorageClient() {
   const supabase = createSupabaseAdminClient();
   if (!supabase) {
-    throw new Error("Makbuz dosya saklama servisi şu anda hazır değil.");
+    throw new Error("Service role env eksik olduğu için makbuz dosya/metadata işlemi yapılamadı.");
   }
 
   return supabase;
@@ -95,9 +95,43 @@ function friendlyStorageError(error: { message?: string } | null, fallback: stri
   return fallback;
 }
 
+function safeDbError(error: DbError | null) {
+  if (!error) return null;
+  return {
+    code: error.code ?? null,
+    message: error.message ?? null,
+    details: error.details ?? null,
+    hint: error.hint ?? null
+  };
+}
+
+function logReceiptMetadataIssue(
+  phase: string,
+  payload: {
+    receiptId?: string;
+    receiptNo?: string | null;
+    filter?: Record<string, string>;
+    filePath?: string;
+    status?: string | null;
+    error?: DbError | null;
+    note?: string;
+  }
+) {
+  console.error("[receipt-pdf:metadata]", phase, {
+    receiptId: payload.receiptId ?? null,
+    receiptNo: payload.receiptNo ?? null,
+    filter: payload.filter ?? null,
+    filePath: payload.filePath ?? null,
+    status: payload.status ?? null,
+    note: payload.note ?? null,
+    error: safeDbError(payload.error ?? null)
+  });
+}
+
 function friendlyReceiptUpdateError(error: DbError | null, fallback: string) {
-  const message = error?.message ?? "";
-  if (/permission|42501|row-level/i.test(message)) return "Makbuz metadata güncellemesi için yetki doğrulanamadı.";
+  const message = [error?.code, error?.message, error?.details, error?.hint].filter(Boolean).join(" ");
+  if (/permission|42501|row-level|not authorized/i.test(message)) return "Makbuz metadata güncellemesi için server yetkisi doğrulanamadı.";
+  if (/invalid input value for enum|22P02|check constraint|23514/i.test(message)) return "PDF dosyası hazırlandı ancak makbuz durum etiketi güncellenemedi.";
   if (/not null|23502/i.test(message)) return "Makbuz dosya metadata bilgileri eksik.";
   return fallback;
 }
@@ -288,30 +322,118 @@ export async function updateReceiptFileMetadata(
 ) {
   const supabase = getAdminStorageClient();
   const db = asAdminWriteClient(supabase);
+
+  const now = new Date().toISOString();
+  const metadataUpdate: Record<string, unknown> = {
+    file_bucket: fileInfo.bucket,
+    file_path: fileInfo.path,
+    file_mime_type: fileInfo.mimeType,
+    file_size_bytes: fileInfo.sizeBytes,
+    file_sha256: fileInfo.sha256,
+    generated_at: options.generatedAt ?? now,
+    version: fileInfo.version,
+    updated_at: now
+  };
+
+  if (options.generatedBy !== undefined) {
+    metadataUpdate.generated_by = options.generatedBy;
+  }
+
+  console.info("[receipt-pdf:metadata]", "metadata_update_start", {
+    receiptId,
+    filter: { id: receiptId },
+    filePath: fileInfo.path,
+    version: fileInfo.version
+  });
+
   const { data, error } = await db
     .from<ReceiptMetadataRow>("receipts")
-    .update({
-      file_bucket: fileInfo.bucket,
-      file_path: fileInfo.path,
-      file_mime_type: fileInfo.mimeType,
-      file_size_bytes: fileInfo.sizeBytes,
-      file_sha256: fileInfo.sha256,
-      generated_at: options.generatedAt ?? new Date().toISOString(),
-      generated_by: options.generatedBy ?? null,
-      version: fileInfo.version,
-      status: options.status ?? "prepared",
-      updated_at: new Date().toISOString()
-    })
+    .update(metadataUpdate)
     .eq("id", receiptId)
     .select("id, receipt_no, status, file_bucket, file_path, file_mime_type, file_size_bytes, file_sha256, generated_at, version")
-    .single();
+    .maybeSingle();
 
-  if (error || !data) {
+  if (error) {
+    logReceiptMetadataIssue("metadata_update_error", {
+      receiptId,
+      filter: { id: receiptId },
+      filePath: fileInfo.path,
+      error
+    });
     throw new Error(friendlyReceiptUpdateError(error, "Makbuz dosya metadata bilgileri güncellenemedi."));
   }
 
+  if (!data) {
+    logReceiptMetadataIssue("metadata_update_no_row", {
+      receiptId,
+      filter: { id: receiptId },
+      filePath: fileInfo.path,
+      note: "update returned no row"
+    });
+    throw new Error("Makbuz kaydı bulunamadı veya güncellenemedi.");
+  }
+
   if (!data.file_path) {
-    throw new Error("Makbuz dosya metadata güncellendi ancak file_path boş döndü.");
+    logReceiptMetadataIssue("metadata_verification_failed", {
+      receiptId,
+      receiptNo: data.receipt_no,
+      filter: { id: receiptId },
+      filePath: fileInfo.path,
+      status: data.status,
+      note: "file_path empty after update"
+    });
+    throw new Error("Makbuz dosyası yüklendi ancak dosya yolu kayda yazılamadı.");
+  }
+
+  console.info("[receipt-pdf:metadata]", "metadata_update_verified", {
+    receiptId: data.id,
+    receiptNo: data.receipt_no,
+    filePath: data.file_path,
+    status: data.status,
+    version: data.version
+  });
+
+  if (data.status === "pending" && options.status === "prepared") {
+    const { data: statusData, error: statusError } = await db
+      .from<ReceiptMetadataRow>("receipts")
+      .update({ status: "prepared", updated_at: new Date().toISOString() })
+      .eq("id", receiptId)
+      .select("id, receipt_no, status, file_bucket, file_path, file_mime_type, file_size_bytes, file_sha256, generated_at, version")
+      .maybeSingle();
+
+    if (statusError) {
+      logReceiptMetadataIssue("status_update_error", {
+        receiptId: data.id,
+        receiptNo: data.receipt_no,
+        filter: { id: receiptId },
+        filePath: data.file_path,
+        status: data.status,
+        error: statusError,
+        note: "PDF metadata yazıldı ama status prepared yapılamadı."
+      });
+      return data;
+    }
+
+    if (!statusData) {
+      logReceiptMetadataIssue("status_update_no_row", {
+        receiptId: data.id,
+        receiptNo: data.receipt_no,
+        filter: { id: receiptId },
+        filePath: data.file_path,
+        status: data.status,
+        note: "PDF metadata yazıldı ama status update no row döndü."
+      });
+      return data;
+    }
+
+    console.info("[receipt-pdf:metadata]", "status_update_verified", {
+      receiptId: statusData.id,
+      receiptNo: statusData.receipt_no,
+      status: statusData.status,
+      filePath: statusData.file_path
+    });
+
+    return statusData;
   }
 
   return data;

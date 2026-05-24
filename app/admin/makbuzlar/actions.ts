@@ -4,7 +4,11 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { AdminAuthorizationError, requireAdminUser } from "@/lib/auth/requireAdmin";
 import { logAdminAction } from "@/lib/audit/auditLogger";
-import { getSupabaseReceiptWithPayment } from "@/lib/data/paymentRepository";
+import {
+  getSupabaseReceiptWithPayment,
+  getSupabaseReceiptWithPaymentById,
+  type ReceiptWithPayment
+} from "@/lib/data/paymentRepository";
 import { diagnoseReceiptPdfState, toSafeReceiptDiagnosticLog } from "@/lib/receipts/receiptDiagnostics";
 import { buildReceiptPdfData, generateReceiptPdfBuffer } from "@/lib/receipts/receiptPdfGenerator";
 import {
@@ -32,9 +36,33 @@ function friendlyActionError(error: unknown) {
   return "Makbuz PDF işlemi tamamlanamadı.";
 }
 
-function readReceiptNo(formData: FormData) {
-  const value = formData.get("receipt_no");
+function readFormString(formData: FormData, key: string) {
+  const value = formData.get(key);
   return typeof value === "string" ? value.trim() : "";
+}
+
+function readReceiptReference(formData: FormData) {
+  return {
+    receiptId: readFormString(formData, "receipt_id"),
+    receiptNo: readFormString(formData, "receipt_no")
+  };
+}
+
+async function getSupabaseReceiptByReference(reference: { receiptId: string; receiptNo: string }): Promise<ReceiptWithPayment | null> {
+  if (reference.receiptId) {
+    const receipt = await getSupabaseReceiptWithPaymentById(reference.receiptId);
+    if (receipt) return receipt;
+    console.warn("[receipt-pdf]", "receipt_lookup_by_id_returned_empty", {
+      receiptId: reference.receiptId,
+      receiptNo: reference.receiptNo || null
+    });
+  }
+
+  if (reference.receiptNo) {
+    return getSupabaseReceiptWithPayment(reference.receiptNo);
+  }
+
+  return null;
 }
 
 async function logDiagnostic(receiptNo: string, phase: string) {
@@ -50,14 +78,35 @@ export async function generateReceiptPdfAction(formData: FormData) {
 
   try {
     const admin = await requireAdminUser();
-    const receiptNo = readReceiptNo(formData);
-    receiptNoForDiagnostics = receiptNo;
-    if (!receiptNo) throw new Error("Makbuz numarası zorunludur.");
+    const receiptReference = readReceiptReference(formData);
+    receiptNoForDiagnostics = receiptReference.receiptNo || null;
+    if (!receiptReference.receiptId && !receiptReference.receiptNo) throw new Error("Makbuz kimliği veya numarası zorunludur.");
 
-    await logDiagnostic(receiptNo, "before_generate");
+    console.info("[receipt-pdf]", "action_input", {
+      receiptId: receiptReference.receiptId || null,
+      receiptNo: receiptReference.receiptNo || null
+    });
 
-    const receipt = await getSupabaseReceiptWithPayment(receiptNo);
+    const receipt = await getSupabaseReceiptByReference(receiptReference);
     if (!receipt) throw new Error("Makbuz kaydı bulunamadı.");
+    if (receiptReference.receiptNo && receipt.receiptNo !== receiptReference.receiptNo) {
+      console.warn("[receipt-pdf]", "receipt_reference_mismatch", {
+        submittedReceiptId: receiptReference.receiptId || null,
+        submittedReceiptNo: receiptReference.receiptNo,
+        loadedReceiptId: receipt.id,
+        loadedReceiptNo: receipt.receiptNo
+      });
+    }
+
+    receiptNoForDiagnostics = receipt.receiptNo;
+    console.info("[receipt-pdf]", "loaded_receipt_for_pdf", {
+      receiptId: receipt.id,
+      receiptNo: receipt.receiptNo,
+      paymentIntentStatus: receipt.paymentIntentStatus ?? null,
+      hasFilePath: Boolean(receipt.filePath)
+    });
+    await logDiagnostic(receipt.receiptNo, "before_generate");
+
     if (!receipt.paymentIntentId || !receipt.paymentIntentStatus) throw new Error("Makbuza bağlı ödeme bilgisi okunamadı.");
     if (receipt.paymentIntentStatus !== "paid") throw new Error("Ödeme tamamlanmadan makbuz PDF'i üretilemez.");
     if (receipt.status === "cancelled") throw new Error("İptal edilmiş makbuz için PDF üretilemez.");
@@ -80,7 +129,7 @@ export async function generateReceiptPdfAction(formData: FormData) {
             matchedBy: "matchedBy" in repair ? repair.matchedBy : "db_metadata"
           }
         });
-        await logDiagnostic(receiptNo, "after_repair");
+        await logDiagnostic(receipt.receiptNo, "after_repair");
         revalidateReceiptViews();
         outcome = { durum: repair.status === "repaired" ? "pdf-onarildi" : "pdf-zaten-hazir" };
       } else {
@@ -124,9 +173,9 @@ export async function generateReceiptPdfAction(formData: FormData) {
           status: "prepared"
         });
 
-        const updatedReceipt = await getSupabaseReceiptWithPayment(receiptNo);
+        const updatedReceipt = await getSupabaseReceiptWithPaymentById(receipt.id);
         if (!updatedReceipt?.filePath) {
-          throw new Error("PDF yüklendi ancak makbuz kaydı güncellenemedi.");
+          throw new Error("Makbuz dosyası yüklendi ancak dosya yolu kayda yazılamadı.");
         }
 
         uploadedFilePath = null;
@@ -139,12 +188,11 @@ export async function generateReceiptPdfAction(formData: FormData) {
           summary: `Makbuz PDF hazırlandı: ${receipt.receiptNo}`,
           metadata: {
             receiptNo: receipt.receiptNo,
-            version,
-            fileSha256: fileInfo.sha256
+            version
           }
         });
 
-        await logDiagnostic(receiptNo, "after_generate");
+        await logDiagnostic(receipt.receiptNo, "after_generate");
         revalidateReceiptViews();
         outcome = { durum: "pdf-hazirlandi" };
       }
