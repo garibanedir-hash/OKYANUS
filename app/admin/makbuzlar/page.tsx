@@ -197,7 +197,9 @@ export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsP
               </td>
               <td>{formatDate(receipt.createdAt)}</td>
               <td>
-                {receipt.hasPdf ? (
+                {source === "demo" ? (
+                  <DisabledDemoButton>Supabase kaydı gerekir</DisabledDemoButton>
+                ) : receipt.hasPdf ? (
                   <PdfViewLink receiptNo={receipt.receiptNo} />
                 ) : canGeneratePdf ? (
                   <PdfGenerateButton receiptNo={receipt.receiptNo} disabled={false} />

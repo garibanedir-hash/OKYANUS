@@ -509,8 +509,30 @@ export async function getAdminPaymentIntents(): Promise<PaymentIntent[]> {
   return result.data;
 }
 
+async function fetchAdminReceiptsWithAdmin(): Promise<Receipt[] | null> {
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) return null;
+
+  const db = asAdminWriteClient(supabase);
+  try {
+    const { data, error } = await db
+      .from<ReceiptRow>("receipts")
+      .select(receiptColumns)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      logReadOnlyFallback("receipts (admin)", error);
+      return null;
+    }
+    return (data ?? []).map((row) => mapReceipt(row));
+  } catch {
+    logReadOnlyFallback("receipts (admin)");
+    return null;
+  }
+}
+
 export async function getAdminReceiptsWithSource(): Promise<RepositoryResult<Receipt[]>> {
-  const receipts = await fetchReceipts();
+  const receipts = await fetchAdminReceiptsWithAdmin();
   if (receipts) return { data: receipts, source: "supabase" };
   return { data: mockReceipts, source: "demo" };
 }
