@@ -99,3 +99,12 @@ Eşleştirme action akışı:
 - Eşleştirme sonrası `sponsorships`, `sponsorship_matches` ve `sponsorship_status_logs` kayıtları oluşmalıdır.
 - Bağışçı girişliyse panelde güvenli özet görünmelidir.
 - `npm run test:supabase` sonucunda `Security warning: 0` korunmalıdır.
+
+## 10A PayTR Test Hazırlığı
+
+- Sponsorluk için payment intent varsa `/panel/yetim-sponsorluk` içinde “Ödemeye Devam Et” bağlantısı PayTR test route'una yönlenebilir.
+- `merchant_oid`, payment intent referansından üretilir ve `provider_reference` olarak saklanır.
+- PayTR success callback sonrası bu aşamada ödeme niyeti `paid` yapılır, makbuz hazırlık kaydı ve sistem bildirim kuyruğu hazırlanır.
+- Sponsorluk iş kuralı finalizasyonu sonraki aşamada atomik işlem olmalıdır: `sponsorships.payment_status = paid`, `sponsorships.status = active`, `next_payment_date` periyoda göre hesaplanır.
+- Failed/cancelled callback sonrası sponsor bilgilendirme, retry ve pasifleştirme state machine'i ayrı tasarlanmalıdır.
+- Ok/fail dönüş sayfaları sponsorluk aktivasyonu yapmaz; karar yalnızca callback ile verilir.

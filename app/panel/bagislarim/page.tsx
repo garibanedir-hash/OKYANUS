@@ -10,7 +10,7 @@ export default function MyDonationsPage() {
         <p className="mt-2 leading-7 text-ink-muted">Bu alan bağış, ödeme ve makbuz durumunu takip etmek içindir. Gerçek sistemde kullanıcı yalnızca kendi bağış geçmişini Supabase RLS ile görebilecektir.</p>
       </section>
       <section className="rounded-lg border border-ocean-green/15 bg-mint-green/35 p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
-        Ortak ödeme ve makbuz altyapısı hazırlık modundadır. Canlı ödeme sağlayıcısı açılmadan ödeme alma, kart bilgisi toplama, PDF makbuz üretimi veya gerçek bildirim gönderimi yapılmaz.
+        Ortak ödeme ve makbuz altyapısı hazırlık modundadır. 10A ile PayTR test iframe/callback yolu payment intent üzerinden hazırlanır; canlı ödeme sağlayıcısı açılmadan ödeme alma, kart bilgisi toplama, PDF makbuz üretimi veya gerçek bildirim gönderimi yapılmaz.
       </section>
       <DonationHistoryTable donations={getUserDonations()} />
     </div>

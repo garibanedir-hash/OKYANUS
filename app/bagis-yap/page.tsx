@@ -23,7 +23,7 @@ const trustNotes: Array<{ icon: LucideIcon; text: string }> = [
   { icon: ShieldCheck, text: "Bağış bilgileriniz güvenle işlenir." },
   { icon: ClipboardCheck, text: "Bağışlar proje bazlı kayıt altına alınır." },
   { icon: BookOpen, text: "Dilerseniz destek olmak istediğiniz alanı seçebilirsiniz." },
-  { icon: CreditCard, text: "Ortak payment intent altyapısına bağlanabilecek hazırlık akışıdır." }
+  { icon: CreditCard, text: "PayTR test akışı sonraki adımda payment intent üzerinden bağlanacaktır." }
 ];
 
 type DonatePageProps = {
@@ -77,7 +77,7 @@ export default async function DonatePage({ searchParams }: DonatePageProps) {
               <div className="mt-6 rounded-brand border border-primary-blue/20 bg-soft-blue p-6 shadow-card">
                 <h2 className="text-xl font-bold text-dark-navy">Ödeme sağlayıcı bağımsız hazırlık</h2>
                 <p className="mt-2 leading-7 text-slate-600">
-                  Genel bağış için gerçek online ödeme formu bu aşamada açılmaz. Bir sonraki entegrasyon aşamasında bağış ön kaydı `general_donation` veya proje seçimine göre `project_donation` payment intent bağlamına dönüştürülebilir.
+                  Genel bağış için gerçek online ödeme formu bu aşamada açılmaz. Bir sonraki adımda bağış ön kaydı `general_donation` veya proje seçimine göre `project_donation` payment intent bağlamına dönüştürülerek PayTR test iframe akışına bağlanacaktır.
                 </p>
               </div>
               <div className="mt-6 rounded-brand border border-ocean-green/20 bg-mint-green/50 p-6 shadow-card">

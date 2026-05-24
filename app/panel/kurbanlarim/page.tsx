@@ -1,7 +1,9 @@
 import { AdminSectionHeader } from "@/components/admin/AdminSectionHeader";
 import { AdminTable } from "@/components/admin/AdminTable";
 import { Button } from "@/components/ui/Button";
+import { getDonorPayments } from "@/lib/data/paymentRepository";
 import { getCurrentDonorQurbanOrdersWithSource } from "@/lib/data/qurbanRepository";
+import { getCurrentQurbanDonorContext } from "@/lib/data/qurbanWriteRepository";
 import { formatDate } from "@/lib/format";
 import { formatQurbanMoney, QurbanStatusCell } from "@/app/admin/kurban/_components/QurbanAdminShared";
 
@@ -16,7 +18,16 @@ const timelineSteps = [
 ];
 
 export default async function PanelQurbanOrdersPage() {
-  const { data: orders, source } = await getCurrentDonorQurbanOrdersWithSource();
+  const [ordersResult, donorContext] = await Promise.all([
+    getCurrentDonorQurbanOrdersWithSource(),
+    getCurrentQurbanDonorContext()
+  ]);
+  const { data: orders, source } = ordersResult;
+  const accountId = donorContext?.account?.status === "active" ? donorContext.account.id : "demo-donor-account";
+  const donorPayments = await getDonorPayments(accountId);
+  const paymentIntentsByOrder = new Map(
+    donorPayments.filter((payment) => payment.contextType === "qurban_order" && payment.contextId).map((payment) => [payment.contextId, payment])
+  );
 
   return (
     <div className="grid gap-6">
@@ -51,20 +62,36 @@ export default async function PanelQurbanOrdersPage() {
         </div>
       </section>
       <AdminTable headers={["Sipariş No", "Kurban türü", "Kampanya", "Hisse/adet", "Durum", "Ödeme", "Vekalet", "Makbuz", "Tarih", "Detay"]} recordCount={orders.length} empty={!orders.length}>
-        {orders.map((order) => (
-          <tr key={order.id}>
-            <td className="font-bold text-dark-navy">{order.orderNo}</td>
-            <td>{order.qurbanTypeLabel}</td>
-            <td>{order.campaignTitle}</td>
-            <td>{order.shareCount} · {formatQurbanMoney(order.totalAmount, order.currency)}</td>
-            <td><QurbanStatusCell status={order.orderStatusLabel} /></td>
-            <td><QurbanStatusCell status={order.paymentStatusLabel} /></td>
-            <td><QurbanStatusCell status={order.delegationStatusLabel} /></td>
-            <td>{order.receiptStatus}</td>
-            <td>{formatDate(order.createdAt)}</td>
-            <td><Button href="/kurban" variant="ghost" className="min-h-8 rounded-md px-3 py-1 text-xs">İncele</Button></td>
-          </tr>
-        ))}
+        {orders.map((order) => {
+          const paymentIntent = paymentIntentsByOrder.get(order.id);
+          const canContinuePayment = paymentIntent && ["pending", "initiated", "requires_action"].includes(paymentIntent.status);
+
+          return (
+            <tr key={order.id}>
+              <td className="font-bold text-dark-navy">{order.orderNo}</td>
+              <td>{order.qurbanTypeLabel}</td>
+              <td>{order.campaignTitle}</td>
+              <td>{order.shareCount} · {formatQurbanMoney(order.totalAmount, order.currency)}</td>
+              <td><QurbanStatusCell status={order.orderStatusLabel} /></td>
+              <td>
+                <QurbanStatusCell status={paymentIntent?.statusLabel ?? order.paymentStatusLabel} />
+                {canContinuePayment ? (
+                  <Button href={`/odeme/paytr/${paymentIntent.intentNo}`} variant="ghost" className="mt-2 min-h-8 rounded-md px-3 py-1 text-xs">
+                    Ödemeye Devam Et
+                  </Button>
+                ) : (
+                  <span className="mt-2 block text-xs font-semibold text-ink-muted">
+                    {paymentIntent ? paymentIntent.providerLabel : "Payment intent oluştuğunda PayTR test akışı açılır."}
+                  </span>
+                )}
+              </td>
+              <td><QurbanStatusCell status={order.delegationStatusLabel} /></td>
+              <td>{order.receiptStatus}</td>
+              <td>{formatDate(order.createdAt)}</td>
+              <td><Button href="/kurban" variant="ghost" className="min-h-8 rounded-md px-3 py-1 text-xs">İncele</Button></td>
+            </tr>
+          );
+        })}
       </AdminTable>
       <section className="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
         <h2 className="text-xl font-extrabold text-dark-navy">Durum zaman çizelgesi</h2>

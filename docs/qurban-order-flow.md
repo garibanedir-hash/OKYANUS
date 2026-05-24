@@ -167,3 +167,12 @@ Audit log hatası ana başvuru akışını patlatmaz. Guest başvurularda audit 
 - Guest kayıtları donor hesabıyla eşleştirme süreci tasarlanmalı.
 - Vekalet metni dernek yönetimi, hukuk danışmanı ve dini danışman onayı olmadan production'da kesin metin olarak kullanılmamalı.
 - `docs/qurban-manual-test-checklist.md` staging ortamında tamamlanmalı.
+
+## 10A PayTR Test Hazırlığı
+
+- Kurban siparişi için payment intent varsa `/panel/kurbanlarim` içinde “Ödemeye Devam Et” bağlantısı PayTR test route'una yönlenebilir.
+- `merchant_oid`, payment intent referansından üretilir ve `provider_reference` olarak saklanır.
+- PayTR success callback sonrası bu aşamada ödeme niyeti `paid` yapılır, makbuz hazırlık kaydı ve sistem bildirim kuyruğu hazırlanır.
+- Kurban iş kuralı finalizasyonu sonraki aşamada atomik işlem olmalıdır: `qurban_orders.payment_status = paid`, `qurban_orders.order_status = payment_confirmed`, `qurban_shares.status = payment_confirmed`, `quota_reserved -> quota_completed`.
+- Failed/cancelled callback sonrası quota release planı idempotent ve transaction güvenli tasarlanmalıdır.
+- Ok/fail dönüş sayfaları kurban siparişini onaylamaz veya iptal etmez; karar yalnızca callback ile verilir.

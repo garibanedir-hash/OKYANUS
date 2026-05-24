@@ -164,6 +164,7 @@
 - [ ] Yetim hamiliği repository'si read-only/mock çalışıyor ve client tarafına service role taşımıyor mu?
 - [ ] Yetim hamiliği write repository `server-only` sınırında kalıyor ve service role client tarafına taşınmıyor mu?
 - [ ] Payment write repository `server-only` sınırında kalıyor ve service role client tarafına taşınmıyor mu?
+- [ ] PayTR helper ve callback kodu server-only kalıyor, `PAYTR_MERCHANT_KEY`/`PAYTR_MERCHANT_SALT` client bundle'a taşınmıyor mu?
 - [ ] Public bağış, kurban ve yetim formları payment tablolara doğrudan client-side yazmıyor mu?
 - [ ] `.env.local` Git'e dahil değil ve Vercel production env değerleri public/server ayrımıyla tanımlı mı?
 - [ ] Production öncesi `NEXT_PUBLIC_ADMIN_DEMO_MODE=false` ve `SITE_MAINTENANCE_MODE` durumu doğrulanıyor mu?
@@ -217,3 +218,12 @@
 - [ ] Test kullanıcıları production öncesi silindi veya devre dışı bırakıldı.
 - [ ] Server guard + RLS doğrulaması, UI görünürlüğünden bağımsız olarak geçerli.
 - [ ] `npm run test:supabase` production öncesi `Security warning: 0` veriyor.
+
+## PayTR Test Entegrasyon Güvenliği
+
+- [ ] `/odeme/paytr/[intentNo]` yalnızca PayTR iframe gösteriyor; kart alanı geliştirmiyor.
+- [ ] `/api/paytr/callback` session kullanmıyor ve sadece hash doğrulamasıyla işlem yapıyor.
+- [ ] PayTR ok/fail sayfaları ödeme onayı veya iptali yapmıyor.
+- [ ] Duplicate callback idempotent işleniyor.
+- [ ] Callback payload summary hassas secret veya tam kart verisi içermiyor.
+- [ ] Production öncesi `PAYTR_TEST_MODE=false` geçişi yazılı onay ve test tamamlanmadan yapılmıyor.

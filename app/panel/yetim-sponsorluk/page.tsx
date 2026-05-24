@@ -2,6 +2,7 @@ import { ShieldCheck } from "lucide-react";
 import { AdminTable } from "@/components/admin/AdminTable";
 import { Button } from "@/components/ui/Button";
 import { PortalStatCard } from "@/components/portal/PortalStatCard";
+import { getDonorPayments } from "@/lib/data/paymentRepository";
 import {
   getCurrentSponsorshipDonorContext,
   getDonorSponsorshipApplications,
@@ -20,6 +21,10 @@ export default async function SponsorshipPage() {
     getDonorSponsoredOrphans(accountId),
     getDonorSponsorshipApplications(accountId)
   ]);
+  const donorPayments = await getDonorPayments(accountId);
+  const paymentIntentsBySponsorship = new Map(
+    donorPayments.filter((payment) => payment.contextType === "orphan_sponsorship" && payment.contextId).map((payment) => [payment.contextId, payment])
+  );
   const firstUpdate = sponsoredOrphans.find((item) => item.lastUpdate)?.lastUpdate;
   const openApplications = applications.filter((item) => !["matched", "archived", "cancelled"].includes(item.status));
 
@@ -66,6 +71,9 @@ export default async function SponsorshipPage() {
       <AdminTable headers={["Sponsorluk No", "Yetim kodu", "Güvenli ad", "Yaş grubu", "Bölge", "Eğitim", "Aylık destek", "Ödeme", "Sonraki destek", "Durum"]} recordCount={sponsorships.length} empty={!sponsorships.length}>
         {sponsorships.map((item) => {
           const orphan = sponsoredOrphans.find((safe) => safe.sponsorshipId === item.id);
+          const paymentIntent = paymentIntentsBySponsorship.get(item.id);
+          const canContinuePayment = paymentIntent && ["pending", "initiated", "requires_action"].includes(paymentIntent.status);
+
           return (
             <tr key={item.id}>
               <td className="font-bold text-dark-navy">{item.sponsorshipNo}</td>
@@ -75,7 +83,18 @@ export default async function SponsorshipPage() {
               <td>{orphan?.country ?? "Sınırlı"}<span className="block text-xs text-ink-muted">{orphan?.cityOrRegion ?? "Bölge sınırlı"}</span></td>
               <td>{orphan?.educationStatus ?? "Sınırlı"}</td>
               <td>{formatSponsorshipMoney(item.monthlyAmount, item.currency)}</td>
-              <td><SponsorshipStatusCell status={item.paymentStatusLabel} /></td>
+              <td>
+                <SponsorshipStatusCell status={paymentIntent?.statusLabel ?? item.paymentStatusLabel} />
+                {canContinuePayment ? (
+                  <Button href={`/odeme/paytr/${paymentIntent.intentNo}`} variant="ghost" className="mt-2 min-h-8 rounded-md px-3 py-1 text-xs">
+                    Ödemeye Devam Et
+                  </Button>
+                ) : (
+                  <span className="mt-2 block text-xs font-semibold text-ink-muted">
+                    {paymentIntent ? paymentIntent.providerLabel : "PayTR test akışı payment intent oluşunca açılır."}
+                  </span>
+                )}
+              </td>
               <td>{item.nextPaymentDate ? formatDate(item.nextPaymentDate) : "Ödeme altyapısı sonraki aşamada aktifleşecek"}</td>
               <td><SponsorshipStatusCell status={item.statusLabel} /></td>
             </tr>

@@ -127,7 +127,7 @@ export const paymentProviderLabels: Record<PaymentProvider, string> = {
 export const paymentIntentStatusLabels: Record<PaymentIntentStatus, string> = {
   draft: "Taslak",
   pending: "Ödeme Bekliyor",
-  initiated: "Başlatıldı",
+  initiated: "Başlatıldı / Callback Bekleniyor",
   requires_action: "Ek işlem gerekli",
   paid: "Ödendi",
   failed: "Başarısız",
@@ -224,6 +224,28 @@ export const mockPaymentIntents: PaymentIntent[] = [
     updatedAt: "2026-05-19T14:30:00.000Z",
     failedAt: "2026-05-19T14:30:00.000Z",
     metadataSummary: "Yetim hamiliği ilk ödeme denemesi"
+  },
+  {
+    id: "payment-intent-004",
+    intentNo: "PAY-2026-000004",
+    contextType: "qurban_order",
+    contextTypeLabel: paymentContextTypeLabels.qurban_order,
+    contextId: "qorder-002",
+    donorAccountId: "demo-donor-account",
+    donorDisplayName: "S*** A.",
+    donorEmailMasked: "s***@example.org",
+    donorPhoneMasked: "+90 5** *** 20 04",
+    amount: 6500,
+    currency: "TRY",
+    provider: "paytr",
+    providerLabel: paymentProviderLabels.paytr,
+    providerReferenceMasked: "PAY***004",
+    status: "initiated",
+    statusLabel: paymentIntentStatusLabels.initiated,
+    createdAt: "2026-05-22T09:30:00.000Z",
+    updatedAt: "2026-05-22T09:35:00.000Z",
+    expiresAt: "2026-05-22T10:05:00.000Z",
+    metadataSummary: "PayTR test iframe token ve callback bekleme örneği"
   }
 ];
 
@@ -307,7 +329,7 @@ export const mockNotificationQueue: NotificationQueueItem[] = [
 
 export const mockPaymentStats: PaymentStats = {
   totalIntents: mockPaymentIntents.length,
-  pendingIntents: mockPaymentIntents.filter((item) => item.status === "pending").length,
+  pendingIntents: mockPaymentIntents.filter((item) => ["draft", "pending", "initiated", "requires_action"].includes(item.status)).length,
   paidIntents: mockPaymentIntents.filter((item) => item.status === "paid").length,
   failedIntents: mockPaymentIntents.filter((item) => item.status === "failed").length,
   pendingReceipts: mockReceipts.filter((item) => item.status === "pending").length,

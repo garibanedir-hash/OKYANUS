@@ -184,3 +184,15 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Admin ödeme/makbuz/bildirim ekranlarında canlı aksiyon butonu yok; aksiyonlar pasif/demo.
 - [ ] `/panel/bagislarim`, `/panel/kurbanlarim` ve `/panel/yetim-sponsorluk` gerçek ödeme yapılmadığını açıkça gösteriyor.
 - [ ] `docs/payment-security-stabilization-checklist.md` ve `docs/payment-manual-test-checklist.md` staging kontrolünde kullanılıyor.
+
+## 10A PayTR Test Entegrasyonu Kontrolleri
+
+- [ ] `.env.example` PayTR test env değişkenlerini içeriyor.
+- [ ] `lib/payments/paytr.ts` server-only ve hash/token üretimini server tarafında yapıyor.
+- [ ] `/odeme/paytr/[intentNo]` PayTR iframe token isteğini server-side başlatıyor.
+- [ ] `/odeme/basarili` ve `/odeme/basarisiz` yalnızca bilgilendirme sayfası.
+- [ ] `/api/paytr/callback` session kullanmıyor, hash doğruluyor ve sadece başarılı işlemde `OK` dönüyor.
+- [ ] Duplicate callback idempotent işleniyor.
+- [ ] `payment_provider_events`, `payment_events` ve `payment_status_logs` callback izini tutuyor.
+- [ ] Paid callback sonrası makbuz hazırlık ve bildirim kuyruğu taslağı oluşuyor.
+- [ ] Kurban/yetim/genel bağış finalization tam iş kuralı sonraki aşamaya kontrollü bırakıldı.

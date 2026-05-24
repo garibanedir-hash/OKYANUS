@@ -37,7 +37,13 @@ export default async function AdminSponsorshipsPage() {
               <td>{item.orphanCode}<span className="block text-xs text-ink-muted">{item.orphanSafeName}</span></td>
               <td>{item.programTitle}</td>
               <td>{formatSponsorshipMoney(item.monthlyAmount, item.currency)}</td>
-              <td>{paymentIntent?.intentNo ?? "Henüz yok"}<span className="block text-xs text-ink-muted">{paymentIntent?.statusLabel ?? "İlk ödeme hazırlığı"}</span></td>
+              <td>
+                {paymentIntent?.intentNo ?? "Henüz yok"}
+                <span className="block text-xs text-ink-muted">{paymentIntent?.statusLabel ?? "İlk ödeme hazırlığı"}</span>
+                {paymentIntent?.provider === "paytr" ? (
+                  <span className="block text-xs font-bold text-deep-blue">PayTR test / callback bekleniyor</span>
+                ) : null}
+              </td>
               <td><SponsorshipStatusCell status={item.paymentStatusLabel} /></td>
               <td><SponsorshipStatusCell status={item.statusLabel} /></td>
               <td>{formatDate(item.startDate)}</td>
@@ -48,7 +54,7 @@ export default async function AdminSponsorshipsPage() {
         })}
       </AdminTable>
       <div className="rounded-lg border border-ocean-green/15 bg-mint-green/35 p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
-        10. aşamada payment paid olduğunda `sponsorships.payment_status = paid`, `sponsorships.status = active` ve `next_payment_date`
+        10A PayTR test callback doğrulaması hazırlandığında payment paid olduğunda `sponsorships.payment_status = paid`, `sponsorships.status = active` ve `next_payment_date`
         periyoda göre server-side hesaplanarak güncellenecektir.
       </div>
     </div>

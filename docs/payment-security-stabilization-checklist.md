@@ -55,3 +55,14 @@ Bu checklist gerçek ödeme entegrasyonuna geçmeden önce ortak ödeme, makbuz 
 - [ ] Gerçek PDF makbuz üretimi yok.
 - [ ] Gerçek SMS/e-posta/WhatsApp gönderimi yok.
 - [ ] Provider seçilmeden önce webhook signature, idempotency, tutar doğrulama ve finalization transaction planı tamamlanacak.
+
+## 10A PayTR Test Güvenlik Kontrolü
+
+- [ ] `PAYTR_MERCHANT_KEY` ve `PAYTR_MERCHANT_SALT` sadece server env olarak tanımlı.
+- [ ] PayTR credential değerleri `NEXT_PUBLIC_` prefix'iyle kullanılmıyor.
+- [ ] `/odeme/paytr/[intentNo]` kart bilgisi toplamıyor; yalnızca PayTR iframe gösteriyor.
+- [ ] `/api/paytr/callback` session veya auth guard kullanmıyor.
+- [ ] Callback hash doğrulaması yapılmadan `payment_intents.status` güncellenmiyor.
+- [ ] Duplicate callback tekrar finalization çalıştırmıyor.
+- [ ] Callback response başarılı işlemde sadece düz metin `OK`.
+- [ ] Test mode kapatılmadan production ödeme açılmıyor.

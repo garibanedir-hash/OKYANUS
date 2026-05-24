@@ -55,7 +55,13 @@ export default async function AdminQurbanOrdersPage() {
               <td>{order.qurbanTypeLabel}</td>
               <td>{order.shareCount}</td>
               <td>{formatQurbanMoney(order.totalAmount, order.currency)}</td>
-              <td>{paymentIntent?.intentNo ?? "Henüz yok"}<span className="block text-xs text-ink-muted">{paymentIntent?.statusLabel ?? "Manuel/demo hazırlanır"}</span></td>
+              <td>
+                {paymentIntent?.intentNo ?? "Henüz yok"}
+                <span className="block text-xs text-ink-muted">{paymentIntent?.statusLabel ?? "Manuel/demo hazırlanır"}</span>
+                {paymentIntent?.provider === "paytr" ? (
+                  <span className="block text-xs font-bold text-deep-blue">PayTR test / merchant_oid hazır</span>
+                ) : null}
+              </td>
               <td><QurbanStatusCell status={getPaymentLabel(order.paymentStatus, order.paymentStatusLabel)} /></td>
               <td><QurbanStatusCell status={getDelegationLabel(order.delegationStatus, order.delegationStatusLabel)} /></td>
               <td><QurbanStatusCell status={order.orderStatusLabel} /></td>
@@ -66,7 +72,7 @@ export default async function AdminQurbanOrdersPage() {
         })}
       </AdminTable>
       <div className="rounded-lg border border-ocean-green/15 bg-mint-green/35 p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
-        10. aşamada payment paid olduğunda `qurban_orders.payment_status = paid`, `qurban_orders.order_status = payment_confirmed`,
+        10A PayTR test callback doğrulaması hazırlandığında payment paid olduğunda `qurban_orders.payment_status = paid`, `qurban_orders.order_status = payment_confirmed`,
         `qurban_shares.status = payment_confirmed` ve kontenjanın `quota_reserved` değerinden `quota_completed` değerine finalizasyonu server-side işlemle yapılacaktır.
       </div>
     </div>

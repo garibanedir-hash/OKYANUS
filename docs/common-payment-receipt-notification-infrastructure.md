@@ -98,3 +98,13 @@ Provider callback entegrasyonu açıldığında `payment_provider_events.provide
 ## 10. Aşama
 
 10. aşama gerçek ödeme sağlayıcısı entegrasyonudur. Bu aşamada provider seçimi, test ortamı anahtarları, webhook route'u, signature doğrulama, payment paid finalization, makbuz PDF üretimi ve gerçek bildirim gönderimi ayrı planlanmalıdır.
+
+## 10A PayTR Test Entegrasyonu
+
+10A ile PayTR iFrame API için test entegrasyonu hazırlığı eklendi. `payment_intents.provider = paytr` ve `payment_intents.provider_reference = merchant_oid` eşleştirmesiyle çalışır.
+
+- Canlı ödeme alma kapalıdır.
+- PayTR token isteği sadece server-side yapılır.
+- Kullanıcı ok/fail dönüş sayfaları sipariş veya bağış onayı yapmaz.
+- Kesin ödeme durumu `/api/paytr/callback` içinde hash doğrulaması ve idempotency kontrolüyle işlenir.
+- Kart bilgisi, CVV veya hassas ödeme verisi Okyanus sisteminde saklanmaz.

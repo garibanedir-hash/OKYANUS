@@ -58,6 +58,7 @@ export default async function OrphanSponsorshipApplicationPage({ searchParams }:
                   <p>KVKK onayınız ve iletişim tercihiniz başvuru kaydına işlenmiştir.</p>
                   <p>Ödeme durumu: İlk destek ödemesi için ödeme bekliyor akışına hazırlanır.</p>
                   <p>Ortak payment intent ve makbuz altyapısı hazırdır; bu aşamada otomatik online ödeme veya düzenli ödeme talimatı başlatılmaz.</p>
+                  <p>PayTR test akışı, eşleşmiş sponsorluk için payment intent oluşturulduğunda panelde “Ödemeye Devam Et” bağlantısı olarak açılacaktır.</p>
                   <p>Başvuru admin tarafında değerlendirme ve eşleştirme süreci için kayıt altına alınmıştır.</p>
                   {params?.panel === "1" ? (
                     <p>Girişli sponsor hesabınızla panelde başvuru ve sponsorluk durumunu takip edebilirsiniz.</p>
@@ -92,7 +93,7 @@ export default async function OrphanSponsorshipApplicationPage({ searchParams }:
                   <div>
                     <h2 className="text-xl font-extrabold text-dark-navy">Ödeme altyapısı hazırlık modunda</h2>
                     <p className="mt-2 text-sm leading-7 text-ink-muted">
-                      Bu form sponsor başvuru deneyimini hazırlar. Ortak payment intent, makbuz ve bildirim modeli hazırlandı; düzenli ödeme, gerçek makbuz PDF, SMS/e-posta ve dosya yükleme bu aşamada yapılmaz.
+                      Bu form sponsor başvuru deneyimini hazırlar. Ortak payment intent, makbuz ve bildirim modeli hazırlandı; PayTR test iframe altyapısı yalnızca server-side payment intent üzerinden açılır. Düzenli ödeme, gerçek makbuz PDF, SMS/e-posta ve dosya yükleme bu aşamada yapılmaz.
                     </p>
                   </div>
                 </div>

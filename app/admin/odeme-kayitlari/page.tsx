@@ -78,7 +78,7 @@ export default async function AdminPaymentRecordsPage({ searchParams }: AdminPay
       <AdminSectionHeader
         eyebrow="Bağış ve destek"
         title="Ödeme Kayıtları"
-        description="Genel bağış, kurban ve yetim hamiliği için provider-bağımsız payment intent kayıtları read-only izlenir. Gerçek ödeme alma veya provider API çağrısı bu aşamada yoktur."
+        description="Genel bağış, kurban ve yetim hamiliği için payment intent kayıtları read-only izlenir. 10A ile PayTR test merchant_oid ve callback bekleme durumu görünür; canlı ödeme alma kapalıdır."
       />
       <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
         {source === "supabase" ? "Supabase payment_intents" : "Demo/mock fallback"}
@@ -163,7 +163,10 @@ export default async function AdminPaymentRecordsPage({ searchParams }: AdminPay
             <td>{payment.currency}</td>
             <td>
               {payment.providerLabel}
-              {payment.providerReferenceMasked ? <span className="block text-xs text-ink-muted">{payment.providerReferenceMasked}</span> : null}
+              {payment.providerReferenceMasked ? <span className="block text-xs text-ink-muted">Ref: {payment.providerReferenceMasked}</span> : null}
+              {payment.provider === "paytr" && payment.status === "initiated" ? (
+                <span className="block text-xs font-bold text-deep-blue">PayTR callback bekleniyor</span>
+              ) : null}
             </td>
             <td><AdminStatusBadge status={payment.statusLabel} /></td>
             <td>{formatDate(payment.createdAt)}</td>
@@ -172,7 +175,8 @@ export default async function AdminPaymentRecordsPage({ searchParams }: AdminPay
         ))}
       </AdminTable>
       <AdminPanelNotice title="9E ödeme altyapısı">
-        Bu ekran `payment_intents` tablosuna göre hazırlanmıştır. Provider webhook, canlı ödeme doğrulama ve kart bilgisi saklama yoktur; manuel aksiyonlar 9E.1 boyunca pasif demo kontrol olarak kalır.
+        Bu ekran `payment_intents` tablosuna göre hazırlanmıştır. PayTR test entegrasyonunda kesin onay yalnızca `/api/paytr/callback`
+        hash doğrulamasıyla işlenir; manuel aksiyonlar pasif demo kontrol olarak kalır.
       </AdminPanelNotice>
     </div>
   );

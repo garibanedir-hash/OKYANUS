@@ -76,3 +76,43 @@ Bu kayıt gerçek ödeme değildir. Kart bilgisi, CVV, banka bilgisi veya gerçe
 - [ ] Gerçek PDF makbuz yok.
 - [ ] Gerçek SMS/e-posta gönderimi yok.
 - [ ] 10. aşama öncesi provider seçimi, signature doğrulama ve idempotency planı tamamlanacak.
+
+## 10A PayTR Test Kontrolü
+
+- [ ] `.env` içinde PayTR test credential değerleri server-only olarak tanımlandı.
+- [ ] `NEXT_PUBLIC_SITE_URL` doğru staging domain'ini gösteriyor.
+- [ ] PayTR Merchant Panel Bildirim URL değeri `https://domain.com/api/paytr/callback`.
+- [ ] Test payment intent için `provider = paytr` ve `provider_reference` merchant_oid olarak kaydediliyor.
+- [ ] `/odeme/paytr/[intentNo]` env eksikse güvenli hata gösteriyor.
+- [ ] PayTR test env varsa iframe token alınabiliyor.
+- [ ] Callback hash yanlışsa `OK` dönmüyor.
+- [ ] Callback hash doğruysa `payment_provider_events` kaydı oluşuyor.
+- [ ] Success callback `payment_intents.status = paid` yapıyor.
+- [ ] Failed callback `payment_intents.status = failed` yapıyor.
+- [ ] Duplicate callback sadece `OK` dönüyor ve finalization tekrar çalışmıyor.
+
+Örnek PayTR test intent SQL'i:
+
+```sql
+insert into public.payment_intents (
+  context_type,
+  donor_name,
+  donor_email,
+  donor_phone,
+  amount,
+  currency,
+  provider,
+  status,
+  metadata
+) values (
+  'manual_admin_entry',
+  'PayTR Demo Destekçi',
+  'paytr-demo@example.org',
+  '+90 500 000 00 00',
+  100,
+  'TRY',
+  'paytr',
+  'pending',
+  '{"summary":"10A PayTR test payment intent"}'::jsonb
+);
+```

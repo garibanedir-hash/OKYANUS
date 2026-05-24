@@ -63,7 +63,8 @@ export default async function QurbanDonationDemoPage({ searchParams }: QurbanDon
                   <p>Vekalet durumu: <strong className="text-dark-navy">Kaydedildi</strong></p>
                   <p>Ödeme durumu: <strong className="text-dark-navy">Ödeme bekliyor</strong></p>
                   <p>Ortak payment intent altyapısı hazırdır; bu aşamada otomatik online ödeme başlatılmaz.</p>
-                  <p>Ödeme entegrasyonu tamamlandığında ödeme adımı aktifleşecek ve sipariş durumu ödeme onayıyla ilerletilecektir.</p>
+                  <p>Admin/manual test için PayTR provider referanslı payment intent oluşturulursa Kurbanlarım panelinde “Ödemeye Devam Et” bağlantısı görünebilir.</p>
+                  <p>PayTR test entegrasyonunda sipariş durumu yalnızca doğrulanmış callback sonrası ilerletilecektir.</p>
                   <p>Başvurunuz dernek yönetim ekranlarında kayıt altına alınmıştır.</p>
                   <p>Bağışçı hesabınızla giriş yaptıysanız kayıt Kurbanlarım panelinde listelenebilir.</p>
                 </div>
@@ -99,7 +100,7 @@ export default async function QurbanDonationDemoPage({ searchParams }: QurbanDon
                   <div>
                     <h2 className="text-xl font-extrabold text-dark-navy">Ödeme altyapısı hazırlık modunda</h2>
                     <p className="mt-2 text-sm leading-7 text-ink-muted">
-                      Bu form başvuru, vekalet kabulü ve hisse/adet rezervasyonu oluşturur. Ortak ödeme niyeti, makbuz ve bildirim modeli hazırlandı; online ödeme, makbuz PDF, SMS/e-posta ve dosya yükleme bu aşamada yapılmaz.
+                      Bu form başvuru, vekalet kabulü ve hisse/adet rezervasyonu oluşturur. Ortak ödeme niyeti, makbuz ve bildirim modeli hazırlandı; PayTR test iframe altyapısı yalnızca payment intent üzerinden açılır. Canlı ödeme, makbuz PDF, SMS/e-posta ve dosya yükleme bu aşamada yapılmaz.
                     </p>
                   </div>
                 </div>

@@ -126,6 +126,12 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] `docs/payment-manual-test-checklist.md` staging manuel testinde tamamlandı.
 - [ ] PDF makbuz için private storage, erişim yetkisi, dosya silme ve audit planı hazır olmadan production'a açılmadı.
 - [ ] Bildirim provider credential, retry, rate limit ve opt-out/KVKK planı hazır olmadan production'a açılmadı.
+- [ ] PayTR test credential değerleri Vercel Preview/Staging env içinde server-only tanımlı.
+- [ ] PayTR Production env değerleri test onayı ve sözleşme tamamlanmadan eklenmedi.
+- [ ] PayTR Merchant Panel Bildirim URL `https://domain.com/api/paytr/callback` olarak doğrulandı.
+- [ ] PayTR ok/fail sayfalarının onay/iptal yapmadığı test edildi.
+- [ ] Duplicate callback ve hash doğrulama senaryoları production geçişinden önce test edildi.
+- [ ] `PAYTR_TEST_MODE=false` yalnızca yönetim, teknik sorumlu ve hukuk/mali süreç onayıyla açılacak.
 
 ## Veri Güvenliği ve KVKK
 

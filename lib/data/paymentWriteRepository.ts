@@ -64,6 +64,19 @@ type ReceiptWriteRow = {
   updated_at: string | null;
 };
 
+type PaymentProviderEventRow = {
+  id: string;
+  provider: PaymentProvider;
+  provider_event_id: string | null;
+  event_type: string | null;
+  signature_verified: boolean | null;
+  processed: boolean | null;
+  processing_error: string | null;
+  received_at: string | null;
+  processed_at: string | null;
+  payload_summary: Record<string, unknown> | null;
+};
+
 export type PaymentIntentRecord = {
   id: string;
   intentNo: string;
@@ -102,6 +115,19 @@ export type ReceiptRecord = {
   status: ReceiptStatus;
   createdAt: string | null;
   updatedAt: string | null;
+};
+
+export type PaymentProviderEventRecord = {
+  id: string;
+  provider: PaymentProvider;
+  providerEventId: string | null;
+  eventType: string | null;
+  signatureVerified: boolean;
+  processed: boolean;
+  processingError: string | null;
+  receivedAt: string | null;
+  processedAt: string | null;
+  payloadSummary: Record<string, unknown>;
 };
 
 export type CreatePaymentIntentInput = {
@@ -173,6 +199,19 @@ const receiptWriteColumns = [
   "status",
   "created_at",
   "updated_at"
+].join(", ");
+
+const paymentProviderEventColumns = [
+  "id",
+  "provider",
+  "provider_event_id",
+  "event_type",
+  "signature_verified",
+  "processed",
+  "processing_error",
+  "received_at",
+  "processed_at",
+  "payload_summary"
 ].join(", ");
 
 function parseNumber(value: number | string | null | undefined) {
@@ -253,6 +292,21 @@ function mapReceipt(row: ReceiptWriteRow): ReceiptRecord {
   };
 }
 
+function mapPaymentProviderEvent(row: PaymentProviderEventRow): PaymentProviderEventRecord {
+  return {
+    id: row.id,
+    provider: row.provider,
+    providerEventId: row.provider_event_id,
+    eventType: row.event_type,
+    signatureVerified: Boolean(row.signature_verified),
+    processed: Boolean(row.processed),
+    processingError: row.processing_error,
+    receivedAt: row.received_at,
+    processedAt: row.processed_at,
+    payloadSummary: row.payload_summary ?? {}
+  };
+}
+
 function validatePaymentIntentInput(input: CreatePaymentIntentInput) {
   if (!input.contextType) throw new PaymentWriteError("Ödeme bağlamı zorunludur.", "context_required");
   if (!Number.isFinite(input.amount) || input.amount <= 0) {
@@ -285,6 +339,25 @@ export async function getPaymentIntentByIntentNo(intentNo: string): Promise<Paym
 
   if (error) {
     throw new PaymentWriteError(friendlyPaymentWriteError(error, "Ödeme kaydı okunamadı."), error.code ?? "payment_read_failed");
+  }
+
+  return data ? mapPaymentIntent(data) : null;
+}
+
+export async function getPaymentIntentByProviderReference(
+  provider: PaymentProvider,
+  providerReference: string
+): Promise<PaymentIntentRecord | null> {
+  const db = getAdminDb();
+  const { data, error } = await db
+    .from<PaymentIntentWriteRow>("payment_intents")
+    .select(paymentIntentWriteColumns)
+    .eq("provider", provider)
+    .eq("provider_reference", providerReference)
+    .maybeSingle();
+
+  if (error) {
+    throw new PaymentWriteError(friendlyPaymentWriteError(error, "Provider ödeme referansı okunamadı."), error.code ?? "payment_provider_reference_read_failed");
   }
 
   return data ? mapPaymentIntent(data) : null;
@@ -383,6 +456,102 @@ export async function createPaymentIntent(
   }
 
   return paymentIntent;
+}
+
+export async function attachProviderReferenceToPaymentIntent(
+  paymentIntentId: string,
+  provider: PaymentProvider,
+  providerReference: string
+): Promise<PaymentIntentRecord> {
+  const current = await getPaymentIntentById(paymentIntentId);
+  if (!current) throw new PaymentWriteError("Ödeme kaydı bulunamadı.", "payment_missing");
+
+  const reference = providerReference.trim();
+  if (!reference) throw new PaymentWriteError("Provider referansı zorunludur.", "provider_reference_required");
+
+  if (current.provider === provider && current.providerReference === reference) return current;
+
+  const now = new Date().toISOString();
+  const db = getAdminDb();
+  const { data, error } = await db
+    .from<PaymentIntentWriteRow>("payment_intents")
+    .update({
+      provider,
+      provider_reference: reference,
+      updated_at: now
+    })
+    .eq("id", current.id)
+    .select(paymentIntentWriteColumns)
+    .single();
+
+  if (error || !data) {
+    throw new PaymentWriteError(
+      friendlyPaymentWriteError(error, "Ödeme provider referansı güncellenemedi."),
+      error?.code ?? "payment_provider_reference_update_failed"
+    );
+  }
+
+  return mapPaymentIntent(data);
+}
+
+export async function markPaymentInitiated(
+  paymentIntentId: string,
+  providerReference: string,
+  context: PaymentWriteContext = {}
+): Promise<PaymentIntentRecord> {
+  const current = await getPaymentIntentById(paymentIntentId);
+  if (!current) throw new PaymentWriteError("Ödeme kaydı bulunamadı.", "payment_missing");
+
+  const reference = providerReference.trim();
+  if (!reference) throw new PaymentWriteError("Provider referansı zorunludur.", "provider_reference_required");
+
+  if (["paid", "failed", "cancelled", "refunded", "expired"].includes(current.status)) return current;
+  if (current.status === "initiated" && current.provider === "paytr" && current.providerReference === reference) return current;
+
+  const now = new Date().toISOString();
+  const db = getAdminDb();
+  const { data, error } = await db
+    .from<PaymentIntentWriteRow>("payment_intents")
+    .update({
+      status: "initiated",
+      provider: "paytr",
+      provider_reference: reference,
+      updated_at: now
+    })
+    .eq("id", current.id)
+    .select(paymentIntentWriteColumns)
+    .single();
+
+  if (error || !data) {
+    throw new PaymentWriteError(
+      friendlyPaymentWriteError(error, "Ödeme başlatıldı durumu kaydedilemedi."),
+      error?.code ?? "payment_initiated_update_failed"
+    );
+  }
+
+  const updated = mapPaymentIntent(data);
+  await appendPaymentEvent({
+    paymentIntentId: updated.id,
+    eventType: "initiated",
+    oldStatus: current.status,
+    newStatus: updated.status,
+    provider: updated.provider,
+    providerEventId: reference,
+    actorId: context.actorId ?? null,
+    actorRole: context.actorRole ?? "server",
+    note: "PayTR test iframe token akışı başlatıldı."
+  });
+  await appendPaymentStatusLog({
+    paymentIntentId: updated.id,
+    oldStatus: current.status,
+    newStatus: updated.status,
+    eventType: "initiated",
+    actorId: context.actorId ?? null,
+    actorRole: context.actorRole ?? "server",
+    note: "PayTR test ödeme ekranı başlatıldı."
+  });
+
+  return updated;
 }
 
 export async function appendPaymentEvent(payload: {
@@ -526,8 +695,27 @@ export async function markPaymentPaid(input: {
   });
 }
 
+export async function markPaymentPaidFromProvider(input: {
+  paymentIntentId: string;
+  providerReference?: string | null;
+  actorId?: string | null;
+  actorRole?: string | null;
+  note?: string | null;
+}) {
+  return updatePaymentStatus({
+    paymentIntentId: input.paymentIntentId,
+    status: "paid",
+    eventType: "paid",
+    providerReference: input.providerReference ?? null,
+    actorId: input.actorId ?? null,
+    actorRole: input.actorRole ?? "provider_callback",
+    note: input.note ?? "Provider callback ile ödeme onaylandı."
+  });
+}
+
 export async function markPaymentFailed(input: {
   paymentIntentId: string;
+  providerReference?: string | null;
   actorId?: string | null;
   actorRole?: string | null;
   note?: string | null;
@@ -536,6 +724,7 @@ export async function markPaymentFailed(input: {
     paymentIntentId: input.paymentIntentId,
     status: "failed",
     eventType: "failed",
+    providerReference: input.providerReference ?? null,
     actorId: input.actorId ?? null,
     actorRole: input.actorRole ?? "admin",
     note: input.note ?? "Ödeme başarısız olarak işaretlendi."
@@ -544,6 +733,7 @@ export async function markPaymentFailed(input: {
 
 export async function markPaymentCancelled(input: {
   paymentIntentId: string;
+  providerReference?: string | null;
   actorId?: string | null;
   actorRole?: string | null;
   note?: string | null;
@@ -552,6 +742,7 @@ export async function markPaymentCancelled(input: {
     paymentIntentId: input.paymentIntentId,
     status: "cancelled",
     eventType: "manually_cancelled",
+    providerReference: input.providerReference ?? null,
     actorId: input.actorId ?? null,
     actorRole: input.actorRole ?? "admin",
     note: input.note ?? "Ödeme manuel olarak iptal edildi."
@@ -604,6 +795,93 @@ export async function prepareReceiptForPayment(input: {
   }
 
   return mapReceipt(data);
+}
+
+export async function getPaymentProviderEvent(
+  provider: PaymentProvider,
+  providerEventId: string
+): Promise<PaymentProviderEventRecord | null> {
+  const db = getAdminDb();
+  const { data, error } = await db
+    .from<PaymentProviderEventRow>("payment_provider_events")
+    .select(paymentProviderEventColumns)
+    .eq("provider", provider)
+    .eq("provider_event_id", providerEventId)
+    .maybeSingle();
+
+  if (error) {
+    throw new PaymentWriteError(
+      friendlyPaymentWriteError(error, "Provider callback kaydı okunamadı."),
+      error.code ?? "payment_provider_event_read_failed"
+    );
+  }
+
+  return data ? mapPaymentProviderEvent(data) : null;
+}
+
+export async function recordPaymentProviderEvent(input: {
+  provider: PaymentProvider;
+  providerEventId?: string | null;
+  eventType?: string | null;
+  signatureVerified?: boolean;
+  processed?: boolean;
+  processingError?: string | null;
+  payloadSummary?: Record<string, unknown>;
+}) {
+  const providerEventId = input.providerEventId?.trim() || null;
+
+  if (providerEventId) {
+    const existing = await getPaymentProviderEvent(input.provider, providerEventId);
+    if (existing) {
+      const db = getAdminDb();
+      const { data, error } = await db
+        .from<PaymentProviderEventRow>("payment_provider_events")
+        .update({
+          signature_verified: input.signatureVerified ?? existing.signatureVerified,
+          processed: input.processed ?? existing.processed,
+          processing_error: Object.prototype.hasOwnProperty.call(input, "processingError") ? (input.processingError ?? null) : existing.processingError,
+          processed_at: input.processed ? new Date().toISOString() : existing.processedAt,
+          payload_summary: input.payloadSummary ?? existing.payloadSummary
+        })
+        .eq("id", existing.id)
+        .select(paymentProviderEventColumns)
+        .single();
+
+      if (error || !data) {
+        throw new PaymentWriteError(
+          friendlyPaymentWriteError(error, "Provider callback kaydı güncellenemedi."),
+          error?.code ?? "payment_provider_event_update_failed"
+        );
+      }
+
+      return { record: mapPaymentProviderEvent(data), duplicate: true };
+    }
+  }
+
+  const db = getAdminDb();
+  const { data, error } = await db
+    .from<PaymentProviderEventRow>("payment_provider_events")
+    .insert({
+      provider: input.provider,
+      provider_event_id: providerEventId,
+      event_type: input.eventType ?? null,
+      signature_verified: input.signatureVerified ?? false,
+      processed: input.processed ?? false,
+      processing_error: input.processingError ?? null,
+      processed_at: input.processed ? new Date().toISOString() : null,
+      payload_summary: input.payloadSummary ?? {}
+    })
+    .select(paymentProviderEventColumns)
+    .single();
+
+  if (error || !data) {
+    throw new PaymentWriteError(
+      friendlyPaymentWriteError(error, "Provider callback kaydı oluşturulamadı."),
+      error?.code ?? "payment_provider_event_insert_failed"
+    );
+  }
+
+  return { record: mapPaymentProviderEvent(data), duplicate: false };
 }
 
 export async function enqueueNotification(input: {
