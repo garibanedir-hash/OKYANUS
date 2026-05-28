@@ -168,7 +168,7 @@ export async function generateReceiptPdfAction(formData: FormData) {
           createdAt: receipt.createdAt,
           description: `${receipt.receiptNo} numaralı makbuz, ${receipt.paymentIntentNo ?? "ödeme kaydı"} için hazırlanmıştır.`
         });
-        const pdfBuffer = generateReceiptPdfBuffer(pdfData);
+        const pdfBuffer = await generateReceiptPdfBuffer(pdfData);
         const fileInfo = await uploadReceiptPdf({
           receiptNo: receipt.receiptNo,
           version,

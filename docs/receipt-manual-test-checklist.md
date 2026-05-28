@@ -44,7 +44,7 @@ Bu checklist 10D makbuz PDF ve private storage altyapısını staging ortamında
 ## 10E.1 Font ve Layout Kontrolü
 
 - [ ] `app/fonts/Gilroy-Bold.woff2` ve `app/fonts/Gilroy-Black.woff2` lisanslı dosyalarla eklendiyse build başarılı.
-- [ ] Font dosyaları yoksa build kırılmıyor ve site Inter/Arial/system fallback ile açılıyor.
+- [ ] Mevcut TrueType dosyaları `Gilroy-Regular.woff2.ttf`, `Gilroy-Medium.woff2.ttf`, `Gilroy-Bold.woff2.ttf`, `Gilroy-Black.woff2.ttf` olarak bulunuyor.
 - [ ] Başlık, buton ve güçlü UI alanları `var(--font-brand)` tokenından besleniyor.
 - [ ] Gövde metinleri sadece Bold/Black dosyaları varken aşırı kalın görünmüyor.
 - [ ] PDF içinde uzun e-posta/makbuz/ödeme no alanları panel dışına taşmıyor.
@@ -52,6 +52,15 @@ Bu checklist 10D makbuz PDF ve private storage altyapısını staging ortamında
 - [ ] Toplam tutar kutusu sağ hizalı ve okunaklı.
 - [ ] Footer sayfa dışına taşmıyor.
 - [ ] Mevcut eski PDF dosyalarının yeniden üretilmeden otomatik değişmediği doğrulandı.
+
+## 10E.2 PDF Font Embed Kontrolü
+
+- [ ] `pdf-lib` ve `@pdf-lib/fontkit` dependency'leri kurulu.
+- [ ] Admin panelde yeni üretilen PDF içinde Gilroy görünümü var.
+- [ ] `BAĞIŞ MAKBUZU`, `BAĞIŞÇI BİLGİLERİ`, `BAĞIŞ ÖZETİ`, `KURUMSAL ŞEFFAFLIK`, `TEŞEKKÜR EDERİZ` başlıklarında Türkçe karakterler düzgün.
+- [ ] Uzun bağışçı e-postası panel dışına taşmıyor.
+- [ ] Uzun ödeme no/makbuz no üst meta alanını bozmuyor.
+- [ ] Font embed başarısızlığı simüle edilirse PDF üretimi fallback ile kırılmadan tamamlanıyor.
 
 ## Repair Senaryoları
 

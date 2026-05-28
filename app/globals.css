@@ -16,8 +16,8 @@
   --color-border-soft: #dde7e8;
   --shadow-soft-brand: 0 20px 50px color-mix(in srgb, var(--color-dark-navy) 12%, transparent);
   --shadow-card-brand: 0 12px 30px color-mix(in srgb, var(--color-dark-navy) 9%, transparent);
-  --font-brand: var(--font-gilroy, Gilroy), Inter, Arial, system-ui, sans-serif;
-  --font-body: Inter, Arial, system-ui, sans-serif;
+  --font-brand: var(--font-gilroy), Inter, Arial, system-ui, sans-serif;
+  --font-body: var(--font-gilroy), Inter, Arial, system-ui, sans-serif;
 }
 
 * {
@@ -48,6 +48,7 @@ h3,
 button,
 .brand-strong {
   font-family: var(--font-brand);
+  font-weight: 700;
 }
 
 ::selection {

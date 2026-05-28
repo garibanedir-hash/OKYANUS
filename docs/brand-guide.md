@@ -65,19 +65,23 @@ Kurumsal rehberde temel yazı tipleri:
 Kurumsal font dosyaları için proje standardı:
 
 ```text
+app/fonts/Gilroy-Regular.woff2
+app/fonts/Gilroy-Medium.woff2
 app/fonts/Gilroy-Bold.woff2
 app/fonts/Gilroy-Black.woff2
 ```
 
-TTF fallback dosyaları `app/fonts/Gilroy-Bold.ttf` ve `app/fonts/Gilroy-Black.ttf` olarak kabul edilir. Dosyalar projede yoksa web arayüzü güvenli fallback kullanır:
+TTF fallback dosyaları `app/fonts/Gilroy-Regular.ttf`, `app/fonts/Gilroy-Medium.ttf`, `app/fonts/Gilroy-Bold.ttf` ve `app/fonts/Gilroy-Black.ttf` olarak kabul edilir. Bu projede mevcut font dosyaları TrueType formatında ve `Gilroy-Regular.woff2.ttf`, `Gilroy-Medium.woff2.ttf`, `Gilroy-Bold.woff2.ttf`, `Gilroy-Black.woff2.ttf` adlarıyla bulunur.
+
+Font dosyaları projede yoksa web arayüzü güvenli fallback kullanır:
 
 ```text
 Inter, Arial, system-ui, sans-serif
 ```
 
-Dosyalar sağlandığında `next/font/local` entegrasyonu `app/layout.tsx` içinde sabit module-scope çağrı olarak aktif edilmelidir; font dosyaları henüz olmadığı için aktif import eklenmez, aksi halde build kırılır. Sadece Bold/Black ağırlıkları olduğu için gövde metinleri Inter/sistem sans ile kalır; başlıklar, butonlar ve güçlü UI alanları `var(--font-brand)` üzerinden Gilroy karakterine hazırlanmıştır. Brittany Signature dijital UI içinde ana metin fontu olarak kullanılmamalı; gerekiyorsa sınırlı marka uygulamalarında değerlendirilmelidir.
+`next/font/local` entegrasyonu `app/layout.tsx` içinde sabit module-scope çağrı olarak aktiftir ve `--font-gilroy` değişkenini üretir. Regular/Medium/Bold/Black ağırlıkları bulunduğu için body, başlıklar, butonlar ve güçlü UI alanları kontrollü şekilde Gilroy sistemine alınmıştır. Brittany Signature dijital UI içinde ana metin fontu olarak kullanılmamalı; gerekiyorsa sınırlı marka uygulamalarında değerlendirilmelidir.
 
-PDF makbuz üreticisi mevcut aşamada standart PDF font fallback kullanır. Gilroy dosyaları bulunduğunda generator bunu güvenli log ile algılar; gerçek Gilroy embed ve tam Türkçe karakter desteği için sonraki aşamada font embed destekli PDF motoru değerlendirilebilir.
+PDF makbuz üreticisi `pdf-lib` ve `@pdf-lib/fontkit` ile Gilroy fontlarını PDF içine embed eder. Embed başarısız olursa üretim durmaz; Helvetica fallback ve güvenli Türkçe normalizasyon devreye girer.
 
 ## Dijital Uygulama İlkeleri
 

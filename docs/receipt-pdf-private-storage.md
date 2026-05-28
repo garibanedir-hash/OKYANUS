@@ -113,6 +113,8 @@ PDF içinde yer almaz:
 Kurumsal font dosyaları için standart klasör:
 
 ```text
+app/fonts/Gilroy-Regular.woff2
+app/fonts/Gilroy-Medium.woff2
 app/fonts/Gilroy-Bold.woff2
 app/fonts/Gilroy-Black.woff2
 ```
@@ -120,13 +122,15 @@ app/fonts/Gilroy-Black.woff2
 TTF fallback:
 
 ```text
+app/fonts/Gilroy-Regular.ttf
+app/fonts/Gilroy-Medium.ttf
 app/fonts/Gilroy-Bold.ttf
 app/fonts/Gilroy-Black.ttf
 ```
 
-Web arayüzünde font tokenları hazırdır. Dosyalar yokken build kırılmaması için `next/font/local` aktif import edilmez; dosyalar eklendikten sonra `app/layout.tsx` içinde sabit module-scope `localFont` çağrısıyla `--font-gilroy` değişkeni aktif edilmelidir. Dosyalar yoksa Inter/Arial/system fallback kullanılır.
+Mevcut projede font dosyaları TrueType formatında ve `Gilroy-Regular.woff2.ttf`, `Gilroy-Medium.woff2.ttf`, `Gilroy-Bold.woff2.ttf`, `Gilroy-Black.woff2.ttf` adlarıyla bulunur. Web arayüzünde `next/font/local` aktif şekilde `--font-gilroy` değişkenini üretir. Dosyalar kaldırılırsa `app/layout.tsx` font pathleri güncellenmeli veya fallback moduna alınmalıdır.
 
-PDF üretiminde bu aşamada yeni PDF paketi eklenmedi. Minimal server-side PDF üretici standart PDF fontu kullandığı için Türkçe karakterler güvenli ASCII karşılıklarına normalize edilir. Gilroy font dosyaları repoya eklense bile mevcut raw PDF motoru font embed yapmaz; generator dosyaları algılar fakat PDF tarafında standart font fallback kullanır. Production öncesi Türkçe karakterli resmi çıktı ve Gilroy embed için `pdf-lib` + fontkit gibi hafif bir çözüm sonraki aşamada değerlendirilebilir.
+PDF üretiminde `pdf-lib` ve `@pdf-lib/fontkit` kullanılır. Generator font dosyalarını server-side okur ve Gilroy Regular/Medium/Bold/Black fontlarını PDF içine embed eder. Embed başarılıysa Türkçe karakterler gerçek karakterlerle basılır. Embed başarısız olursa PDF üretimi durmaz; Helvetica fallback ve yalnızca fallback durumunda güvenli Türkçe normalizasyon kullanılır.
 
 ## 10E Kurumsal Şablon
 
@@ -153,8 +157,16 @@ Logo embed akışı `public/brand/logo.png` dosyasını server-side okur, PDF'e 
 - Boşluksuz uzun metinler satır genişliğine göre parçalanır.
 - Bağışçı bilgileri paneli daha yüksek iki kolonlu düzene alınır.
 - Tutar ve toplam alanları sağ hizalı, maksimum genişlik kontrollü çizilir.
-- Logo PDF içine daha düşük çözünürlükte gömülerek dosya boyutu kontrol edilir.
+- Logo PDF içine `pdf-lib` üzerinden PNG olarak gömülür ve oranı korunur.
 - Footer ve kurumsal şeffaflık alanları tek sayfa hedefiyle sabit güvenli bölgelerde tutulur.
+
+10E.2 ile:
+
+- `next/font/local` ile site genelinde Gilroy aktif edildi.
+- PDF generator raw PDF string üretiminden `pdf-lib` tabanlı çizim modeline taşındı.
+- Text ölçümü gerçek embed font üzerinden yapılır.
+- `drawText`, `drawWrappedText`, `splitTextToLines`, `truncateText`, `drawLabelValueRow`, `drawSummaryTable` ve `drawTotalBox` yardımcıları font ölçümüyle çalışır.
+- Makbuz PDF içinde `BAĞIŞ MAKBUZU`, `BAĞIŞÇI BİLGİLERİ`, `BAĞIŞ ÖZETİ`, `KURUMSAL ŞEFFAFLIK`, `TEŞEKKÜR EDERİZ` gibi başlıklar Türkçe karakterleriyle basılabilir.
 
 ## Receipt Status Lifecycle
 
