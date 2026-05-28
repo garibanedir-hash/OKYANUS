@@ -65,13 +65,13 @@ Kurumsal rehberde temel yazı tipleri:
 Kurumsal font dosyaları için proje standardı:
 
 ```text
-app/fonts/Gilroy-Regular.woff2
-app/fonts/Gilroy-Medium.woff2
-app/fonts/Gilroy-Bold.woff2
-app/fonts/Gilroy-Black.woff2
+app/fonts/Gilroy-Regular.ttf
+app/fonts/Gilroy-Medium.ttf
+app/fonts/Gilroy-Bold.ttf
+app/fonts/Gilroy-Black.ttf
 ```
 
-TTF fallback dosyaları `app/fonts/Gilroy-Regular.ttf`, `app/fonts/Gilroy-Medium.ttf`, `app/fonts/Gilroy-Bold.ttf` ve `app/fonts/Gilroy-Black.ttf` olarak kabul edilir. Bu projede mevcut font dosyaları TrueType formatında ve `Gilroy-Regular.woff2.ttf`, `Gilroy-Medium.woff2.ttf`, `Gilroy-Bold.woff2.ttf`, `Gilroy-Black.woff2.ttf` adlarıyla bulunur.
+WOFF2 dosyaları da `app/fonts/Gilroy-Regular.woff2`, `app/fonts/Gilroy-Medium.woff2`, `app/fonts/Gilroy-Bold.woff2` ve `app/fonts/Gilroy-Black.woff2` olarak kabul edilir. Bu projede mevcut font dosyaları orijinal TrueType formatında ve `.ttf` uzantısıyla bulunur.
 
 Font dosyaları projede yoksa web arayüzü güvenli fallback kullanır:
 

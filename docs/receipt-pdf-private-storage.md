@@ -128,7 +128,7 @@ app/fonts/Gilroy-Bold.ttf
 app/fonts/Gilroy-Black.ttf
 ```
 
-Mevcut projede font dosyaları TrueType formatında ve `Gilroy-Regular.woff2.ttf`, `Gilroy-Medium.woff2.ttf`, `Gilroy-Bold.woff2.ttf`, `Gilroy-Black.woff2.ttf` adlarıyla bulunur. Web arayüzünde `next/font/local` aktif şekilde `--font-gilroy` değişkenini üretir. Dosyalar kaldırılırsa `app/layout.tsx` font pathleri güncellenmeli veya fallback moduna alınmalıdır.
+Mevcut projede font dosyaları orijinal TrueType formatında ve `Gilroy-Regular.ttf`, `Gilroy-Medium.ttf`, `Gilroy-Bold.ttf`, `Gilroy-Black.ttf` adlarıyla bulunur. Web arayüzünde `next/font/local` aktif şekilde `--font-gilroy` değişkenini üretir. Dosyalar kaldırılırsa `app/layout.tsx` font pathleri güncellenmeli veya fallback moduna alınmalıdır.
 
 PDF üretiminde `pdf-lib` ve `@pdf-lib/fontkit` kullanılır. Generator font dosyalarını server-side okur ve Gilroy Regular/Medium/Bold/Black fontlarını PDF içine embed eder. Embed başarılıysa Türkçe karakterler gerçek karakterlerle basılır. Embed başarısız olursa PDF üretimi durmaz; Helvetica fallback ve yalnızca fallback durumunda güvenli Türkçe normalizasyon kullanılır.
 

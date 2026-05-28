@@ -44,7 +44,7 @@ Bu checklist 10D makbuz PDF ve private storage altyapısını staging ortamında
 ## 10E.1 Font ve Layout Kontrolü
 
 - [ ] `app/fonts/Gilroy-Bold.woff2` ve `app/fonts/Gilroy-Black.woff2` lisanslı dosyalarla eklendiyse build başarılı.
-- [ ] Mevcut TrueType dosyaları `Gilroy-Regular.woff2.ttf`, `Gilroy-Medium.woff2.ttf`, `Gilroy-Bold.woff2.ttf`, `Gilroy-Black.woff2.ttf` olarak bulunuyor.
+- [ ] Mevcut TrueType dosyaları `Gilroy-Regular.ttf`, `Gilroy-Medium.ttf`, `Gilroy-Bold.ttf`, `Gilroy-Black.ttf` olarak bulunuyor.
 - [ ] Başlık, buton ve güçlü UI alanları `var(--font-brand)` tokenından besleniyor.
 - [ ] Gövde metinleri sadece Bold/Black dosyaları varken aşırı kalın görünmüyor.
 - [ ] PDF içinde uzun e-posta/makbuz/ödeme no alanları panel dışına taşmıyor.

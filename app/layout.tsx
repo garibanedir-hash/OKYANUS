@@ -22,10 +22,10 @@ const faviconPath = faviconSvgExists
 
 const gilroy = localFont({
   src: [
-    { path: "./fonts/Gilroy-Regular.woff2.ttf", weight: "400", style: "normal" },
-    { path: "./fonts/Gilroy-Medium.woff2.ttf", weight: "500", style: "normal" },
-    { path: "./fonts/Gilroy-Bold.woff2.ttf", weight: "700", style: "normal" },
-    { path: "./fonts/Gilroy-Black.woff2.ttf", weight: "900", style: "normal" }
+    { path: "./fonts/Gilroy-Regular.ttf", weight: "400", style: "normal" },
+    { path: "./fonts/Gilroy-Medium.ttf", weight: "500", style: "normal" },
+    { path: "./fonts/Gilroy-Bold.ttf", weight: "700", style: "normal" },
+    { path: "./fonts/Gilroy-Black.ttf", weight: "900", style: "normal" }
   ],
   variable: "--font-gilroy",
   display: "swap",

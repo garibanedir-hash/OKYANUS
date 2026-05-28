@@ -93,10 +93,10 @@ const TURKISH_CHAR_MAP: Record<string, string> = {
 };
 
 const FONT_CANDIDATES: Record<FontRole, string[]> = {
-  regular: ["Gilroy-Regular.woff2", "Gilroy-Regular.ttf", "Gilroy-Regular.woff2.ttf"],
-  medium: ["Gilroy-Medium.woff2", "Gilroy-Medium.ttf", "Gilroy-Medium.woff2.ttf"],
-  bold: ["Gilroy-Bold.woff2", "Gilroy-Bold.ttf", "Gilroy-Bold.woff2.ttf"],
-  black: ["Gilroy-Black.woff2", "Gilroy-Black.ttf", "Gilroy-Black.woff2.ttf"]
+  regular: ["Gilroy-Regular.ttf", "Gilroy-Regular.woff2"],
+  medium: ["Gilroy-Medium.ttf", "Gilroy-Medium.woff2"],
+  bold: ["Gilroy-Bold.ttf", "Gilroy-Bold.woff2"],
+  black: ["Gilroy-Black.ttf", "Gilroy-Black.woff2"]
 };
 
 function normalizeForFallback(value: string) {
@@ -269,6 +269,30 @@ function truncateText(value: string, maxWidth: number, font: PDFFont, size: numb
   return `${result.trim()}...`;
 }
 
+function truncateMiddleText(value: string, maxWidth: number, font: PDFFont, size: number, embeddedGilroy: boolean) {
+  const source = safeText(value, embeddedGilroy);
+  if (font.widthOfTextAtSize(source, size) <= maxWidth) return source;
+  if (source.length <= 12) return truncateText(source, maxWidth, font, size, embeddedGilroy);
+
+  let startLength = Math.min(14, Math.ceil(source.length * 0.48));
+  let endLength = Math.min(8, Math.floor(source.length * 0.28));
+  let result = `${source.slice(0, startLength)}...${source.slice(-endLength)}`;
+
+  while (font.widthOfTextAtSize(result, size) > maxWidth && (startLength > 5 || endLength > 4)) {
+    if (startLength >= endLength && startLength > 5) {
+      startLength -= 1;
+    } else if (endLength > 4) {
+      endLength -= 1;
+    } else {
+      break;
+    }
+
+    result = `${source.slice(0, startLength)}...${source.slice(-endLength)}`;
+  }
+
+  return font.widthOfTextAtSize(result, size) <= maxWidth ? result : truncateText(source, maxWidth, font, size, embeddedGilroy);
+}
+
 function splitLongWord(word: string, maxWidth: number, font: PDFFont, size: number, embeddedGilroy: boolean) {
   const chunks: string[] = [];
   let current = "";
@@ -418,47 +442,136 @@ function drawLabelValueRow(
   });
 }
 
-function drawMetaRow(page: PDFPage, label: string, value: string, y: number, fonts: ReceiptPdfFonts) {
-  drawText(page, label, 382, y, {
+function getStatusBadgeStyle(value: string) {
+  const normalized = value.toLocaleLowerCase("tr-TR");
+
+  if (normalized.includes("ödendi") || normalized.includes("odendi")) {
+    return { fill: LIGHT_TEAL, border: "#B9E1E2", color: TEAL };
+  }
+
+  if (normalized.includes("iptal") || normalized.includes("başarısız") || normalized.includes("basarisiz") || normalized.includes("hata")) {
+    return { fill: "#FEF2F2", border: "#FCA5A5", color: "#991B1B" };
+  }
+
+  return { fill: HEADER_SOFT, border: BORDER, color: NAVY };
+}
+
+function drawStatusBadge(page: PDFPage, value: string, x: number, y: number, maxWidth: number, fonts: ReceiptPdfFonts) {
+  const textSize = 7.2;
+  const label = truncateText(value, maxWidth - 14, fonts.bold, textSize, fonts.embeddedGilroy);
+  const textWidth = fonts.bold.widthOfTextAtSize(label, textSize);
+  const badgeWidth = Math.min(maxWidth, Math.max(48, textWidth + 14));
+  const badgeHeight = 13;
+  const style = getStatusBadgeStyle(value);
+
+  drawBox(page, x, y - 3, badgeWidth, badgeHeight, {
+    fill: style.fill,
+    border: style.border,
+    borderWidth: 0.8
+  });
+  drawText(page, label, x + badgeWidth / 2, y + 1, {
     font: fonts.bold,
-    size: 7.5,
+    size: textSize,
+    color: style.color,
+    align: "center",
+    maxWidth: badgeWidth - 10,
+    embeddedGilroy: fonts.embeddedGilroy
+  });
+}
+
+function drawMetaRow(
+  page: PDFPage,
+  label: string,
+  value: string,
+  x: number,
+  y: number,
+  width: number,
+  fonts: ReceiptPdfFonts,
+  options: { compactValue?: boolean; badge?: boolean } = {}
+) {
+  const labelWidth = 52;
+  const gap = 7;
+  const valueX = x + labelWidth + gap;
+  const valueWidth = width - labelWidth - gap;
+
+  drawText(page, label, x, y, {
+    font: fonts.bold,
+    size: 6.8,
     color: MUTED,
+    maxWidth: labelWidth,
     embeddedGilroy: fonts.embeddedGilroy
   });
-  drawText(page, value, 548, y, {
+
+  if (options.badge) {
+    drawStatusBadge(page, value, valueX, y - 1, valueWidth, fonts);
+    return y - 17;
+  }
+
+  const valueSize = options.compactValue ? 7.1 : 7.6;
+  const textValue = options.compactValue
+    ? truncateMiddleText(value, valueWidth, fonts.bold, valueSize, fonts.embeddedGilroy)
+    : truncateText(value, valueWidth, fonts.bold, valueSize, fonts.embeddedGilroy);
+
+  drawText(page, textValue, valueX, y, {
     font: fonts.bold,
-    size: 8.8,
+    size: valueSize,
     color: NAVY,
-    align: "right",
-    maxWidth: 142,
+    maxWidth: valueWidth,
     embeddedGilroy: fonts.embeddedGilroy
   });
+
+  return y - 16;
 }
 
 function drawHeader(page: PDFPage, data: ReceiptPdfData, fonts: ReceiptPdfFonts, logo: PDFImage | null) {
   drawBox(page, 0, PAGE_HEIGHT - 10, PAGE_WIDTH, 10, { fill: NAVY });
   drawBox(page, 0, PAGE_HEIGHT - 13, PAGE_WIDTH, 3, { fill: TEAL });
 
+  const logoBox = { x: MARGIN_X, y: 758, width: 158, height: 58 };
+
   if (logo) {
-    const logoWidth = 150;
-    const logoHeight = logoWidth * (logo.height / logo.width);
+    const scale = Math.min(logoBox.width / logo.width, logoBox.height / logo.height);
+    const logoWidth = logo.width * scale;
+    const logoHeight = logo.height * scale;
     page.drawImage(logo, {
-      x: MARGIN_X,
-      y: 780 - logoHeight / 2,
+      x: logoBox.x,
+      y: logoBox.y + (logoBox.height - logoHeight) / 2,
       width: logoWidth,
       height: logoHeight
     });
   } else {
-    drawBox(page, 42, 776, 28, 28, { fill: TEAL });
-    drawText(page, "OKYANUS", 78, 790, { font: fonts.black, size: 17, color: NAVY, embeddedGilroy: fonts.embeddedGilroy });
-    drawText(page, "İNSANİ YARDIM DERNEĞİ", 78, 776, { font: fonts.bold, size: 8.5, color: MUTED, embeddedGilroy: fonts.embeddedGilroy });
+    drawBox(page, logoBox.x, logoBox.y + 15, 28, 28, { fill: TEAL });
+    drawText(page, "OKYANUS", logoBox.x + 36, logoBox.y + 31, { font: fonts.black, size: 17, color: NAVY, embeddedGilroy: fonts.embeddedGilroy });
+    drawText(page, "İNSANİ YARDIM DERNEĞİ", logoBox.x + 36, logoBox.y + 17, {
+      font: fonts.bold,
+      size: 8.5,
+      color: MUTED,
+      embeddedGilroy: fonts.embeddedGilroy
+    });
   }
 
-  drawLine(page, { x: 358, y: 760 }, { x: 358, y: 814 }, TEAL, 2);
-  drawMetaRow(page, "Makbuz No", data.receiptNo, 800, fonts);
-  drawMetaRow(page, "Ödeme No", data.paymentIntentNo, 784, fonts);
-  drawMetaRow(page, "Tarih", data.dateLabel, 768, fonts);
-  drawMetaRow(page, "Durum", data.paymentStatusLabel, 752, fonts);
+  const panelX = 333;
+  const panelY = 735;
+  const panelWidth = 220;
+  const panelHeight = 90;
+  const innerX = panelX + 14;
+  const innerWidth = panelWidth - 26;
+
+  drawBox(page, panelX, panelY, panelWidth, panelHeight, { fill: WHITE, border: BORDER, borderWidth: 0.8 });
+  drawBox(page, panelX, panelY, 3, panelHeight, { fill: TEAL });
+  drawText(page, "DİJİTAL MAKBUZ", innerX, panelY + panelHeight - 14, {
+    font: fonts.black,
+    size: 6.6,
+    color: TEAL,
+    maxWidth: innerWidth,
+    embeddedGilroy: fonts.embeddedGilroy
+  });
+
+  let cursorY = panelY + panelHeight - 30;
+  cursorY = drawMetaRow(page, "Makbuz No", data.receiptNo, innerX, cursorY, innerWidth, fonts, { compactValue: true });
+  cursorY = drawMetaRow(page, "Ödeme No", data.paymentIntentNo, innerX, cursorY, innerWidth, fonts, { compactValue: true });
+  cursorY = drawMetaRow(page, "Tarih", data.dateLabel, innerX, cursorY, innerWidth, fonts);
+  drawMetaRow(page, "Durum", data.paymentStatusLabel, innerX, cursorY, innerWidth, fonts, { badge: true });
 }
 
 function drawTitle(page: PDFPage, fonts: ReceiptPdfFonts) {
