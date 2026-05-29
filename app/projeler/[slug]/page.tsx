@@ -5,6 +5,7 @@ import { projects as fallbackProjects } from "@/data/projects";
 import { formatCurrency } from "@/lib/format";
 import { getPublicProjectActivities } from "@/lib/data/projectActivityRepository";
 import { getProjectBySlug, getProjects } from "@/lib/data/projectsRepository";
+import { getProjectRegionBySlug } from "@/data/projectRegions";
 import { Container } from "@/components/ui/Container";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -43,6 +44,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   }
 
   const progress = project.goal > 0 ? Math.min(Math.round((project.raised / project.goal) * 100), 100) : 0;
+  const region = getProjectRegionBySlug(project.regionSlug);
   const [projects, activities] = await Promise.all([
     getProjects(),
     getPublicProjectActivities(project.id)
@@ -60,6 +62,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
             <h1 className="mt-5 text-4xl font-extrabold leading-tight text-dark-navy sm:text-5xl">{project.title}</h1>
             <p className="mt-5 text-lg leading-8 text-ink-muted">{project.summary}</p>
             <div className="mt-6 flex flex-wrap gap-3">
+              {region ? <Badge variant="light">{region.name} · {region.country}</Badge> : null}
               <Badge variant="green">{project.status}</Badge>
               <Badge variant="blue">{project.location}</Badge>
             </div>
@@ -125,6 +128,12 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                     <MapPin aria-hidden className="h-5 w-5 text-ocean-green" />
                     <div><dt className="font-bold text-dark-navy">Lokasyon</dt><dd className="text-ink-muted">{project.location}</dd></div>
                   </div>
+                  {region ? (
+                    <div>
+                      <dt className="font-bold text-dark-navy">Çalışma Bölgesi</dt>
+                      <dd className="text-ink-muted">{region.name} · {region.regionLabel}</dd>
+                    </div>
+                  ) : null}
                   <div><dt className="font-bold text-dark-navy">Başlangıç</dt><dd className="text-ink-muted">{project.startDate}</dd></div>
                   <div><dt className="font-bold text-dark-navy">Güncelleme</dt><dd className="text-ink-muted">{project.updatedAt}</dd></div>
                   <div><dt className="font-bold text-dark-navy">Durum</dt><dd className="text-ink-muted">{project.status}</dd></div>

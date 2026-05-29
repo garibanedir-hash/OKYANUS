@@ -101,6 +101,29 @@ Bu bölüm sadece şu kayıtları gösterir:
 
 Public faaliyet yoksa bölüm gizlenir.
 
+## 11A.2 Public Harita ve Çalışma Bölgeleri
+
+Public proje deneyimi çalışma bölgeleriyle güçlendirildi:
+
+- Gazze
+- Lübnan
+- Mısır
+- Türkiye
+
+İlk aşamada bu bölgeler `data/projectRegions.ts` içindeki güvenli fallback veriyle yönetilir. Admin proje CRUD veya `project_activities` veri modeli değiştirilmez.
+
+Public `/projeler` sayfasında önce çalışma bölgeleri haritası ve bölge detay paneli, ardından bölge/kategori filtreli proje listesi gösterilir. Ana sayfada aynı yapının kompakt “Nerelerde Çalışıyoruz?” özeti yer alır.
+
+Harita hafif SVG/HTML/CSS tabanlıdır; Mapbox, Google Maps veya API key gerektiren ağır bir entegrasyon kullanılmaz.
+
+Supabase `projects` tablosunda bölge alanı olmadığı için public mapping şu sırayla fallback yapar:
+
+- proje `regionSlug` alanı varsa onu kullanır
+- slug/title/category/location/tags üzerinden Gazze, Lübnan, Mısır veya Türkiye eşleştirmesi yapar
+- eşleşme yoksa güvenli varsayılan olarak Türkiye bölgesine bağlar
+
+Bu görsel sunum public-only deneyim katmanıdır; makbuz, ödeme, PayTR veya manuel makbuz akışlarını etkilemez.
+
 ## RLS ve Güvenlik
 
 Migration şu güvenlik yaklaşımını kullanır:

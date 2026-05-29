@@ -3,6 +3,8 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ProjectFilterGrid } from "@/components/ProjectFilterGrid";
 import { PageHero } from "@/components/sections/PageHero";
+import { ProjectRegionSection } from "@/components/projects/ProjectRegionSection";
+import { mergeProjectsWithRegionalFallbacks, projectRegions } from "@/data/projectRegions";
 import { getProjects } from "@/lib/data/projectsRepository";
 
 export const metadata: Metadata = {
@@ -11,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectsPage() {
-  const projects = await getProjects();
+  const projects = mergeProjectsWithRegionalFallbacks(await getProjects());
 
   return (
     <>
@@ -23,9 +25,22 @@ export default async function ProjectsPage() {
       <section className="bg-warm-white py-16 sm:py-20">
         <Container>
           <SectionHeading
+            eyebrow="Çalışma Bölgelerimiz"
+            title="Önce bölgeyi görün, sonra projeyi inceleyin"
+            description="Gazze, Lübnan, Mısır ve Türkiye hattındaki çalışmalarımızı harita, odak alanları ve bağlı projelerle birlikte takip edin."
+          />
+          <div className="mt-10">
+            <ProjectRegionSection regions={projectRegions} projects={projects} />
+          </div>
+        </Container>
+      </section>
+
+      <section className="bg-white py-16 sm:py-20">
+        <Container>
+          <SectionHeading
             eyebrow="Proje Takibi"
-            title="Kategoriye göre inceleyin, uygun projeye destek olun"
-            description="Filtreleme ve progress yapısı frontend olarak hazırlandı. Gerçek bağış ve raporlama entegrasyonu sonraki aşamada bağlanabilir."
+            title="Bölge ve kategoriye göre inceleyin"
+            description="Gazze, Lübnan, Mısır ve Türkiye filtreleriyle ya da acil yardım, eğitim, su, yetim ve kurban başlıklarıyla projeleri tarayın."
           />
           <ProjectFilterGrid projects={projects} />
         </Container>

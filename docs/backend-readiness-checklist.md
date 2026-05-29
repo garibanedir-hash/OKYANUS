@@ -261,3 +261,12 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Public proje detay sayfasında yalnızca completed/public faaliyetler görünüyor.
 - [ ] `internal_notes`, `estimated_cost`, `responsible_user_id`, `metadata`, `created_by` ve `updated_by` public mapping'e taşınmıyor.
 - [ ] Smoke test `project_activities: OK - public completed read` ve `project_activity_events: OK - protected` sonucunu veriyor.
+
+## 11A.2 Public Proje Haritası Kontrolleri
+
+- [ ] `/` ana sayfasında “Nerelerde Çalışıyoruz?” bölümü görünüyor.
+- [ ] `/projeler` sayfasında Gazze, Lübnan, Mısır ve Türkiye bölgeleri harita üzerinde gösteriliyor.
+- [ ] Bölge seçilince ilgili proje kartları listeleniyor.
+- [ ] Proje filtrelerinde bölge ve kategori seçenekleri çalışıyor.
+- [ ] Supabase proje verisinde bölge alanı yoksa slug/title/location fallback mapping boş sayfa oluşturmuyor.
+- [ ] Harita bağımlılıksız SVG/HTML/CSS olarak çalışıyor; API key gerektirmiyor.

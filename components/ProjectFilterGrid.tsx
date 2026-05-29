@@ -1,15 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import type { Project, ProjectCategory } from "@/data/projects";
+import type { Project } from "@/data/projects";
 import { ProjectCard } from "@/components/ProjectCard";
 
-const filters = ["Tüm Projeler", "Eğitim", "Gıda", "Sağlık", "Acil Yardım", "Yetim"] as const;
+const filters = ["Tüm Projeler", "Gazze", "Lübnan", "Mısır", "Türkiye", "Acil Yardım", "Eğitim", "Su", "Yetim", "Kurban"] as const;
+
+function matchesFilter(project: Project, filter: (typeof filters)[number]) {
+  if (filter === "Tüm Projeler") return true;
+  if (project.regionName === filter) return true;
+  if (project.category === filter) return true;
+
+  const normalized = [project.title, project.summary, project.description, project.category, project.regionName, ...(project.tags ?? [])]
+    .filter(Boolean)
+    .join(" ")
+    .toLocaleLowerCase("tr-TR");
+
+  if (filter === "Su") return normalized.includes("su") || normalized.includes("hijyen");
+  if (filter === "Kurban") return normalized.includes("kurban") || normalized.includes("vekalet");
+  return normalized.includes(filter.toLocaleLowerCase("tr-TR"));
+}
 
 export function ProjectFilterGrid({ projects }: { projects: Project[] }) {
   const [active, setActive] = useState<(typeof filters)[number]>("Tüm Projeler");
   const visibleProjects =
-    active === "Tüm Projeler" ? projects : projects.filter((project) => project.category === (active as ProjectCategory));
+    active === "Tüm Projeler" ? projects : projects.filter((project) => matchesFilter(project, active));
 
   return (
     <>

@@ -166,6 +166,9 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Public proje detay sayfasında yalnızca `completed/public` faaliyetler yayınlandı.
 - [ ] Internal faaliyetler ve iç notlar public kullanıcıyla görünmüyor.
 - [ ] `project_activities` anon write kapalı, `project_activity_events` protected.
+- [ ] Public proje haritasında Gazze, Lübnan, Mısır ve Türkiye bölgeleri doğru görünüyor.
+- [ ] Bölge/proje fallback datası production içerik stratejisiyle uyumlu hale getirildi.
+- [ ] Harita API key veya üçüncü taraf harita servisi gerektirmiyor.
 
 ## Veri Güvenliği ve KVKK
 

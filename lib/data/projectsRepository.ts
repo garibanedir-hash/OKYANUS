@@ -1,5 +1,6 @@
 import type { Project } from "@/data/projects";
 import { projects as fallbackProjects } from "@/data/projects";
+import { enrichProjectWithRegion, inferProjectRegion } from "@/data/projectRegions";
 import {
   createReadOnlyAbortSignal,
   createSupabaseReadOnlyClient,
@@ -57,8 +58,10 @@ const projectVisualTones: Record<string, string> = {
   "Eğitim": "from-soft-blue via-warm-white to-mint-green",
   "Gıda": "from-mint-green via-soft-blue to-warm-white",
   "Sağlık": "from-mint-green via-soft-blue to-warm-white",
+  "Su": "from-mint-green via-soft-blue to-warm-white",
   "Acil Yardım": "from-soft-blue via-warm-white to-soft-gray",
-  "Yetim": "from-soft-blue via-warm-white to-mint-green"
+  "Yetim": "from-soft-blue via-warm-white to-mint-green",
+  "Kurban": "from-mint-green via-soft-blue to-warm-white"
 };
 
 function parseAmount(value: number | string | null | undefined) {
@@ -139,8 +142,7 @@ export function mapSupabaseProjectToProject(row: SupabaseProjectRow): Project {
   const goal = parseAmount(row.goal_amount);
   const raised = parseAmount(row.raised_amount);
   const status = mapProjectStatus(row.status);
-
-  return {
+  const baseProject = {
     id: row.id,
     slug: row.slug,
     title: row.title,
@@ -163,7 +165,15 @@ export function mapSupabaseProjectToProject(row: SupabaseProjectRow): Project {
       row.transparency_note ??
       "Bu proje için şeffaflık notu Supabase içerik modelinden güncellenecektir.",
     cta: normalizeCta(row.cta, row.slug)
-  };
+  } satisfies Project;
+  const region = inferProjectRegion(baseProject);
+
+  return enrichProjectWithRegion({
+    ...baseProject,
+    regionSlug: region?.slug,
+    regionName: region?.name,
+    country: region?.country
+  });
 }
 
 async function fetchPublishedProjects() {
@@ -229,7 +239,7 @@ export async function getProjectsWithSource(): Promise<RepositoryResult<Project[
     return { data: supabaseProjects, source: "supabase" };
   }
 
-  return { data: fallbackProjects, source: "demo" };
+  return { data: fallbackProjects.map((project) => enrichProjectWithRegion(project)), source: "demo" };
 }
 
 export async function getProjects() {
@@ -244,8 +254,9 @@ export async function getProjectBySlugWithSource(slug: string): Promise<Reposito
     return { data: supabaseProject, source: "supabase" };
   }
 
+  const fallbackProject = fallbackProjects.find((project) => project.slug === slug);
   return {
-    data: fallbackProjects.find((project) => project.slug === slug),
+    data: fallbackProject ? enrichProjectWithRegion(fallbackProject) : undefined,
     source: "demo"
   };
 }

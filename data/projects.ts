@@ -1,4 +1,4 @@
-export type ProjectCategory = "Eğitim" | "Gıda" | "Sağlık" | "Acil Yardım" | "Yetim";
+export type ProjectCategory = "Eğitim" | "Gıda" | "Sağlık" | "Acil Yardım" | "Yetim" | "Su" | "Kurban";
 export type ProjectStatus = "Devam Ediyor" | "Tamamlandı" | "Planlanıyor";
 
 export type Project = {
@@ -13,6 +13,10 @@ export type Project = {
   raised: number;
   status: ProjectStatus;
   location: string;
+  regionSlug?: string;
+  regionName?: string;
+  country?: string;
+  activityCount?: number;
   startDate: string;
   updatedAt: string;
   visualTone: string;
@@ -40,6 +44,10 @@ export const projects: Project[] = [
     raised: 318000,
     status: "Devam Ediyor",
     location: "İstanbul ve çevre iller",
+    regionSlug: "turkiye",
+    regionName: "Türkiye",
+    country: "Türkiye",
+    activityCount: 6,
     startDate: "1 Mart 2026",
     updatedAt: "28 Nisan 2026",
     visualTone: "from-mint-green via-soft-blue to-warm-white",
@@ -69,7 +77,11 @@ export const projects: Project[] = [
     goal: 600000,
     raised: 372000,
     status: "Devam Ediyor",
-    location: "Türkiye geneli",
+    location: "Lübnan ve Türkiye destek hattı",
+    regionSlug: "lubnan",
+    regionName: "Lübnan",
+    country: "Lübnan",
+    activityCount: 4,
     startDate: "15 Şubat 2026",
     updatedAt: "20 Nisan 2026",
     visualTone: "from-soft-blue via-warm-white to-mint-green",
@@ -100,6 +112,10 @@ export const projects: Project[] = [
     raised: 291000,
     status: "Planlanıyor",
     location: "Doğu ve İç Anadolu öncelikli",
+    regionSlug: "turkiye",
+    regionName: "Türkiye",
+    country: "Türkiye",
+    activityCount: 3,
     startDate: "1 Ekim 2026",
     updatedAt: "18 Nisan 2026",
     visualTone: "from-soft-blue via-warm-white to-soft-gray",
@@ -119,7 +135,7 @@ export const projects: Project[] = [
     id: "project-water-001",
     slug: "temiz-suya-ulasim",
     title: "Temiz Suya Ulaşım",
-    category: "Sağlık",
+    category: "Su",
     summary:
       "Temiz su ve hijyen imkanlarına erişimi güçlendiren kalıcı destekler geliştiriyoruz.",
     description:
@@ -129,7 +145,11 @@ export const projects: Project[] = [
     goal: 750000,
     raised: 405000,
     status: "Devam Ediyor",
-    location: "Yurt dışı saha çalışmaları",
+    location: "Mısır lojistik ve saha çalışmaları",
+    regionSlug: "misir",
+    regionName: "Mısır",
+    country: "Mısır",
+    activityCount: 5,
     startDate: "10 Ocak 2026",
     updatedAt: "22 Nisan 2026",
     visualTone: "from-mint-green via-soft-blue to-warm-white",
@@ -144,5 +164,73 @@ export const projects: Project[] = [
     transparencyNote:
       "Uzun soluklu projelerde güncelleme tarihi ve saha notları bağışçı bilgilendirmesi için ayrıca tutulur.",
     cta: { label: "Su Projesine Destek Ol", href: "/bagis-yap?proje=temiz-suya-ulasim" }
+  },
+  {
+    id: "project-gaza-emergency-001",
+    slug: "gazze-acil-yardim",
+    title: "Gazze Acil Yardım",
+    category: "Acil Yardım",
+    summary:
+      "Gazze'de gıda, sağlık, barınma ve temel yaşam ihtiyaçları için hızlı destek çalışmaları yürütüyoruz.",
+    description:
+      "Acil ihtiyaçların yoğun olduğu Gazze hattında gıda, hijyen, sağlık ve barınma desteklerini kayıtlı şekilde planlayan proje.",
+    detail:
+      "Gazze Acil Yardım projesi, kriz şartlarında temel insani ihtiyaçlara odaklanır. Yerel temaslar, lojistik imkanlar ve sahadan gelen ihtiyaçlar doğrultusunda destek kalemleri önceliklendirilir.",
+    goal: 1200000,
+    raised: 684000,
+    status: "Devam Ediyor",
+    location: "Gazze",
+    regionSlug: "gazze",
+    regionName: "Gazze",
+    country: "Filistin",
+    activityCount: 7,
+    startDate: "5 Ocak 2026",
+    updatedAt: "24 Mayıs 2026",
+    visualTone: "from-soft-blue via-warm-white to-mint-green",
+    tags: ["gazze", "acil yardım", "gıda", "sağlık", "barınma"],
+    metrics: [
+      { label: "Hedef destek", value: "1.200.000 TL" },
+      { label: "Planlanan paket", value: "2.400" },
+      { label: "Saha güncellemesi", value: "7" }
+    ],
+    impactItems: ["Acil gıda desteği", "Hijyen paketi", "Sağlık ve barınma desteği"],
+    scopeItems: ["İhtiyaç doğrulama", "Lojistik planlama", "Yerel teslimat", "Dönemsel raporlama"],
+    transparencyNote:
+      "Kriz bölgelerinde destekler saha şartlarına göre güncellenir; public faaliyet kayıtları doğrulanan teslimatlar üzerinden yayınlanır.",
+    cta: { label: "Gazze'ye Destek Ol", href: "/bagis-yap?proje=gazze-acil-yardim" }
+  },
+  {
+    id: "project-qurban-001",
+    slug: "kurban-organizasyonu",
+    title: "Kurban Organizasyonu",
+    category: "Kurban",
+    summary:
+      "Vekalet, kesim ve dağıtım süreçlerini emanet bilinciyle planlayan kurban destek organizasyonu.",
+    description:
+      "Kurban bağışlarının bölge, hisse, vekalet ve dağıtım takibiyle yürütülmesi için hazırlanan proje.",
+    detail:
+      "Kurban Organizasyonu, vekaletlerin kayıt altına alınması, kesim takibi ve ihtiyaç bölgelerinde dağıtım planının şeffaf şekilde yürütülmesine odaklanır.",
+    goal: 900000,
+    raised: 412000,
+    status: "Planlanıyor",
+    location: "Gazze ve çevre ihtiyaç bölgeleri",
+    regionSlug: "gazze",
+    regionName: "Gazze",
+    country: "Filistin",
+    activityCount: 2,
+    startDate: "1 Mayıs 2026",
+    updatedAt: "26 Mayıs 2026",
+    visualTone: "from-mint-green via-soft-blue to-warm-white",
+    tags: ["kurban", "vekalet", "dağıtım", "gazze"],
+    metrics: [
+      { label: "Hedef hisse", value: "300" },
+      { label: "Planlanan bölge", value: "4" },
+      { label: "Hazırlık", value: "Devam ediyor" }
+    ],
+    impactItems: ["Vekalet kaydı", "Kesim organizasyonu", "Dağıtım bildirimi"],
+    scopeItems: ["Hisse planlama", "Vekalet takibi", "Kesim koordinasyonu", "Dağıtım raporu"],
+    transparencyNote:
+      "Kurban süreçleri kayıt ve durum güncellemeleriyle takip edilir; kesin operasyon bilgileri saha doğrulaması sonrası yayınlanır.",
+    cta: { label: "Kurban Bağışı Yap", href: "/kurban" }
   }
 ];

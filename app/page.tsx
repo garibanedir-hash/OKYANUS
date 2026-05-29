@@ -3,6 +3,7 @@ import { HandHeart, ListChecks, ShieldCheck, UsersRound } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { getFeaturedProjects } from "@/lib/data/projectsRepository";
 import { getLatestNews } from "@/lib/data/newsRepository";
+import { projectRegions } from "@/data/projectRegions";
 import { ActivityCard } from "@/components/ActivityCard";
 import { ProjectCard } from "@/components/ProjectCard";
 import { NewsCard } from "@/components/NewsCard";
@@ -14,6 +15,7 @@ import { DonationCTA } from "@/components/sections/DonationCTA";
 import { VolunteerCTA } from "@/components/sections/VolunteerCTA";
 import { TrustSection } from "@/components/sections/TrustSection";
 import { MotionReveal } from "@/components/MotionReveal";
+import { ProjectRegionSection } from "@/components/projects/ProjectRegionSection";
 
 const homeFlow: Array<{ icon: LucideIcon; title: string; text: string }> = [
   { icon: HandHeart, title: "Kimiz?", text: "Emanet bilinciyle çalışan insani yardım derneğiyiz." },
@@ -32,6 +34,23 @@ export default async function HomePage() {
     <>
       <HeroSection />
       <StatsSection />
+
+      {/* ── Çalışma Bölgeleri ── */}
+      <section className="bg-warm-white py-20 sm:py-24">
+        <Container>
+          <MotionReveal>
+            <SectionHeading
+              eyebrow="Nerelerde Çalışıyoruz?"
+              title="Gazze'den Türkiye'ye bölge odaklı insani yardım"
+              description="Gazze, Lübnan, Mısır ve Türkiye hattında ihtiyaç sahiplerine ulaşmak için projeleri bölge, faaliyet ve etki bilgisiyle takip ediyoruz."
+              align="center"
+            />
+          </MotionReveal>
+          <div className="mt-12">
+            <ProjectRegionSection regions={projectRegions} projects={projects} compact />
+          </div>
+        </Container>
+      </section>
 
       {/* ── Nasıl Çalışıyoruz? ── */}
       <section className="bg-white py-20 sm:py-28">
