@@ -104,6 +104,8 @@ Bu checklist 10D makbuz PDF ve private storage altyapısını staging ortamında
 - [ ] Prepared makbuz "Makbuzu Onayla" ile `issued` olur.
 - [ ] `issued_at` ve `issued_by` set edilir.
 - [ ] Issued makbuz yeniden oluşturulacaksa gerekçe zorunludur.
+- [ ] `019_fix_receipt_cancelled_status.sql` staging ortamında uygulandı.
+- [ ] `public.receipts.status` `cancelled` değerini kabul ediyor.
 - [ ] İptal action'ı gerekçe olmadan çalışmaz.
 - [ ] İptal action'ı `status = cancelled`, `cancelled_reason` ve `cancelled_at` yazar.
 - [ ] `cancelled_by` kolonu varsa admin id yazılır; yoksa `metadata.cancelledBy` fallback alanı doludur.

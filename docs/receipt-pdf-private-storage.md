@@ -204,6 +204,8 @@ receipts/2026/RCPT-2026-000001/v3.pdf
 - `cancelled`: Dosya silinmez. Admin/super_admin mevcut PDF'i görebilir, donor download kapalıdır. İptal gerekçesi `cancelled_reason`, iptal zamanı `cancelled_at` alanında saklanır. Ortamda `cancelled_by` kolonu yoksa iptal eden admin bilgisi `metadata.cancelledBy` fallback alanına yazılır.
 - `failed`: PDF üretimi kapalıdır.
 
+`019_fix_receipt_cancelled_status.sql` uygulanmadan eski staging ortamlarında `public.receipts.status` enum'u `cancelled` değerini kabul etmeyebilir. Bu durumda dijital makbuz iptali DB tarafından reddedilir. 019 migration `receipt_status` enum'una `prepared` ve `cancelled` değerlerini güvenli şekilde ekler, varsa status check constraint'ini günceller ve `cancelled_at`, `cancelled_reason`, `cancelled_by` alanlarını hazırlar.
+
 İşlemler audit log'a best-effort yazılır:
 
 - `receipt.pdf.generate`

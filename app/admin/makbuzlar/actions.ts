@@ -28,6 +28,7 @@ type ReceiptActionRow = {
   issued_at: string | null;
   issued_by: string | null;
   cancelled_at: string | null;
+  cancelled_by?: string | null;
   cancelled_reason: string | null;
   updated_at: string | null;
 };
@@ -237,6 +238,7 @@ async function updateReceiptCancelled(input: {
     cancelled_reason: input.reason,
     updated_at: input.now
   };
+  const selectColumnsWithCancelledBy = "id, receipt_no, status, issued_at, issued_by, cancelled_at, cancelled_by, cancelled_reason, updated_at";
   const selectColumns = "id, receipt_no, status, issued_at, issued_by, cancelled_at, cancelled_reason, updated_at";
   const filter = { id: input.receipt.id };
 
@@ -247,7 +249,7 @@ async function updateReceiptCancelled(input: {
       cancelled_by: input.adminUserId
     })
     .eq("id", input.receipt.id)
-    .select(selectColumns)
+    .select(selectColumnsWithCancelledBy)
     .maybeSingle();
 
   if (!withCancelledBy.error || !isMissingColumnError(withCancelledBy.error, "cancelled_by")) {

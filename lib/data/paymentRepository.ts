@@ -79,6 +79,7 @@ type ReceiptRow = {
   issued_by: string | null;
   version: number | null;
   cancelled_reason: string | null;
+  cancelled_by: string | null;
   last_downloaded_at: string | null;
   metadata: Record<string, unknown> | null;
   created_at: string | null;
@@ -224,6 +225,7 @@ const receiptColumns = [
   "issued_by",
   "version",
   "cancelled_reason",
+  "cancelled_by",
   "last_downloaded_at",
   "metadata",
   "created_at",
@@ -334,7 +336,7 @@ function mapPaymentIntent(row: PaymentIntentRow): PaymentIntent {
 
 function mapReceipt(row: ReceiptRow): Receipt {
   const paymentIntent = firstRelation(row.payment_intents);
-  const cancelledBy = typeof row.metadata?.cancelledBy === "string" ? row.metadata.cancelledBy : undefined;
+  const cancelledBy = row.cancelled_by ?? (typeof row.metadata?.cancelledBy === "string" ? row.metadata.cancelledBy : undefined);
 
   return {
     id: row.id,
@@ -374,7 +376,7 @@ function mapReceipt(row: ReceiptRow): Receipt {
 
 function mapReceiptWithPayment(row: ReceiptRow): ReceiptWithPayment {
   const paymentIntent = firstRelation(row.payment_intents);
-  const cancelledBy = typeof row.metadata?.cancelledBy === "string" ? row.metadata.cancelledBy : null;
+  const cancelledBy = row.cancelled_by ?? (typeof row.metadata?.cancelledBy === "string" ? row.metadata.cancelledBy : null);
 
   return {
     id: row.id,
