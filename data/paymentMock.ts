@@ -69,7 +69,9 @@ export type Receipt = {
   status: ReceiptStatus;
   statusLabel: string;
   issuedAt?: string;
+  issuedBy?: string;
   cancelledAt?: string;
+  cancelledReason?: string;
   generatedAt?: string;
   fileBucket?: string;
   filePath?: string;
@@ -397,6 +399,7 @@ export const mockReceipts: Receipt[] = [
     status: "cancelled",
     statusLabel: receiptStatusLabels.cancelled,
     cancelledAt: "2026-05-18T13:00:00.000Z",
+    cancelledReason: "Demo kayıtta ödeme iadesi sonrası makbuz iptal edildi.",
     version: 1,
     hasPdf: false,
     createdAt: "2026-05-18T12:06:00.000Z",

@@ -65,6 +65,10 @@ export type Donation = {
   status: DonationStatus;
   paymentStatus: PaymentStatus;
   receiptStatus: ReceiptStatus;
+  receiptIssuedAt?: string;
+  receiptCancelledAt?: string;
+  receiptCancelledReason?: string;
+  receiptVersion?: number;
   note?: string;
   createdAt: string;
 };

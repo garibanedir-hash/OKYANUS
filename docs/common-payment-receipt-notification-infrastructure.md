@@ -161,3 +161,30 @@ PDF dosyaları `receipts-private` Supabase Storage bucket içinde saklanır. Buc
 Admin PDF hazırlama akışı `app/admin/makbuzlar/actions.ts` içinde server action olarak çalışır. Sadece paid payment intent ilişkili, iptal edilmemiş receipt için PDF üretilebilir. Bu aşamada PDF status `prepared` olur; resmi/mali `issued` onayı sonraki aşamada tasarlanacaktır.
 
 PDF üretim action'ı önce diagnostic/repair çalıştırır. Storage içinde PDF object var ama `receipts.file_path` boşsa dosya indirilip hash ve boyut tekrar hesaplanır, DB metadata onarılır ve admin ekranı `pdf-onarildi` sonucu ile yenilenir. Upload sonrası DB tekrar okunur; `file_path` doğrulanmadan işlem başarılı sayılmaz.
+
+## 10F Makbuz Versioning ve Onay Akışı
+
+10F ile mevcut makbuz PDF dosyasının üzerine yazmadan yeni versiyon üretme akışı eklendi.
+
+- İlk üretim `v1.pdf` olarak yapılır.
+- Yeniden üretim `v2.pdf`, `v3.pdf` şeklinde ilerler.
+- `receipts.file_path` aktif/latest versiyonu gösterir.
+- Eski PDF dosyaları storage içinde korunur.
+- `prepared` makbuzlar admin tarafından `issued` yapılabilir.
+- `issued` makbuz yeniden oluşturulacaksa gerekçe zorunludur.
+- `cancelled` makbuzlarda dosya silinmez; admin/super_admin görüntüleyebilir, donor download kapalıdır.
+- İptal gerekçesi `cancelled_reason` alanında saklanır.
+- Üretim, yeniden üretim, onay, iptal ve download işlemleri audit log'a best-effort yazılır.
+
+## 10F-M Manuel / Fiziksel Makbuz Modülü
+
+10F-M ile online ödeme sonrası oluşan dijital makbuzlardan ayrı bir manuel/fiziksel makbuz modülü eklendi.
+
+- Dijital makbuzlar `receipts` ve `receipts-private` ile çalışmaya devam eder.
+- Manuel/fiziksel makbuzlar `manual_receipts`, `manual_receipt_events` ve `manual-receipts-private` ile ayrı tutulur.
+- Manuel makbuzlar elden/nakit/saha/ofis tahsilatları için kullanılır.
+- A4 yatay yazdırma ve PDF şablonu imza/kaşe alanlarıyla hazırlanır.
+- Bu aşamada manuel makbuzlar otomatik payment intent veya dijital receipt kaydı oluşturmaz.
+- Gelecekte `provider = manual`, muhasebe export, makbuz koçanı ve fiziksel yazıcı entegrasyonları ayrı aşamada bağlanabilir.
+
+Bu modül resmi/mali belge niteliğine yaklaşabileceği için production öncesi seri/sıra kullanımı, iptal politikası, arşivleme süresi ve makbuz metinleri yönetim, mali müşavir ve hukuk danışmanı tarafından onaylanmalıdır.

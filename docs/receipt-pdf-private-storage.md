@@ -184,7 +184,34 @@ Logo embed akışı `public/brand/logo.png` dosyasını server-side okur, PDF'e 
 - `v2.pdf`
 - `v3.pdf`
 
-Bu aşamada admin ekranı dosya yoksa PDF hazırlar. Yeniden oluşturma/iptal/onay politikası sonraki aşamada ayrı action olarak netleştirilecektir.
+10F ile admin ekranı dosya yoksa ilk PDF'i hazırlar, dosya varsa "PDF Yeniden Oluştur" action'ı yeni sürüm üretir. Eski PDF dosyaları silinmez ve üzerine yazılmaz. `receipts.file_path` her zaman aktif/latest versiyon yolunu gösterir.
+
+Örnek:
+
+```text
+receipts/2026/RCPT-2026-000001/v1.pdf
+receipts/2026/RCPT-2026-000001/v2.pdf
+receipts/2026/RCPT-2026-000001/v3.pdf
+```
+
+`receipts.version`, `file_sha256`, `file_size_bytes` ve `generated_at` yeni aktif versiyona göre güncellenir.
+
+## Issued ve Cancel Workflow
+
+- `pending`: Paid ödeme varsa PDF hazırlanabilir.
+- `prepared`: PDF görüntülenebilir, yeniden oluşturulabilir ve "Makbuzu Onayla" ile `issued` yapılabilir.
+- `issued`: PDF görüntülenebilir. Yeniden oluşturma için admin gerekçesi zorunludur; status `issued` kalır.
+- `cancelled`: Dosya silinmez. Admin/super_admin mevcut PDF'i görebilir, donor download kapalıdır. İptal gerekçesi `cancelled_reason` alanında saklanır.
+- `failed`: PDF üretimi kapalıdır.
+
+İşlemler audit log'a best-effort yazılır:
+
+- `receipt.pdf.generate`
+- `receipt.pdf.regenerate`
+- `receipt.issue`
+- `receipt.cancel`
+- `receipt.download.admin`
+- `receipt.download.donor`
 
 ## Diagnostic ve Repair Akışı
 
@@ -251,4 +278,14 @@ Repository snake_case Supabase alanlarını camelCase modele map eder.
 
 ## Sonraki Aşama
 
-Sonraki aşamada gerçek makbuz issued/onay akışı, iptal nedeni, muhasebe entegrasyonu, e-posta ile gönderim, mevcut hazırlanmış PDF'ler için kontrollü yeniden üretim/versioning ve font embed destekli Türkçe karakter/Gilroy iyileştirmesi planlanmalıdır.
+Sonraki aşamada muhasebe entegrasyonu, e-posta ile makbuz gönderimi, mali müşavir onaylı resmi belge statüsü ve KVKK saklama/imha otomasyonu planlanmalıdır.
+
+## Manuel / Fiziksel Makbuzlardan Ayrım
+
+10F-M ile eklenen manuel/fiziksel makbuz modülü bu dijital receipt akışından ayrıdır:
+
+- Dijital makbuzlar online ödeme ve `payment_intents` sonrası `receipts` tablosundan üretilir.
+- Manuel makbuzlar elden/saha/ofis tahsilatı için `manual_receipts` tablosunda tutulur.
+- Manuel makbuz PDF dosyaları `manual-receipts-private` bucket içinde saklanır.
+- İki modülün storage bucket, veri modeli ve admin aksiyonları ayrıdır.
+- Manuel makbuzun resmi belge niteliği, seri/sıra kullanımı ve arşiv politikası production öncesi ayrıca onaylanmalıdır.

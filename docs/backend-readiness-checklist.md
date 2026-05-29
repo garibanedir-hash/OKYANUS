@@ -235,3 +235,16 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Receipt `file_path` public URL olarak kullanılmıyor.
 - [ ] `docs/receipt-pdf-private-storage.md` ve `docs/receipt-manual-test-checklist.md` staging testinde kullanılıyor.
 - [ ] Canlı ödeme, gerçek muhasebe entegrasyonu ve gerçek bildirim gönderimi hala kapalı.
+
+## 10F-M Manuel / Fiziksel Makbuz Kontrolleri
+
+- [ ] `018_manual_physical_receipts.sql` staging ortamında çalıştırıldı.
+- [ ] `manual_receipts` ve `manual_receipt_events` anon/public erişime kapalı.
+- [ ] `manual-receipts-private` bucket public değil.
+- [ ] `/admin/makbuzlar/manuel` liste, filtre ve mock fallback ile açılıyor.
+- [ ] `/admin/makbuzlar/manuel/yeni` server action ile manuel makbuz oluşturuyor.
+- [ ] Detay, düzenleme ve A4 yatay yazdırma önizleme ekranları admin guard altında çalışıyor.
+- [ ] PDF üretimi `manual-receipts/{year}/{receiptNo}/v1.pdf` path standardını kullanıyor.
+- [ ] `/api/manual-receipts/[receiptNo]/download` yalnızca admin/super_admin erişimine açık.
+- [ ] İptal gerekçesi zorunlu ve event/audit log'a yazılıyor.
+- [ ] Manuel makbuzlar dijital `receipts` ve PayTR/payment intent akışını değiştirmiyor.

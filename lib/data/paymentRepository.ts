@@ -127,6 +127,7 @@ export type ReceiptWithPayment = {
   currency: string;
   status: ReceiptStatus;
   issuedAt: string | null;
+  issuedBy: string | null;
   cancelledAt: string | null;
   generatedAt: string | null;
   fileBucket: string | null;
@@ -349,7 +350,9 @@ function mapReceipt(row: ReceiptRow): Receipt {
     status: row.status,
     statusLabel: receiptStatusLabels[row.status],
     issuedAt: row.issued_at ?? undefined,
+    issuedBy: row.issued_by ?? undefined,
     cancelledAt: row.cancelled_at ?? undefined,
+    cancelledReason: row.cancelled_reason ?? undefined,
     generatedAt: row.generated_at ?? undefined,
     fileBucket: row.file_bucket ?? undefined,
     filePath: row.file_path ?? undefined,
@@ -388,6 +391,7 @@ function mapReceiptWithPayment(row: ReceiptRow): ReceiptWithPayment {
     currency: row.currency ?? "TRY",
     status: row.status,
     issuedAt: row.issued_at,
+    issuedBy: row.issued_by,
     cancelledAt: row.cancelled_at,
     generatedAt: row.generated_at,
     fileBucket: row.file_bucket,
@@ -428,7 +432,9 @@ function mockReceiptWithPayment(receiptNo: string): ReceiptWithPayment | null {
     currency: receipt.currency,
     status: receipt.status,
     issuedAt: receipt.issuedAt ?? null,
+    issuedBy: receipt.issuedBy ?? null,
     cancelledAt: receipt.cancelledAt ?? null,
+    cancelledReason: receipt.cancelledReason ?? null,
     generatedAt: receipt.generatedAt ?? null,
     fileBucket: receipt.fileBucket ?? null,
     filePath: receipt.filePath ?? null,
@@ -436,7 +442,6 @@ function mockReceiptWithPayment(receiptNo: string): ReceiptWithPayment | null {
     fileSizeBytes: receipt.fileSizeBytes ?? null,
     fileSha256: receipt.fileSha256 ?? null,
     version: receipt.version ?? 1,
-    cancelledReason: null,
     lastDownloadedAt: null,
     createdAt: receipt.createdAt,
     updatedAt: receipt.updatedAt
@@ -667,7 +672,9 @@ export async function getReceiptByNo(receiptNo: string): Promise<Receipt | null>
     status: receipt.status,
     statusLabel: receiptStatusLabels[receipt.status],
     issuedAt: receipt.issuedAt ?? undefined,
+    issuedBy: receipt.issuedBy ?? undefined,
     cancelledAt: receipt.cancelledAt ?? undefined,
+    cancelledReason: receipt.cancelledReason ?? undefined,
     generatedAt: receipt.generatedAt ?? undefined,
     fileBucket: receipt.fileBucket ?? undefined,
     filePath: receipt.filePath ?? undefined,

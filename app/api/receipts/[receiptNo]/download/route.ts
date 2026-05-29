@@ -91,6 +91,7 @@ export async function GET(_request: Request, context: RouteContext) {
   const viewer = await resolveViewerContext(user.id);
   const allowedAsDonor = Boolean(viewer.accountId && receipt.donorAccountId && viewer.accountId === receipt.donorAccountId);
   if (!viewer.isAdmin && !allowedAsDonor) return textResponse("FORBIDDEN", 403);
+  if (!viewer.isAdmin && receipt.status === "cancelled") return textResponse("Makbuz iptal edilmiş.", 403);
 
   let pdfBuffer: Buffer;
   try {

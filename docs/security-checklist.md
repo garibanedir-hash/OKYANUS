@@ -262,3 +262,26 @@
 - [ ] PDF içinde kart bilgisi, provider raw payload, hash, merchant key/salt, service role key veya IP yok.
 - [ ] PDF üretimi ve download audit log best-effort yazıyor.
 - [ ] Storage bucket private kontrolü Supabase panelden manuel doğrulanıyor.
+
+## 10F Makbuz Versioning ve Workflow Güvenliği
+
+- [ ] PDF yeniden oluşturma eski storage dosyasını silmiyor veya üzerine yazmıyor.
+- [ ] Yeni PDF sürümleri `v1/v2/v3` path standardını izliyor.
+- [ ] `receipts.file_path` yalnızca aktif/latest versiyonu gösteriyor.
+- [ ] `issued` makbuz yeniden oluşturma gerekçesi zorunlu.
+- [ ] `cancelled` makbuz donor download'a kapalı.
+- [ ] Admin/super_admin cancelled makbuzun mevcut dosyasını audit log ile görüntüleyebiliyor.
+- [ ] `receipt.pdf.regenerate`, `receipt.issue` ve `receipt.cancel` audit kayıtları best-effort yazılıyor.
+- [ ] Service role key client tarafına taşınmıyor.
+
+## 10F-M Manuel / Fiziksel Makbuz Güvenliği
+
+- [ ] `manual_receipts` ve `manual_receipt_events` RLS enabled/forced.
+- [ ] Anon/public kullanıcı manuel makbuz kayıtlarını okuyamıyor veya yazamıyor.
+- [ ] Admin/super_admin dışındaki kullanıcılar ilk sürümde manuel makbuz PDF download açamıyor.
+- [ ] `manual-receipts-private` bucket public değil.
+- [ ] Manuel makbuz PDF path'i client tarafında yetki yerine kullanılmıyor.
+- [ ] TCKN/VKN gibi alanlar listede maskeli veya minimum gösteriliyor.
+- [ ] İptal gerekçesi zorunlu, dosya silinmiyor ve event/audit izi korunuyor.
+- [ ] Service role key sadece server-only repository/storage katmanında kullanılıyor.
+- [ ] Manuel makbuz hukuki/mali metinleri production öncesi yönetim, mali müşavir ve hukuk onayından geçiyor.

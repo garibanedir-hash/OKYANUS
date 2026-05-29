@@ -85,11 +85,29 @@ Bu checklist 10D makbuz PDF ve private storage altyapısını staging ortamında
 ## Audit ve Güvenlik
 
 - [ ] PDF üretimi `receipt.pdf.generate` audit kaydı yazıyor.
+- [ ] PDF yeniden oluşturma `receipt.pdf.regenerate` audit kaydı yazıyor.
+- [ ] Makbuz onayı `receipt.issue` audit kaydı yazıyor.
+- [ ] Makbuz iptali `receipt.cancel` audit kaydı yazıyor.
 - [ ] Admin download `receipt.download.admin` audit kaydı yazıyor.
 - [ ] Donor download `receipt.download.donor` audit kaydı yazıyor.
 - [ ] Audit hatası PDF indirmeyi bozmuyor.
 - [ ] PDF içinde kart bilgisi, hash, PayTR key/salt veya raw provider payload yok.
 - [ ] Client HTML içinde storage `file_path` doğrudan yetki olarak kullanılmıyor.
+
+## 10F Versioning ve Workflow Kontrolü
+
+- [ ] File path dolu eski makbuzda "PDF Yeniden Oluştur" v2 üretir.
+- [ ] `receipts.version` yeni aktif versiyon numarasına yükselir.
+- [ ] `receipts.file_path` latest versiyonu gösterir.
+- [ ] Storage içinde eski `v1.pdf` silinmeden kalır.
+- [ ] Yeni `file_sha256`, `file_size_bytes` ve `generated_at` doludur.
+- [ ] Prepared makbuz "Makbuzu Onayla" ile `issued` olur.
+- [ ] `issued_at` ve `issued_by` set edilir.
+- [ ] Issued makbuz yeniden oluşturulacaksa gerekçe zorunludur.
+- [ ] İptal action'ı gerekçe olmadan çalışmaz.
+- [ ] İptal action'ı `status = cancelled`, `cancelled_reason` ve `cancelled_at` yazar.
+- [ ] Cancelled makbuzu donor indiremez.
+- [ ] Cancelled makbuzu admin/super_admin görüntüleyebilir.
 
 ## Genel Testler
 
@@ -100,3 +118,23 @@ Bu checklist 10D makbuz PDF ve private storage altyapısını staging ortamında
 - [ ] `npm run test:supabase` sonucu `Missing table: 0`.
 - [ ] `receipts` protected kalıyor.
 - [ ] Storage bucket private kontrolü manuel tamamlandı.
+
+## 10F-M Manuel / Fiziksel Makbuz Testleri
+
+- [ ] `018_manual_physical_receipts.sql` staging ortamında uygulandı.
+- [ ] `manual_receipts` tablosu var.
+- [ ] `manual_receipt_events` tablosu var.
+- [ ] `manual-receipts-private` bucket var ve public değil.
+- [ ] `/admin/makbuzlar/manuel` admin hesabıyla açılıyor.
+- [ ] Yeni manuel makbuz oluşturuluyor ve `MRC-YYYY-000001` formatında numara alıyor.
+- [ ] Liste filtreleri makbuz no, bağışçı, durum, bağış türü, ödeme yöntemi, tarih ve şube/birim için çalışıyor.
+- [ ] Detay ekranında makbuz bilgileri, bağışçı bilgileri, görevli/onay bilgileri ve event geçmişi görünüyor.
+- [ ] Düzenleme ekranı cancelled/archived kayıtlar için kapalı.
+- [ ] Yazdırma önizlemesi A4 yatay düzende açılıyor.
+- [ ] Yazdırıldı İşaretle `printed_count` ve `last_printed_at` alanlarını güncelliyor.
+- [ ] PDF Oluştur private bucket'a `manual-receipts/{year}/{receiptNo}/v1.pdf` yükler.
+- [ ] PDF metadata `file_bucket`, `file_path`, `file_sha256`, `file_size_bytes`, `generated_at` alanlarını doldurur.
+- [ ] `/api/manual-receipts/[receiptNo]/download` admin ile açılır.
+- [ ] Anon/public kullanıcı manual receipt download için 401/403 alır.
+- [ ] İptal action'ı reason olmadan çalışmaz.
+- [ ] İptal edilen kayıt `cancelled_reason` gösterir ve yeni PDF/yazdırma kapalıdır.

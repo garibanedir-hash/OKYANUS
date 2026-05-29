@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { AdminAuthorizationError, requireAdminUser } from "@/lib/auth/requireAdmin";
 import { logAdminAction } from "@/lib/audit/auditLogger";
+import { asAdminWriteClient, type DbError } from "@/lib/data/adminWriteClient";
 import {
   getSupabaseReceiptWithPayment,
   getSupabaseReceiptWithPaymentById,
@@ -12,10 +13,23 @@ import {
 import { diagnoseReceiptPdfState, toSafeReceiptDiagnosticLog } from "@/lib/receipts/receiptDiagnostics";
 import { buildReceiptPdfData, generateReceiptPdfBuffer } from "@/lib/receipts/receiptPdfGenerator";
 import {
+  getNextReceiptVersion,
   repairReceiptPdfMetadata,
   updateReceiptFileMetadata,
   uploadReceiptPdf
 } from "@/lib/receipts/receiptStorage";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+
+type ReceiptActionRow = {
+  id: string;
+  receipt_no: string;
+  status: string;
+  issued_at: string | null;
+  issued_by: string | null;
+  cancelled_at: string | null;
+  cancelled_reason: string | null;
+  updated_at: string | null;
+};
 
 function redirectWithStatus(durum: string, mesaj?: string) {
   const params = new URLSearchParams({ durum });
@@ -43,8 +57,8 @@ function readFormString(formData: FormData, key: string) {
 
 function readReceiptReference(formData: FormData) {
   return {
-    receiptId: readFormString(formData, "receipt_id"),
-    receiptNo: readFormString(formData, "receipt_no")
+    receiptId: readFormString(formData, "receipt_id") || readFormString(formData, "receiptId"),
+    receiptNo: readFormString(formData, "receipt_no") || readFormString(formData, "receiptNo")
   };
 }
 
@@ -81,6 +95,43 @@ function receiptProjectOrCampaignLabel(receipt: ReceiptWithPayment) {
   }
 
   return null;
+}
+
+function getAdminWriteDb() {
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) {
+    throw new Error("Service role env eksik olduğu için makbuz işlemi tamamlanamadı.");
+  }
+
+  return asAdminWriteClient(supabase);
+}
+
+function friendlyDbActionError(error: DbError | null, fallback: string) {
+  const message = [error?.code, error?.message, error?.details, error?.hint].filter(Boolean).join(" ");
+  if (/permission|42501|row-level|not authorized/i.test(message)) return "Makbuz işlemi için server yetkisi doğrulanamadı.";
+  if (/invalid input value for enum|22P02|check constraint|23514/i.test(message)) return "Makbuz durum etiketi güncellenemedi.";
+  return fallback;
+}
+
+function buildReceiptPdfInput(receipt: ReceiptWithPayment, receiptStatus: ReceiptWithPayment["status"], generatedAt: string) {
+  return buildReceiptPdfData({
+    receiptNo: receipt.receiptNo,
+    paymentIntentNo: receipt.paymentIntentNo,
+    contextType: receipt.contextType,
+    donorName: receipt.donorName ?? receipt.paymentDonorName,
+    donorEmail: receipt.donorEmail ?? receipt.paymentDonorEmail,
+    donorPhone: receipt.paymentDonorPhone,
+    amount: receipt.amount,
+    currency: receipt.currency,
+    receiptStatus,
+    paymentStatus: receipt.paymentIntentStatus,
+    paymentProvider: receipt.paymentProvider,
+    projectOrCampaign: receiptProjectOrCampaignLabel(receipt),
+    issuedAt: receipt.issuedAt,
+    generatedAt,
+    createdAt: receipt.createdAt,
+    description: `${receipt.receiptNo} numaralı makbuz, ${receipt.paymentIntentNo ?? "ödeme kaydı"} için hazırlanmıştır.`
+  });
 }
 
 export async function generateReceiptPdfAction(formData: FormData) {
@@ -150,24 +201,8 @@ export async function generateReceiptPdfAction(formData: FormData) {
         }
 
         const version = receipt.version || 1;
-        const pdfData = buildReceiptPdfData({
-          receiptNo: receipt.receiptNo,
-          paymentIntentNo: receipt.paymentIntentNo,
-          contextType: receipt.contextType,
-          donorName: receipt.donorName ?? receipt.paymentDonorName,
-          donorEmail: receipt.donorEmail ?? receipt.paymentDonorEmail,
-          donorPhone: receipt.paymentDonorPhone,
-          amount: receipt.amount,
-          currency: receipt.currency,
-          receiptStatus: "prepared",
-          paymentStatus: receipt.paymentIntentStatus,
-          paymentProvider: receipt.paymentProvider,
-          projectOrCampaign: receiptProjectOrCampaignLabel(receipt),
-          issuedAt: receipt.issuedAt,
-          generatedAt: new Date().toISOString(),
-          createdAt: receipt.createdAt,
-          description: `${receipt.receiptNo} numaralı makbuz, ${receipt.paymentIntentNo ?? "ödeme kaydı"} için hazırlanmıştır.`
-        });
+        const generatedAt = new Date().toISOString();
+        const pdfData = buildReceiptPdfInput(receipt, "prepared", generatedAt);
         const pdfBuffer = await generateReceiptPdfBuffer(pdfData);
         const fileInfo = await uploadReceiptPdf({
           receiptNo: receipt.receiptNo,
@@ -221,6 +256,239 @@ export async function generateReceiptPdfAction(formData: FormData) {
       }
     }
 
+    if (error instanceof AdminAuthorizationError) {
+      redirectWithStatus("yetkisiz", error.message);
+    }
+
+    redirectWithStatus("hata", friendlyActionError(error));
+  }
+
+  if (outcome) {
+    redirectWithStatus(outcome.durum, outcome.mesaj);
+  }
+}
+
+export async function regenerateReceiptPdfAction(formData: FormData) {
+  let outcome: { durum: string; mesaj?: string } | null = null;
+  let receiptNoForDiagnostics: string | null = null;
+
+  try {
+    const admin = await requireAdminUser();
+    const receiptReference = readReceiptReference(formData);
+    const reason = readFormString(formData, "reason");
+    receiptNoForDiagnostics = receiptReference.receiptNo || null;
+
+    if (!receiptReference.receiptId && !receiptReference.receiptNo) throw new Error("Makbuz kimliği veya numarası zorunludur.");
+
+    const receipt = await getSupabaseReceiptByReference(receiptReference);
+    if (!receipt) throw new Error("Makbuz kaydı bulunamadı.");
+
+    receiptNoForDiagnostics = receipt.receiptNo;
+    if (!receipt.paymentIntentId || !receipt.paymentIntentStatus) throw new Error("Makbuza bağlı ödeme bilgisi okunamadı.");
+    if (receipt.paymentIntentStatus !== "paid") throw new Error("Ödeme tamamlanmadan makbuz PDF'i yeniden oluşturulamaz.");
+    if (!receipt.filePath) throw new Error("İlk PDF oluşturulmadan yeniden oluşturma yapılamaz.");
+    if (receipt.status === "cancelled") throw new Error("İptal edilmiş makbuz için PDF yeniden oluşturulamaz.");
+    if (receipt.status === "failed" || receipt.status === "not_required") throw new Error("Bu makbuz durumu için PDF yeniden oluşturma kapalıdır.");
+    if (receipt.status === "issued" && !reason) throw new Error("Kesilmiş makbuz için yeniden oluşturma gerekçesi zorunludur.");
+
+    await logDiagnostic(receipt.receiptNo, "before_regenerate");
+
+    let nextVersion = await getNextReceiptVersion(receipt);
+    let fileInfo = null;
+    const generatedAt = new Date().toISOString();
+    const nextStatus = receipt.status === "pending" ? "prepared" : receipt.status;
+    const pdfData = buildReceiptPdfInput(receipt, nextStatus, generatedAt);
+    const pdfBuffer = await generateReceiptPdfBuffer(pdfData);
+
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        fileInfo = await uploadReceiptPdf({
+          receiptNo: receipt.receiptNo,
+          version: nextVersion,
+          pdfBuffer,
+          metadata: {
+            generatedBy: admin.user.id,
+            paymentIntentNo: receipt.paymentIntentNo ?? "",
+            regenerationReason: reason || "admin_regenerate"
+          },
+          upsert: false
+        });
+        break;
+      } catch (error) {
+        if (attempt === 0 && error instanceof Error && /zaten oluşturulmuş|already exists|duplicate/i.test(error.message)) {
+          nextVersion += 1;
+          continue;
+        }
+        throw error;
+      }
+    }
+
+    if (!fileInfo) throw new Error("Yeni makbuz PDF versiyonu oluşturulamadı.");
+
+    await updateReceiptFileMetadata(receipt.id, fileInfo, {
+      generatedBy: admin.user.id,
+      generatedAt,
+      status: nextStatus === "issued" ? "issued" : "prepared"
+    });
+
+    const updatedReceipt = await getSupabaseReceiptWithPaymentById(receipt.id);
+    if (!updatedReceipt?.filePath || updatedReceipt.version !== fileInfo.version) {
+      throw new Error("Makbuz PDF yeni versiyonu yüklendi ancak aktif metadata güncellenemedi.");
+    }
+
+    await logAdminAction({
+      actorId: admin.user.id,
+      action: "receipt.pdf.regenerate",
+      entityType: "receipts",
+      entityId: receipt.id,
+      summary: `Makbuz PDF yeniden oluşturuldu: ${receipt.receiptNo}`,
+      metadata: {
+        receiptNo: receipt.receiptNo,
+        previousVersion: receipt.version,
+        version: fileInfo.version,
+        reason: reason || null
+      }
+    });
+
+    await logDiagnostic(receipt.receiptNo, "after_regenerate");
+    revalidateReceiptViews();
+    outcome = { durum: "pdf-yeniden-olusturuldu" };
+  } catch (error) {
+    if (receiptNoForDiagnostics) {
+      try {
+        await logDiagnostic(receiptNoForDiagnostics, "after_failed_regenerate");
+      } catch {
+        // Best-effort diagnostic.
+      }
+    }
+
+    if (error instanceof AdminAuthorizationError) {
+      redirectWithStatus("yetkisiz", error.message);
+    }
+
+    redirectWithStatus("hata", friendlyActionError(error));
+  }
+
+  if (outcome) {
+    redirectWithStatus(outcome.durum, outcome.mesaj);
+  }
+}
+
+export async function markReceiptIssuedAction(formData: FormData) {
+  let outcome: { durum: string; mesaj?: string } | null = null;
+
+  try {
+    const admin = await requireAdminUser();
+    const receiptReference = readReceiptReference(formData);
+    if (!receiptReference.receiptId && !receiptReference.receiptNo) throw new Error("Makbuz kimliği veya numarası zorunludur.");
+
+    const receipt = await getSupabaseReceiptByReference(receiptReference);
+    if (!receipt) throw new Error("Makbuz kaydı bulunamadı.");
+    if (!receipt.filePath) throw new Error("PDF oluşturulmadan makbuz kesildi olarak işaretlenemez.");
+    if (receipt.status === "issued") {
+      revalidateReceiptViews();
+      outcome = { durum: "makbuz-zaten-onayli" };
+    } else {
+      if (receipt.status !== "prepared") throw new Error("Yalnızca hazırlanmış makbuzlar kesildi olarak işaretlenebilir.");
+
+      const now = new Date().toISOString();
+      const db = getAdminWriteDb();
+      const { data, error } = await db
+        .from<ReceiptActionRow>("receipts")
+        .update({
+          status: "issued",
+          issued_at: now,
+          issued_by: admin.user.id,
+          updated_at: now
+        })
+        .eq("id", receipt.id)
+        .select("id, receipt_no, status, issued_at, issued_by, cancelled_at, cancelled_reason, updated_at")
+        .maybeSingle();
+
+      if (error || !data) {
+        throw new Error(friendlyDbActionError(error, "Makbuz kesildi olarak işaretlenemedi."));
+      }
+
+      await logAdminAction({
+        actorId: admin.user.id,
+        action: "receipt.issue",
+        entityType: "receipts",
+        entityId: receipt.id,
+        summary: `Makbuz kesildi olarak işaretlendi: ${receipt.receiptNo}`,
+        metadata: {
+          receiptNo: receipt.receiptNo,
+          version: receipt.version,
+          issuedAt: data.issued_at
+        }
+      });
+
+      revalidateReceiptViews();
+      outcome = { durum: "makbuz-onaylandi" };
+    }
+  } catch (error) {
+    if (error instanceof AdminAuthorizationError) {
+      redirectWithStatus("yetkisiz", error.message);
+    }
+
+    redirectWithStatus("hata", friendlyActionError(error));
+  }
+
+  if (outcome) {
+    redirectWithStatus(outcome.durum, outcome.mesaj);
+  }
+}
+
+export async function cancelReceiptAction(formData: FormData) {
+  let outcome: { durum: string; mesaj?: string } | null = null;
+
+  try {
+    const admin = await requireAdminUser();
+    const receiptReference = readReceiptReference(formData);
+    const reason = readFormString(formData, "reason");
+    if (!receiptReference.receiptId && !receiptReference.receiptNo) throw new Error("Makbuz kimliği veya numarası zorunludur.");
+    if (!reason || reason.length < 5) throw new Error("Makbuz iptali için en az 5 karakterlik gerekçe zorunludur.");
+
+    const receipt = await getSupabaseReceiptByReference(receiptReference);
+    if (!receipt) throw new Error("Makbuz kaydı bulunamadı.");
+    if (receipt.status === "cancelled") {
+      revalidateReceiptViews();
+      outcome = { durum: "makbuz-zaten-iptal" };
+    } else {
+      const now = new Date().toISOString();
+      const db = getAdminWriteDb();
+      const { data, error } = await db
+        .from<ReceiptActionRow>("receipts")
+        .update({
+          status: "cancelled",
+          cancelled_at: now,
+          cancelled_reason: reason,
+          updated_at: now
+        })
+        .eq("id", receipt.id)
+        .select("id, receipt_no, status, issued_at, issued_by, cancelled_at, cancelled_reason, updated_at")
+        .maybeSingle();
+
+      if (error || !data) {
+        throw new Error(friendlyDbActionError(error, "Makbuz iptal edilemedi."));
+      }
+
+      await logAdminAction({
+        actorId: admin.user.id,
+        action: "receipt.cancel",
+        entityType: "receipts",
+        entityId: receipt.id,
+        summary: `Makbuz iptal edildi: ${receipt.receiptNo}`,
+        metadata: {
+          receiptNo: receipt.receiptNo,
+          version: receipt.version,
+          reason
+        }
+      });
+
+      revalidateReceiptViews();
+      outcome = { durum: "makbuz-iptal-edildi" };
+    }
+  } catch (error) {
     if (error instanceof AdminAuthorizationError) {
       redirectWithStatus("yetkisiz", error.message);
     }

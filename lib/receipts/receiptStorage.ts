@@ -151,6 +151,10 @@ export function getReceiptFilePath(receiptNo: string, version: number) {
   return `receipts/${yearFromReceiptNo(receiptNo)}/${safeNo}/v${safeVersion}.pdf`;
 }
 
+export function buildReceiptPdfPath(receiptNo: string, version: number) {
+  return getReceiptFilePath(receiptNo, version);
+}
+
 export function calculateSha256(buffer: Buffer) {
   return crypto.createHash("sha256").update(buffer).digest("hex");
 }
@@ -232,6 +236,36 @@ export async function findReceiptStorageObject(receiptNo: string, expectedPath: 
   }
 
   return null;
+}
+
+export async function listReceiptPdfVersions(receiptNo: string) {
+  await ensureReceiptBucketExists();
+  const safeNo = safeReceiptPathSegment(receiptNo);
+  const prefixPattern = `receipts/${yearFromReceiptNo(receiptNo)}/${safeNo}/v%.pdf`;
+  const { data, error } = await getStorageObjectsClient()
+    .select(storageObjectColumns())
+    .eq("bucket_id", RECEIPT_PRIVATE_BUCKET)
+    .ilike("name", prefixPattern)
+    .order("name", { ascending: true });
+
+  if (error || !data) return [];
+
+  return data
+    .map((object) => ({
+      path: object.name,
+      version: versionFromPath(object.name, 0),
+      updatedAt: object.updated_at,
+      sizeBytes: parseObjectSize(object.metadata)
+    }))
+    .filter((item) => item.version > 0)
+    .sort((a, b) => a.version - b.version);
+}
+
+export async function getNextReceiptVersion(receipt: { receiptNo: string; version?: number | null }) {
+  const currentVersion = receipt.version && receipt.version > 0 ? Math.floor(receipt.version) : 0;
+  const existingVersions = await listReceiptPdfVersions(receipt.receiptNo);
+  const maxStoredVersion = existingVersions.reduce((max, item) => Math.max(max, item.version), 0);
+  return Math.max(currentVersion, maxStoredVersion, 0) + 1;
 }
 
 export async function uploadReceiptPdf({

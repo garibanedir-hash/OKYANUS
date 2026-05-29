@@ -152,6 +152,15 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Makbuz PDF içinde hassas ödeme/provider bilgisi yok.
 - [ ] PDF metni, belge statüsü ve issued/onay süreci yönetim ve mali müşavir tarafından onaylandı.
 - [ ] PDF dosya saklama ve imha politikası KVKK kapsamında tanımlandı.
+- [ ] Makbuz PDF yeniden oluşturma v2/v3 versioning ile eski dosyaları koruyor.
+- [ ] Issued makbuz için yeniden oluşturma gerekçesi zorunlu.
+- [ ] Makbuz iptali gerekçeli ve audit log kayıtlı.
+- [ ] Cancelled makbuz donor download'a kapalı, admin/super_admin erişimi yetki kontrollü.
+- [ ] `018_manual_physical_receipts.sql` staging ortamında çalıştırıldı.
+- [ ] `manual-receipts-private` bucket public değil.
+- [ ] Manuel makbuz liste/oluştur/detay/düzenle/yazdır/PDF download akışları admin hesabıyla test edildi.
+- [ ] Manuel makbuz seri/sıra/koçan kullanımı yönetim ve mali müşavir tarafından onaylandı.
+- [ ] Manuel makbuz iptal, arşiv ve saklama süresi politikası KVKK/hukuk kapsamında onaylandı.
 
 ## Veri Güvenliği ve KVKK
 
