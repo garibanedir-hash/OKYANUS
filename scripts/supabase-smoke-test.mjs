@@ -61,7 +61,16 @@ const publicReadTables = [
   { table: "site_settings" },
   { table: "legal_pages" },
   { table: "qurban_campaigns", okLabel: "public active read" },
-  { table: "sponsorship_programs", okLabel: "public active read" }
+  { table: "sponsorship_programs", okLabel: "public active read" },
+  {
+    table: "project_activities",
+    okLabel: "public completed read",
+    columns: "id,title,status,visibility,activity_date",
+    filters: [
+      { type: "eq", column: "visibility", value: "public" },
+      { type: "eq", column: "status", value: "completed" }
+    ]
+  }
 ];
 const restrictedTables = [
   "donations",
@@ -117,7 +126,8 @@ const restrictedTables = [
   "notification_queue",
   "payment_status_logs",
   "manual_receipts",
-  "manual_receipt_events"
+  "manual_receipt_events",
+  "project_activity_events"
 ];
 
 function isMissingTable(error) {
@@ -128,8 +138,15 @@ function isRlsBlocked(error) {
   return /permission denied|row-level security|not authorized|JWT/i.test(error?.message ?? "");
 }
 
-async function checkTable(supabase, table, expectedPublic, okLabel = "public read") {
-  const { error } = await supabase.from(table).select("*").limit(1);
+async function checkTable(supabase, table, expectedPublic, okLabel = "public read", options = {}) {
+  let query = supabase.from(table).select(options.columns ?? "*").limit(1);
+
+  for (const filter of options.filters ?? []) {
+    if (filter.type === "eq") query = query.eq(filter.column, filter.value);
+    if (filter.type === "in") query = query.in(filter.column, filter.values);
+  }
+
+  const { error } = await query;
 
   if (!error) {
     if (expectedPublic) {
@@ -208,7 +225,7 @@ const summary = {
 };
 
 for (const item of publicReadTables) {
-  summary[await checkTable(supabase, item.table, true, item.okLabel)] += 1;
+  summary[await checkTable(supabase, item.table, true, item.okLabel, item)] += 1;
 }
 
 console.log("Public content kayıt sayıları");
@@ -217,6 +234,7 @@ await reportPublicContentCount(supabase, "news_posts", { eq: { column: "status",
 await reportPublicContentCount(supabase, "reports", { eq: { column: "status", value: "published" } });
 await reportPublicContentCount(supabase, "qurban_campaigns", { eq: { column: "status", value: "active" } });
 await reportPublicContentCount(supabase, "sponsorship_programs", { eq: { column: "status", value: "active" } });
+await reportPublicContentCount(supabase, "project_activities", { eq: { column: "status", value: "completed" } });
 
 for (const table of restrictedTables) {
   summary[await checkTable(supabase, table, false)] += 1;

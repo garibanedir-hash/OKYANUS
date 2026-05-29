@@ -248,3 +248,16 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] `/api/manual-receipts/[receiptNo]/download` yalnızca admin/super_admin erişimine açık.
 - [ ] İptal gerekçesi zorunlu ve event/audit log'a yazılıyor.
 - [ ] Manuel makbuzlar dijital `receipts` ve PayTR/payment intent akışını değiştirmiyor.
+
+## 11A Proje Faaliyetleri Kontrolleri
+
+- [ ] `020_project_activities.sql` staging ortamında çalıştırıldı.
+- [ ] `project_activities` tablosu RLS enabled/forced.
+- [ ] `project_activity_events` anon/public erişime kapalı.
+- [ ] Anon yalnızca `visibility = public` ve `status = completed` faaliyetlerin güvenli kolonlarını okuyabiliyor.
+- [ ] Admin proje listesinde her proje için `Faaliyetler` bağlantısı görünüyor.
+- [ ] `/admin/projeler/[id]/faaliyetler` liste, filtre ve demo fallback ile açılıyor.
+- [ ] Yeni faaliyet oluşturma, düzenleme, tamamlandı işaretleme, public/internal görünürlük, iptal ve arşiv action'ları server-side admin guard ile çalışıyor.
+- [ ] Public proje detay sayfasında yalnızca completed/public faaliyetler görünüyor.
+- [ ] `internal_notes`, `estimated_cost`, `responsible_user_id`, `metadata`, `created_by` ve `updated_by` public mapping'e taşınmıyor.
+- [ ] Smoke test `project_activities: OK - public completed read` ve `project_activity_events: OK - protected` sonucunu veriyor.

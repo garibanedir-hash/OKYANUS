@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { CalendarDays, ClipboardCheck, HandHeart, MapPin, ShieldCheck } from "lucide-react";
 import { projects as fallbackProjects } from "@/data/projects";
 import { formatCurrency } from "@/lib/format";
+import { getPublicProjectActivities } from "@/lib/data/projectActivityRepository";
 import { getProjectBySlug, getProjects } from "@/lib/data/projectsRepository";
 import { Container } from "@/components/ui/Container";
 import { Badge } from "@/components/ui/Badge";
@@ -12,6 +13,7 @@ import { MetricCard } from "@/components/ui/MetricCard";
 import { InfoBlock } from "@/components/ui/InfoBlock";
 import { Timeline } from "@/components/ui/Timeline";
 import { ProjectCard } from "@/components/ProjectCard";
+import { ProjectActivityTimeline } from "@/components/project/ProjectActivityTimeline";
 import { VisualPlaceholder } from "@/components/VisualPlaceholder";
 
 type ProjectPageProps = {
@@ -41,7 +43,10 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   }
 
   const progress = project.goal > 0 ? Math.min(Math.round((project.raised / project.goal) * 100), 100) : 0;
-  const projects = await getProjects();
+  const [projects, activities] = await Promise.all([
+    getProjects(),
+    getPublicProjectActivities(project.id)
+  ]);
   const similar = projects.filter((item) => item.slug !== project.slug && item.category === project.category).slice(0, 3);
   const fallbackSimilar = similar.length ? similar : projects.filter((item) => item.slug !== project.slug).slice(0, 3);
 
@@ -132,6 +137,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               </div>
             </aside>
           </div>
+
+          <ProjectActivityTimeline activities={activities} />
 
           <section className="mt-16">
             <h2 className="text-3xl font-bold text-dark-navy">Benzer projeler</h2>

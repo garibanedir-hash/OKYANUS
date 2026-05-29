@@ -188,3 +188,13 @@ PDF üretim action'ı önce diagnostic/repair çalıştırır. Storage içinde P
 - Gelecekte `provider = manual`, muhasebe export, makbuz koçanı ve fiziksel yazıcı entegrasyonları ayrı aşamada bağlanabilir.
 
 Bu modül resmi/mali belge niteliğine yaklaşabileceği için production öncesi seri/sıra kullanımı, iptal politikası, arşivleme süresi ve makbuz metinleri yönetim, mali müşavir ve hukuk danışmanı tarafından onaylanmalıdır.
+
+## 11A Proje Faaliyetleri ile İlişki
+
+Proje faaliyetleri ödeme/makbuz altyapısından ayrı bir operasyon modülü olarak eklenmiştir.
+
+- `project_activities` proje altında saha, dağıtım, raporlama ve public güncelleme kayıtlarını tutar.
+- Public proje sayfasında yalnızca `visibility = public` ve `status = completed` kayıtlar gösterilir.
+- İç notlar, maliyet, sorumlu kullanıcı id ve metadata public mapping'e taşınmaz.
+- Bu modül payment intent, receipt, PayTR callback veya manuel makbuz tablolarına otomatik kayıt yazmaz.
+- Gelecekte faaliyet kaydı ile harcama, masraf, medya upload ve rapor export ilişkileri ayrı aşamada kurulabilir.

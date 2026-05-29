@@ -285,3 +285,14 @@
 - [ ] İptal gerekçesi zorunlu, dosya silinmiyor ve event/audit izi korunuyor.
 - [ ] Service role key sadece server-only repository/storage katmanında kullanılıyor.
 - [ ] Manuel makbuz hukuki/mali metinleri production öncesi yönetim, mali müşavir ve hukuk onayından geçiyor.
+
+## 11A Proje Faaliyetleri Güvenliği
+
+- [ ] `project_activities` RLS enabled/forced ve anon write kapalı.
+- [ ] `project_activity_events` anon/public erişime kapalı.
+- [ ] Public proje sayfası yalnızca completed/public faaliyetleri gösteriyor.
+- [ ] Public mapping `internal_notes`, maliyet, sorumlu kullanıcı id, metadata ve admin id alanlarını döndürmüyor.
+- [ ] Admin write action'ları `requireAdminUser()` ile korunuyor.
+- [ ] Public görünürlük sadece `status = completed` kayıtlar için açılıyor.
+- [ ] İptal gerekçesi zorunlu ve event/audit izi korunuyor.
+- [ ] Service role key client componentlere veya public route'lara taşınmıyor.

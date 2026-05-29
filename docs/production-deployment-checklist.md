@@ -161,6 +161,11 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Manuel makbuz liste/oluştur/detay/düzenle/yazdır/PDF download akışları admin hesabıyla test edildi.
 - [ ] Manuel makbuz seri/sıra/koçan kullanımı yönetim ve mali müşavir tarafından onaylandı.
 - [ ] Manuel makbuz iptal, arşiv ve saklama süresi politikası KVKK/hukuk kapsamında onaylandı.
+- [ ] `020_project_activities.sql` staging ortamında çalıştırıldı.
+- [ ] Proje faaliyetleri admin ekranlarında oluşturma/düzenleme/durum/görünürlük/iptal/arşiv akışları test edildi.
+- [ ] Public proje detay sayfasında yalnızca `completed/public` faaliyetler yayınlandı.
+- [ ] Internal faaliyetler ve iç notlar public kullanıcıyla görünmüyor.
+- [ ] `project_activities` anon write kapalı, `project_activity_events` protected.
 
 ## Veri Güvenliği ve KVKK
 

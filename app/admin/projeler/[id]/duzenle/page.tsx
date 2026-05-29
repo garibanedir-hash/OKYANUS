@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { AdminFormShell } from "@/components/admin/AdminFormShell";
 import { ProjectForm } from "@/app/admin/projeler/ProjectForm";
 import { getProjectForEdit, updateProjectAction } from "@/app/admin/projeler/actions";
@@ -42,6 +43,9 @@ export default async function EditProjectPage({
             <p className="text-sm font-extrabold text-dark-navy">Arşivleme</p>
             <p className="mt-1 text-sm font-semibold leading-6 text-ink-muted">Silme işlemi yerine durum alanını Arşiv olarak güncelleyin.</p>
           </div>
+          <Link href={`/admin/projeler/${id}/faaliyetler`} className="focus-ring inline-flex min-h-10 items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-extrabold text-deep-blue ring-1 ring-border-soft hover:bg-soft-blue">
+            Bu Projenin Faaliyetleri
+          </Link>
         </>
       }
     >

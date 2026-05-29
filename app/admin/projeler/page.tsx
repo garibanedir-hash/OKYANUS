@@ -93,6 +93,7 @@ export default async function AdminProjectsPage({
                 <div className="flex gap-2">
                   <AdminActionButton href={`/projeler/${project.slug}`}>İncele</AdminActionButton>
                   <AdminActionButton href={`/admin/projeler/${project.id}/duzenle`}>Düzenle</AdminActionButton>
+                  <AdminActionButton href={`/admin/projeler/${project.id}/faaliyetler`}>Faaliyetler</AdminActionButton>
                   <form action={archiveProjectAction}>
                     <input type="hidden" name="id" value={project.id} />
                     <button type="submit" className="focus-ring inline-flex min-h-8 items-center justify-center rounded-md bg-warm-accent/15 px-2.5 py-1 text-[0.72rem] font-extrabold text-dark-navy ring-1 ring-warm-accent/25 transition hover:bg-warm-accent/25">

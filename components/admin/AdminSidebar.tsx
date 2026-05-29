@@ -41,6 +41,7 @@ const navGroups = [
     title: "Operasyon",
     items: [
       { label: "İş Kayıtları & Faaliyetler", href: "/admin/is-kayitlari", icon: TableProperties, badge: "demo" },
+      { label: "Faaliyet Kayıtları", href: "/admin/faaliyet-kayitlari", icon: ClipboardCheck, badge: "yeni" },
       { label: "Görevlendirmeler", href: "/admin/gorevlendirmeler", icon: Route, badge: "demo" },
       { label: "Görevler", href: "/admin/gorevler", icon: CheckSquare },
       { label: "Harcama & Masraf Talepleri", href: "/admin/harcama-masraf", icon: WalletCards, badge: "demo" },
