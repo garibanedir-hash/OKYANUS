@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { AdminPanelNotice } from "@/components/admin/AdminPanelNotice";
 import { ManualReceiptPrintView } from "@/components/admin/manual-receipts/ManualReceiptPrintView";
 import { PrintButton } from "@/components/admin/manual-receipts/PrintButton";
-import { getManualReceiptById } from "@/lib/data/manualReceiptRepository";
+import { getManualReceiptByIdWithSource } from "@/lib/data/manualReceiptRepository";
 import { generateManualReceiptPdfAction, markManualReceiptPrintedAction } from "../../actions";
 
 export const dynamic = "force-dynamic";
@@ -26,10 +26,10 @@ function statusMessage(status?: string, message?: string) {
 
 export default async function ManualReceiptPrintPage({ params, searchParams }: PageProps) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  const receipt = await getManualReceiptById(id);
+  const { data: receipt, source } = await getManualReceiptByIdWithSource(id);
   if (!receipt) notFound();
   const message = statusMessage(query?.durum, query?.mesaj);
-  const canPrint = receipt.status !== "cancelled";
+  const canPrint = source === "supabase" && receipt.status !== "cancelled";
 
   return (
     <div className="grid gap-4">
@@ -100,6 +100,13 @@ export default async function ManualReceiptPrintPage({ params, searchParams }: P
           <div className="mt-4">
             <AdminPanelNotice title="İptal edilmiş makbuz">
               Bu makbuz iptal edildiği için yeni yazdırma kaydı oluşturulamaz. Admin detay ekranından iptal gerekçesi görüntülenebilir.
+            </AdminPanelNotice>
+          </div>
+        ) : null}
+        {source === "demo" ? (
+          <div className="mt-4">
+            <AdminPanelNotice title="Supabase kaydı gerekir">
+              Bu kayıt demo/mock fallback kaydı olduğu için yazdırma kaydı veya PDF üretimi çalıştırılmaz.
             </AdminPanelNotice>
           </div>
         ) : null}

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { AdminFormShell } from "@/components/admin/AdminFormShell";
 import { AdminPanelNotice } from "@/components/admin/AdminPanelNotice";
 import { ManualReceiptForm } from "@/components/admin/manual-receipts/ManualReceiptForm";
-import { getManualReceiptById } from "@/lib/data/manualReceiptRepository";
+import { getManualReceiptByIdWithSource } from "@/lib/data/manualReceiptRepository";
 import { updateManualReceiptAction } from "../../actions";
 
 export const dynamic = "force-dynamic";
@@ -14,10 +14,10 @@ type PageProps = {
 
 export default async function EditManualReceiptPage({ params }: PageProps) {
   const { id } = await params;
-  const receipt = await getManualReceiptById(id);
+  const { data: receipt, source } = await getManualReceiptByIdWithSource(id);
   if (!receipt) notFound();
 
-  const locked = receipt.status === "cancelled" || receipt.status === "archived";
+  const locked = source === "demo" || receipt.status === "cancelled" || receipt.status === "archived";
 
   return (
     <AdminFormShell
@@ -35,8 +35,10 @@ export default async function EditManualReceiptPage({ params }: PageProps) {
       }
     >
       {locked ? (
-        <AdminPanelNotice title="Düzenleme kapalı">
-          Bu manuel makbuz {receipt.statusLabel.toLocaleLowerCase("tr-TR")} durumunda olduğu için düzenlenemez.
+        <AdminPanelNotice title={source === "demo" ? "Supabase kaydı gerekir" : "Düzenleme kapalı"}>
+          {source === "demo"
+            ? "Bu kayıt demo/mock fallback kaydı olduğu için düzenlenemez."
+            : `Bu manuel makbuz ${receipt.statusLabel.toLocaleLowerCase("tr-TR")} durumunda olduğu için düzenlenemez.`}
         </AdminPanelNotice>
       ) : (
         <ManualReceiptForm action={updateManualReceiptAction} receipt={receipt} submitLabel="Manuel Makbuzu Güncelle" />

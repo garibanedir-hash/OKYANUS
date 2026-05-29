@@ -57,10 +57,44 @@ function getDb() {
 
 function friendlyManualReceiptError(error: DbError | null, fallback: string) {
   const message = [error?.code, error?.message, error?.details, error?.hint].filter(Boolean).join(" ");
+  if (/manual_receipts|manual_receipt_events|does not exist|schema cache|PGRST205|42P01/i.test(message)) {
+    return "manual_receipts tablosu bulunamadı. 018_manual_physical_receipts.sql uygulanmalı.";
+  }
   if (/permission|42501|row-level|not authorized/i.test(message)) return "Manuel makbuz işlemi için server yetkisi doğrulanamadı.";
   if (/duplicate|23505/i.test(message)) return "Bu manuel makbuz numarası daha önce oluşturulmuş.";
   if (/check constraint|23514|invalid input|22P02/i.test(message)) return "Manuel makbuz alanları geçerli değil.";
   return fallback;
+}
+
+function safeDbError(error: DbError | null) {
+  if (!error) return null;
+  return {
+    code: error.code ?? null,
+    message: error.message ?? null,
+    details: error.details ?? null,
+    hint: error.hint ?? null
+  };
+}
+
+function logManualReceiptWriteIssue(
+  phase: string,
+  payload: {
+    id?: string;
+    receiptNo?: string | null;
+    operation?: string;
+    filter?: Record<string, string>;
+    error?: DbError | null;
+    note?: string;
+  }
+) {
+  console.error("[manual-receipts:write]", phase, {
+    operation: payload.operation ?? null,
+    id: payload.id ?? null,
+    receiptNo: payload.receiptNo ?? null,
+    filter: payload.filter ?? null,
+    note: payload.note ?? null,
+    error: safeDbError(payload.error ?? null)
+  });
 }
 
 function toRow(input: Partial<ManualReceiptWriteInput>, actorId?: string) {
@@ -142,7 +176,14 @@ export async function createManualReceipt(input: ManualReceiptWriteInput, actorI
     .select(manualReceiptColumns)
     .single();
 
-  if (error || !data) throw new Error(friendlyManualReceiptError(error, "Manuel makbuz oluşturulamadı."));
+  if (error) {
+    logManualReceiptWriteIssue("insert_error", { operation: "createManualReceipt", error });
+    throw new Error(friendlyManualReceiptError(error, "Manuel makbuz oluşturulamadı."));
+  }
+  if (!data) {
+    logManualReceiptWriteIssue("insert_no_row", { operation: "createManualReceipt", note: "insert returned no row" });
+    throw new Error("Manuel makbuz oluşturuldu ancak kayıt geri okunamadı.");
+  }
   const receipt = mapManualReceipt(data);
   await appendManualReceiptEvent({
     manualReceiptId: receipt.id,
@@ -164,7 +205,14 @@ export async function updateManualReceipt(id: string, input: Partial<ManualRecei
     .select(manualReceiptColumns)
     .maybeSingle();
 
-  if (error || !data) throw new Error(friendlyManualReceiptError(error, "Manuel makbuz güncellenemedi."));
+  if (error) {
+    logManualReceiptWriteIssue("update_error", { operation: "updateManualReceipt", id, filter: { id }, error });
+    throw new Error(friendlyManualReceiptError(error, "Manuel makbuz güncellenemedi."));
+  }
+  if (!data) {
+    logManualReceiptWriteIssue("update_no_row", { operation: "updateManualReceipt", id, filter: { id }, note: "update returned no row" });
+    throw new Error("Manuel makbuz kaydı bulunamadı veya güncellenemedi.");
+  }
   const receipt = mapManualReceipt(data);
   await appendManualReceiptEvent({
     manualReceiptId: receipt.id,
@@ -202,7 +250,14 @@ export async function updateManualReceiptStatus(input: {
     .select(manualReceiptColumns)
     .maybeSingle();
 
-  if (error || !data) throw new Error(friendlyManualReceiptError(error, "Manuel makbuz durumu güncellenemedi."));
+  if (error) {
+    logManualReceiptWriteIssue("status_update_error", { operation: input.eventType, id: input.id, filter: { id: input.id }, error });
+    throw new Error(friendlyManualReceiptError(error, "Manuel makbuz durumu güncellenemedi."));
+  }
+  if (!data) {
+    logManualReceiptWriteIssue("status_update_no_row", { operation: input.eventType, id: input.id, filter: { id: input.id }, note: "update returned no row" });
+    throw new Error("Manuel makbuz kaydı bulunamadı veya durumu güncellenemedi.");
+  }
   const receipt = mapManualReceipt(data);
   await appendManualReceiptEvent({
     manualReceiptId: receipt.id,
@@ -248,6 +303,13 @@ export async function updateManualReceiptPdfMetadata(
     .select(manualReceiptColumns)
     .maybeSingle();
 
-  if (error || !data) throw new Error(friendlyManualReceiptError(error, "Manuel makbuz PDF metadata güncellenemedi."));
+  if (error) {
+    logManualReceiptWriteIssue("pdf_metadata_update_error", { operation: "updateManualReceiptPdfMetadata", id, filter: { id }, error });
+    throw new Error(friendlyManualReceiptError(error, "Manuel makbuz PDF metadata güncellenemedi."));
+  }
+  if (!data) {
+    logManualReceiptWriteIssue("pdf_metadata_update_no_row", { operation: "updateManualReceiptPdfMetadata", id, filter: { id }, note: "update returned no row" });
+    throw new Error("Manuel makbuz PDF metadata kaydı bulunamadı veya güncellenemedi.");
+  }
   return mapManualReceipt(data);
 }

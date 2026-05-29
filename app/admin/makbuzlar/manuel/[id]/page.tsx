@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminPanelNotice } from "@/components/admin/AdminPanelNotice";
 import { ManualReceiptStatusBadge } from "@/components/admin/manual-receipts/ManualReceiptStatusBadge";
-import { getManualReceiptById, getManualReceiptEvents } from "@/lib/data/manualReceiptRepository";
+import { getManualReceiptByIdWithSource, getManualReceiptEvents } from "@/lib/data/manualReceiptRepository";
 import { formatDate } from "@/lib/format";
 import {
   archiveManualReceiptAction,
@@ -52,11 +52,11 @@ function statusMessage(status?: string, message?: string) {
 
 export default async function ManualReceiptDetailPage({ params, searchParams }: PageProps) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  const receipt = await getManualReceiptById(id);
+  const { data: receipt, source } = await getManualReceiptByIdWithSource(id);
   if (!receipt) notFound();
   const events = await getManualReceiptEvents(id);
   const message = statusMessage(query?.durum, query?.mesaj);
-  const canMutate = !["cancelled", "archived"].includes(receipt.status);
+  const canMutate = source === "supabase" && !["cancelled", "archived"].includes(receipt.status);
 
   return (
     <div className="grid gap-5">
@@ -89,6 +89,9 @@ export default async function ManualReceiptDetailPage({ params, searchParams }: 
       </div>
 
       {message ? <div className="rounded-lg border border-ocean-green/20 bg-mint-green/35 p-4 text-sm font-bold text-dark-navy">{message}</div> : null}
+      <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
+        {source === "supabase" ? "Supabase manual_receipts" : "Demo/mock fallback"}
+      </div>
 
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="grid gap-4">
@@ -142,7 +145,12 @@ export default async function ManualReceiptDetailPage({ params, searchParams }: 
 
         <aside className="grid gap-3 self-start rounded-lg border border-border-soft bg-white p-4 shadow-sm">
           <h2 className="font-black text-dark-navy">İşlemler</h2>
-          {receipt.status === "draft" ? (
+          {source === "demo" ? (
+            <AdminPanelNotice title="Supabase kaydı gerekir">
+              Bu kayıt demo/mock fallback kaydı olduğu için oluşturma, güncelleme, yazdırma, PDF ve iptal aksiyonları çalıştırılmaz.
+            </AdminPanelNotice>
+          ) : null}
+          {source === "supabase" && receipt.status === "draft" ? (
             <form action={markManualReceiptPreparedAction}>
               <HiddenId id={receipt.id} />
               <button type="submit" className="focus-ring w-full rounded-md bg-ocean-green px-3 py-2 text-sm font-extrabold text-white">
@@ -150,7 +158,7 @@ export default async function ManualReceiptDetailPage({ params, searchParams }: 
               </button>
             </form>
           ) : null}
-          {!receipt.filePath && receipt.status !== "cancelled" ? (
+          {source === "supabase" && !receipt.filePath && receipt.status !== "cancelled" ? (
             <form action={generateManualReceiptPdfAction}>
               <HiddenId id={receipt.id} />
               <button type="submit" className="focus-ring w-full rounded-md border border-border-soft px-3 py-2 text-sm font-extrabold text-deep-blue">
@@ -167,7 +175,7 @@ export default async function ManualReceiptDetailPage({ params, searchParams }: 
               </button>
             </form>
           ) : null}
-          {receipt.status !== "cancelled" && receipt.status !== "archived" ? (
+          {source === "supabase" && receipt.status !== "cancelled" && receipt.status !== "archived" ? (
             <form action={archiveManualReceiptAction}>
               <HiddenId id={receipt.id} />
               <button type="submit" className="focus-ring w-full rounded-md border border-border-soft px-3 py-2 text-sm font-extrabold text-deep-blue">

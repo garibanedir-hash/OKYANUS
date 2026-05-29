@@ -24,8 +24,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 const inputClassName = "focus-ring mt-2 w-full rounded-lg border border-border-soft px-3 py-2 text-sm text-dark-navy";
 
 function dateTimeLocal(value?: string) {
-  if (!value) return "";
-  const date = new Date(value);
+  const date = value ? new Date(value) : new Date();
   if (Number.isNaN(date.valueOf())) return "";
   return date.toISOString().slice(0, 16);
 }

@@ -15,6 +15,7 @@ import {
   type ManualReceiptStatus
 } from "@/data/manualReceiptMock";
 import { asAdminWriteClient } from "@/lib/data/adminWriteClient";
+import type { RepositoryResult } from "@/lib/data/readOnlySupabase";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export type ManualReceiptRow = {
@@ -240,22 +241,45 @@ function getAdminDb() {
   return asAdminWriteClient(supabase);
 }
 
-export async function getAdminManualReceipts() {
+function logManualReceiptReadFallback(scope: string, error?: { code?: string; message?: string; details?: string; hint?: string } | null) {
+  console.warn("[manual-receipts:read]", "fallback_to_demo", {
+    scope,
+    code: error?.code ?? null,
+    message: error?.message ?? null,
+    details: error?.details ?? null,
+    hint: error?.hint ?? null
+  });
+}
+
+function isMissingManualReceiptTableError(error?: { code?: string; message?: string; details?: string; hint?: string } | null) {
+  const message = [error?.code, error?.message, error?.details, error?.hint].filter(Boolean).join(" ");
+  return /manual_receipts|does not exist|schema cache|PGRST205|42P01/i.test(message);
+}
+
+export async function getAdminManualReceiptsWithSource(): Promise<RepositoryResult<ManualReceipt[]>> {
   const db = getAdminDb();
-  if (!db) return mockManualReceipts;
+  if (!db) return { data: mockManualReceipts, source: "demo" };
 
   const { data, error } = await db
     .from<ManualReceiptRow>("manual_receipts")
     .select(manualReceiptColumns)
     .order("receipt_date", { ascending: false });
 
-  if (error || !data) return mockManualReceipts;
-  return data.map((row) => mapManualReceipt(row));
+  if (error || !data) {
+    logManualReceiptReadFallback("admin_list", error);
+    return { data: mockManualReceipts, source: "demo" };
+  }
+  return { data: data.map((row) => mapManualReceipt(row)), source: "supabase" };
 }
 
-export async function getManualReceiptById(id: string) {
+export async function getAdminManualReceipts() {
+  const result = await getAdminManualReceiptsWithSource();
+  return result.data;
+}
+
+export async function getManualReceiptByIdWithSource(id: string): Promise<RepositoryResult<ManualReceipt | null>> {
   const db = getAdminDb();
-  if (!db) return mockManualReceipts.find((receipt) => receipt.id === id) ?? null;
+  if (!db) return { data: mockManualReceipts.find((receipt) => receipt.id === id) ?? null, source: "demo" };
 
   const { data, error } = await db
     .from<ManualReceiptRow>("manual_receipts")
@@ -263,7 +287,37 @@ export async function getManualReceiptById(id: string) {
     .eq("id", id)
     .maybeSingle();
 
-  if (error || !data) return mockManualReceipts.find((receipt) => receipt.id === id) ?? null;
+  if (error) {
+    logManualReceiptReadFallback("detail_by_id", error);
+    return { data: mockManualReceipts.find((receipt) => receipt.id === id) ?? null, source: "demo" };
+  }
+
+  if (!data) return { data: null, source: "supabase" };
+  return { data: mapManualReceipt(data), source: "supabase" };
+}
+
+export async function getManualReceiptById(id: string) {
+  const result = await getManualReceiptByIdWithSource(id);
+  return result.data;
+}
+
+export async function getSupabaseManualReceiptById(id: string) {
+  const db = getAdminDb();
+  if (!db) return null;
+  const { data, error } = await db
+    .from<ManualReceiptRow>("manual_receipts")
+    .select(manualReceiptColumns)
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) {
+    logManualReceiptReadFallback("supabase_by_id", error);
+    if (isMissingManualReceiptTableError(error)) {
+      throw new Error("manual_receipts tablosu bulunamadı. 018_manual_physical_receipts.sql uygulanmalı.");
+    }
+    return null;
+  }
+  if (!data) return null;
   return mapManualReceipt(data);
 }
 

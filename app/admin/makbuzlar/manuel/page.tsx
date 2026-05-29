@@ -9,7 +9,7 @@ import {
   manualReceiptPaymentMethodLabels,
   manualReceiptStatusLabels
 } from "@/data/manualReceiptMock";
-import { getAdminManualReceipts } from "@/lib/data/manualReceiptRepository";
+import { getAdminManualReceiptsWithSource } from "@/lib/data/manualReceiptRepository";
 import { formatDate } from "@/lib/format";
 import { cancelManualReceiptAction, generateManualReceiptPdfAction } from "./actions";
 
@@ -60,7 +60,7 @@ function HiddenId({ id }: { id: string }) {
 
 export default async function AdminManualReceiptsPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const receipts = await getAdminManualReceipts();
+  const { data: receipts, source } = await getAdminManualReceiptsWithSource();
   const filtered = receipts.filter((receipt) => {
     const receiptMatch = !params?.receipt_no || receipt.receiptNo.toLocaleLowerCase("tr-TR").includes(params.receipt_no.toLocaleLowerCase("tr-TR"));
     const donorMatch = !params?.donor || receipt.donorName.toLocaleLowerCase("tr-TR").includes(params.donor.toLocaleLowerCase("tr-TR"));
@@ -84,6 +84,9 @@ export default async function AdminManualReceiptsPage({ searchParams }: PageProp
         actionHref="/admin/makbuzlar/manuel/yeni"
       />
       {message ? <div className="rounded-lg border border-ocean-green/20 bg-mint-green/35 p-4 text-sm font-bold text-dark-navy">{message}</div> : null}
+      <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
+        {source === "supabase" ? "Supabase manual_receipts" : "Demo/mock fallback"}
+      </div>
 
       <form>
         <AdminFilterBar>
@@ -187,7 +190,11 @@ export default async function AdminManualReceiptsPage({ searchParams }: PageProp
                 <Link href={`/admin/makbuzlar/manuel/${receipt.id}/yazdir`} className="focus-ring rounded-md bg-deep-blue px-2.5 py-1 text-[0.72rem] font-extrabold text-white">
                   Yazdır
                 </Link>
-                {receipt.filePath ? (
+                {source === "demo" ? (
+                  <button type="button" disabled className="inline-flex rounded-md border border-border-soft bg-soft-gray px-2.5 py-1 text-[0.72rem] font-extrabold text-ink-muted">
+                    Supabase kaydı gerekir
+                  </button>
+                ) : receipt.filePath ? (
                   <a href={`/api/manual-receipts/${receipt.receiptNo}/download`} className="focus-ring rounded-md bg-ocean-green px-2.5 py-1 text-[0.72rem] font-extrabold text-white">
                     PDF
                   </a>
@@ -199,7 +206,7 @@ export default async function AdminManualReceiptsPage({ searchParams }: PageProp
                     </button>
                   </form>
                 ) : null}
-                {receipt.status !== "cancelled" ? (
+                {source === "supabase" && receipt.status !== "cancelled" ? (
                   <form action={cancelManualReceiptAction} className="flex gap-1">
                     <HiddenId id={receipt.id} />
                     <input name="reason" required minLength={5} placeholder="İptal gerekçesi" className="h-7 w-28 rounded border border-border-soft px-2 text-[0.7rem]" />

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { redirect } from "next/navigation";
 import { AdminAuthorizationError, requireAdminUser } from "@/lib/auth/requireAdmin";
 import { logAdminAction } from "@/lib/audit/auditLogger";
@@ -62,6 +63,30 @@ function readReceiptReference(formData: FormData) {
   };
 }
 
+function formDataKeys(formData: FormData) {
+  return Array.from(new Set(Array.from(formData.keys()).map((key) => String(key)))).sort();
+}
+
+function logReceiptActionStart(
+  action: string,
+  formData: FormData,
+  input: {
+    adminRole?: string | null;
+    receiptId?: string | null;
+    receiptNo?: string | null;
+    reasonProvided?: boolean;
+  }
+) {
+  console.info("[receipt-action]", "start", {
+    action,
+    receiptId: input.receiptId ?? null,
+    receiptNo: input.receiptNo ?? null,
+    adminRole: input.adminRole ?? null,
+    reasonProvided: input.reasonProvided ?? null,
+    formKeys: formDataKeys(formData)
+  });
+}
+
 async function getSupabaseReceiptByReference(reference: { receiptId: string; receiptNo: string }): Promise<ReceiptWithPayment | null> {
   if (reference.receiptId) {
     const receipt = await getSupabaseReceiptWithPaymentById(reference.receiptId);
@@ -113,6 +138,37 @@ function friendlyDbActionError(error: DbError | null, fallback: string) {
   return fallback;
 }
 
+function safeDbError(error: DbError | null) {
+  if (!error) return null;
+  return {
+    code: error.code ?? null,
+    message: error.message ?? null,
+    details: error.details ?? null,
+    hint: error.hint ?? null
+  };
+}
+
+function logReceiptDbActionIssue(
+  phase: string,
+  payload: {
+    action: string;
+    receiptId?: string;
+    receiptNo?: string | null;
+    filter?: Record<string, string>;
+    error?: DbError | null;
+    note?: string;
+  }
+) {
+  console.error("[receipt-action:db]", phase, {
+    action: payload.action,
+    receiptId: payload.receiptId ?? null,
+    receiptNo: payload.receiptNo ?? null,
+    filter: payload.filter ?? null,
+    note: payload.note ?? null,
+    error: safeDbError(payload.error ?? null)
+  });
+}
+
 function buildReceiptPdfInput(receipt: ReceiptWithPayment, receiptStatus: ReceiptWithPayment["status"], generatedAt: string) {
   return buildReceiptPdfData({
     receiptNo: receipt.receiptNo,
@@ -142,6 +198,11 @@ export async function generateReceiptPdfAction(formData: FormData) {
   try {
     const admin = await requireAdminUser();
     const receiptReference = readReceiptReference(formData);
+    logReceiptActionStart("generateReceiptPdfAction", formData, {
+      adminRole: admin.role,
+      receiptId: receiptReference.receiptId || null,
+      receiptNo: receiptReference.receiptNo || null
+    });
     receiptNoForDiagnostics = receiptReference.receiptNo || null;
     if (!receiptReference.receiptId && !receiptReference.receiptNo) throw new Error("Makbuz kimliği veya numarası zorunludur.");
 
@@ -248,6 +309,7 @@ export async function generateReceiptPdfAction(formData: FormData) {
       }
     }
   } catch (error) {
+    if (isRedirectError(error)) throw error;
     if (uploadedFilePath) {
       try {
         if (receiptNoForDiagnostics) await logDiagnostic(receiptNoForDiagnostics, "after_failed_upload_or_update");
@@ -276,6 +338,12 @@ export async function regenerateReceiptPdfAction(formData: FormData) {
     const admin = await requireAdminUser();
     const receiptReference = readReceiptReference(formData);
     const reason = readFormString(formData, "reason");
+    logReceiptActionStart("regenerateReceiptPdfAction", formData, {
+      adminRole: admin.role,
+      receiptId: receiptReference.receiptId || null,
+      receiptNo: receiptReference.receiptNo || null,
+      reasonProvided: Boolean(reason)
+    });
     receiptNoForDiagnostics = receiptReference.receiptNo || null;
 
     if (!receiptReference.receiptId && !receiptReference.receiptNo) throw new Error("Makbuz kimliği veya numarası zorunludur.");
@@ -354,6 +422,7 @@ export async function regenerateReceiptPdfAction(formData: FormData) {
     revalidateReceiptViews();
     outcome = { durum: "pdf-yeniden-olusturuldu" };
   } catch (error) {
+    if (isRedirectError(error)) throw error;
     if (receiptNoForDiagnostics) {
       try {
         await logDiagnostic(receiptNoForDiagnostics, "after_failed_regenerate");
@@ -380,6 +449,11 @@ export async function markReceiptIssuedAction(formData: FormData) {
   try {
     const admin = await requireAdminUser();
     const receiptReference = readReceiptReference(formData);
+    logReceiptActionStart("markReceiptIssuedAction", formData, {
+      adminRole: admin.role,
+      receiptId: receiptReference.receiptId || null,
+      receiptNo: receiptReference.receiptNo || null
+    });
     if (!receiptReference.receiptId && !receiptReference.receiptNo) throw new Error("Makbuz kimliği veya numarası zorunludur.");
 
     const receipt = await getSupabaseReceiptByReference(receiptReference);
@@ -405,8 +479,25 @@ export async function markReceiptIssuedAction(formData: FormData) {
         .select("id, receipt_no, status, issued_at, issued_by, cancelled_at, cancelled_reason, updated_at")
         .maybeSingle();
 
-      if (error || !data) {
+      if (error) {
+        logReceiptDbActionIssue("issue_update_error", {
+          action: "markReceiptIssuedAction",
+          receiptId: receipt.id,
+          receiptNo: receipt.receiptNo,
+          filter: { id: receipt.id },
+          error
+        });
         throw new Error(friendlyDbActionError(error, "Makbuz kesildi olarak işaretlenemedi."));
+      }
+      if (!data) {
+        logReceiptDbActionIssue("issue_update_no_row", {
+          action: "markReceiptIssuedAction",
+          receiptId: receipt.id,
+          receiptNo: receipt.receiptNo,
+          filter: { id: receipt.id },
+          note: "update returned no row"
+        });
+        throw new Error("Makbuz kaydı bulunamadı veya kesildi olarak işaretlenemedi.");
       }
 
       await logAdminAction({
@@ -426,6 +517,7 @@ export async function markReceiptIssuedAction(formData: FormData) {
       outcome = { durum: "makbuz-onaylandi" };
     }
   } catch (error) {
+    if (isRedirectError(error)) throw error;
     if (error instanceof AdminAuthorizationError) {
       redirectWithStatus("yetkisiz", error.message);
     }
@@ -445,6 +537,12 @@ export async function cancelReceiptAction(formData: FormData) {
     const admin = await requireAdminUser();
     const receiptReference = readReceiptReference(formData);
     const reason = readFormString(formData, "reason");
+    logReceiptActionStart("cancelReceiptAction", formData, {
+      adminRole: admin.role,
+      receiptId: receiptReference.receiptId || null,
+      receiptNo: receiptReference.receiptNo || null,
+      reasonProvided: Boolean(reason)
+    });
     if (!receiptReference.receiptId && !receiptReference.receiptNo) throw new Error("Makbuz kimliği veya numarası zorunludur.");
     if (!reason || reason.length < 5) throw new Error("Makbuz iptali için en az 5 karakterlik gerekçe zorunludur.");
 
@@ -468,8 +566,25 @@ export async function cancelReceiptAction(formData: FormData) {
         .select("id, receipt_no, status, issued_at, issued_by, cancelled_at, cancelled_reason, updated_at")
         .maybeSingle();
 
-      if (error || !data) {
+      if (error) {
+        logReceiptDbActionIssue("cancel_update_error", {
+          action: "cancelReceiptAction",
+          receiptId: receipt.id,
+          receiptNo: receipt.receiptNo,
+          filter: { id: receipt.id },
+          error
+        });
         throw new Error(friendlyDbActionError(error, "Makbuz iptal edilemedi."));
+      }
+      if (!data) {
+        logReceiptDbActionIssue("cancel_update_no_row", {
+          action: "cancelReceiptAction",
+          receiptId: receipt.id,
+          receiptNo: receipt.receiptNo,
+          filter: { id: receipt.id },
+          note: "update returned no row"
+        });
+        throw new Error("Makbuz kaydı bulunamadı veya iptal edilemedi.");
       }
 
       await logAdminAction({
@@ -489,6 +604,7 @@ export async function cancelReceiptAction(formData: FormData) {
       outcome = { durum: "makbuz-iptal-edildi" };
     }
   } catch (error) {
+    if (isRedirectError(error)) throw error;
     if (error instanceof AdminAuthorizationError) {
       redirectWithStatus("yetkisiz", error.message);
     }
