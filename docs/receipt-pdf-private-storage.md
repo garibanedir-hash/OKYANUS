@@ -201,7 +201,7 @@ receipts/2026/RCPT-2026-000001/v3.pdf
 - `pending`: Paid ödeme varsa PDF hazırlanabilir.
 - `prepared`: PDF görüntülenebilir, yeniden oluşturulabilir ve "Makbuzu Onayla" ile `issued` yapılabilir.
 - `issued`: PDF görüntülenebilir. Yeniden oluşturma için admin gerekçesi zorunludur; status `issued` kalır.
-- `cancelled`: Dosya silinmez. Admin/super_admin mevcut PDF'i görebilir, donor download kapalıdır. İptal gerekçesi `cancelled_reason` alanında saklanır.
+- `cancelled`: Dosya silinmez. Admin/super_admin mevcut PDF'i görebilir, donor download kapalıdır. İptal gerekçesi `cancelled_reason`, iptal zamanı `cancelled_at` alanında saklanır. Ortamda `cancelled_by` kolonu yoksa iptal eden admin bilgisi `metadata.cancelledBy` fallback alanına yazılır.
 - `failed`: PDF üretimi kapalıdır.
 
 İşlemler audit log'a best-effort yazılır:

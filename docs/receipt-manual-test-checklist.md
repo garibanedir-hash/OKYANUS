@@ -106,6 +106,7 @@ Bu checklist 10D makbuz PDF ve private storage altyapısını staging ortamında
 - [ ] Issued makbuz yeniden oluşturulacaksa gerekçe zorunludur.
 - [ ] İptal action'ı gerekçe olmadan çalışmaz.
 - [ ] İptal action'ı `status = cancelled`, `cancelled_reason` ve `cancelled_at` yazar.
+- [ ] `cancelled_by` kolonu varsa admin id yazılır; yoksa `metadata.cancelledBy` fallback alanı doludur.
 - [ ] Cancelled makbuzu donor indiremez.
 - [ ] Cancelled makbuzu admin/super_admin görüntüleyebilir.
 

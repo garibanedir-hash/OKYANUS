@@ -32,6 +32,12 @@ type ReceiptActionRow = {
   updated_at: string | null;
 };
 
+type ReceiptMetadataRow = {
+  metadata: Record<string, unknown> | null;
+};
+
+const CANCELLABLE_RECEIPT_STATUSES = ["pending", "prepared", "issued"];
+
 function redirectWithStatus(durum: string, mesaj?: string) {
   const params = new URLSearchParams({ durum });
   if (mesaj) params.set("mesaj", mesaj);
@@ -48,7 +54,7 @@ function revalidateReceiptViews() {
 
 function friendlyActionError(error: unknown) {
   if (error instanceof Error && error.message) return error.message;
-  return "Makbuz PDF işlemi tamamlanamadı.";
+  return "Makbuz işlemi tamamlanamadı.";
 }
 
 function readFormString(formData: FormData, key: string) {
@@ -71,6 +77,7 @@ function logReceiptActionStart(
   action: string,
   formData: FormData,
   input: {
+    adminUserId?: string | null;
     adminRole?: string | null;
     receiptId?: string | null;
     receiptNo?: string | null;
@@ -81,6 +88,7 @@ function logReceiptActionStart(
     action,
     receiptId: input.receiptId ?? null,
     receiptNo: input.receiptNo ?? null,
+    adminUserId: input.adminUserId ?? null,
     adminRole: input.adminRole ?? null,
     reasonProvided: input.reasonProvided ?? null,
     formKeys: formDataKeys(formData)
@@ -134,8 +142,13 @@ function getAdminWriteDb() {
 function friendlyDbActionError(error: DbError | null, fallback: string) {
   const message = [error?.code, error?.message, error?.details, error?.hint].filter(Boolean).join(" ");
   if (/permission|42501|row-level|not authorized/i.test(message)) return "Makbuz işlemi için server yetkisi doğrulanamadı.";
-  if (/invalid input value for enum|22P02|check constraint|23514/i.test(message)) return "Makbuz durum etiketi güncellenemedi.";
+  if (/invalid input value for enum|22P02|check constraint|23514/i.test(message)) return "Makbuz durum değeri veritabanı tarafından kabul edilmedi. Receipt status enum/policy kontrol edilmeli.";
   return fallback;
+}
+
+function isMissingColumnError(error: DbError | null, columnName: string) {
+  const message = [error?.code, error?.message, error?.details, error?.hint].filter(Boolean).join(" ");
+  return new RegExp(`${columnName}|column .* does not exist|schema cache|PGRST204|42703`, "i").test(message);
 }
 
 function safeDbError(error: DbError | null) {
@@ -188,6 +201,85 @@ function buildReceiptPdfInput(receipt: ReceiptWithPayment, receiptStatus: Receip
     createdAt: receipt.createdAt,
     description: `${receipt.receiptNo} numaralı makbuz, ${receipt.paymentIntentNo ?? "ödeme kaydı"} için hazırlanmıştır.`
   });
+}
+
+async function readReceiptMetadataForCancel(receiptId: string) {
+  const db = getAdminWriteDb();
+  const { data, error } = await db
+    .from<ReceiptMetadataRow>("receipts")
+    .select("metadata")
+    .eq("id", receiptId)
+    .maybeSingle();
+
+  if (error) {
+    logReceiptDbActionIssue("cancel_metadata_read_error", {
+      action: "cancelReceiptAction",
+      receiptId,
+      filter: { id: receiptId },
+      error
+    });
+    return {};
+  }
+
+  return data?.metadata ?? {};
+}
+
+async function updateReceiptCancelled(input: {
+  receipt: ReceiptWithPayment;
+  adminUserId: string;
+  reason: string;
+  now: string;
+}) {
+  const db = getAdminWriteDb();
+  const basePayload: Record<string, unknown> = {
+    status: "cancelled",
+    cancelled_at: input.now,
+    cancelled_reason: input.reason,
+    updated_at: input.now
+  };
+  const selectColumns = "id, receipt_no, status, issued_at, issued_by, cancelled_at, cancelled_reason, updated_at";
+  const filter = { id: input.receipt.id };
+
+  const withCancelledBy = await db
+    .from<ReceiptActionRow>("receipts")
+    .update({
+      ...basePayload,
+      cancelled_by: input.adminUserId
+    })
+    .eq("id", input.receipt.id)
+    .select(selectColumns)
+    .maybeSingle();
+
+  if (!withCancelledBy.error || !isMissingColumnError(withCancelledBy.error, "cancelled_by")) {
+    return withCancelledBy;
+  }
+
+  logReceiptDbActionIssue("cancelled_by_column_missing_fallback", {
+    action: "cancelReceiptAction",
+    receiptId: input.receipt.id,
+    receiptNo: input.receipt.receiptNo,
+    filter,
+    error: withCancelledBy.error,
+    note: "cancelled_by column missing; writing cancellation actor into metadata"
+  });
+
+  const existingMetadata = await readReceiptMetadataForCancel(input.receipt.id);
+  const metadata = {
+    ...existingMetadata,
+    cancelledAt: input.now,
+    cancelledBy: input.adminUserId,
+    cancelledReason: input.reason
+  };
+
+  return db
+    .from<ReceiptActionRow>("receipts")
+    .update({
+      ...basePayload,
+      metadata
+    })
+    .eq("id", input.receipt.id)
+    .select(selectColumns)
+    .maybeSingle();
 }
 
 export async function generateReceiptPdfAction(formData: FormData) {
@@ -538,13 +630,15 @@ export async function cancelReceiptAction(formData: FormData) {
     const receiptReference = readReceiptReference(formData);
     const reason = readFormString(formData, "reason");
     logReceiptActionStart("cancelReceiptAction", formData, {
+      adminUserId: admin.user.id,
       adminRole: admin.role,
       receiptId: receiptReference.receiptId || null,
       receiptNo: receiptReference.receiptNo || null,
       reasonProvided: Boolean(reason)
     });
     if (!receiptReference.receiptId && !receiptReference.receiptNo) throw new Error("Makbuz kimliği veya numarası zorunludur.");
-    if (!reason || reason.length < 5) throw new Error("Makbuz iptali için en az 5 karakterlik gerekçe zorunludur.");
+    if (!reason) throw new Error("İptal gerekçesi zorunludur.");
+    if (reason.length < 5) throw new Error("İptal gerekçesi en az 5 karakter olmalıdır.");
 
     const receipt = await getSupabaseReceiptByReference(receiptReference);
     if (!receipt) throw new Error("Makbuz kaydı bulunamadı.");
@@ -552,19 +646,16 @@ export async function cancelReceiptAction(formData: FormData) {
       revalidateReceiptViews();
       outcome = { durum: "makbuz-zaten-iptal" };
     } else {
+      if (!CANCELLABLE_RECEIPT_STATUSES.includes(receipt.status)) {
+        throw new Error("Yalnızca bekleyen, hazırlanmış veya kesilmiş makbuzlar iptal edilebilir.");
+      }
       const now = new Date().toISOString();
-      const db = getAdminWriteDb();
-      const { data, error } = await db
-        .from<ReceiptActionRow>("receipts")
-        .update({
-          status: "cancelled",
-          cancelled_at: now,
-          cancelled_reason: reason,
-          updated_at: now
-        })
-        .eq("id", receipt.id)
-        .select("id, receipt_no, status, issued_at, issued_by, cancelled_at, cancelled_reason, updated_at")
-        .maybeSingle();
+      const { data, error } = await updateReceiptCancelled({
+        receipt,
+        adminUserId: admin.user.id,
+        reason,
+        now
+      });
 
       if (error) {
         logReceiptDbActionIssue("cancel_update_error", {
@@ -586,19 +677,40 @@ export async function cancelReceiptAction(formData: FormData) {
         });
         throw new Error("Makbuz kaydı bulunamadı veya iptal edilemedi.");
       }
-
-      await logAdminAction({
-        actorId: admin.user.id,
-        action: "receipt.cancel",
-        entityType: "receipts",
-        entityId: receipt.id,
-        summary: `Makbuz iptal edildi: ${receipt.receiptNo}`,
-        metadata: {
+      if (data.status !== "cancelled") {
+        logReceiptDbActionIssue("cancel_update_verification_failed", {
+          action: "cancelReceiptAction",
+          receiptId: receipt.id,
           receiptNo: receipt.receiptNo,
-          version: receipt.version,
-          reason
-        }
-      });
+          filter: { id: receipt.id },
+          note: `expected cancelled, got ${data.status}`
+        });
+        throw new Error("Makbuz iptal güncellemesi doğrulanamadı.");
+      }
+
+      try {
+        await logAdminAction({
+          actorId: admin.user.id,
+          action: "receipt.cancel",
+          entityType: "receipts",
+          entityId: receipt.id,
+          summary: `Makbuz iptal edildi: ${receipt.receiptNo}`,
+          metadata: {
+            receiptNo: receipt.receiptNo,
+            version: receipt.version,
+            reason,
+            previousStatus: receipt.status,
+            newStatus: "cancelled",
+            adminRole: admin.role
+          }
+        });
+      } catch (auditError) {
+        console.warn("[receipt-action:audit]", "receipt_cancel_audit_failed", {
+          receiptId: receipt.id,
+          receiptNo: receipt.receiptNo,
+          error: auditError instanceof Error ? auditError.message : "unknown"
+        });
+      }
 
       revalidateReceiptViews();
       outcome = { durum: "makbuz-iptal-edildi" };

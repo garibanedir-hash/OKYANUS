@@ -80,6 +80,7 @@ type ReceiptRow = {
   version: number | null;
   cancelled_reason: string | null;
   last_downloaded_at: string | null;
+  metadata: Record<string, unknown> | null;
   created_at: string | null;
   updated_at: string | null;
   payment_intents?:
@@ -129,6 +130,7 @@ export type ReceiptWithPayment = {
   issuedAt: string | null;
   issuedBy: string | null;
   cancelledAt: string | null;
+  cancelledBy: string | null;
   generatedAt: string | null;
   fileBucket: string | null;
   filePath: string | null;
@@ -223,6 +225,7 @@ const receiptColumns = [
   "version",
   "cancelled_reason",
   "last_downloaded_at",
+  "metadata",
   "created_at",
   "updated_at",
   "payment_intents(intent_no, status, provider, paid_at, donor_name, donor_email, donor_phone, metadata)"
@@ -331,6 +334,7 @@ function mapPaymentIntent(row: PaymentIntentRow): PaymentIntent {
 
 function mapReceipt(row: ReceiptRow): Receipt {
   const paymentIntent = firstRelation(row.payment_intents);
+  const cancelledBy = typeof row.metadata?.cancelledBy === "string" ? row.metadata.cancelledBy : undefined;
 
   return {
     id: row.id,
@@ -353,6 +357,7 @@ function mapReceipt(row: ReceiptRow): Receipt {
     issuedBy: row.issued_by ?? undefined,
     cancelledAt: row.cancelled_at ?? undefined,
     cancelledReason: row.cancelled_reason ?? undefined,
+    cancelledBy,
     generatedAt: row.generated_at ?? undefined,
     fileBucket: row.file_bucket ?? undefined,
     filePath: row.file_path ?? undefined,
@@ -369,6 +374,7 @@ function mapReceipt(row: ReceiptRow): Receipt {
 
 function mapReceiptWithPayment(row: ReceiptRow): ReceiptWithPayment {
   const paymentIntent = firstRelation(row.payment_intents);
+  const cancelledBy = typeof row.metadata?.cancelledBy === "string" ? row.metadata.cancelledBy : null;
 
   return {
     id: row.id,
@@ -393,6 +399,7 @@ function mapReceiptWithPayment(row: ReceiptRow): ReceiptWithPayment {
     issuedAt: row.issued_at,
     issuedBy: row.issued_by,
     cancelledAt: row.cancelled_at,
+    cancelledBy,
     generatedAt: row.generated_at,
     fileBucket: row.file_bucket,
     filePath: row.file_path,
@@ -434,6 +441,7 @@ function mockReceiptWithPayment(receiptNo: string): ReceiptWithPayment | null {
     issuedAt: receipt.issuedAt ?? null,
     issuedBy: receipt.issuedBy ?? null,
     cancelledAt: receipt.cancelledAt ?? null,
+    cancelledBy: receipt.cancelledBy ?? null,
     cancelledReason: receipt.cancelledReason ?? null,
     generatedAt: receipt.generatedAt ?? null,
     fileBucket: receipt.fileBucket ?? null,
@@ -675,6 +683,7 @@ export async function getReceiptByNo(receiptNo: string): Promise<Receipt | null>
     issuedBy: receipt.issuedBy ?? undefined,
     cancelledAt: receipt.cancelledAt ?? undefined,
     cancelledReason: receipt.cancelledReason ?? undefined,
+    cancelledBy: receipt.cancelledBy ?? undefined,
     generatedAt: receipt.generatedAt ?? undefined,
     fileBucket: receipt.fileBucket ?? undefined,
     filePath: receipt.filePath ?? undefined,

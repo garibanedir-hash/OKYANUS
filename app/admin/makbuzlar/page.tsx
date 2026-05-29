@@ -125,12 +125,12 @@ function CancelReceiptForm({ receiptId, receiptNo }: { receiptId: string; receip
     <form action={cancelReceiptAction} className="grid gap-1">
       <input type="hidden" name="receipt_id" value={receiptId} />
       <input type="hidden" name="receipt_no" value={receiptNo} />
-      <input
+      <textarea
         name="reason"
         required
         minLength={5}
         placeholder="İptal gerekçesi"
-        className="h-8 w-40 rounded-md border border-border-soft px-2 text-[0.72rem] font-bold text-dark-navy"
+        className="min-h-16 w-44 resize-y rounded-md border border-border-soft px-2 py-1.5 text-[0.72rem] font-bold text-dark-navy"
       />
       <button
         type="submit"
