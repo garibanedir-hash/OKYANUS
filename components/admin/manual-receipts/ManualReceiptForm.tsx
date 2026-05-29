@@ -32,7 +32,12 @@ function dateTimeLocal(value?: string) {
 export function ManualReceiptForm({ action, receipt, submitLabel }: ManualReceiptFormProps) {
   return (
     <form action={action} className="grid gap-6">
-      {receipt ? <input type="hidden" name="id" value={receipt.id} /> : null}
+      {receipt ? (
+        <>
+          <input type="hidden" name="id" value={receipt.id} />
+          <input type="hidden" name="receiptNo" value={receipt.receiptNo} />
+        </>
+      ) : null}
 
       <section className="grid gap-3">
         <h2 className="border-b border-border-soft pb-2 text-base font-black text-dark-navy">Makbuz Bilgileri</h2>

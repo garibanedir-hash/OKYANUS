@@ -7,14 +7,20 @@ import { getManualReceiptByIdWithSource } from "@/lib/data/manualReceiptReposito
 import { generateManualReceiptPdfAction, markManualReceiptPrintedAction } from "../../actions";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type PageProps = {
   params: Promise<{ id: string }>;
   searchParams?: Promise<{ durum?: string; mesaj?: string }>;
 };
 
-function HiddenId({ id }: { id: string }) {
-  return <input type="hidden" name="id" value={id} />;
+function HiddenReceiptIdentity({ id, receiptNo }: { id: string; receiptNo: string }) {
+  return (
+    <>
+      <input type="hidden" name="id" value={id} />
+      <input type="hidden" name="receiptNo" value={receiptNo} />
+    </>
+  );
 }
 
 function statusMessage(status?: string, message?: string) {
@@ -29,7 +35,8 @@ export default async function ManualReceiptPrintPage({ params, searchParams }: P
   const { data: receipt, source } = await getManualReceiptByIdWithSource(id);
   if (!receipt) notFound();
   const message = statusMessage(query?.durum, query?.mesaj);
-  const canPrint = source === "supabase" && receipt.status !== "cancelled";
+  const canPrint = source === "supabase" && ["prepared", "printed"].includes(receipt.status);
+  const canGeneratePdf = source === "supabase" && !receipt.filePath && !["cancelled", "archived"].includes(receipt.status);
 
   return (
     <div className="grid gap-4">
@@ -75,7 +82,7 @@ export default async function ManualReceiptPrintPage({ params, searchParams }: P
             <PrintButton />
             {canPrint ? (
               <form action={markManualReceiptPrintedAction}>
-                <HiddenId id={receipt.id} />
+                <HiddenReceiptIdentity id={receipt.id} receiptNo={receipt.receiptNo} />
                 <button type="submit" className="focus-ring inline-flex min-h-10 items-center rounded-md bg-ocean-green px-4 py-2 text-sm font-extrabold text-white">
                   Yazdırıldı İşaretle
                 </button>
@@ -85,9 +92,9 @@ export default async function ManualReceiptPrintPage({ params, searchParams }: P
               <a href={`/api/manual-receipts/${receipt.receiptNo}/download`} className="focus-ring inline-flex min-h-10 items-center rounded-md border border-border-soft px-4 py-2 text-sm font-extrabold text-deep-blue">
                 PDF Görüntüle
               </a>
-            ) : canPrint ? (
+            ) : canGeneratePdf ? (
               <form action={generateManualReceiptPdfAction}>
-                <HiddenId id={receipt.id} />
+                <HiddenReceiptIdentity id={receipt.id} receiptNo={receipt.receiptNo} />
                 <button type="submit" className="focus-ring inline-flex min-h-10 items-center rounded-md border border-border-soft px-4 py-2 text-sm font-extrabold text-deep-blue">
                   PDF Oluştur
                 </button>
@@ -100,6 +107,13 @@ export default async function ManualReceiptPrintPage({ params, searchParams }: P
           <div className="mt-4">
             <AdminPanelNotice title="İptal edilmiş makbuz">
               Bu makbuz iptal edildiği için yeni yazdırma kaydı oluşturulamaz. Admin detay ekranından iptal gerekçesi görüntülenebilir.
+            </AdminPanelNotice>
+          </div>
+        ) : null}
+        {receipt.status === "archived" ? (
+          <div className="mt-4">
+            <AdminPanelNotice title="Arşivlenmiş makbuz">
+              Bu makbuz arşivlendiği için yeni yazdırma kaydı oluşturulamaz.
             </AdminPanelNotice>
           </div>
         ) : null}

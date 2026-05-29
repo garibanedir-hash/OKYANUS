@@ -50,6 +50,18 @@ manual-receipts/{year}/{receiptNo}/v1.pdf
 
 İptal edilen makbuzlar silinmez; `cancelled_reason`, `cancelled_at` ve `cancelled_by` alanlarıyla iz bırakır.
 
+Geçerli ilk sürüm geçişleri:
+
+- `draft → prepared`
+- `prepared → printed`
+- `printed → delivered`
+- `delivered → signed`
+- `signed → archived`
+- `draft/prepared/printed/delivered/signed → cancelled`
+- `cancelled` ve `archived` durumlarından başka duruma geçilmez.
+
+`printed` durumundaki bir kayıt tekrar yazdırıldı işaretlenirse `printed_count` artırılır ve `last_printed_at` yenilenir; status yine `printed` kalır.
+
 ## Admin Akışı
 
 - `/admin/makbuzlar/manuel`: liste ve filtreler
@@ -69,6 +81,8 @@ Geniş yatay PDF/print şablonu Okyanus kurumsal renklerini kullanır:
 PDF içinde Okyanus logosu, bağışçı bilgileri, bağış türü, tutar, tutar yazıyla, ödeme yöntemi, şube/birim, teslim alan, muhasebe/yetkili ve onay imza alanları bulunur.
 
 PDF dosyaları `manual-receipts-private` bucket içinde tutulur. Bucket public değildir. Client tarafına service role key veya doğrudan storage yetkisi taşınmaz.
+
+PDF oluşturma yalnızca gerçek Supabase kaydı için çalışır. Demo/mock fallback kayıtlarında aksiyon butonları pasif kalır ve “Supabase kaydı gerekir” uyarısı gösterilir. PDF oluşturma sonrası `file_bucket`, `file_path`, `file_sha256`, `file_size_bytes` ve `generated_at` alanları doğrulanır.
 
 ## Güvenlik
 

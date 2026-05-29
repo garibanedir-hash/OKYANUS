@@ -19,8 +19,13 @@ import { uploadManualReceiptPdf } from "@/lib/receipts/manualReceiptStorage";
 import type {
   ManualReceiptDonationType,
   ManualReceiptOutputType,
-  ManualReceiptPaymentMethod
+  ManualReceiptPaymentMethod,
+  ManualReceiptStatus
 } from "@/data/manualReceiptMock";
+
+const TERMINAL_MANUAL_RECEIPT_STATUSES: ManualReceiptStatus[] = ["cancelled", "archived"];
+const PRINTABLE_MANUAL_RECEIPT_STATUSES: ManualReceiptStatus[] = ["prepared", "printed"];
+const ARCHIVABLE_MANUAL_RECEIPT_STATUSES: ManualReceiptStatus[] = ["prepared", "printed", "delivered", "signed"];
 
 function redirectWithStatus(status: string, message?: string) {
   const params = new URLSearchParams({ durum: status });
@@ -108,26 +113,36 @@ function logManualActionStart(
   action: string,
   formData: FormData,
   input: {
+    adminUserId?: string | null;
     adminRole?: string | null;
     receiptId?: string | null;
     receiptNo?: string | null;
     reasonProvided?: boolean;
+    targetStatus?: ManualReceiptStatus | null;
   } = {}
 ) {
   console.info("[manual-receipts:action]", "start", {
     action,
     receiptId: input.receiptId ?? null,
     receiptNo: input.receiptNo ?? null,
+    adminUserId: input.adminUserId ?? null,
     adminRole: input.adminRole ?? null,
+    targetStatus: input.targetStatus ?? null,
     reasonProvided: input.reasonProvided ?? null,
     formKeys: formDataKeys(formData)
   });
 }
 
+function assertNotTerminalStatus(status: ManualReceiptStatus, message: string) {
+  if (TERMINAL_MANUAL_RECEIPT_STATUSES.includes(status)) {
+    throw new Error(message);
+  }
+}
+
 export async function createManualReceiptAction(formData: FormData) {
   try {
     const admin = await requireAdminUser();
-    logManualActionStart("createManualReceiptAction", formData, { adminRole: admin.role });
+    logManualActionStart("createManualReceiptAction", formData, { adminRole: admin.role, adminUserId: admin.user.id });
     const receipt = await createManualReceipt(parseManualReceiptInput(formData), admin.user.id);
     await logAdminAction({
       actorId: admin.user.id,
@@ -148,9 +163,10 @@ export async function createManualReceiptAction(formData: FormData) {
 
 export async function updateManualReceiptAction(formData: FormData) {
   const id = readString(formData, "id");
+  const receiptNo = readString(formData, "receiptNo");
   try {
     const admin = await requireAdminUser();
-    logManualActionStart("updateManualReceiptAction", formData, { adminRole: admin.role, receiptId: id });
+    logManualActionStart("updateManualReceiptAction", formData, { adminRole: admin.role, adminUserId: admin.user.id, receiptId: id, receiptNo });
     if (!id) throw new Error("Manuel makbuz kimliği zorunludur.");
     const existing = await getSupabaseManualReceiptById(id);
     if (!existing) throw new Error("Manuel makbuz bulunamadı.");
@@ -175,13 +191,18 @@ export async function updateManualReceiptAction(formData: FormData) {
 
 export async function markManualReceiptPreparedAction(formData: FormData) {
   const id = readString(formData, "id");
+  const receiptNo = readString(formData, "receiptNo");
   try {
     const admin = await requireAdminUser();
-    logManualActionStart("markManualReceiptPreparedAction", formData, { adminRole: admin.role, receiptId: id });
+    logManualActionStart("markManualReceiptPreparedAction", formData, { adminRole: admin.role, adminUserId: admin.user.id, receiptId: id, receiptNo, targetStatus: "prepared" });
     if (!id) throw new Error("Manuel makbuz kimliği zorunludur.");
+    const existing = await getSupabaseManualReceiptById(id);
+    if (!existing) throw new Error("Manuel makbuz bulunamadı.");
+    if (existing.status !== "draft") throw new Error("Yalnızca taslak manuel makbuzlar hazırlanmış olarak işaretlenebilir.");
     const receipt = await updateManualReceiptStatus({
       id,
       status: "prepared",
+      oldStatus: existing.status,
       actorId: admin.user.id,
       eventType: "manual_receipt.prepare",
       note: "Manuel makbuz hazırlandı."
@@ -195,7 +216,7 @@ export async function markManualReceiptPreparedAction(formData: FormData) {
       metadata: { receiptNo: receipt.receiptNo }
     });
     revalidateManualReceiptViews(id);
-    redirect(`/admin/makbuzlar/manuel/${id}?durum=hazirlandi`);
+    redirect(`/admin/makbuzlar/manuel/${id}?durum=durum-guncellendi`);
   } catch (error) {
     if (isRedirectError(error)) throw error;
     if (error instanceof AdminAuthorizationError) redirectWithStatus("yetkisiz", error.message);
@@ -205,17 +226,20 @@ export async function markManualReceiptPreparedAction(formData: FormData) {
 
 export async function markManualReceiptPrintedAction(formData: FormData) {
   const id = readString(formData, "id");
+  const receiptNo = readString(formData, "receiptNo");
   try {
     const admin = await requireAdminUser();
-    logManualActionStart("markManualReceiptPrintedAction", formData, { adminRole: admin.role, receiptId: id });
+    logManualActionStart("markManualReceiptPrintedAction", formData, { adminRole: admin.role, adminUserId: admin.user.id, receiptId: id, receiptNo, targetStatus: "printed" });
     if (!id) throw new Error("Manuel makbuz kimliği zorunludur.");
     const existing = await getSupabaseManualReceiptById(id);
     if (!existing) throw new Error("Manuel makbuz bulunamadı.");
-    if (existing.status === "cancelled") throw new Error("İptal edilmiş makbuz yazdırılamaz.");
+    if (TERMINAL_MANUAL_RECEIPT_STATUSES.includes(existing.status)) throw new Error("İptal edilmiş veya arşivlenmiş makbuz yazdırılamaz.");
+    if (!PRINTABLE_MANUAL_RECEIPT_STATUSES.includes(existing.status)) throw new Error("Yazdırıldı işaretlemek için manuel makbuz önce hazırlanmış olmalıdır.");
     const now = new Date().toISOString();
     const receipt = await updateManualReceiptStatus({
       id,
       status: "printed",
+      oldStatus: existing.status,
       actorId: admin.user.id,
       eventType: "manual_receipt.print",
       note: "Manuel makbuz yazdırıldı.",
@@ -243,15 +267,20 @@ export async function markManualReceiptPrintedAction(formData: FormData) {
 
 export async function cancelManualReceiptAction(formData: FormData) {
   const id = readString(formData, "id");
+  const receiptNo = readString(formData, "receiptNo");
   const reason = readString(formData, "reason");
   try {
     const admin = await requireAdminUser();
-    logManualActionStart("cancelManualReceiptAction", formData, { adminRole: admin.role, receiptId: id, reasonProvided: Boolean(reason) });
+    logManualActionStart("cancelManualReceiptAction", formData, { adminRole: admin.role, adminUserId: admin.user.id, receiptId: id, receiptNo, reasonProvided: Boolean(reason), targetStatus: "cancelled" });
     if (!id) throw new Error("Manuel makbuz kimliği zorunludur.");
     if (!reason || reason.length < 5) throw new Error("İptal gerekçesi zorunludur.");
+    const existing = await getSupabaseManualReceiptById(id);
+    if (!existing) throw new Error("Manuel makbuz bulunamadı.");
+    assertNotTerminalStatus(existing.status, "İptal edilmiş veya arşivlenmiş makbuz tekrar iptal edilemez.");
     const receipt = await updateManualReceiptStatus({
       id,
       status: "cancelled",
+      oldStatus: existing.status,
       actorId: admin.user.id,
       eventType: "manual_receipt.cancel",
       note: reason,
@@ -280,13 +309,20 @@ export async function cancelManualReceiptAction(formData: FormData) {
 
 export async function archiveManualReceiptAction(formData: FormData) {
   const id = readString(formData, "id");
+  const receiptNo = readString(formData, "receiptNo");
   try {
     const admin = await requireAdminUser();
-    logManualActionStart("archiveManualReceiptAction", formData, { adminRole: admin.role, receiptId: id });
+    logManualActionStart("archiveManualReceiptAction", formData, { adminRole: admin.role, adminUserId: admin.user.id, receiptId: id, receiptNo, targetStatus: "archived" });
     if (!id) throw new Error("Manuel makbuz kimliği zorunludur.");
+    const existing = await getSupabaseManualReceiptById(id);
+    if (!existing) throw new Error("Manuel makbuz bulunamadı.");
+    if (!ARCHIVABLE_MANUAL_RECEIPT_STATUSES.includes(existing.status)) {
+      throw new Error("Yalnızca hazırlanmış, yazdırılmış, teslim edilmiş veya imzalanmış makbuzlar arşivlenebilir.");
+    }
     const receipt = await updateManualReceiptStatus({
       id,
       status: "archived",
+      oldStatus: existing.status,
       actorId: admin.user.id,
       eventType: "manual_receipt.archive",
       note: "Manuel makbuz arşivlendi.",
@@ -311,13 +347,14 @@ export async function archiveManualReceiptAction(formData: FormData) {
 
 export async function generateManualReceiptPdfAction(formData: FormData) {
   const id = readString(formData, "id");
+  const receiptNo = readString(formData, "receiptNo");
   try {
     const admin = await requireAdminUser();
-    logManualActionStart("generateManualReceiptPdfAction", formData, { adminRole: admin.role, receiptId: id });
+    logManualActionStart("generateManualReceiptPdfAction", formData, { adminRole: admin.role, adminUserId: admin.user.id, receiptId: id, receiptNo });
     if (!id) throw new Error("Manuel makbuz kimliği zorunludur.");
     const receipt = await getSupabaseManualReceiptById(id);
     if (!receipt) throw new Error("Manuel makbuz bulunamadı.");
-    if (receipt.status === "cancelled") throw new Error("İptal edilmiş manuel makbuz için PDF üretilemez.");
+    if (TERMINAL_MANUAL_RECEIPT_STATUSES.includes(receipt.status)) throw new Error("İptal edilmiş veya arşivlenmiş manuel makbuz için PDF üretilemez.");
     if (receipt.filePath) throw new Error("Manuel makbuz PDF dosyası zaten oluşturulmuş.");
     const pdfBuffer = await generateManualReceiptPdfBuffer(receipt);
     const fileInfo = await uploadManualReceiptPdf({ receiptNo: receipt.receiptNo, pdfBuffer, version: 1 });
@@ -326,6 +363,7 @@ export async function generateManualReceiptPdfAction(formData: FormData) {
     await appendManualReceiptEvent({
       manualReceiptId: updated.id,
       eventType: "manual_receipt.pdf.generate",
+      oldStatus: receipt.status,
       newStatus: updated.status,
       actorId: admin.user.id,
       actorRole: "admin",

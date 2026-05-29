@@ -8,10 +8,12 @@ import {
   archiveManualReceiptAction,
   cancelManualReceiptAction,
   generateManualReceiptPdfAction,
-  markManualReceiptPreparedAction
+  markManualReceiptPreparedAction,
+  markManualReceiptPrintedAction
 } from "../actions";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -35,14 +37,21 @@ function Info({ label, value }: { label: string; value?: string | number | null 
   );
 }
 
-function HiddenId({ id }: { id: string }) {
-  return <input type="hidden" name="id" value={id} />;
+function HiddenReceiptIdentity({ id, receiptNo }: { id: string; receiptNo: string }) {
+  return (
+    <>
+      <input type="hidden" name="id" value={id} />
+      <input type="hidden" name="receiptNo" value={receiptNo} />
+    </>
+  );
 }
 
 function statusMessage(status?: string, message?: string) {
   if (status === "olusturuldu") return "Manuel makbuz oluşturuldu.";
   if (status === "guncellendi") return "Manuel makbuz güncellendi.";
+  if (status === "durum-guncellendi") return "Manuel makbuz durumu güncellendi.";
   if (status === "hazirlandi") return "Manuel makbuz hazırlandı.";
+  if (status === "yazdirildi") return "Yazdırma kaydı işlendi.";
   if (status === "pdf-olusturuldu") return "Manuel makbuz PDF dosyası oluşturuldu.";
   if (status === "iptal-edildi") return "Manuel makbuz iptal edildi.";
   if (status === "arsivlendi") return "Manuel makbuz arşivlendi.";
@@ -57,6 +66,9 @@ export default async function ManualReceiptDetailPage({ params, searchParams }: 
   const events = await getManualReceiptEvents(id);
   const message = statusMessage(query?.durum, query?.mesaj);
   const canMutate = source === "supabase" && !["cancelled", "archived"].includes(receipt.status);
+  const canGeneratePdf = canMutate && !receipt.filePath;
+  const canMarkPrinted = source === "supabase" && ["prepared", "printed"].includes(receipt.status);
+  const canArchive = source === "supabase" && ["prepared", "printed", "delivered", "signed"].includes(receipt.status);
 
   return (
     <div className="grid gap-5">
@@ -152,32 +164,40 @@ export default async function ManualReceiptDetailPage({ params, searchParams }: 
           ) : null}
           {source === "supabase" && receipt.status === "draft" ? (
             <form action={markManualReceiptPreparedAction}>
-              <HiddenId id={receipt.id} />
+              <HiddenReceiptIdentity id={receipt.id} receiptNo={receipt.receiptNo} />
               <button type="submit" className="focus-ring w-full rounded-md bg-ocean-green px-3 py-2 text-sm font-extrabold text-white">
                 Hazırlandı İşaretle
               </button>
             </form>
           ) : null}
-          {source === "supabase" && !receipt.filePath && receipt.status !== "cancelled" ? (
+          {canGeneratePdf ? (
             <form action={generateManualReceiptPdfAction}>
-              <HiddenId id={receipt.id} />
+              <HiddenReceiptIdentity id={receipt.id} receiptNo={receipt.receiptNo} />
               <button type="submit" className="focus-ring w-full rounded-md border border-border-soft px-3 py-2 text-sm font-extrabold text-deep-blue">
                 PDF Oluştur
               </button>
             </form>
           ) : null}
+          {canMarkPrinted ? (
+            <form action={markManualReceiptPrintedAction}>
+              <HiddenReceiptIdentity id={receipt.id} receiptNo={receipt.receiptNo} />
+              <button type="submit" className="focus-ring w-full rounded-md border border-border-soft px-3 py-2 text-sm font-extrabold text-deep-blue">
+                Yazdırıldı İşaretle
+              </button>
+            </form>
+          ) : null}
           {canMutate ? (
             <form action={cancelManualReceiptAction} className="grid gap-2">
-              <HiddenId id={receipt.id} />
+              <HiddenReceiptIdentity id={receipt.id} receiptNo={receipt.receiptNo} />
               <input name="reason" required minLength={5} placeholder="İptal gerekçesi" className="focus-ring rounded-md border border-border-soft px-3 py-2 text-sm" />
               <button type="submit" className="focus-ring rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-extrabold text-red-700">
                 İptal Et
               </button>
             </form>
           ) : null}
-          {source === "supabase" && receipt.status !== "cancelled" && receipt.status !== "archived" ? (
+          {canArchive ? (
             <form action={archiveManualReceiptAction}>
-              <HiddenId id={receipt.id} />
+              <HiddenReceiptIdentity id={receipt.id} receiptNo={receipt.receiptNo} />
               <button type="submit" className="focus-ring w-full rounded-md border border-border-soft px-3 py-2 text-sm font-extrabold text-deep-blue">
                 Arşivle
               </button>

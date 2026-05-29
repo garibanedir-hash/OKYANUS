@@ -48,14 +48,24 @@ function matchesDateRange(value: string, dateFrom?: string, dateTo?: string) {
 }
 
 function statusMessage(status?: string, message?: string) {
+  if (status === "olusturuldu") return "Manuel makbuz oluşturuldu.";
+  if (status === "guncellendi") return "Manuel makbuz güncellendi.";
+  if (status === "durum-guncellendi" || status === "hazirlandi") return "Manuel makbuz durumu güncellendi.";
+  if (status === "yazdirildi") return "Yazdırma kaydı işlendi.";
   if (status === "iptal-edildi") return "Manuel makbuz iptal edildi.";
+  if (status === "arsivlendi") return "Manuel makbuz arşivlendi.";
   if (status === "pdf-olusturuldu") return "Manuel makbuz PDF dosyası private storage içinde oluşturuldu.";
   if (status === "hata") return message ?? "Manuel makbuz işlemi tamamlanamadı.";
   return message ?? null;
 }
 
-function HiddenId({ id }: { id: string }) {
-  return <input type="hidden" name="id" value={id} />;
+function HiddenReceiptIdentity({ id, receiptNo }: { id: string; receiptNo: string }) {
+  return (
+    <>
+      <input type="hidden" name="id" value={id} />
+      <input type="hidden" name="receiptNo" value={receiptNo} />
+    </>
+  );
 }
 
 export default async function AdminManualReceiptsPage({ searchParams }: PageProps) {
@@ -159,7 +169,10 @@ export default async function AdminManualReceiptsPage({ searchParams }: PageProp
         recordCount={filtered.length}
         empty={!filtered.length}
       >
-        {filtered.map((receipt) => (
+        {filtered.map((receipt) => {
+          const canWrite = source === "supabase" && !["cancelled", "archived"].includes(receipt.status);
+          const canGeneratePdf = canWrite && !receipt.filePath;
+          return (
           <tr key={receipt.id}>
             <td className="font-bold text-dark-navy">{receipt.receiptNo}</td>
             <td>{receipt.serialNo || receipt.sequenceNo ? `${receipt.serialNo ?? "-"} / ${receipt.sequenceNo ?? "-"}` : "-"}</td>
@@ -198,17 +211,17 @@ export default async function AdminManualReceiptsPage({ searchParams }: PageProp
                   <a href={`/api/manual-receipts/${receipt.receiptNo}/download`} className="focus-ring rounded-md bg-ocean-green px-2.5 py-1 text-[0.72rem] font-extrabold text-white">
                     PDF
                   </a>
-                ) : receipt.status !== "cancelled" ? (
+                ) : canGeneratePdf ? (
                   <form action={generateManualReceiptPdfAction}>
-                    <HiddenId id={receipt.id} />
+                    <HiddenReceiptIdentity id={receipt.id} receiptNo={receipt.receiptNo} />
                     <button type="submit" className="focus-ring rounded-md border border-border-soft px-2.5 py-1 text-[0.72rem] font-extrabold text-deep-blue">
                       PDF Oluştur
                     </button>
                   </form>
                 ) : null}
-                {source === "supabase" && receipt.status !== "cancelled" ? (
+                {canWrite ? (
                   <form action={cancelManualReceiptAction} className="flex gap-1">
-                    <HiddenId id={receipt.id} />
+                    <HiddenReceiptIdentity id={receipt.id} receiptNo={receipt.receiptNo} />
                     <input name="reason" required minLength={5} placeholder="İptal gerekçesi" className="h-7 w-28 rounded border border-border-soft px-2 text-[0.7rem]" />
                     <button type="submit" className="focus-ring rounded-md border border-red-200 bg-red-50 px-2.5 py-1 text-[0.72rem] font-extrabold text-red-700">
                       İptal
@@ -218,7 +231,8 @@ export default async function AdminManualReceiptsPage({ searchParams }: PageProp
               </div>
             </td>
           </tr>
-        ))}
+          );
+        })}
       </AdminTable>
 
       <AdminPanelNotice title="Manuel makbuz notu">

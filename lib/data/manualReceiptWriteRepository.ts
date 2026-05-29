@@ -83,6 +83,8 @@ function logManualReceiptWriteIssue(
     receiptNo?: string | null;
     operation?: string;
     filter?: Record<string, string>;
+    expectedStatus?: ManualReceiptStatus;
+    actualStatus?: ManualReceiptStatus | null;
     error?: DbError | null;
     note?: string;
   }
@@ -92,6 +94,8 @@ function logManualReceiptWriteIssue(
     id: payload.id ?? null,
     receiptNo: payload.receiptNo ?? null,
     filter: payload.filter ?? null,
+    expectedStatus: payload.expectedStatus ?? null,
+    actualStatus: payload.actualStatus ?? null,
     note: payload.note ?? null,
     error: safeDbError(payload.error ?? null)
   });
@@ -156,9 +160,10 @@ export async function appendManualReceiptEvent(input: {
   });
 
   if (error) {
-    console.warn("[manual-receipts] event_insert_failed", {
+    console.warn("[manual-receipts:write]", "event_insert_failed", {
+      manualReceiptId: input.manualReceiptId,
       eventType: input.eventType,
-      code: error.code ?? null
+      error: safeDbError(error)
     });
   }
 }
@@ -228,6 +233,7 @@ export async function updateManualReceipt(id: string, input: Partial<ManualRecei
 export async function updateManualReceiptStatus(input: {
   id: string;
   status: ManualReceiptStatus;
+  oldStatus?: ManualReceiptStatus | null;
   actorId: string;
   actorRole?: string;
   note?: string | null;
@@ -259,9 +265,21 @@ export async function updateManualReceiptStatus(input: {
     throw new Error("Manuel makbuz kaydı bulunamadı veya durumu güncellenemedi.");
   }
   const receipt = mapManualReceipt(data);
+  if (receipt.status !== input.status) {
+    logManualReceiptWriteIssue("status_update_verification_failed", {
+      operation: input.eventType,
+      id: input.id,
+      filter: { id: input.id },
+      expectedStatus: input.status,
+      actualStatus: receipt.status,
+      note: "updated row status did not match target status"
+    });
+    throw new Error("Manuel makbuz durumu güncellendi ancak doğrulama başarısız oldu.");
+  }
   await appendManualReceiptEvent({
     manualReceiptId: receipt.id,
     eventType: input.eventType,
+    oldStatus: input.oldStatus ?? null,
     newStatus: receipt.status,
     actorId: input.actorId,
     actorRole: input.actorRole ?? "admin",
@@ -311,5 +329,26 @@ export async function updateManualReceiptPdfMetadata(
     logManualReceiptWriteIssue("pdf_metadata_update_no_row", { operation: "updateManualReceiptPdfMetadata", id, filter: { id }, note: "update returned no row" });
     throw new Error("Manuel makbuz PDF metadata kaydı bulunamadı veya güncellenemedi.");
   }
-  return mapManualReceipt(data);
+  const receipt = mapManualReceipt(data);
+  if (!receipt.filePath) {
+    logManualReceiptWriteIssue("pdf_metadata_verification_failed", {
+      operation: "updateManualReceiptPdfMetadata",
+      id,
+      filter: { id },
+      note: "file_path empty after update"
+    });
+    throw new Error("Manuel makbuz PDF yüklendi ancak dosya yolu kayda yazılamadı.");
+  }
+  if (status && receipt.status !== status) {
+    logManualReceiptWriteIssue("pdf_metadata_status_verification_failed", {
+      operation: "updateManualReceiptPdfMetadata",
+      id,
+      filter: { id },
+      expectedStatus: status,
+      actualStatus: receipt.status,
+      note: "status did not match requested pdf metadata status"
+    });
+    throw new Error("Manuel makbuz PDF metadata yazıldı ancak durum doğrulaması başarısız oldu.");
+  }
+  return receipt;
 }

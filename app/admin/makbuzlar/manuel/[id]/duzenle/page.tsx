@@ -7,6 +7,7 @@ import { getManualReceiptByIdWithSource } from "@/lib/data/manualReceiptReposito
 import { updateManualReceiptAction } from "../../actions";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type PageProps = {
   params: Promise<{ id: string }>;

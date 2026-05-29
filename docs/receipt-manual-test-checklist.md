@@ -138,3 +138,24 @@ Bu checklist 10D makbuz PDF ve private storage altyapısını staging ortamında
 - [ ] Anon/public kullanıcı manual receipt download için 401/403 alır.
 - [ ] İptal action'ı reason olmadan çalışmaz.
 - [ ] İptal edilen kayıt `cancelled_reason` gösterir ve yeni PDF/yazdırma kapalıdır.
+
+Manuel makbuz aksiyonları sonrası hızlı SQL kontrolü:
+
+```sql
+select
+  id,
+  receipt_no,
+  status,
+  printed_count,
+  last_printed_at,
+  file_bucket,
+  file_path,
+  file_sha256,
+  generated_at,
+  cancelled_at,
+  cancelled_reason,
+  updated_at
+from public.manual_receipts
+order by updated_at desc
+limit 20;
+```

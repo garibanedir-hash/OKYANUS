@@ -3,6 +3,7 @@ import { ManualReceiptForm } from "@/components/admin/manual-receipts/ManualRece
 import { createManualReceiptAction } from "../actions";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default function NewManualReceiptPage() {
   return (
