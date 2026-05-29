@@ -26,8 +26,8 @@ export default async function ProjectsPage() {
         <Container>
           <SectionHeading
             eyebrow="Çalışma Bölgelerimiz"
-            title="Önce bölgeyi görün, sonra projeyi inceleyin"
-            description="Gazze, Lübnan, Mısır ve Türkiye hattındaki çalışmalarımızı harita, odak alanları ve bağlı projelerle birlikte takip edin."
+            title="Yakın coğrafyada ihtiyaç odaklı çalışma hatları"
+            description="Okyanus İnsani Yardım Derneği olarak ihtiyaç odaklı çalışmalarımızı belirli bölgelerde sürdürülebilir, şeffaf ve insan onurunu merkeze alan bir yaklaşımla yürütüyoruz."
           />
           <div className="mt-10">
             <ProjectRegionSection regions={projectRegions} projects={projects} />

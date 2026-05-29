@@ -10,6 +10,8 @@ export type ProjectRegion = {
   shortDescription: string;
   focusAreas: string[];
   mapPosition: { x: number; y: number };
+  priorityLabel: string;
+  operatingModel: string;
   activeProjectCount: number;
   beneficiaryEstimate: string;
   coverTone: string;
@@ -26,7 +28,9 @@ export const projectRegions: ProjectRegion[] = [
     shortDescription:
       "Acil gıda, sağlık, hijyen ve barınma desteğinin önceliklendirildiği saha hattı.",
     focusAreas: ["Acil yardım", "Gıda", "Sağlık", "Barınma"],
-    mapPosition: { x: 58, y: 57 },
+    mapPosition: { x: 59, y: 57 },
+    priorityLabel: "Kriz müdahalesi",
+    operatingModel: "Yerel temas + lojistik teyit + dönemsel raporlama",
     activeProjectCount: 2,
     beneficiaryEstimate: "8.000+ kişi hedefi",
     coverTone: "from-soft-blue via-warm-white to-mint-green",
@@ -41,7 +45,9 @@ export const projectRegions: ProjectRegion[] = [
     shortDescription:
       "Mülteci aileler, eğitim desteği ve temel gıda ihtiyaçları için sürdürülebilir programlar.",
     focusAreas: ["Mülteci destekleri", "Gıda", "Eğitim"],
-    mapPosition: { x: 56, y: 49 },
+    mapPosition: { x: 57, y: 47 },
+    priorityLabel: "Aile ve eğitim desteği",
+    operatingModel: "Programlı yardım + aile takibi + eğitim materyali",
     activeProjectCount: 1,
     beneficiaryEstimate: "1.200+ çocuk ve aile",
     coverTone: "from-mint-green via-soft-blue to-warm-white",
@@ -56,7 +62,9 @@ export const projectRegions: ProjectRegion[] = [
     shortDescription:
       "Lojistik hazırlık, sağlık ve geçiş destekleriyle bölgesel insani yardım akışını güçlendiren hat.",
     focusAreas: ["Lojistik", "Sağlık", "Geçiş destekleri"],
-    mapPosition: { x: 52, y: 66 },
+    mapPosition: { x: 52, y: 67 },
+    priorityLabel: "Lojistik hazırlık",
+    operatingModel: "Geçiş desteği + sağlık/hijyen lojistiği",
     activeProjectCount: 1,
     beneficiaryEstimate: "2.400+ faydalanıcı",
     coverTone: "from-soft-blue via-warm-white to-soft-gray",
@@ -71,7 +79,9 @@ export const projectRegions: ProjectRegion[] = [
     shortDescription:
       "Sosyal destek, afet yardımı, yetim ve aile destekleri için merkez ve saha koordinasyonu.",
     focusAreas: ["Sosyal destek", "Afet yardımı", "Yetim", "Aile destekleri"],
-    mapPosition: { x: 50, y: 39 },
+    mapPosition: { x: 49, y: 37 },
+    priorityLabel: "Merkez koordinasyon",
+    operatingModel: "Merkez ekip + saha gönüllüleri + sosyal destek ağı",
     activeProjectCount: 2,
     beneficiaryEstimate: "3.500+ aile hedefi",
     coverTone: "from-mint-green via-soft-blue to-warm-white",

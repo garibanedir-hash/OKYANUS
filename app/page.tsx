@@ -42,7 +42,7 @@ export default async function HomePage() {
             <SectionHeading
               eyebrow="Nerelerde Çalışıyoruz?"
               title="Gazze'den Türkiye'ye bölge odaklı insani yardım"
-              description="Gazze, Lübnan, Mısır ve Türkiye hattında ihtiyaç sahiplerine ulaşmak için projeleri bölge, faaliyet ve etki bilgisiyle takip ediyoruz."
+              description="Okyanus İnsani Yardım Derneği olarak ihtiyaç odaklı çalışmalarımızı belirli bölgelerde sürdürülebilir, şeffaf ve insan onurunu merkeze alan bir yaklaşımla yürütüyoruz."
               align="center"
             />
           </MotionReveal>
