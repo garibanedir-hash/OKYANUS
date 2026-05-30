@@ -2,6 +2,7 @@ import type { Project } from "@/data/projects";
 import type { ProjectRegion } from "@/data/projectRegions";
 import { ProjectCard } from "@/components/ProjectCard";
 import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 
 export function ProjectRegionProjects({
   region,
@@ -15,12 +16,13 @@ export function ProjectRegionProjects({
   const visibleProjects = projects.filter((project) => project.regionSlug === region.slug || region.relatedProjectSlugs.includes(project.slug));
 
   return (
-    <div className="rounded-lg border border-[#D7E0E7] bg-white p-5 shadow-card">
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-start">
+    <div className="rounded-xl border border-[#D7E0E7] bg-white p-5 shadow-card">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-start">
         <div>
           <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-[#1F8083]">Bölgedeki Projeler</p>
-          <h3 className="mt-2 text-2xl font-extrabold text-[#0F2547]">{region.name} çalışma hattı</h3>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-[#526574]">{region.shortDescription}</p>
+          <h3 className="mt-2 text-2xl font-extrabold text-[#0F2547]">{region.name} operasyon hattı</h3>
+          <p className="mt-2 max-w-3xl text-sm font-semibold leading-6 text-[#526574]">{region.tagline}</p>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-[#64748B]">{region.shortDescription}</p>
         </div>
         <div className="grid gap-2 rounded-lg border border-[#D7E0E7] bg-[#F8FAFB] p-4">
           <div>
@@ -41,7 +43,7 @@ export function ProjectRegionProjects({
         ))}
       </div>
 
-      <div className={compact ? "mt-6 grid gap-4 md:grid-cols-2" : "mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3"}>
+      <div className={cn("mt-6 grid gap-5", compact ? "md:grid-cols-2" : "md:grid-cols-2 xl:grid-cols-3")}>
         {visibleProjects.length ? (
           visibleProjects.slice(0, compact ? 2 : 3).map((project) => (
             <ProjectCard key={project.slug} {...project} compact={compact} />

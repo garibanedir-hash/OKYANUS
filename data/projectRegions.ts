@@ -1,21 +1,62 @@
 import type { Project } from "@/data/projects";
 import { projects as fallbackProjects } from "@/data/projects";
 
+export type ProjectRegionSlug = "gazze" | "lubnan" | "misir" | "turkiye";
+
+export type ProjectRegionCategory =
+  | "food"
+  | "water"
+  | "health"
+  | "shelter"
+  | "orphan"
+  | "education"
+  | "qurban"
+  | "emergency";
+
 export type ProjectRegion = {
   id: string;
-  slug: "gazze" | "lubnan" | "misir" | "turkiye";
+  slug: ProjectRegionSlug;
   name: string;
+  region: string;
   country: string;
-  regionLabel: string;
+  iso?: string;
+  coords: [longitude: number, latitude: number];
+  tagline: string;
+  description: string;
   shortDescription: string;
+  regionLabel: string;
   focusAreas: string[];
-  mapPosition: { x: number; y: number };
   priorityLabel: string;
   operatingModel: string;
+  projectCount: number;
   activeProjectCount: number;
   beneficiaryEstimate: string;
+  stats: Array<{ label: string; value: string }>;
+  categories: ProjectRegionCategory[];
   coverTone: string;
   relatedProjectSlugs: string[];
+};
+
+export const projectRegionCategoryLabels: Record<ProjectRegionCategory, string> = {
+  food: "Gıda",
+  water: "Su",
+  health: "Sağlık",
+  shelter: "Barınma",
+  orphan: "Yetim",
+  education: "Eğitim",
+  qurban: "Kurban",
+  emergency: "Acil Yardım"
+};
+
+export const projectRegionCategoryIconPaths: Record<ProjectRegionCategory, string> = {
+  water: "M12 3.5C12 3.5 6 10 6 14a6 6 0 0 0 12 0c0-4-6-10.5-6-10.5Z",
+  food: "M12 21V10 M12 10c0-2-1.5-3.5-3.5-3.5C8.5 8.5 10 10 12 10Zm0 0c0-2 1.5-3.5 3.5-3.5C15.5 8.5 14 10 12 10Zm0-5c0-2-1.5-3.5-3.5-3.5C8.5 3.5 10 5 12 5Zm0 0c0-2 1.5-3.5 3.5-3.5C15.5 3.5 14 5 12 5Z",
+  education: "M4 5.5A1.5 1.5 0 0 1 5.5 4H12v15H5.5A1.5 1.5 0 0 1 4 17.5ZM20 5.5A1.5 1.5 0 0 0 18.5 4H12v15h6.5a1.5 1.5 0 0 0 1.5-1.5Z",
+  health: "M9 3h6v6h6v6h-6v6H9v-6H3V9h6Z",
+  shelter: "M4 11 12 4l8 7M6 10v10h12V10",
+  orphan: "M12 20s-7-4.6-7-9.5A3.5 3.5 0 0 1 12 7a3.5 3.5 0 0 1 7 3.5C19 15.4 12 20 12 20Z",
+  qurban: "M7 8c1.8-2.7 8.2-2.7 10 0M6 12h12M8 16h8M12 5v14",
+  emergency: "M12 3l9 16H3L12 3Zm0 5v5m0 3h.01"
 };
 
 export const projectRegions: ProjectRegion[] = [
@@ -23,68 +64,116 @@ export const projectRegions: ProjectRegion[] = [
     id: "region-gaza",
     slug: "gazze",
     name: "Gazze",
+    region: "Doğu Akdeniz kriz hattı",
     country: "Filistin",
-    regionLabel: "Doğu Akdeniz kriz hattı",
+    iso: "PS",
+    coords: [34.39, 31.45],
+    tagline: "Acil insani yardım ve temel yaşam desteği",
+    description:
+      "Gazze hattında gıda, hijyen, sağlık ve barınma ihtiyaçları önceliklendirilir; saha verisi, yerel temaslar ve dönemsel raporlama ile proje görünürlüğü güçlendirilir.",
     shortDescription:
       "Acil gıda, sağlık, hijyen ve barınma desteğinin önceliklendirildiği saha hattı.",
+    regionLabel: "Doğu Akdeniz kriz hattı",
     focusAreas: ["Acil yardım", "Gıda", "Sağlık", "Barınma"],
-    mapPosition: { x: 59, y: 57 },
     priorityLabel: "Kriz müdahalesi",
     operatingModel: "Yerel temas + lojistik teyit + dönemsel raporlama",
+    projectCount: 2,
     activeProjectCount: 2,
     beneficiaryEstimate: "8.000+ kişi hedefi",
-    coverTone: "from-soft-blue via-warm-white to-mint-green",
+    stats: [
+      { label: "Yararlanan kişi", value: "8.000+" },
+      { label: "Planlanan paket", value: "2.400" },
+      { label: "Aktif proje", value: "2" }
+    ],
+    categories: ["emergency", "food", "health", "shelter", "qurban"],
+    coverTone: "from-[#0F2547] via-[#1F8083] to-[#D7DEE8]",
     relatedProjectSlugs: ["gazze-acil-yardim", "kurban-organizasyonu", "temiz-suya-ulasim"]
   },
   {
     id: "region-lebanon",
     slug: "lubnan",
     name: "Lübnan",
+    region: "Mülteci ve aile destek hattı",
     country: "Lübnan",
-    regionLabel: "Mülteci ve aile destek hattı",
+    iso: "LB",
+    coords: [35.85, 33.85],
+    tagline: "Mülteci aileler, çocuklar ve eğitim destekleri",
+    description:
+      "Lübnan bölgesinde mülteci ailelerin temel ihtiyaçları, eğitim materyali ve aile takibi odaklı programlar planlanır; yardım akışı düzenli izleme ile yürütülür.",
     shortDescription:
       "Mülteci aileler, eğitim desteği ve temel gıda ihtiyaçları için sürdürülebilir programlar.",
+    regionLabel: "Mülteci ve aile destek hattı",
     focusAreas: ["Mülteci destekleri", "Gıda", "Eğitim"],
-    mapPosition: { x: 57, y: 47 },
     priorityLabel: "Aile ve eğitim desteği",
     operatingModel: "Programlı yardım + aile takibi + eğitim materyali",
+    projectCount: 1,
     activeProjectCount: 1,
     beneficiaryEstimate: "1.200+ çocuk ve aile",
-    coverTone: "from-mint-green via-soft-blue to-warm-white",
+    stats: [
+      { label: "Yararlanan aile", value: "1.200+" },
+      { label: "Eğitim desteği", value: "465 set" },
+      { label: "Aktif proje", value: "1" }
+    ],
+    categories: ["food", "education", "orphan"],
+    coverTone: "from-[#0F2547] via-[#1F8083] to-[#EEF4F6]",
     relatedProjectSlugs: ["yetim-cocuklara-egitim-destegi", "bir-koli-bir-umut"]
   },
   {
     id: "region-egypt",
     slug: "misir",
     name: "Mısır",
+    region: "Lojistik ve geçiş destekleri",
     country: "Mısır",
-    regionLabel: "Lojistik ve geçiş destekleri",
+    iso: "EG",
+    coords: [31.0, 28.5],
+    tagline: "Bölgesel lojistik, sağlık ve geçiş destekleri",
+    description:
+      "Mısır hattı, bölgesel insani yardım lojistiği, sağlık/hijyen hazırlıkları ve geçiş destekleri için takip edilen stratejik bir koordinasyon alanıdır.",
     shortDescription:
       "Lojistik hazırlık, sağlık ve geçiş destekleriyle bölgesel insani yardım akışını güçlendiren hat.",
+    regionLabel: "Lojistik ve geçiş destekleri",
     focusAreas: ["Lojistik", "Sağlık", "Geçiş destekleri"],
-    mapPosition: { x: 52, y: 67 },
     priorityLabel: "Lojistik hazırlık",
     operatingModel: "Geçiş desteği + sağlık/hijyen lojistiği",
+    projectCount: 1,
     activeProjectCount: 1,
     beneficiaryEstimate: "2.400+ faydalanıcı",
-    coverTone: "from-soft-blue via-warm-white to-soft-gray",
+    stats: [
+      { label: "Faydalanıcı", value: "2.400+" },
+      { label: "Su/hijyen noktası", value: "12" },
+      { label: "Aktif proje", value: "1" }
+    ],
+    categories: ["health", "water", "emergency"],
+    coverTone: "from-[#071C28] via-[#1F8083] to-[#D7DEE8]",
     relatedProjectSlugs: ["temiz-suya-ulasim", "gazze-acil-yardim"]
   },
   {
     id: "region-turkey",
     slug: "turkiye",
     name: "Türkiye",
+    region: "Merkez, afet ve sosyal destek ağı",
     country: "Türkiye",
-    regionLabel: "Merkez, afet ve sosyal destek ağı",
+    iso: "TR",
+    coords: [37.5, 38.6],
+    tagline: "Merkez koordinasyon, afet ve sosyal destek çalışmaları",
+    description:
+      "Türkiye hattı, dernek merkez koordinasyonu, sosyal destek, afet yardımı, yetim ve aile destek programlarının planlandığı ana operasyon zemini olarak çalışır.",
     shortDescription:
       "Sosyal destek, afet yardımı, yetim ve aile destekleri için merkez ve saha koordinasyonu.",
+    regionLabel: "Merkez, afet ve sosyal destek ağı",
     focusAreas: ["Sosyal destek", "Afet yardımı", "Yetim", "Aile destekleri"],
-    mapPosition: { x: 49, y: 37 },
     priorityLabel: "Merkez koordinasyon",
     operatingModel: "Merkez ekip + saha gönüllüleri + sosyal destek ağı",
+    projectCount: 2,
     activeProjectCount: 2,
     beneficiaryEstimate: "3.500+ aile hedefi",
-    coverTone: "from-mint-green via-soft-blue to-warm-white",
+    stats: [
+      { label: "Hedef aile", value: "3.500+" },
+      { label: "Gönüllü ekip", value: "42" },
+      { label: "Aktif proje", value: "2" }
+    ],
+    categories: ["food", "orphan", "education", "emergency"],
+    coverTone: "from-[#0F2547] via-[#1F8083] to-[#F8FAFB]",
     relatedProjectSlugs: ["bir-koli-bir-umut", "kis-gelmeden", "yetim-cocuklara-egitim-destegi"]
   }
 ];
@@ -99,26 +188,37 @@ export function getProjectRegionBySlug(slug?: string | null) {
 }
 
 function normalize(value: string | null | undefined) {
-  return (value ?? "").toLocaleLowerCase("tr-TR");
+  return (value ?? "")
+    .toLocaleLowerCase("tr-TR")
+    .replace(/ı/g, "i")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 }
+
+const regionMatchRules: Array<{ slug: ProjectRegionSlug; keywords: string[] }> = [
+  {
+    slug: "gazze",
+    keywords: ["gazze", "gaza", "filistin", "palestine", "qurban", "kurban"]
+  },
+  {
+    slug: "lubnan",
+    keywords: ["lubnan", "lebanon", "lbnan", "multeci", "refugee"]
+  },
+  {
+    slug: "misir",
+    keywords: ["misir", "egypt", "lojistik", "gecis", "saglik", "temiz su", "water"]
+  },
+  {
+    slug: "turkiye",
+    keywords: ["turkiye", "turkey", "konya", "istanbul", "anadolu", "deprem", "aile destek", "kis"]
+  }
+];
 
 export function inferProjectRegion(project: Pick<Project, "slug" | "title" | "category" | "location" | "tags">) {
   const haystack = normalize([project.slug, project.title, project.category, project.location, ...(project.tags ?? [])].join(" "));
+  const match = regionMatchRules.find((rule) => rule.keywords.some((keyword) => haystack.includes(normalize(keyword))));
 
-  if (haystack.includes("gazze") || haystack.includes("filistin") || haystack.includes("kurban")) {
-    return getProjectRegionBySlug("gazze");
-  }
-  if (haystack.includes("lübnan") || haystack.includes("lubnan") || haystack.includes("mülteci")) {
-    return getProjectRegionBySlug("lubnan");
-  }
-  if (haystack.includes("mısır") || haystack.includes("misir") || haystack.includes("lojistik") || haystack.includes("temiz su")) {
-    return getProjectRegionBySlug("misir");
-  }
-  if (haystack.includes("türkiye") || haystack.includes("turkiye") || haystack.includes("istanbul") || haystack.includes("anadolu") || haystack.includes("kış")) {
-    return getProjectRegionBySlug("turkiye");
-  }
-
-  return getProjectRegionBySlug("turkiye");
+  return getProjectRegionBySlug(match?.slug ?? "turkiye");
 }
 
 export function enrichProjectWithRegion(project: Project): Project {
