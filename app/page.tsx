@@ -3,7 +3,9 @@ import { HandHeart, ListChecks, ShieldCheck, UsersRound } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { getFeaturedProjects } from "@/lib/data/projectsRepository";
 import { getLatestNews } from "@/lib/data/newsRepository";
-import { projectRegions } from "@/data/projectRegions";
+import { mergeProjectsWithRegionalFallbacks } from "@/data/projectRegions";
+import { getPublicProjectActivitiesForProjectIds } from "@/lib/data/projectActivityRepository";
+import { getPublicProjectRegions } from "@/lib/data/projectRegionRepository";
 import { ActivityCard } from "@/components/ActivityCard";
 import { ProjectCard } from "@/components/ProjectCard";
 import { NewsCard } from "@/components/NewsCard";
@@ -25,10 +27,13 @@ const homeFlow: Array<{ icon: LucideIcon; title: string; text: string }> = [
 ];
 
 export default async function HomePage() {
-  const [projects, news] = await Promise.all([
+  const [projects, news, regions] = await Promise.all([
     getFeaturedProjects(4),
-    getLatestNews(3)
+    getLatestNews(3),
+    getPublicProjectRegions()
   ]);
+  const visibleProjects = projects.length ? projects : mergeProjectsWithRegionalFallbacks([]).slice(0, 4);
+  const regionActivities = await getPublicProjectActivitiesForProjectIds(visibleProjects.map((project) => project.id));
 
   return (
     <>
@@ -47,7 +52,7 @@ export default async function HomePage() {
             />
           </MotionReveal>
           <div className="mt-12">
-            <ProjectRegionSection regions={projectRegions} projects={projects} compact />
+            <ProjectRegionSection regions={regions} projects={visibleProjects} activities={regionActivities} compact />
           </div>
         </Container>
       </section>
@@ -120,8 +125,8 @@ export default async function HomePage() {
           </MotionReveal>
 
           <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {projects.length ? (
-              projects.map((project, index) => (
+            {visibleProjects.length ? (
+              visibleProjects.map((project, index) => (
                 <MotionReveal key={project.slug} delay={index * 0.05}>
                   <ProjectCard {...project} />
                 </MotionReveal>

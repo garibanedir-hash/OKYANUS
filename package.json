@@ -17,6 +17,7 @@
     "@pdf-lib/fontkit": "^1.1.1",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.105.3",
+    "d3-geo": "^3.1.1",
     "framer-motion": "^11.18.2",
     "lucide-react": "^0.468.0",
     "next": "16.2.6",
@@ -24,7 +25,9 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "recharts": "^3.8.1",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2"
   },
   "devDependencies": {
     "@types/node": "^20.17.10",

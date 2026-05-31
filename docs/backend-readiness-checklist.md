@@ -270,3 +270,14 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Proje filtrelerinde bölge ve kategori seçenekleri çalışıyor.
 - [ ] Supabase proje verisinde bölge alanı yoksa slug/title/location fallback mapping boş sayfa oluşturmuyor.
 - [ ] Harita bağımlılıksız SVG/HTML/CSS olarak çalışıyor; API key gerektirmiyor.
+
+## 11A.3 Proje Bölgeleri ve Bölgeye Bağlı Projeler
+
+- [ ] `021_project_regions_and_project_region_fields.sql` staging ortamında çalıştırıldı.
+- [ ] `project_regions` tablosunda Gazze, Lübnan, Mısır ve Türkiye seed kayıtları görünüyor.
+- [ ] `/admin/proje-bolgeleri` liste, oluşturma, düzenleme, public/internal ve pasif akışları admin guard altında çalışıyor.
+- [ ] `/admin/projeler/yeni` ve `/admin/projeler/[id]/duzenle` içinde “Çalışma Bölgesi” select alanı görünüyor.
+- [ ] `projects.region_slug`, `country`, `city`, `region_label` alanları kaydediliyor.
+- [ ] Public harita önce Supabase `project_regions` datasını, hata/boş durumda fallback datasını kullanıyor.
+- [ ] Harita altındaki “Bu Bölgede Yürütülen Projeler” ve “Son Saha Faaliyetleri” alanları boş görünmüyor.
+- [ ] Smoke test `project_regions: OK - public active read` sonucunu veriyor.

@@ -14,6 +14,7 @@ import {
   Image,
   LayoutDashboard,
   Mail,
+  MapPinned,
   MessageSquare,
   Newspaper,
   ReceiptText,
@@ -100,6 +101,7 @@ const navGroups = [
     title: "İçerik Yönetimi",
     items: [
       { label: "Projeler", href: "/admin/projeler", icon: BarChart3 },
+      { label: "Proje Bölgeleri", href: "/admin/proje-bolgeleri", icon: MapPinned, badge: "yeni" },
       { label: "Haberler", href: "/admin/haberler", icon: Newspaper },
       { label: "Faaliyet Raporları", href: "/admin/faaliyet-raporlari", icon: FileText },
       { label: "Faaliyet Alanları", href: "/admin/projeler", icon: ShieldCheck, badge: "demo" },

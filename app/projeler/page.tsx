@@ -4,8 +4,10 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ProjectFilterGrid } from "@/components/ProjectFilterGrid";
 import { PageHero } from "@/components/sections/PageHero";
 import { ProjectRegionSection } from "@/components/projects/ProjectRegionSection";
-import { mergeProjectsWithRegionalFallbacks, projectRegions } from "@/data/projectRegions";
-import { getProjects } from "@/lib/data/projectsRepository";
+import { mergeProjectsWithRegionalFallbacks } from "@/data/projectRegions";
+import { getPublicProjectActivitiesForProjectIds } from "@/lib/data/projectActivityRepository";
+import { getPublicProjectRegions } from "@/lib/data/projectRegionRepository";
+import { getProjectsWithSource } from "@/lib/data/projectsRepository";
 
 export const metadata: Metadata = {
   title: "Projeler",
@@ -13,7 +15,12 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectsPage() {
-  const projects = mergeProjectsWithRegionalFallbacks(await getProjects());
+  const [projectsResult, regions] = await Promise.all([
+    getProjectsWithSource(),
+    getPublicProjectRegions()
+  ]);
+  const projects = projectsResult.data.length ? projectsResult.data : mergeProjectsWithRegionalFallbacks([]);
+  const activities = await getPublicProjectActivitiesForProjectIds(projects.map((project) => project.id));
 
   return (
     <>
@@ -30,7 +37,7 @@ export default async function ProjectsPage() {
             description="Okyanus İnsani Yardım Derneği olarak ihtiyaç odaklı çalışmalarımızı belirli bölgelerde sürdürülebilir, şeffaf ve insan onurunu merkeze alan bir yaklaşımla yürütüyoruz."
           />
           <div className="mt-10">
-            <ProjectRegionSection regions={projectRegions} projects={projects} />
+            <ProjectRegionSection regions={regions} projects={projects} activities={activities} />
           </div>
         </Container>
       </section>

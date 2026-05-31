@@ -19,6 +19,7 @@ import {
 } from "@/lib/admin/contentValidation";
 import { logAdminAction } from "@/lib/audit/auditLogger";
 import { asAdminWriteClient } from "@/lib/data/adminWriteClient";
+import { getAdminProjectRegions } from "@/lib/data/projectRegionRepository";
 import type { SupabaseProjectRow } from "@/lib/data/projectsRepository";
 
 const projectStatuses = ["draft", "active", "completed", "archived"] as const;
@@ -36,6 +37,10 @@ export type ProjectFormValues = {
   raised: number;
   startDate: string;
   transparencyNote: string;
+  regionSlug: string;
+  country: string;
+  city: string;
+  regionLabel: string;
   metricsText: string;
   impactItemsText: string;
   scopeItemsText: string;
@@ -70,6 +75,10 @@ function mapFallbackProject(id: string): ProjectFormValues | null {
     raised: project.raised,
     startDate: "",
     transparencyNote: project.transparencyNote,
+    regionSlug: project.regionSlug ?? "",
+    country: project.country ?? "",
+    city: project.city ?? "",
+    regionLabel: project.regionLabel ?? "",
     metricsText: project.metrics.map((metric) => `${metric.label}: ${metric.value}`).join("\n"),
     impactItemsText: project.impactItems.join("\n"),
     scopeItemsText: project.scopeItems.join("\n"),
@@ -104,6 +113,10 @@ function mapSupabaseProject(row: SupabaseProjectRow): ProjectFormValues {
     raised: Number(row.raised_amount ?? 0),
     startDate: row.start_date ?? "",
     transparencyNote: row.transparency_note ?? "",
+    regionSlug: row.region_slug ?? "",
+    country: row.country ?? "",
+    city: row.city ?? "",
+    regionLabel: row.region_label ?? "",
     metricsText: metrics,
     impactItemsText: Array.isArray(row.impact_items) ? row.impact_items.join("\n") : "",
     scopeItemsText: Array.isArray(row.scope_items) ? row.scope_items.join("\n") : "",
@@ -138,6 +151,10 @@ function parseProjectForm(formData: FormData) {
     category: getString(formData, "category") || "Genel",
     status,
     location: getOptionalString(formData, "location"),
+    region_slug: getOptionalString(formData, "regionSlug"),
+    country: getOptionalString(formData, "country"),
+    city: getOptionalString(formData, "city"),
+    region_label: getOptionalString(formData, "regionLabel"),
     goal_amount: parseNumberField(formData, "goal", 0),
     raised_amount: parseNumberField(formData, "raised", 0),
     start_date: parseDateField(formData, "startDate"),
@@ -146,6 +163,20 @@ function parseProjectForm(formData: FormData) {
     impact_items: impactItems,
     scope_items: scopeItems,
     cta: toJsonValue({ label: ctaLabel, href: ctaHref ?? `/bagis-yap?proje=${slug}` })
+  };
+}
+
+async function applyRegionDefaults<T extends { region_slug?: string | null; country?: string | null; region_label?: string | null }>(payload: T): Promise<T> {
+  if (!payload.region_slug) return payload;
+
+  const regions = await getAdminProjectRegions();
+  const region = regions.data.find((item) => item.slug === payload.region_slug);
+  if (!region) return payload;
+
+  return {
+    ...payload,
+    country: payload.country || region.country || null,
+    region_label: payload.region_label || region.region_label || null
   };
 }
 
@@ -182,7 +213,7 @@ export async function createProjectAction(formData: FormData) {
   let successPath: string | null = null;
   try {
     const context = await requireContentAdmin();
-    const payload = parseProjectForm(formData);
+    const payload = await applyRegionDefaults(parseProjectForm(formData));
     const db = asAdminWriteClient(context.supabase);
     const { data, error } = await db
       .from<MutationResult>("projects")
@@ -200,7 +231,7 @@ export async function createProjectAction(formData: FormData) {
       entityType: "projects",
       entityId: data.id,
       summary: `Proje oluşturuldu: ${payload.title}`,
-      metadata: { slug: payload.slug, status: payload.status }
+      metadata: { slug: payload.slug, status: payload.status, regionSlug: payload.region_slug }
     });
 
     revalidatePath("/");
@@ -227,7 +258,7 @@ export async function updateProjectAction(formData: FormData) {
     if (!id) throw new Error("Proje kaydı bulunamadı.");
 
     const context = await requireContentAdmin();
-    const payload = parseProjectForm(formData);
+    const payload = await applyRegionDefaults(parseProjectForm(formData));
     const db = asAdminWriteClient(context.supabase);
     const { data, error } = await db
       .from<MutationResult>("projects")
@@ -246,7 +277,7 @@ export async function updateProjectAction(formData: FormData) {
       entityType: "projects",
       entityId: id,
       summary: `Proje güncellendi: ${payload.title}`,
-      metadata: { slug: payload.slug, status: payload.status }
+      metadata: { slug: payload.slug, status: payload.status, regionSlug: payload.region_slug }
     });
 
     revalidatePath("/");

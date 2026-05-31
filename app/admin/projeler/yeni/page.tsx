@@ -1,6 +1,7 @@
 import { AdminFormShell } from "@/components/admin/AdminFormShell";
 import { ProjectForm } from "@/app/admin/projeler/ProjectForm";
 import { createProjectAction } from "@/app/admin/projeler/actions";
+import { getAdminProjectRegions } from "@/lib/data/projectRegionRepository";
 
 const statusMessages: Record<string, string> = {
   hata: "Proje kaydedilemedi. Lütfen alanları kontrol edin.",
@@ -14,6 +15,13 @@ export default async function NewProjectPage({
 }) {
   const params = await searchParams;
   const statusMessage = params?.mesaj ?? (params?.durum ? statusMessages[params.durum] : null);
+  const { data: regions } = await getAdminProjectRegions();
+  const regionOptions = regions
+    .filter((region) => region.is_active)
+    .map((region) => ({
+      label: `${region.name}${region.country ? ` · ${region.country}` : ""}`,
+      value: region.slug
+    }));
 
   return (
     <AdminFormShell
@@ -34,7 +42,7 @@ export default async function NewProjectPage({
         </>
       }
     >
-      <ProjectForm action={createProjectAction} submitLabel="Projeyi Kaydet" />
+      <ProjectForm action={createProjectAction} regionOptions={regionOptions} submitLabel="Projeyi Kaydet" />
     </AdminFormShell>
   );
 }

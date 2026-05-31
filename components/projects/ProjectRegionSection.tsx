@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { Project } from "@/data/projects";
+import type { PublicProjectActivity } from "@/data/projectActivityMock";
 import type { ProjectRegion } from "@/data/projectRegions";
 import { mergeProjectsWithRegionalFallbacks } from "@/data/projectRegions";
 import { ProjectRegionDetailPanel } from "@/components/projects/ProjectRegionDetailPanel";
@@ -13,13 +14,15 @@ import { cn } from "@/lib/utils";
 export function ProjectRegionSection({
   regions,
   projects,
+  activities = [],
   compact = false
 }: {
   regions: ProjectRegion[];
   projects: Project[];
+  activities?: PublicProjectActivity[];
   compact?: boolean;
 }) {
-  const enrichedProjects = useMemo(() => mergeProjectsWithRegionalFallbacks(projects), [projects]);
+  const enrichedProjects = useMemo(() => (projects.length ? projects : mergeProjectsWithRegionalFallbacks(projects)), [projects]);
   const [activeRegionSlug, setActiveRegionSlug] = useState<ProjectRegion["slug"]>(regions[0]?.slug ?? "gazze");
   const activeRegion = regions.find((region) => region.slug === activeRegionSlug) ?? regions[0];
 
@@ -30,30 +33,35 @@ export function ProjectRegionSection({
     }, {});
   }, [enrichedProjects, regions]);
 
+  const totalProjectCount = Object.values(projectCountByRegion).reduce((total, count) => total + count, 0);
+
   if (!activeRegion) return null;
 
   return (
     <div className="grid gap-6">
-      <div className="overflow-hidden rounded-xl border border-[#102B3D] bg-[#04121A] p-3 shadow-[0_34px_90px_rgba(4,18,26,0.34)] sm:p-4">
-        <div className="flex flex-col gap-3 border-b border-white/10 px-1 pb-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="overflow-hidden rounded-xl border border-[#DDE8E7] bg-[#F7FAF9] p-4 shadow-soft sm:p-5">
+        <div className="flex flex-col gap-4 px-1 pb-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-[0.66rem] font-extrabold uppercase tracking-[0.22em] text-[#75C9C9]">OKYANUS Projeler Haritası</p>
-            <h3 className="mt-2 text-2xl font-extrabold leading-tight text-white sm:text-3xl">
-              Operasyon bölgeleri ve proje hatları
+            <p className="text-[0.66rem] font-bold uppercase tracking-[0.12em] text-[#1F8083]">Bölge Bazlı Yardım Çalışmaları</p>
+            <h3 className="mt-2 text-2xl font-bold leading-tight text-[#0F2547] sm:text-3xl">
+              Yardımlarımızın ulaştığı bölgeler
             </h3>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-[#64748B]">
+              Okyanus İnsani Yardım Derneği olarak çalışmalarımızı bölge, ihtiyaç ve saha bilgisini dikkate alan güvenilir bir yardım yaklaşımıyla yürütüyoruz.
+            </p>
           </div>
-          <div className="grid grid-cols-3 gap-2 text-right sm:min-w-[20rem]">
-            <div className="rounded-md border border-white/10 bg-white/[0.045] px-3 py-2">
-              <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-[#9DB7C5]">Bölge</p>
-              <p className="mt-1 text-lg font-extrabold text-white">{regions.length}</p>
+          <div className="grid grid-cols-3 gap-2 text-right sm:min-w-[22rem]">
+            <div className="rounded-lg border border-[#DDE8E7] bg-white px-3 py-3">
+              <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#64748B]">Bölge</p>
+              <p className="mt-1 text-lg font-semibold text-[#0F2547]">{regions.length}</p>
             </div>
-            <div className="rounded-md border border-white/10 bg-white/[0.045] px-3 py-2">
-              <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-[#9DB7C5]">Aktif</p>
-              <p className="mt-1 text-lg font-extrabold text-white">{activeRegion.name}</p>
+            <div className="rounded-lg border border-[#DDE8E7] bg-white px-3 py-3">
+              <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#64748B]">Proje</p>
+              <p className="mt-1 text-lg font-semibold text-[#0F2547]">{totalProjectCount}</p>
             </div>
-            <div className="rounded-md border border-[#E8B04B]/25 bg-[#E8B04B]/10 px-3 py-2">
-              <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.14em] text-[#F1C56F]">Model</p>
-              <p className="mt-1 text-sm font-extrabold text-white">Public</p>
+            <div className="rounded-lg border border-[#DDE8E7] bg-white px-3 py-3">
+              <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#64748B]">Etki</p>
+              <p className="mt-1 text-sm font-semibold text-[#0F2547]">{activeRegion.stats[0]?.value ?? activeRegion.beneficiaryEstimate}</p>
             </div>
           </div>
         </div>
@@ -62,8 +70,8 @@ export function ProjectRegionSection({
           className={cn(
             "mt-4 grid gap-4",
             compact
-              ? "xl:grid-cols-[minmax(0,1fr)_22rem]"
-              : "xl:grid-cols-[17rem_minmax(0,1fr)_23rem]"
+              ? "xl:grid-cols-[minmax(0,1fr)_320px]"
+              : "xl:grid-cols-[260px_minmax(620px,1fr)_320px]"
           )}
         >
           {compact ? null : (
@@ -102,7 +110,7 @@ export function ProjectRegionSection({
         ) : null}
       </div>
 
-      <ProjectRegionProjects region={activeRegion} projects={enrichedProjects} compact={compact} />
+      <ProjectRegionProjects region={activeRegion} projects={enrichedProjects} activities={activities} compact={compact} />
     </div>
   );
 }

@@ -69,13 +69,14 @@ export default async function AdminProjectsPage({
         <label className="text-sm font-bold text-dark-navy">Kategori<select className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2"><option>Tümü</option><option>Gıda</option><option>Eğitim</option><option>Sağlık</option></select></label>
         <label className="text-sm font-bold text-dark-navy">Durum<select className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2"><option>Tümü</option><option>Devam Ediyor</option><option>Planlanıyor</option><option>Tamamlandı</option></select></label>
       </AdminFilterBar>
-      <AdminTable headers={["Proje adı", "Kategori", "Durum", "Lokasyon", "Hedef destek", "Ulaşılan destek", "İlerleme", "Güncelleme", "İşlemler"]} recordCount={projects.length} empty={!projects.length}>
+      <AdminTable headers={["Proje adı", "Kategori", "Bölge", "Durum", "Lokasyon", "Hedef destek", "Ulaşılan destek", "İlerleme", "Güncelleme", "İşlemler"]} recordCount={projects.length} empty={!projects.length}>
         {projects.map((project) => {
           const progress = project.goal > 0 ? Math.round((project.raised / project.goal) * 100) : 0;
           return (
             <tr key={project.id}>
               <td className="px-4 py-3 font-bold text-dark-navy">{project.title}</td>
               <td className="px-4 py-3 text-ink-muted">{project.category}</td>
+              <td className="px-4 py-3 text-ink-muted">{project.regionName ?? project.regionSlug ?? "-"}</td>
               <td className="px-4 py-3"><AdminStatusBadge status={project.status} /></td>
               <td className="px-4 py-3 text-ink-muted">{project.location}</td>
               <td className="px-4 py-3 text-ink-muted">{formatCurrency(project.goal)}</td>

@@ -5,7 +5,7 @@ import { projects as fallbackProjects } from "@/data/projects";
 import { formatCurrency } from "@/lib/format";
 import { getPublicProjectActivities } from "@/lib/data/projectActivityRepository";
 import { getProjectBySlug, getProjects } from "@/lib/data/projectsRepository";
-import { getProjectRegionBySlug } from "@/data/projectRegions";
+import { getProjectRegionBySlug } from "@/lib/data/projectRegionRepository";
 import { Container } from "@/components/ui/Container";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -44,10 +44,10 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   }
 
   const progress = project.goal > 0 ? Math.min(Math.round((project.raised / project.goal) * 100), 100) : 0;
-  const region = getProjectRegionBySlug(project.regionSlug);
-  const [projects, activities] = await Promise.all([
+  const [projects, activities, region] = await Promise.all([
     getProjects(),
-    getPublicProjectActivities(project.id)
+    getPublicProjectActivities(project.id),
+    getProjectRegionBySlug(project.regionSlug)
   ]);
   const similar = projects.filter((item) => item.slug !== project.slug && item.category === project.category).slice(0, 3);
   const fallbackSimilar = similar.length ? similar : projects.filter((item) => item.slug !== project.slug).slice(0, 3);

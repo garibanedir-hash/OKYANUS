@@ -110,15 +110,15 @@ Public proje deneyimi çalışma bölgeleriyle güçlendirildi:
 - Mısır
 - Türkiye
 
-İlk aşamada bu bölgeler `data/projectRegions.ts` içindeki güvenli fallback veriyle yönetilir. Admin proje CRUD veya `project_activities` veri modeli değiştirilmez.
+11A.3 itibarıyla çalışma bölgeleri `project_regions` tablosundan yönetilir. `data/projectRegions.ts` yalnızca Supabase bağlantısı yoksa, migration uygulanmamışsa veya tablo boşsa fallback olarak kullanılır.
 
 Public `/projeler` sayfasında önce çalışma bölgeleri haritası ve bölge detay paneli, ardından bölge/kategori filtreli proje listesi gösterilir. Ana sayfada aynı yapının kompakt “Nerelerde Çalışıyoruz?” özeti yer alır.
 
 Harita hafif SVG/HTML/CSS tabanlıdır; Mapbox, Google Maps veya API key gerektiren ağır bir entegrasyon kullanılmaz.
 
-Supabase `projects` tablosunda bölge alanı olmadığı için public mapping şu sırayla fallback yapar:
+Supabase `projects` tablosunda `region_slug`, `country`, `city` ve `region_label` alanları bulunur. Public mapping şu sırayla çalışır:
 
-- proje `regionSlug` alanı varsa onu kullanır
+- `projects.region_slug` varsa onu kullanır
 - slug/title/category/location/tags üzerinden Gazze, Lübnan, Mısır veya Türkiye eşleştirmesi yapar
 - eşleşme yoksa güvenli varsayılan olarak Türkiye bölgesine bağlar
 

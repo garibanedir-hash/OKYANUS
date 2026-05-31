@@ -30,6 +30,10 @@ const emptyProject: ProjectFormValues = {
   raised: 0,
   startDate: "",
   transparencyNote: "",
+  regionSlug: "",
+  country: "",
+  city: "",
+  regionLabel: "",
   metricsText: "",
   impactItemsText: "",
   scopeItemsText: "",
@@ -40,13 +44,19 @@ const emptyProject: ProjectFormValues = {
 export function ProjectForm({
   action,
   project,
+  regionOptions = [],
   submitLabel
 }: {
   action: (formData: FormData) => void | Promise<void>;
   project?: ProjectFormValues | null;
+  regionOptions?: Array<{ label: string; value: string }>;
   submitLabel: string;
 }) {
   const values = project ?? emptyProject;
+  const regionSelectOptions = [
+    { label: "Bölge seçilmedi", value: "" },
+    ...regionOptions
+  ];
 
   return (
     <form action={action} className="grid gap-5">
@@ -56,7 +66,11 @@ export function ProjectForm({
         <AdminTextInput label="Slug" name="slug" defaultValue={values.slug} helper="Boş bırakılırsa başlıktan güvenli slug üretilebilir." />
         <AdminSelect label="Kategori" name="category" defaultValue={values.category} options={categoryOptions} />
         <AdminSelect label="Yayın Durumu" name="status" defaultValue={values.status} options={projectStatusOptions} />
+        <AdminSelect label="Çalışma Bölgesi" name="regionSlug" defaultValue={values.regionSlug} options={regionSelectOptions} helper="Harita ve bölge filtreleri bu bağlantıyı kullanır." />
         <AdminTextInput label="Lokasyon" name="location" defaultValue={values.location} />
+        <AdminTextInput label="Ülke" name="country" defaultValue={values.country} />
+        <AdminTextInput label="Şehir" name="city" defaultValue={values.city} />
+        <AdminTextInput label="Bölge Etiketi" name="regionLabel" defaultValue={values.regionLabel} />
         <AdminTextInput label="Başlangıç Tarihi" name="startDate" type="date" defaultValue={values.startDate} />
         <AdminTextInput label="Hedef Destek" name="goal" type="number" defaultValue={values.goal} />
         <AdminTextInput label="Ulaşılan Destek" name="raised" type="number" defaultValue={values.raised} />

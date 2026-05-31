@@ -169,6 +169,11 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Public proje haritasında Gazze, Lübnan, Mısır ve Türkiye bölgeleri doğru görünüyor.
 - [ ] Bölge/proje fallback datası production içerik stratejisiyle uyumlu hale getirildi.
 - [ ] Harita API key veya üçüncü taraf harita servisi gerektirmiyor.
+- [ ] `021_project_regions_and_project_region_fields.sql` staging ortamında çalıştırıldı.
+- [ ] Admin panelde `/admin/proje-bolgeleri` üzerinden bölge oluşturma/düzenleme ve public/internal görünürlük test edildi.
+- [ ] Proje oluşturma/düzenleme formlarında `region_slug` seçimi kaydediliyor.
+- [ ] Public harita Supabase `project_regions` datasını kullanıyor; fallback yalnızca veri yoksa devreye giriyor.
+- [ ] Harita altındaki bölge projeleri ve son saha faaliyetleri public kullanıcıda boş blok oluşturmuyor.
 
 ## Veri Güvenliği ve KVKK
 

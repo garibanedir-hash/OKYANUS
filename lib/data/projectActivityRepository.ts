@@ -501,6 +501,66 @@ export async function getPublicProjectActivities(projectId: string): Promise<Pub
   }
 }
 
+export async function getPublicProjectActivitiesForProjectIds(projectIds: string[]): Promise<PublicProjectActivity[]> {
+  const uniqueProjectIds = Array.from(new Set(projectIds.filter(Boolean)));
+  if (!uniqueProjectIds.length) return [];
+
+  const supabase = createSupabaseReadOnlyClient();
+  if (!supabase) {
+    return mockProjectActivities
+      .filter((item) => uniqueProjectIds.includes(item.projectId) && item.status === "completed" && item.visibility === "public")
+      .map((item) => ({
+        id: item.id,
+        projectId: item.projectId,
+        title: item.title,
+        slug: item.slug,
+        activityType: item.activityType,
+        activityTypeLabel: item.activityTypeLabel,
+        activityDate: item.activityDate,
+        country: item.country,
+        city: item.city,
+        district: item.district,
+        locationName: item.locationName,
+        regionLabel: item.regionLabel,
+        beneficiaryCount: item.beneficiaryCount,
+        familyCount: item.familyCount,
+        distributedItemType: item.distributedItemType,
+        distributedItemCount: item.distributedItemCount,
+        publicSummary: item.publicSummary,
+        coverImageUrl: item.coverImageUrl,
+        galleryUrls: item.galleryUrls,
+        videoUrl: item.videoUrl,
+        reportUrl: item.reportUrl,
+        publishedAt: item.publishedAt,
+        completedAt: item.completedAt
+      }));
+  }
+
+  const timeout = createReadOnlyAbortSignal();
+  try {
+    const { data, error } = await supabase
+      .from("project_activities")
+      .select(publicProjectActivityColumns)
+      .in("project_id", uniqueProjectIds)
+      .eq("visibility", "public")
+      .eq("status", "completed")
+      .order("activity_date", { ascending: false, nullsFirst: false })
+      .abortSignal(timeout.signal);
+
+    if (error) {
+      logReadOnlyFallback("project_activities_public_region", error);
+      return [];
+    }
+
+    return (data ?? []).map((row) => mapPublicProjectActivity(row as unknown as ProjectActivityPublicRow));
+  } catch {
+    logReadOnlyFallback("project_activities_public_region");
+    return [];
+  } finally {
+    timeout.clear();
+  }
+}
+
 export async function getPublicProjectActivitiesByProjectSlug(slug: string): Promise<PublicProjectActivity[]> {
   const supabase = createSupabaseReadOnlyClient();
   if (!supabase) {

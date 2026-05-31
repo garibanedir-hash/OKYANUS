@@ -23,6 +23,10 @@ export type SupabaseProjectRow = {
   end_date?: string | null;
   transparency_note: string | null;
   featured: boolean | null;
+  region_slug?: string | null;
+  country?: string | null;
+  city?: string | null;
+  region_label?: string | null;
   metrics?: unknown;
   impact_items?: string[] | null;
   scope_items?: string[] | null;
@@ -46,6 +50,10 @@ const publicProjectColumns = [
   "end_date",
   "transparency_note",
   "featured",
+  "region_slug",
+  "country",
+  "city",
+  "region_label",
   "metrics",
   "impact_items",
   "scope_items",
@@ -166,13 +174,15 @@ export function mapSupabaseProjectToProject(row: SupabaseProjectRow): Project {
       "Bu proje için şeffaflık notu Supabase içerik modelinden güncellenecektir.",
     cta: normalizeCta(row.cta, row.slug)
   } satisfies Project;
-  const region = inferProjectRegion(baseProject);
+  const region = row.region_slug ? undefined : inferProjectRegion(baseProject);
 
   return enrichProjectWithRegion({
     ...baseProject,
-    regionSlug: region?.slug,
-    regionName: region?.name,
-    country: region?.country
+    regionSlug: row.region_slug ?? region?.slug,
+    regionName: row.region_slug ? undefined : region?.name,
+    country: row.country ?? region?.country,
+    city: row.city ?? undefined,
+    regionLabel: row.region_label ?? region?.regionLabel
   });
 }
 

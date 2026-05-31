@@ -63,6 +63,15 @@ const publicReadTables = [
   { table: "qurban_campaigns", okLabel: "public active read" },
   { table: "sponsorship_programs", okLabel: "public active read" },
   {
+    table: "project_regions",
+    okLabel: "public active read",
+    columns: "id,slug,name,is_active,visibility,sort_order",
+    filters: [
+      { type: "eq", column: "is_active", value: true },
+      { type: "eq", column: "visibility", value: "public" }
+    ]
+  },
+  {
     table: "project_activities",
     okLabel: "public completed read",
     columns: "id,title,status,visibility,activity_date",
@@ -234,6 +243,7 @@ await reportPublicContentCount(supabase, "news_posts", { eq: { column: "status",
 await reportPublicContentCount(supabase, "reports", { eq: { column: "status", value: "published" } });
 await reportPublicContentCount(supabase, "qurban_campaigns", { eq: { column: "status", value: "active" } });
 await reportPublicContentCount(supabase, "sponsorship_programs", { eq: { column: "status", value: "active" } });
+await reportPublicContentCount(supabase, "project_regions", { eq: { column: "visibility", value: "public" } });
 await reportPublicContentCount(supabase, "project_activities", { eq: { column: "status", value: "completed" } });
 
 for (const table of restrictedTables) {

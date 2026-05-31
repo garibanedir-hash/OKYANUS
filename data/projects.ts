@@ -16,6 +16,8 @@ export type Project = {
   regionSlug?: string;
   regionName?: string;
   country?: string;
+  city?: string;
+  regionLabel?: string;
   activityCount?: number;
   startDate: string;
   updatedAt: string;

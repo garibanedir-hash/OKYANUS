@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AdminFormShell } from "@/components/admin/AdminFormShell";
 import { ProjectForm } from "@/app/admin/projeler/ProjectForm";
 import { getProjectForEdit, updateProjectAction } from "@/app/admin/projeler/actions";
+import { getAdminProjectRegions } from "@/lib/data/projectRegionRepository";
 
 export const dynamic = "force-dynamic";
 
@@ -19,13 +20,22 @@ export default async function EditProjectPage({
   searchParams?: Promise<{ durum?: string; mesaj?: string }>;
 }) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  const project = await getProjectForEdit(id);
+  const [project, regionsResult] = await Promise.all([
+    getProjectForEdit(id),
+    getAdminProjectRegions()
+  ]);
 
   if (!project) {
     notFound();
   }
 
   const statusMessage = query?.mesaj ?? (query?.durum ? statusMessages[query.durum] : null);
+  const regionOptions = regionsResult.data
+    .filter((region) => region.is_active || region.slug === project.regionSlug)
+    .map((region) => ({
+      label: `${region.name}${region.country ? ` · ${region.country}` : ""}`,
+      value: region.slug
+    }));
 
   return (
     <AdminFormShell
@@ -49,7 +59,7 @@ export default async function EditProjectPage({
         </>
       }
     >
-      <ProjectForm action={updateProjectAction} project={project} submitLabel="Projeyi Güncelle" />
+      <ProjectForm action={updateProjectAction} project={project} regionOptions={regionOptions} submitLabel="Projeyi Güncelle" />
     </AdminFormShell>
   );
 }

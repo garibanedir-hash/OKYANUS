@@ -1,7 +1,7 @@
 import type { Project } from "@/data/projects";
 import { projects as fallbackProjects } from "@/data/projects";
 
-export type ProjectRegionSlug = "gazze" | "lubnan" | "misir" | "turkiye";
+export type ProjectRegionSlug = string;
 
 export type ProjectRegionCategory =
   | "food"
@@ -33,6 +33,7 @@ export type ProjectRegion = {
   beneficiaryEstimate: string;
   stats: Array<{ label: string; value: string }>;
   categories: ProjectRegionCategory[];
+  recentUpdates: Array<{ title: string; dateLabel: string; summary: string }>;
   coverTone: string;
   relatedProjectSlugs: string[];
 };
@@ -70,7 +71,7 @@ export const projectRegions: ProjectRegion[] = [
     coords: [34.39, 31.45],
     tagline: "Acil insani yardım ve temel yaşam desteği",
     description:
-      "Gazze hattında gıda, hijyen, sağlık ve barınma ihtiyaçları önceliklendirilir; saha verisi, yerel temaslar ve dönemsel raporlama ile proje görünürlüğü güçlendirilir.",
+      "Gazze hattında gıda, hijyen, sağlık ve barınma ihtiyaçları önceliklendirilir. Bağışlar, insan onurunu gözeten yardım çalışmalarıyla ihtiyaç sahibi ailelere ulaştırılır.",
     shortDescription:
       "Acil gıda, sağlık, hijyen ve barınma desteğinin önceliklendirildiği saha hattı.",
     regionLabel: "Doğu Akdeniz kriz hattı",
@@ -86,6 +87,18 @@ export const projectRegions: ProjectRegion[] = [
       { label: "Aktif proje", value: "2" }
     ],
     categories: ["emergency", "food", "health", "shelter", "qurban"],
+    recentUpdates: [
+      {
+        title: "Gıda desteği hazırlıkları tamamlandı",
+        dateLabel: "Son güncelleme",
+        summary: "Aile ihtiyaç listeleri saha temaslarıyla güncellendi; destek paketleri öncelik sırasına göre planlandı."
+      },
+      {
+        title: "Hijyen desteği için ihtiyaç tespiti yapıldı",
+        dateLabel: "Saha notu",
+        summary: "Hijyen ve temel yaşam desteği başlıkları aile bazlı ihtiyaçlarla eşleştirildi."
+      }
+    ],
     coverTone: "from-[#0F2547] via-[#1F8083] to-[#D7DEE8]",
     relatedProjectSlugs: ["gazze-acil-yardim", "kurban-organizasyonu", "temiz-suya-ulasim"]
   },
@@ -99,7 +112,7 @@ export const projectRegions: ProjectRegion[] = [
     coords: [35.85, 33.85],
     tagline: "Mülteci aileler, çocuklar ve eğitim destekleri",
     description:
-      "Lübnan bölgesinde mülteci ailelerin temel ihtiyaçları, eğitim materyali ve aile takibi odaklı programlar planlanır; yardım akışı düzenli izleme ile yürütülür.",
+      "Lübnan bölgesinde mülteci ailelerin temel ihtiyaçları, çocukların eğitim materyalleri ve aile destekleri düzenli programlarla ele alınır.",
     shortDescription:
       "Mülteci aileler, eğitim desteği ve temel gıda ihtiyaçları için sürdürülebilir programlar.",
     regionLabel: "Mülteci ve aile destek hattı",
@@ -115,6 +128,18 @@ export const projectRegions: ProjectRegion[] = [
       { label: "Aktif proje", value: "1" }
     ],
     categories: ["food", "education", "orphan"],
+    recentUpdates: [
+      {
+        title: "Eğitim setleri için aile listeleri güncellendi",
+        dateLabel: "Program takibi",
+        summary: "Çocukların eğitim dönemi ihtiyaçları kırtasiye ve temel destek başlıklarıyla yeniden planlandı."
+      },
+      {
+        title: "Aile destek çalışması sürdürüldü",
+        dateLabel: "Saha notu",
+        summary: "Mülteci ailelere yönelik gıda ve temel ihtiyaç desteği için dönemsel takip yapıldı."
+      }
+    ],
     coverTone: "from-[#0F2547] via-[#1F8083] to-[#EEF4F6]",
     relatedProjectSlugs: ["yetim-cocuklara-egitim-destegi", "bir-koli-bir-umut"]
   },
@@ -128,7 +153,7 @@ export const projectRegions: ProjectRegion[] = [
     coords: [31.0, 28.5],
     tagline: "Bölgesel lojistik, sağlık ve geçiş destekleri",
     description:
-      "Mısır hattı, bölgesel insani yardım lojistiği, sağlık/hijyen hazırlıkları ve geçiş destekleri için takip edilen stratejik bir koordinasyon alanıdır.",
+      "Mısır hattı, temiz su, sağlık/hijyen ve bölgesel geçiş desteklerinin planlandığı tamamlayıcı bir insani yardım çalışma alanıdır.",
     shortDescription:
       "Lojistik hazırlık, sağlık ve geçiş destekleriyle bölgesel insani yardım akışını güçlendiren hat.",
     regionLabel: "Lojistik ve geçiş destekleri",
@@ -144,6 +169,18 @@ export const projectRegions: ProjectRegion[] = [
       { label: "Aktif proje", value: "1" }
     ],
     categories: ["health", "water", "emergency"],
+    recentUpdates: [
+      {
+        title: "Temiz su ve hijyen desteği planlandı",
+        dateLabel: "Son güncelleme",
+        summary: "Su ve hijyen ihtiyaçları için öncelikli destek noktaları belirlendi."
+      },
+      {
+        title: "Sağlık desteği hazırlıkları gözden geçirildi",
+        dateLabel: "Saha notu",
+        summary: "Bölgesel ihtiyaçlara göre sağlık ve geçiş destekleri için hazırlık listesi güncellendi."
+      }
+    ],
     coverTone: "from-[#071C28] via-[#1F8083] to-[#D7DEE8]",
     relatedProjectSlugs: ["temiz-suya-ulasim", "gazze-acil-yardim"]
   },
@@ -157,7 +194,7 @@ export const projectRegions: ProjectRegion[] = [
     coords: [37.5, 38.6],
     tagline: "Merkez koordinasyon, afet ve sosyal destek çalışmaları",
     description:
-      "Türkiye hattı, dernek merkez koordinasyonu, sosyal destek, afet yardımı, yetim ve aile destek programlarının planlandığı ana operasyon zemini olarak çalışır.",
+      "Türkiye hattı, dernek merkez koordinasyonu, afet yardımı, sosyal destek, yetim ve aile destek programlarının planlandığı ana çalışma alanıdır.",
     shortDescription:
       "Sosyal destek, afet yardımı, yetim ve aile destekleri için merkez ve saha koordinasyonu.",
     regionLabel: "Merkez, afet ve sosyal destek ağı",
@@ -173,6 +210,18 @@ export const projectRegions: ProjectRegion[] = [
       { label: "Aktif proje", value: "2" }
     ],
     categories: ["food", "orphan", "education", "emergency"],
+    recentUpdates: [
+      {
+        title: "Aile destek çalışmaları güncellendi",
+        dateLabel: "Son güncelleme",
+        summary: "Sosyal destek başvuruları ve aile ihtiyaçları öncelik durumuna göre yeniden sınıflandırıldı."
+      },
+      {
+        title: "Kış desteği hazırlıkları başlatıldı",
+        dateLabel: "Program notu",
+        summary: "Battaniye, giyim ve yakacak destekleri için bölge bazlı ihtiyaç hazırlığı yapıldı."
+      }
+    ],
     coverTone: "from-[#0F2547] via-[#1F8083] to-[#F8FAFB]",
     relatedProjectSlugs: ["bir-koli-bir-umut", "kis-gelmeden", "yetim-cocuklara-egitim-destegi"]
   }
@@ -214,6 +263,10 @@ const regionMatchRules: Array<{ slug: ProjectRegionSlug; keywords: string[] }> =
   }
 ];
 
+export function isProjectRegionCategory(value: string): value is ProjectRegionCategory {
+  return value in projectRegionCategoryLabels;
+}
+
 export function inferProjectRegion(project: Pick<Project, "slug" | "title" | "category" | "location" | "tags">) {
   const haystack = normalize([project.slug, project.title, project.category, project.location, ...(project.tags ?? [])].join(" "));
   const match = regionMatchRules.find((rule) => rule.keywords.some((keyword) => haystack.includes(normalize(keyword))));
@@ -222,7 +275,8 @@ export function inferProjectRegion(project: Pick<Project, "slug" | "title" | "ca
 }
 
 export function enrichProjectWithRegion(project: Project): Project {
-  const region = getProjectRegionBySlug(project.regionSlug) ?? inferProjectRegion(project);
+  const explicitRegion = getProjectRegionBySlug(project.regionSlug);
+  const region = explicitRegion ?? (project.regionSlug ? undefined : inferProjectRegion(project));
   if (!region) return project;
 
   return {

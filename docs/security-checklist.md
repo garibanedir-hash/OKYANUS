@@ -296,3 +296,13 @@
 - [ ] Public görünürlük sadece `status = completed` kayıtlar için açılıyor.
 - [ ] İptal gerekçesi zorunlu ve event/audit izi korunuyor.
 - [ ] Service role key client componentlere veya public route'lara taşınmıyor.
+
+## 11A.3 Proje Bölgeleri Güvenliği
+
+- [ ] `project_regions` RLS enabled/forced.
+- [ ] Anon/public yalnızca `is_active = true` ve `visibility = public` bölgeleri okuyabiliyor.
+- [ ] Anon/public `project_regions` insert/update/delete yapamıyor.
+- [ ] Bölge yönetimi server action ve `requireAdminUser()` üzerinden çalışıyor.
+- [ ] Public harita internal/pasif bölgeleri göstermiyor.
+- [ ] `project_regions.metadata` içinde secret, iç not veya kişisel veri tutulmuyor.
+- [ ] Service role key client componentlere taşınmıyor.
