@@ -23,7 +23,11 @@ export function ProjectRegionSection({
   compact?: boolean;
 }) {
   const enrichedProjects = useMemo(() => (projects.length ? projects : mergeProjectsWithRegionalFallbacks(projects)), [projects]);
-  const [activeRegionSlug, setActiveRegionSlug] = useState<ProjectRegion["slug"]>(regions[0]?.slug ?? "gazze");
+  const initialRegionSlug =
+    regions.find((region) => enrichedProjects.some((project) => project.regionSlug === region.slug || region.relatedProjectSlugs.includes(project.slug)))?.slug ??
+    regions[0]?.slug ??
+    "gazze";
+  const [activeRegionSlug, setActiveRegionSlug] = useState<ProjectRegion["slug"]>(initialRegionSlug);
   const activeRegion = regions.find((region) => region.slug === activeRegionSlug) ?? regions[0];
 
   const projectCountByRegion = useMemo(() => {
@@ -39,7 +43,7 @@ export function ProjectRegionSection({
 
   return (
     <div className="grid gap-6">
-      <div className="overflow-hidden rounded-xl border border-[#DDE8E7] bg-[#F7FAF9] p-4 shadow-soft sm:p-5">
+      <div className="min-w-0 rounded-xl border border-[#DDE8E7] bg-[#F7FAF9] p-4 shadow-soft sm:p-5">
         <div className="flex flex-col gap-4 px-1 pb-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-[0.66rem] font-bold uppercase tracking-[0.12em] text-[#1F8083]">Bölge Bazlı Yardım Çalışmaları</p>
@@ -68,33 +72,39 @@ export function ProjectRegionSection({
 
         <div
           className={cn(
-            "mt-4 grid gap-4",
+            "mt-4 grid min-w-0 gap-4",
             compact
-              ? "xl:grid-cols-[minmax(0,1fr)_320px]"
-              : "xl:grid-cols-[260px_minmax(620px,1fr)_320px]"
+              ? "xl:grid-cols-[minmax(0,1fr)_minmax(300px,340px)]"
+              : "xl:grid-cols-[280px_minmax(0,1fr)_340px] 2xl:grid-cols-[300px_minmax(0,1fr)_370px]"
           )}
         >
           {compact ? null : (
-            <ProjectRegionList
-              regions={regions}
-              activeRegionSlug={activeRegion.slug}
-              projectCountByRegion={projectCountByRegion}
-              onSelect={setActiveRegionSlug}
-            />
+            <div className="order-3 min-w-0 xl:order-1">
+              <ProjectRegionList
+                regions={regions}
+                activeRegionSlug={activeRegion.slug}
+                projectCountByRegion={projectCountByRegion}
+                onSelect={setActiveRegionSlug}
+              />
+            </div>
           )}
 
-          <ProjectRegionMap
-            regions={regions}
-            activeRegionSlug={activeRegion.slug}
-            onSelect={setActiveRegionSlug}
-            compact={compact}
-          />
+          <div className="order-1 min-w-0 xl:order-2">
+            <ProjectRegionMap
+              regions={regions}
+              activeRegionSlug={activeRegion.slug}
+              onSelect={setActiveRegionSlug}
+              compact={compact}
+            />
+          </div>
 
-          <ProjectRegionDetailPanel
-            region={activeRegion}
-            projects={enrichedProjects}
-            compact={compact}
-          />
+          <div className="order-2 min-w-0 xl:order-3">
+            <ProjectRegionDetailPanel
+              region={activeRegion}
+              projects={enrichedProjects}
+              compact={compact}
+            />
+          </div>
         </div>
 
         {compact ? (

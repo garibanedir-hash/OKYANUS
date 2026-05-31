@@ -34,6 +34,8 @@ const emptyProject: ProjectFormValues = {
   country: "",
   city: "",
   regionLabel: "",
+  coverImageUrl: "",
+  thumbnailUrl: "",
   metricsText: "",
   impactItemsText: "",
   scopeItemsText: "",
@@ -71,6 +73,8 @@ export function ProjectForm({
         <AdminTextInput label="Ülke" name="country" defaultValue={values.country} />
         <AdminTextInput label="Şehir" name="city" defaultValue={values.city} />
         <AdminTextInput label="Bölge Etiketi" name="regionLabel" defaultValue={values.regionLabel} />
+        <AdminTextInput label="Kapak Görsel URL" name="coverImageUrl" type="url" defaultValue={values.coverImageUrl} placeholder="https://..." />
+        <AdminTextInput label="Thumbnail URL" name="thumbnailUrl" type="url" defaultValue={values.thumbnailUrl} placeholder="https://..." />
         <AdminTextInput label="Başlangıç Tarihi" name="startDate" type="date" defaultValue={values.startDate} />
         <AdminTextInput label="Hedef Destek" name="goal" type="number" defaultValue={values.goal} />
         <AdminTextInput label="Ulaşılan Destek" name="raised" type="number" defaultValue={values.raised} />

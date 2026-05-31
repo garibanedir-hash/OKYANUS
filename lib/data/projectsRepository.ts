@@ -27,6 +27,8 @@ export type SupabaseProjectRow = {
   country?: string | null;
   city?: string | null;
   region_label?: string | null;
+  cover_image_url?: string | null;
+  thumbnail_url?: string | null;
   metrics?: unknown;
   impact_items?: string[] | null;
   scope_items?: string[] | null;
@@ -54,6 +56,8 @@ const publicProjectColumns = [
   "country",
   "city",
   "region_label",
+  "cover_image_url",
+  "thumbnail_url",
   "metrics",
   "impact_items",
   "scope_items",
@@ -182,7 +186,9 @@ export function mapSupabaseProjectToProject(row: SupabaseProjectRow): Project {
     regionName: row.region_slug ? undefined : region?.name,
     country: row.country ?? region?.country,
     city: row.city ?? undefined,
-    regionLabel: row.region_label ?? region?.regionLabel
+    regionLabel: row.region_label ?? region?.regionLabel,
+    coverImageUrl: row.cover_image_url ?? undefined,
+    thumbnailUrl: row.thumbnail_url ?? undefined
   });
 }
 

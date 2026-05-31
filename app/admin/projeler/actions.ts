@@ -41,6 +41,8 @@ export type ProjectFormValues = {
   country: string;
   city: string;
   regionLabel: string;
+  coverImageUrl: string;
+  thumbnailUrl: string;
   metricsText: string;
   impactItemsText: string;
   scopeItemsText: string;
@@ -79,6 +81,8 @@ function mapFallbackProject(id: string): ProjectFormValues | null {
     country: project.country ?? "",
     city: project.city ?? "",
     regionLabel: project.regionLabel ?? "",
+    coverImageUrl: project.coverImageUrl ?? "",
+    thumbnailUrl: project.thumbnailUrl ?? "",
     metricsText: project.metrics.map((metric) => `${metric.label}: ${metric.value}`).join("\n"),
     impactItemsText: project.impactItems.join("\n"),
     scopeItemsText: project.scopeItems.join("\n"),
@@ -117,6 +121,8 @@ function mapSupabaseProject(row: SupabaseProjectRow): ProjectFormValues {
     country: row.country ?? "",
     city: row.city ?? "",
     regionLabel: row.region_label ?? "",
+    coverImageUrl: row.cover_image_url ?? "",
+    thumbnailUrl: row.thumbnail_url ?? "",
     metricsText: metrics,
     impactItemsText: Array.isArray(row.impact_items) ? row.impact_items.join("\n") : "",
     scopeItemsText: Array.isArray(row.scope_items) ? row.scope_items.join("\n") : "",
@@ -132,6 +138,8 @@ function parseProjectForm(formData: FormData) {
   const description = getString(formData, "description");
   const status = assertAllowedStatus(getString(formData, "status") || "draft", projectStatuses);
   const ctaHref = normalizeOptionalUrl(getOptionalString(formData, "ctaHref"));
+  const coverImageUrl = normalizeOptionalUrl(getOptionalString(formData, "coverImageUrl"));
+  const thumbnailUrl = normalizeOptionalUrl(getOptionalString(formData, "thumbnailUrl"));
 
   if (!title) throw new Error("Proje başlığı zorunludur.");
   if (!slug) throw new Error("Proje slug alanı zorunludur.");
@@ -155,6 +163,8 @@ function parseProjectForm(formData: FormData) {
     country: getOptionalString(formData, "country"),
     city: getOptionalString(formData, "city"),
     region_label: getOptionalString(formData, "regionLabel"),
+    cover_image_url: coverImageUrl,
+    thumbnail_url: thumbnailUrl,
     goal_amount: parseNumberField(formData, "goal", 0),
     raised_amount: parseNumberField(formData, "raised", 0),
     start_date: parseDateField(formData, "startDate"),

@@ -18,6 +18,8 @@ export type Project = {
   country?: string;
   city?: string;
   regionLabel?: string;
+  coverImageUrl?: string;
+  thumbnailUrl?: string;
   activityCount?: number;
   startDate: string;
   updatedAt: string;

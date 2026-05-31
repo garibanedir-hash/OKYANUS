@@ -21,7 +21,7 @@ export function ProjectRegionList({
   return (
     <aside
       className={cn(
-        "rounded-lg border border-[#DDE8E7] bg-white p-2.5 text-[#0F2547] shadow-sm",
+        "min-w-0 rounded-lg border border-[#DDE8E7] bg-white p-2.5 text-[#0F2547] shadow-sm",
         compact ? "grid grid-cols-2 gap-2 md:grid-cols-4 xl:grid-cols-1" : "grid gap-1.5"
       )}
       aria-label="Çalışılan bölgeler"
@@ -42,7 +42,7 @@ export function ProjectRegionList({
             onClick={() => onSelect(region.slug)}
             aria-pressed={active}
             className={cn(
-              "group relative overflow-hidden rounded-md border px-3 py-2.5 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1F8083]",
+              "group relative min-w-0 overflow-hidden rounded-md border px-3 py-2.5 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1F8083]",
               active
                 ? "border-[#1F8083]/45 bg-[#F4F8F7]"
                 : "border-transparent bg-transparent hover:border-[#DDE8E7] hover:bg-[#F8FBFA]"
@@ -55,7 +55,7 @@ export function ProjectRegionList({
               )}
             />
             <span className="flex items-center justify-between gap-3 pl-2">
-              <span>
+              <span className="min-w-0">
                 <span className="block text-[0.6rem] font-bold uppercase tracking-[0.1em] text-[#1F8083]">
                   {region.country}
                 </span>
