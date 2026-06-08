@@ -281,3 +281,13 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Public harita önce Supabase `project_regions` datasını, hata/boş durumda fallback datasını kullanıyor.
 - [ ] Harita altındaki “Bu Bölgede Yürütülen Projeler” ve “Son Saha Faaliyetleri” alanları boş görünmüyor.
 - [ ] Smoke test `project_regions: OK - public active read` sonucunu veriyor.
+
+## 11B Proje Medya Upload Kontrolleri
+
+- [ ] `023_project_media_storage.sql` staging ortamında çalıştırıldı.
+- [ ] `project-media` bucket public read, admin server action upload ve anon upload kapalı olarak doğrulandı.
+- [ ] Proje kapak/thumbnail, bölge kapak ve faaliyet kapak görselleri dosya seçilerek yükleniyor.
+- [ ] Upload helper `server-only` kalıyor ve service role key client tarafına taşınmıyor.
+- [ ] MIME yalnızca JPG/PNG/WebP, dosya boyutu en fazla 5 MB.
+- [ ] Public kartlar ve detay sayfaları yüklenen public URL değerlerini kullanıyor.
+- [ ] URL ile ekleme yalnızca gelişmiş/yedek seçenek olarak kalıyor.

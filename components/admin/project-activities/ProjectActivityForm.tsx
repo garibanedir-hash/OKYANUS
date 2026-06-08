@@ -1,5 +1,6 @@
 import { AdminSelect, AdminTextInput, AdminTextarea } from "@/components/admin/AdminFormFields";
 import { AdminFormActions } from "@/components/admin/AdminFormShell";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import {
   projectActivityStatusLabels,
   projectActivityTypeLabels,
@@ -58,7 +59,7 @@ function DateTimeInput({
 
 export function ProjectActivityForm({ action, projectId, activity, submitLabel, cancelHref }: ProjectActivityFormProps) {
   return (
-    <form action={action} className="grid gap-5">
+    <form action={action} encType="multipart/form-data" className="grid gap-5">
       <input type="hidden" name="projectId" value={projectId} />
       {activity?.id ? <input type="hidden" name="activityId" value={activity.id} /> : null}
 
@@ -102,7 +103,13 @@ export function ProjectActivityForm({ action, projectId, activity, submitLabel, 
       </section>
 
       <section className="grid gap-4 md:grid-cols-2">
-        <AdminTextInput label="Kapak Görsel URL" name="coverImageUrl" type="url" defaultValue={activity?.coverImageUrl} placeholder="https://..." />
+        <ImageUploadField
+          label="Kapak Görseli"
+          fileName="coverImageFile"
+          urlName="coverImageUrl"
+          defaultUrl={activity?.coverImageUrl}
+          helper="Public faaliyet kartlarında ve proje haritası alt alanında kullanılabilir."
+        />
         <AdminTextInput label="Video URL" name="videoUrl" type="url" defaultValue={activity?.videoUrl} placeholder="https://..." />
         <AdminTextInput label="Rapor URL" name="reportUrl" type="url" defaultValue={activity?.reportUrl} placeholder="https://..." />
         <AdminTextarea label="Galeri URL'leri" name="galleryUrls" defaultValue={toLines(activity?.galleryUrls)} rows={4} helper="Her satıra bir URL yazın." />

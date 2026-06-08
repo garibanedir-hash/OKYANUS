@@ -51,7 +51,7 @@ function logProjectRegionWriteIssue(event: string, payload: Record<string, unkno
 function assertCoordinate(value: number | null | undefined, min: number, max: number, label: string) {
   if (value === null || value === undefined) return;
   if (!Number.isFinite(value) || value < min || value > max) {
-    throw new Error(`${label} değeri geçerli aralıkta olmalıdır.`);
+    throw new Error(`${label} harita bilgisi geçerli aralıkta olmalıdır.`);
   }
 }
 
@@ -64,7 +64,12 @@ function assertSafeSlug(slug: string) {
 export function validateProjectRegionInput(input: ProjectRegionWriteInput) {
   if (!input.name.trim()) throw new Error("Bölge adı zorunludur.");
   if (!input.slug.trim()) throw new Error("Bölge slug alanı zorunludur.");
+  if (!input.country?.trim()) throw new Error("Ülke seçimi zorunludur.");
+  if (!input.regionLabel?.trim()) throw new Error("Şehir / bölge seçimi zorunludur.");
   assertSafeSlug(input.slug);
+  if (input.coordsLng === null || input.coordsLng === undefined || input.coordsLat === null || input.coordsLat === undefined) {
+    throw new Error("Seçilen konum için harita bilgisi bulunamadı.");
+  }
   assertCoordinate(input.coordsLng, -180, 180, "Boylam");
   assertCoordinate(input.coordsLat, -90, 90, "Enlem");
   if (input.visibility !== "public" && input.visibility !== "internal") {
@@ -197,6 +202,32 @@ export async function setProjectRegionVisibility(id: string, visibility: "public
   if (!data) {
     logProjectRegionWriteIssue("visibility_no_row", { id, visibility });
     throw new Error("Proje bölgesi bulunamadı veya güncellenemedi.");
+  }
+
+  return data;
+}
+
+export async function updateProjectRegionCoverImage(id: string, coverImageUrl: string, admin: ProjectRegionAdminContext) {
+  const db = getDb();
+  const { data, error } = await db
+    .from<ProjectRegionMutationResult>("project_regions")
+    .update({
+      cover_image_url: coverImageUrl,
+      updated_by: admin.actorId,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", id)
+    .select("id, slug, name, visibility, is_active")
+    .maybeSingle();
+
+  if (error) {
+    logProjectRegionWriteIssue("cover_image_error", { id, error });
+    throw new Error("Bölge görseli yüklendi ancak kayıt güncellenemedi.");
+  }
+
+  if (!data) {
+    logProjectRegionWriteIssue("cover_image_no_row", { id });
+    throw new Error("Proje bölgesi bulunamadı veya görsel bilgisi güncellenemedi.");
   }
 
   return data;

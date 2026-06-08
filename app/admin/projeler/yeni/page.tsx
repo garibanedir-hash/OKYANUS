@@ -20,7 +20,10 @@ export default async function NewProjectPage({
     .filter((region) => region.is_active)
     .map((region) => ({
       label: `${region.name}${region.country ? ` · ${region.country}` : ""}`,
-      value: region.slug
+      value: region.slug,
+      country: region.country,
+      city: region.name,
+      regionLabel: region.region_label
     }));
 
   return (

@@ -154,6 +154,7 @@ export function mapSupabaseProjectRegion(row: ProjectRegionRow): ProjectRegion {
     ],
     categories: categories.length ? categories : fallback?.categories ?? [],
     recentUpdates: recentUpdates.length ? recentUpdates : fallback?.recentUpdates ?? [],
+    coverImageUrl: row.cover_image_url ?? fallback?.coverImageUrl,
     coverTone: fallback?.coverTone ?? "from-[#0F2547] via-[#1F8083] to-[#EEF4F6]",
     relatedProjectSlugs: relatedProjectSlugs.length ? relatedProjectSlugs : fallback?.relatedProjectSlugs ?? []
   };

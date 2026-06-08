@@ -13,13 +13,20 @@ import {
   userFriendlyActionError
 } from "@/lib/admin/contentValidation";
 import { logAdminAction } from "@/lib/audit/auditLogger";
+import { findCountryByName } from "@/data/geo/worldLocations";
 import {
   createProjectRegion,
   deactivateProjectRegion,
   setProjectRegionVisibility,
   updateProjectRegion,
+  updateProjectRegionCoverImage,
   type ProjectRegionWriteInput
 } from "@/lib/data/projectRegionWriteRepository";
+import {
+  getOptionalProjectMediaFile,
+  uploadProjectMediaFile,
+  validateProjectMediaFile
+} from "@/lib/media/projectMediaStorage";
 
 function redirectWithStatus(path: string, durum: string, mesaj?: string) {
   const params = new URLSearchParams({ durum });
@@ -39,8 +46,8 @@ async function requireContentAdmin() {
 function parseOptionalNumber(formData: FormData, name: string) {
   const raw = getOptionalString(formData, name);
   if (!raw) return null;
-  const parsed = Number(raw);
-  if (!Number.isFinite(parsed)) throw new Error(`${name} alanı sayısal olmalıdır.`);
+  const parsed = Number(raw.replace(",", "."));
+  if (!Number.isFinite(parsed)) throw new Error("Seçilen konum için harita bilgisi geçerli değildir.");
   return parsed;
 }
 
@@ -69,17 +76,29 @@ function parseProjectRegionForm(formData: FormData): ProjectRegionWriteInput {
   if (!slug) throw new Error("Slug alanı zorunludur.");
 
   const coverImageUrl = normalizeOptionalUrl(getOptionalString(formData, "coverImageUrl"));
+  const country = getOptionalString(formData, "country");
+  const cityName = getOptionalString(formData, "locationCityName") ?? getOptionalString(formData, "customCityName");
+  const countryFallback = findCountryByName(country);
+  const coordsLng = parseOptionalNumber(formData, "coordsLng") ?? countryFallback?.defaultLng ?? null;
+  const coordsLat = parseOptionalNumber(formData, "coordsLat") ?? countryFallback?.defaultLat ?? null;
+  const regionLabel = getOptionalString(formData, "regionLabel") ?? cityName;
+
+  if (!country) throw new Error("Ülke seçimi zorunludur.");
+  if (!cityName) throw new Error("Lütfen şehir/bölge seçin veya özel bölge adı girin.");
+  if (coordsLat === null || coordsLng === null) {
+    throw new Error("Seçilen konum için harita bilgisi bulunamadı.");
+  }
 
   return {
     name,
     slug,
-    country: getOptionalString(formData, "country"),
-    regionLabel: getOptionalString(formData, "regionLabel"),
+    country,
+    regionLabel,
     tagline: getOptionalString(formData, "tagline"),
     description: getOptionalString(formData, "description"),
     shortDescription: getOptionalString(formData, "shortDescription"),
-    coordsLng: parseOptionalNumber(formData, "coordsLng"),
-    coordsLat: parseOptionalNumber(formData, "coordsLat"),
+    coordsLng,
+    coordsLat,
     priorityLabel: getOptionalString(formData, "priorityLabel"),
     operatingModel: getOptionalString(formData, "operatingModel"),
     beneficiaryEstimate: getOptionalString(formData, "beneficiaryEstimate"),
@@ -95,6 +114,31 @@ function parseProjectRegionForm(formData: FormData): ProjectRegionWriteInput {
   };
 }
 
+function validateRegionCoverImageFile(formData: FormData) {
+  const coverFile = getOptionalProjectMediaFile(formData, "coverImageFile");
+  if (coverFile) validateProjectMediaFile(coverFile);
+  return coverFile;
+}
+
+async function uploadRegionCoverImage({
+  coverFile,
+  regionSlug,
+  adminUserId
+}: {
+  coverFile: File | null;
+  regionSlug: string;
+  adminUserId: string;
+}) {
+  if (!coverFile) return null;
+  return uploadProjectMediaFile({
+    file: coverFile,
+    contextType: "region",
+    entityId: regionSlug,
+    purpose: "cover",
+    adminUserId
+  });
+}
+
 function revalidateProjectRegionPaths() {
   revalidatePath("/");
   revalidatePath("/projeler");
@@ -106,8 +150,17 @@ export async function createProjectRegionAction(formData: FormData) {
   let successPath: string | null = null;
   try {
     const context = await requireContentAdmin();
+    const coverFile = validateRegionCoverImageFile(formData);
     const payload = parseProjectRegionForm(formData);
     const region = await createProjectRegion(payload, { actorId: context.user.id, actorRole: context.role });
+    const uploadedCover = await uploadRegionCoverImage({
+      coverFile,
+      regionSlug: region.slug,
+      adminUserId: context.user.id
+    });
+    if (uploadedCover) {
+      await updateProjectRegionCoverImage(region.id, uploadedCover.publicUrl, { actorId: context.user.id, actorRole: context.role });
+    }
 
     await logAdminAction({
       actorId: context.user.id,
@@ -115,7 +168,7 @@ export async function createProjectRegionAction(formData: FormData) {
       entityType: "project_regions",
       entityId: region.id,
       summary: `Proje bölgesi oluşturuldu: ${payload.name}`,
-      metadata: { slug: payload.slug, visibility: payload.visibility }
+      metadata: { slug: payload.slug, visibility: payload.visibility, imageUpload: Boolean(uploadedCover) }
     });
 
     revalidateProjectRegionPaths();
@@ -139,8 +192,17 @@ export async function updateProjectRegionAction(formData: FormData) {
   try {
     if (!id) throw new Error("Proje bölgesi kaydı bulunamadı.");
     const context = await requireContentAdmin();
+    const coverFile = validateRegionCoverImageFile(formData);
     const payload = parseProjectRegionForm(formData);
     const region = await updateProjectRegion(id, payload, { actorId: context.user.id, actorRole: context.role });
+    const uploadedCover = await uploadRegionCoverImage({
+      coverFile,
+      regionSlug: region.slug,
+      adminUserId: context.user.id
+    });
+    if (uploadedCover) {
+      await updateProjectRegionCoverImage(id, uploadedCover.publicUrl, { actorId: context.user.id, actorRole: context.role });
+    }
 
     await logAdminAction({
       actorId: context.user.id,
@@ -148,7 +210,7 @@ export async function updateProjectRegionAction(formData: FormData) {
       entityType: "project_regions",
       entityId: id,
       summary: `Proje bölgesi güncellendi: ${payload.name}`,
-      metadata: { slug: region.slug, visibility: region.visibility, isActive: region.is_active }
+      metadata: { slug: region.slug, visibility: region.visibility, isActive: region.is_active, imageUpload: Boolean(uploadedCover) }
     });
 
     revalidateProjectRegionPaths();

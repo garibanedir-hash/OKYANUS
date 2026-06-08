@@ -32,6 +32,12 @@ export function ProjectRegionDetailPanel({
         </div>
       </div>
 
+      {region.coverImageUrl ? (
+        <div className="mt-4 h-28 overflow-hidden rounded-md border border-[#DDE8E7] bg-[#EEF4F3]">
+          <div className="h-full bg-cover bg-center" style={{ backgroundImage: `url("${region.coverImageUrl}")` }} aria-label={`${region.name} bölge görseli`} />
+        </div>
+      ) : null}
+
       <p className="mt-4 text-sm font-semibold leading-6 text-[#0F2547]">{region.tagline}</p>
       <p className="mt-2 line-clamp-5 text-sm leading-6 text-[#64748B]">{region.description}</p>
 

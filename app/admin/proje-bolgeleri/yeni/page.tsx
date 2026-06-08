@@ -31,8 +31,8 @@ export default async function NewProjectRegionPage({
             <p className="mt-1 text-sm font-semibold leading-6 text-ink-muted">Aktif ve public bölgeler haritada görünür. İç kayıt bölgeleri admin panelde saklanır.</p>
           </div>
           <div>
-            <p className="text-sm font-extrabold text-dark-navy">Koordinatlar</p>
-            <p className="mt-1 text-sm font-semibold leading-6 text-ink-muted">Boylam/enlem marker konumunu belirler. Boş bırakılırsa fallback konum kullanılabilir.</p>
+            <p className="text-sm font-extrabold text-dark-navy">Harita konumu</p>
+            <p className="mt-1 text-sm font-semibold leading-6 text-ink-muted">Ülke ve şehir/bölge seçimi harita işaretinin konumunu otomatik belirler.</p>
           </div>
         </>
       }

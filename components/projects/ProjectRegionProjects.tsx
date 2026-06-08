@@ -62,7 +62,7 @@ export function ProjectRegionProjects({
         <div className={cn("mt-5 grid gap-4", compact ? "md:grid-cols-2" : "md:grid-cols-2")}>
           {visibleProjects.length ? (
             visibleProjects.slice(0, compact ? 2 : 4).map((project) => {
-              const imageUrl = project.thumbnailUrl || project.coverImageUrl;
+              const imageUrl = project.thumbnailUrl || project.coverImageUrl || region.coverImageUrl;
               return (
               <article
                 key={project.slug}

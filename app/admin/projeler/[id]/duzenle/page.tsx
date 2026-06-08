@@ -34,7 +34,10 @@ export default async function EditProjectPage({
     .filter((region) => region.is_active || region.slug === project.regionSlug)
     .map((region) => ({
       label: `${region.name}${region.country ? ` · ${region.country}` : ""}`,
-      value: region.slug
+      value: region.slug,
+      country: region.country,
+      city: region.name,
+      regionLabel: region.region_label
     }));
 
   return (

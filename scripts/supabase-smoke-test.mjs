@@ -257,7 +257,7 @@ console.log(`Security warning: ${summary.securityWarning}`);
 console.log(`Missing table: ${summary.missing}`);
 console.log(`Public blocked: ${summary.publicBlocked}`);
 console.log(`Diğer hata: ${summary.error}`);
-console.log("Manual storage check: receipts-private bucket 017 migration sonrası, manual-receipts-private bucket 018 migration sonrası private/public=false olarak doğrulanmalıdır.");
+console.log("Manual storage check: receipts-private bucket 017 migration sonrası, manual-receipts-private bucket 018 migration sonrası private/public=false; project-media bucket 023 migration sonrası public=true ve anon upload kapalı olarak doğrulanmalıdır.");
 console.log("Supabase smoke test tamamlandı.");
 
 if (summary.securityWarning > 0) {

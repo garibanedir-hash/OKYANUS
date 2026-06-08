@@ -256,6 +256,31 @@ export async function updateProjectActivity(id: string, input: ProjectActivityWr
   return activity;
 }
 
+export async function updateProjectActivityCoverImage(id: string, coverImageUrl: string, admin: AdminContextLite) {
+  const db = getDb();
+  const { data, error } = await db
+    .from<ProjectActivityRow>("project_activities")
+    .update({
+      cover_image_url: coverImageUrl,
+      updated_by: admin.actorId,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", id)
+    .select(projectActivityColumns)
+    .maybeSingle();
+
+  if (error) {
+    logProjectActivityWriteIssue("cover_image_error", { operation: "updateProjectActivityCoverImage", id, filter: { id }, error });
+    throw new Error(friendlyProjectActivityError(error, "Faaliyet görseli yüklendi ancak kayıt güncellenemedi."));
+  }
+  if (!data) {
+    logProjectActivityWriteIssue("cover_image_no_row", { operation: "updateProjectActivityCoverImage", id, filter: { id } });
+    throw new Error("Proje faaliyeti bulunamadı veya görsel bilgisi güncellenemedi.");
+  }
+
+  return mapSupabaseProjectActivity(data);
+}
+
 export async function updateProjectActivityStatus(input: {
   id: string;
   status: ProjectActivityStatus;

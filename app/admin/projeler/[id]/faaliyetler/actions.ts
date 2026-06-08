@@ -16,10 +16,16 @@ import {
 import {
   createProjectActivity,
   updateProjectActivity,
+  updateProjectActivityCoverImage,
   updateProjectActivityStatus,
   updateProjectActivityVisibility,
   type ProjectActivityWriteInput
 } from "@/lib/data/projectActivityWriteRepository";
+import {
+  getOptionalProjectMediaFile,
+  uploadProjectMediaFile,
+  validateProjectMediaFile
+} from "@/lib/media/projectMediaStorage";
 import { slugify } from "@/lib/utils/slugify";
 import type {
   ProjectActivityStatus,
@@ -185,6 +191,31 @@ function parseActivityInput(formData: FormData): ProjectActivityWriteInput {
   };
 }
 
+function validateActivityCoverImageFile(formData: FormData) {
+  const coverFile = getOptionalProjectMediaFile(formData, "coverImageFile");
+  if (coverFile) validateProjectMediaFile(coverFile);
+  return coverFile;
+}
+
+async function uploadActivityCoverImage({
+  coverFile,
+  activityId,
+  adminUserId
+}: {
+  coverFile: File | null;
+  activityId: string;
+  adminUserId: string;
+}) {
+  if (!coverFile) return null;
+  return uploadProjectMediaFile({
+    file: coverFile,
+    contextType: "activity",
+    entityId: activityId,
+    purpose: "activity-cover",
+    adminUserId
+  });
+}
+
 async function revalidateActivityViews(projectId: string, activityId?: string | null) {
   revalidatePath("/admin/projeler");
   revalidatePath("/admin/faaliyet-kayitlari");
@@ -223,15 +254,24 @@ export async function createProjectActivityAction(formData: FormData) {
   try {
     const admin = await requireAdminUser();
     logActivityActionStart("createProjectActivityAction", formData, { projectId, adminUserId: admin.user.id, adminRole: admin.role });
+    const coverFile = validateActivityCoverImageFile(formData);
     const input = parseActivityInput(formData);
-    const activity = await createProjectActivity(input, { actorId: admin.user.id, actorRole: admin.role });
+    let activity = await createProjectActivity(input, { actorId: admin.user.id, actorRole: admin.role });
+    const uploadedCover = await uploadActivityCoverImage({
+      coverFile,
+      activityId: activity.id,
+      adminUserId: admin.user.id
+    });
+    if (uploadedCover) {
+      activity = await updateProjectActivityCoverImage(activity.id, uploadedCover.publicUrl, { actorId: admin.user.id, actorRole: admin.role });
+    }
     await logAdminAction({
       actorId: admin.user.id,
       action: "project_activity.create",
       entityType: "project_activities",
       entityId: activity.id,
       summary: `Proje faaliyeti oluşturuldu: ${activity.title}`,
-      metadata: { projectId: activity.projectId, status: activity.status, visibility: activity.visibility }
+      metadata: { projectId: activity.projectId, status: activity.status, visibility: activity.visibility, imageUpload: Boolean(uploadedCover) }
     });
     await revalidateActivityViews(activity.projectId, activity.id);
     redirectToActivity(activity.projectId, activity.id, "faaliyet-olusturuldu");
@@ -249,18 +289,27 @@ export async function updateProjectActivityAction(formData: FormData) {
     const admin = await requireAdminUser();
     logActivityActionStart("updateProjectActivityAction", formData, { projectId, activityId, adminUserId: admin.user.id, adminRole: admin.role });
     if (!activityId) throw new Error("Faaliyet kimliği zorunludur.");
+    const coverFile = validateActivityCoverImageFile(formData);
     const existing = await getRequiredSupabaseActivity(activityId);
     if (terminalStatuses.includes(existing.status) || existing.status === "cancelled") {
       throw new Error("İptal edilmiş veya arşivlenmiş faaliyet düzenlenemez.");
     }
-    const activity = await updateProjectActivity(activityId, parseActivityInput(formData), { actorId: admin.user.id, actorRole: admin.role });
+    let activity = await updateProjectActivity(activityId, parseActivityInput(formData), { actorId: admin.user.id, actorRole: admin.role });
+    const uploadedCover = await uploadActivityCoverImage({
+      coverFile,
+      activityId: activity.id,
+      adminUserId: admin.user.id
+    });
+    if (uploadedCover) {
+      activity = await updateProjectActivityCoverImage(activity.id, uploadedCover.publicUrl, { actorId: admin.user.id, actorRole: admin.role });
+    }
     await logAdminAction({
       actorId: admin.user.id,
       action: "project_activity.update",
       entityType: "project_activities",
       entityId: activity.id,
       summary: `Proje faaliyeti güncellendi: ${activity.title}`,
-      metadata: { projectId: activity.projectId, status: activity.status, visibility: activity.visibility }
+      metadata: { projectId: activity.projectId, status: activity.status, visibility: activity.visibility, imageUpload: Boolean(uploadedCover) }
     });
     await revalidateActivityViews(activity.projectId, activity.id);
     redirectToActivity(activity.projectId, activity.id, "faaliyet-guncellendi");

@@ -20,6 +20,11 @@ import {
 import { logAdminAction } from "@/lib/audit/auditLogger";
 import { asAdminWriteClient } from "@/lib/data/adminWriteClient";
 import { getAdminProjectRegions } from "@/lib/data/projectRegionRepository";
+import {
+  getOptionalProjectMediaFile,
+  uploadProjectMediaFile,
+  validateProjectMediaFile
+} from "@/lib/media/projectMediaStorage";
 import type { SupabaseProjectRow } from "@/lib/data/projectsRepository";
 
 const projectStatuses = ["draft", "active", "completed", "archived"] as const;
@@ -51,6 +56,10 @@ export type ProjectFormValues = {
 };
 
 type MutationResult = { id: string; slug?: string };
+type ProjectImageUpdate = {
+  cover_image_url?: string;
+  thumbnail_url?: string;
+};
 
 function redirectWithStatus(path: string, durum: string, mesaj?: string) {
   const params = new URLSearchParams({ durum });
@@ -176,7 +185,66 @@ function parseProjectForm(formData: FormData) {
   };
 }
 
-async function applyRegionDefaults<T extends { region_slug?: string | null; country?: string | null; region_label?: string | null }>(payload: T): Promise<T> {
+function validateProjectImageFiles(formData: FormData) {
+  const coverFile = getOptionalProjectMediaFile(formData, "coverImageFile");
+  const thumbnailFile = getOptionalProjectMediaFile(formData, "thumbnailImageFile");
+  if (coverFile) validateProjectMediaFile(coverFile);
+  if (thumbnailFile) validateProjectMediaFile(thumbnailFile);
+  return { coverFile, thumbnailFile };
+}
+
+async function uploadProjectImageFiles({
+  coverFile,
+  thumbnailFile,
+  projectId,
+  adminUserId
+}: {
+  coverFile: File | null;
+  thumbnailFile: File | null;
+  projectId: string;
+  adminUserId: string;
+}) {
+  const updates: ProjectImageUpdate = {};
+  if (coverFile) {
+    const uploaded = await uploadProjectMediaFile({
+      file: coverFile,
+      contextType: "project",
+      entityId: projectId,
+      purpose: "cover",
+      adminUserId
+    });
+    updates.cover_image_url = uploaded.publicUrl;
+  }
+
+  if (thumbnailFile) {
+    const uploaded = await uploadProjectMediaFile({
+      file: thumbnailFile,
+      contextType: "project",
+      entityId: projectId,
+      purpose: "thumbnail",
+      adminUserId
+    });
+    updates.thumbnail_url = uploaded.publicUrl;
+  }
+
+  return updates;
+}
+
+async function applyProjectImageUpdates(db: ReturnType<typeof asAdminWriteClient>, projectId: string, updates: ProjectImageUpdate) {
+  if (!Object.keys(updates).length) return;
+  const { error } = await db
+    .from<MutationResult>("projects")
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq("id", projectId)
+    .select("id")
+    .single();
+
+  if (error) {
+    throw new Error("Görsel yüklendi ancak proje görsel bilgisi güncellenemedi.");
+  }
+}
+
+async function applyRegionDefaults<T extends { region_slug?: string | null; country?: string | null; city?: string | null; region_label?: string | null }>(payload: T): Promise<T> {
   if (!payload.region_slug) return payload;
 
   const regions = await getAdminProjectRegions();
@@ -186,6 +254,7 @@ async function applyRegionDefaults<T extends { region_slug?: string | null; coun
   return {
     ...payload,
     country: payload.country || region.country || null,
+    city: payload.city || region.name || null,
     region_label: payload.region_label || region.region_label || null
   };
 }
@@ -223,6 +292,7 @@ export async function createProjectAction(formData: FormData) {
   let successPath: string | null = null;
   try {
     const context = await requireContentAdmin();
+    const imageFiles = validateProjectImageFiles(formData);
     const payload = await applyRegionDefaults(parseProjectForm(formData));
     const db = asAdminWriteClient(context.supabase);
     const { data, error } = await db
@@ -235,13 +305,20 @@ export async function createProjectAction(formData: FormData) {
       throw new Error("Proje kaydedilemedi. Lütfen alanları kontrol edin.");
     }
 
+    const imageUpdates = await uploadProjectImageFiles({
+      ...imageFiles,
+      projectId: data.id,
+      adminUserId: context.user.id
+    });
+    await applyProjectImageUpdates(db, data.id, imageUpdates);
+
     await logAdminAction({
       actorId: context.user.id,
       action: "project.create",
       entityType: "projects",
       entityId: data.id,
       summary: `Proje oluşturuldu: ${payload.title}`,
-      metadata: { slug: payload.slug, status: payload.status, regionSlug: payload.region_slug }
+      metadata: { slug: payload.slug, status: payload.status, regionSlug: payload.region_slug, imageUpload: Object.keys(imageUpdates) }
     });
 
     revalidatePath("/");
@@ -268,6 +345,7 @@ export async function updateProjectAction(formData: FormData) {
     if (!id) throw new Error("Proje kaydı bulunamadı.");
 
     const context = await requireContentAdmin();
+    const imageFiles = validateProjectImageFiles(formData);
     const payload = await applyRegionDefaults(parseProjectForm(formData));
     const db = asAdminWriteClient(context.supabase);
     const { data, error } = await db
@@ -281,13 +359,20 @@ export async function updateProjectAction(formData: FormData) {
       throw new Error("Proje güncellenemedi. Lütfen tekrar deneyin.");
     }
 
+    const imageUpdates = await uploadProjectImageFiles({
+      ...imageFiles,
+      projectId: id,
+      adminUserId: context.user.id
+    });
+    await applyProjectImageUpdates(db, id, imageUpdates);
+
     await logAdminAction({
       actorId: context.user.id,
       action: "project.update",
       entityType: "projects",
       entityId: id,
       summary: `Proje güncellendi: ${payload.title}`,
-      metadata: { slug: payload.slug, status: payload.status, regionSlug: payload.region_slug }
+      metadata: { slug: payload.slug, status: payload.status, regionSlug: payload.region_slug, imageUpload: Object.keys(imageUpdates) }
     });
 
     revalidatePath("/");

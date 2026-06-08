@@ -1,5 +1,19 @@
+"use client";
+
+import { useMemo, useState } from "react";
 import { AdminFormActions } from "@/components/admin/AdminFormShell";
 import { AdminSelect, AdminTextInput, AdminTextarea } from "@/components/admin/AdminFormFields";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
+import {
+  countryOptions,
+  findCityByCoordinates,
+  findCityById,
+  findCityByName,
+  findCountryByName,
+  getCountryByCode,
+  searchCitiesForCountry,
+  searchCountries
+} from "@/data/geo/worldLocations";
 import type { AdminProjectRegion } from "@/lib/data/projectRegionRepository";
 
 type ProjectRegionFormValues = {
@@ -104,6 +118,14 @@ const visibilityOptions = [
   { label: "İç kayıt", value: "internal" }
 ];
 
+const selectClassName = "focus-ring mt-2 w-full rounded-lg border border-border-soft px-3 py-2 text-sm text-dark-navy";
+const textInputClassName = "focus-ring mt-2 w-full rounded-lg border border-border-soft px-3 py-2 text-sm text-dark-navy";
+const customCityId = "__custom_city__";
+
+function stringValue(value: string | number | null | undefined) {
+  return value === null || value === undefined ? "" : String(value);
+}
+
 export function ProjectRegionForm({
   action,
   region,
@@ -114,22 +136,189 @@ export function ProjectRegionForm({
   submitLabel: string;
 }) {
   const values = mapRegionToValues(region);
+  const initialCountry = findCountryByName(values.country) ?? getCountryByCode("TR") ?? countryOptions[0];
+  const initialCity =
+    findCityByCoordinates(initialCountry.code, values.coordsLat, values.coordsLng) ??
+    findCityByName(initialCountry.code, values.regionLabel);
+  const hasInitialCustomCity = Boolean(values.regionLabel && !initialCity);
+  const [countryCode, setCountryCode] = useState(initialCountry.code);
+  const [countryQuery, setCountryQuery] = useState("");
+  const [cityQuery, setCityQuery] = useState("");
+  const [cityId, setCityId] = useState(initialCity?.id ?? (hasInitialCustomCity ? customCityId : ""));
+  const [customCityName, setCustomCityName] = useState(hasInitialCustomCity ? values.regionLabel : "");
+  const [manualLat, setManualLat] = useState(hasInitialCustomCity ? stringValue(values.coordsLat) : "");
+  const [manualLng, setManualLng] = useState(hasInitialCustomCity ? stringValue(values.coordsLng) : "");
+  const selectedCountry = getCountryByCode(countryCode) ?? countryOptions[0];
+  const countries = useMemo(() => {
+    const matches = searchCountries(countryQuery);
+    return matches.some((country) => country.code === countryCode) ? matches : [selectedCountry, ...matches];
+  }, [countryCode, countryQuery, selectedCountry]);
+  const cities = useMemo(() => searchCitiesForCountry(countryCode, cityQuery), [countryCode, cityQuery]);
+  const selectedCity = cityId === customCityId ? undefined : findCityById(cityId);
+  const isCustomCity = cityId === customCityId;
+  const locationCityName = selectedCity?.name ?? customCityName.trim();
+  const coordinateLat = manualLat.trim() || selectedCity?.lat || selectedCountry.defaultLat;
+  const coordinateLng = manualLng.trim() || selectedCity?.lng || selectedCountry.defaultLng;
 
   return (
-    <form action={action} className="grid gap-5">
+    <form action={action} encType="multipart/form-data" className="grid gap-5">
       {values.id ? <input type="hidden" name="id" value={values.id} /> : null}
+      <input type="hidden" name="country" value={selectedCountry.name} />
+      <input type="hidden" name="locationCityName" value={locationCityName} />
+      <input type="hidden" name="coordsLng" value={coordinateLng} />
+      <input type="hidden" name="coordsLat" value={coordinateLat} />
       <div className="grid gap-4 md:grid-cols-2">
         <AdminTextInput label="Bölge Adı" name="name" defaultValue={values.name} required />
         <AdminTextInput label="Slug" name="slug" defaultValue={values.slug} helper="Boş bırakılırsa bölge adından güvenli slug üretilebilir." />
-        <AdminTextInput label="Ülke" name="country" defaultValue={values.country} />
+        <div className="grid gap-2">
+          <label className="text-sm font-bold text-dark-navy" htmlFor="countrySearch">Ülke ara</label>
+          <input
+            id="countrySearch"
+            type="search"
+            value={countryQuery}
+            onChange={(event) => setCountryQuery(event.currentTarget.value)}
+            placeholder="Ülke adı yazın"
+            className={textInputClassName}
+          />
+          <label className="text-sm font-bold text-dark-navy">
+            Ülke
+            <select
+              name="countryCode"
+              value={countryCode}
+              onChange={(event) => {
+                setCountryCode(event.currentTarget.value);
+                setCityId("");
+                setCityQuery("");
+                setCustomCityName("");
+                setManualLat("");
+                setManualLng("");
+              }}
+              className={selectClassName}
+              required
+            >
+              {countries.map((country) => (
+                <option key={country.code} value={country.code}>
+                  {country.name}
+                </option>
+              ))}
+            </select>
+            <span className="mt-1 block text-xs font-semibold leading-5 text-ink-muted">Harita konumu için ülkeyi seçin.</span>
+          </label>
+        </div>
+        <div className="grid gap-2">
+          <label className="text-sm font-bold text-dark-navy" htmlFor="citySearch">Şehir / bölge ara</label>
+          <input
+            id="citySearch"
+            type="search"
+            value={cityQuery}
+            onChange={(event) => setCityQuery(event.currentTarget.value)}
+            placeholder="Şehir veya bölge adı yazın"
+            className={textInputClassName}
+          />
+          <label className="text-sm font-bold text-dark-navy">
+            Şehir / Bölge
+            <select
+              name="locationCityId"
+              value={cityId}
+              onChange={(event) => {
+                setCityId(event.currentTarget.value);
+                setManualLat("");
+                setManualLng("");
+              }}
+              className={selectClassName}
+              required
+            >
+              <option value="">Şehir veya bölge seçin</option>
+              {cities.map((city) => (
+                <option key={city.id} value={city.id}>
+                  {city.name}{city.adminName ? ` · ${city.adminName}` : ""}
+                </option>
+              ))}
+              <option value={customCityId}>Listede yok / özel şehir-bölge gir</option>
+            </select>
+            <span className="mt-1 block text-xs font-semibold leading-5 text-ink-muted">Seçilen kayıt harita işaretinin konumunu otomatik belirler.</span>
+          </label>
+        </div>
+        {isCustomCity ? (
+          <label className="text-sm font-bold text-dark-navy">
+            Özel Şehir / Bölge Adı
+            <input
+              name="customCityName"
+              value={customCityName}
+              onChange={(event) => setCustomCityName(event.currentTarget.value)}
+              placeholder="Örn. Darfur saha hattı"
+              className={textInputClassName}
+              required
+            />
+            <span className="mt-1 block text-xs font-semibold leading-5 text-ink-muted">
+              Listede olmayan şehir, kamp, saha hattı veya özel bölge adını yazın.
+            </span>
+          </label>
+        ) : null}
         <AdminTextInput label="Çalışma Hattı / Bölge Etiketi" name="regionLabel" defaultValue={values.regionLabel} />
-        <AdminTextInput label="Boylam (lng)" name="coordsLng" type="number" defaultValue={values.coordsLng} />
-        <AdminTextInput label="Enlem (lat)" name="coordsLat" type="number" defaultValue={values.coordsLat} />
+        <div className="rounded-lg border border-border-soft bg-soft-gray px-4 py-3 text-sm">
+          <p className="font-bold text-dark-navy">Harita konumu</p>
+          <p className="mt-1 font-semibold leading-5 text-ink-muted">
+            {selectedCity
+              ? `${selectedCity.name}, ${selectedCountry.name} · ${selectedCity.lat.toFixed(4)}, ${selectedCity.lng.toFixed(4)}`
+              : isCustomCity && customCityName.trim()
+                ? `${customCityName.trim()}, ${selectedCountry.name} · ${Number(coordinateLat).toFixed(4)}, ${Number(coordinateLng).toFixed(4)}`
+                : "Şehir seçildiğinde konum otomatik doldurulur."}
+          </p>
+          {isCustomCity ? (
+            <p className="mt-2 text-xs font-semibold leading-5 text-ink-muted">
+              Bu şehir için kesin koordinat bulunmadı. Harita konumu ülke merkezine yakın gösterilebilir; gerekirse gelişmiş alandan güncelleyebilirsiniz.
+            </p>
+          ) : null}
+        </div>
+        {isCustomCity ? (
+          <details className="rounded-lg border border-border-soft bg-white p-4 md:col-span-2">
+            <summary className="cursor-pointer text-sm font-bold text-dark-navy">Gelişmiş harita konumu</summary>
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <label className="text-sm font-bold text-dark-navy">
+                Yaklaşık enlem
+                <input
+                  type="number"
+                  step="0.000001"
+                  min="-90"
+                  max="90"
+                  value={manualLat}
+                  onChange={(event) => setManualLat(event.currentTarget.value)}
+                  placeholder={String(selectedCountry.defaultLat)}
+                  className={textInputClassName}
+                />
+              </label>
+              <label className="text-sm font-bold text-dark-navy">
+                Yaklaşık boylam
+                <input
+                  type="number"
+                  step="0.000001"
+                  min="-180"
+                  max="180"
+                  value={manualLng}
+                  onChange={(event) => setManualLng(event.currentTarget.value)}
+                  placeholder={String(selectedCountry.defaultLng)}
+                  className={textInputClassName}
+                />
+              </label>
+            </div>
+            <p className="mt-3 text-xs font-semibold leading-5 text-ink-muted">
+              Boş bırakılırsa seçilen ülkenin merkez konumu kullanılır. Admin ana akışta koordinat yazmak zorunda değildir.
+            </p>
+          </details>
+        ) : null}
         <AdminTextInput label="Öncelik Etiketi" name="priorityLabel" defaultValue={values.priorityLabel} />
         <AdminTextInput label="Yararlanıcı Tahmini" name="beneficiaryEstimate" defaultValue={values.beneficiaryEstimate} />
         <AdminTextInput label="Aktif Proje Sayısı" name="activeProjectCount" type="number" defaultValue={values.activeProjectCount} />
         <AdminTextInput label="Sıra" name="sortOrder" type="number" defaultValue={values.sortOrder} />
-        <AdminTextInput label="Kapak Görsel URL" name="coverImageUrl" type="url" defaultValue={values.coverImageUrl} placeholder="https://..." />
+        <ImageUploadField
+          label="Bölge Kapak Görseli"
+          fileName="coverImageFile"
+          urlName="coverImageUrl"
+          defaultUrl={values.coverImageUrl}
+          helper="Bu görsel bölge detay kartlarında ve proje haritası bilgi alanlarında kullanılabilir."
+          fallbackLabel="Bölge görseli önizlemesi"
+        />
         <AdminSelect label="Görünürlük" name="visibility" defaultValue={values.visibility} options={visibilityOptions} />
       </div>
 

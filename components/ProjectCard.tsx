@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/Button";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { getProjectRegionBySlug } from "@/data/projectRegions";
 import { formatCurrency } from "@/lib/format";
 
 export function ProjectCard({
@@ -10,6 +11,7 @@ export function ProjectCard({
   goal,
   raised,
   visualTone,
+  regionSlug,
   regionName,
   coverImageUrl,
   thumbnailUrl,
@@ -24,6 +26,7 @@ export function ProjectCard({
   goal: number;
   raised: number;
   visualTone: string;
+  regionSlug?: string;
   regionName?: string;
   coverImageUrl?: string;
   thumbnailUrl?: string;
@@ -32,7 +35,8 @@ export function ProjectCard({
   compact?: boolean;
 }) {
   const progress = goal > 0 ? Math.min(Math.round((raised / goal) * 100), 100) : 0;
-  const imageUrl = thumbnailUrl || coverImageUrl;
+  const regionCoverImageUrl = getProjectRegionBySlug(regionSlug)?.coverImageUrl;
+  const imageUrl = thumbnailUrl || coverImageUrl || regionCoverImageUrl;
 
   return (
     <article className="overflow-hidden rounded-brand border border-border-soft bg-white shadow-card transition hover:-translate-y-1 hover:shadow-soft">

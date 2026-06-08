@@ -90,6 +90,9 @@
 - [ ] Private/public bucket ayrımı yapıldı.
 - [ ] Dosya path normalizasyonu uygulandı.
 - [ ] Storage bucket policy tanımlandı mı?
+- [ ] `project-media` bucket public read, admin upload server action ve anon upload kapalı olacak şekilde doğrulandı mı?
+- [ ] Proje/bölge/faaliyet görsel upload akışı service role key'i client tarafına taşımıyor mu?
+- [ ] Görsel upload server-side MIME ve 5 MB boyut kontrolünden geçiyor mu?
 
 ## Payment webhook security
 

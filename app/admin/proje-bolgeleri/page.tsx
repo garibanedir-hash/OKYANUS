@@ -60,7 +60,7 @@ export default async function AdminProjectRegionsPage({
       </section>
 
       <AdminTable
-        headers={["Bölge adı", "Slug", "Ülke", "Çalışma hattı", "Durum", "Görünürlük", "Sıra", "Bağlı proje", "İşlemler"]}
+        headers={["Bölge adı", "Slug", "Ülke", "Şehir/Bölge", "Harita konumu", "Durum", "Görünürlük", "Sıra", "Bağlı proje", "İşlemler"]}
         recordCount={regions.length}
         empty={!regions.length}
       >
@@ -70,6 +70,7 @@ export default async function AdminProjectRegionsPage({
             <td className="px-4 py-3 text-ink-muted">{region.slug}</td>
             <td className="px-4 py-3 text-ink-muted">{region.country ?? "-"}</td>
             <td className="px-4 py-3 text-ink-muted">{region.region_label ?? "-"}</td>
+            <td className="px-4 py-3 text-ink-muted">{region.coords_lat !== null && region.coords_lng !== null ? "Hazır" : "Eksik"}</td>
             <td className="px-4 py-3">
               <AdminStatusBadge status={region.is_active ? "Aktif" : "Pasif"} />
             </td>

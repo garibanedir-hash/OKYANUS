@@ -34,6 +34,7 @@ export type ProjectRegion = {
   stats: Array<{ label: string; value: string }>;
   categories: ProjectRegionCategory[];
   recentUpdates: Array<{ title: string; dateLabel: string; summary: string }>;
+  coverImageUrl?: string;
   coverTone: string;
   relatedProjectSlugs: string[];
 };

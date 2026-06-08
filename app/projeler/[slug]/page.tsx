@@ -44,6 +44,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   }
 
   const progress = project.goal > 0 ? Math.min(Math.round((project.raised / project.goal) * 100), 100) : 0;
+  const heroImageUrl = project.coverImageUrl || project.thumbnailUrl;
   const [projects, activities, region] = await Promise.all([
     getProjects(),
     getPublicProjectActivities(project.id),
@@ -76,7 +77,15 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
             </div>
           </div>
           <div className="rounded-[1.75rem] bg-white p-4 shadow-soft">
-            <VisualPlaceholder label={project.category} className={`h-80 rounded-[1.35rem] bg-gradient-to-br ${project.visualTone}`} />
+            {heroImageUrl ? (
+              <div
+                className="h-80 rounded-[1.35rem] bg-cover bg-center"
+                style={{ backgroundImage: `url("${heroImageUrl}")` }}
+                aria-label={`${project.title} proje görseli`}
+              />
+            ) : (
+              <VisualPlaceholder label={project.category} className={`h-80 rounded-[1.35rem] bg-gradient-to-br ${project.visualTone}`} />
+            )}
           </div>
         </Container>
       </section>

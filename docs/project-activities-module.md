@@ -24,6 +24,8 @@ Temel alanlar:
 - içerik: `summary`, `description`, `public_summary`, `internal_notes`
 - medya/rapor: `cover_image_url`, `gallery_urls`, `video_url`, `report_url`
 
+Faaliyet kapak görseli admin formundan dosya seçilerek yüklenebilir. `023_project_media_storage.sql` ile oluşturulan `project-media` bucket public read olarak kullanılır; upload server action ve server-only service role helper üzerinden yapılır. URL alanı yalnızca gelişmiş/yedek kullanım için kalır.
+
 ## Internal / Public Ayrımı
 
 `visibility = internal` kayıtları yalnızca admin ekranlarında kullanılır.
@@ -143,7 +145,7 @@ Smoke test:
 
 ## Gelecek Geliştirmeler
 
-- medya upload ve private/public asset yönetimi
+- otomatik thumbnail üretimi ve görsel sıkıştırma
 - harcama/masraf kaydı bağlantısı
 - personel/koordinatör atama
 - faaliyet raporu export

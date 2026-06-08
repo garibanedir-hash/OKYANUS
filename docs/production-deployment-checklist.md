@@ -174,6 +174,12 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Proje oluşturma/düzenleme formlarında `region_slug` seçimi kaydediliyor.
 - [ ] Public harita Supabase `project_regions` datasını kullanıyor; fallback yalnızca veri yoksa devreye giriyor.
 - [ ] Harita altındaki bölge projeleri ve son saha faaliyetleri public kullanıcıda boş blok oluşturmuyor.
+- [ ] `022_project_visual_fields.sql` staging ortamında çalıştırıldı.
+- [ ] Admin bölge formunda ülke/şehir seçimi koordinatı otomatik dolduruyor; admin enlem/boylam yazmak zorunda kalmıyor.
+- [ ] `023_project_media_storage.sql` staging ortamında çalıştırıldı.
+- [ ] `project-media` bucket public read, 5 MB limit ve JPG/PNG/WebP MIME sınırıyla doğrulandı.
+- [ ] Proje, bölge ve faaliyet görsel upload formları admin hesabıyla test edildi.
+- [ ] Proje kapak ve thumbnail görselleri admin panelden dosya seçilerek yükleniyor ve public kart/detay görsellerinde görünüyor.
 
 ## Veri Güvenliği ve KVKK
 
