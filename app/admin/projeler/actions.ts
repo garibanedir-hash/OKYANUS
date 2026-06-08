@@ -57,8 +57,8 @@ export type ProjectFormValues = {
 
 type MutationResult = { id: string; slug?: string };
 type ProjectImageUpdate = {
-  cover_image_url?: string;
-  thumbnail_url?: string;
+  cover_image_url?: string | null;
+  thumbnail_url?: string | null;
 };
 
 function redirectWithStatus(path: string, durum: string, mesaj?: string) {
@@ -149,6 +149,8 @@ function parseProjectForm(formData: FormData) {
   const ctaHref = normalizeOptionalUrl(getOptionalString(formData, "ctaHref"));
   const coverImageUrl = normalizeOptionalUrl(getOptionalString(formData, "coverImageUrl"));
   const thumbnailUrl = normalizeOptionalUrl(getOptionalString(formData, "thumbnailUrl"));
+  const removeCoverImage = formData.get("coverImageUrlRemove") === "on";
+  const removeThumbnailImage = formData.get("thumbnailUrlRemove") === "on";
 
   if (!title) throw new Error("Proje başlığı zorunludur.");
   if (!slug) throw new Error("Proje slug alanı zorunludur.");
@@ -172,8 +174,8 @@ function parseProjectForm(formData: FormData) {
     country: getOptionalString(formData, "country"),
     city: getOptionalString(formData, "city"),
     region_label: getOptionalString(formData, "regionLabel"),
-    cover_image_url: coverImageUrl,
-    thumbnail_url: thumbnailUrl,
+    cover_image_url: removeCoverImage ? null : coverImageUrl,
+    thumbnail_url: removeThumbnailImage ? null : thumbnailUrl,
     goal_amount: parseNumberField(formData, "goal", 0),
     raised_amount: parseNumberField(formData, "raised", 0),
     start_date: parseDateField(formData, "startDate"),

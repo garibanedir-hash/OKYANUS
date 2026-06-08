@@ -147,6 +147,7 @@ function parseActivityInput(formData: FormData): ProjectActivityWriteInput {
   const status = readEnum(formData, "status", activityStatuses, "draft");
   const visibility = readEnum(formData, "visibility", activityVisibilities, "internal");
   const cancelledReason = readNullableString(formData, "cancelledReason");
+  const removeCoverImage = formData.get("coverImageUrlRemove") === "on";
 
   if (!projectId) throw new Error("Proje kimliği zorunludur.");
   if (!title) throw new Error("Faaliyet başlığı zorunludur.");
@@ -183,7 +184,7 @@ function parseActivityInput(formData: FormData): ProjectActivityWriteInput {
     description: readNullableString(formData, "description"),
     internalNotes: readNullableString(formData, "internalNotes"),
     publicSummary: readNullableString(formData, "publicSummary"),
-    coverImageUrl: readOptionalUrl(formData, "coverImageUrl"),
+    coverImageUrl: removeCoverImage ? null : readOptionalUrl(formData, "coverImageUrl"),
     galleryUrls: readGalleryUrls(formData),
     videoUrl: readOptionalUrl(formData, "videoUrl"),
     reportUrl: readOptionalUrl(formData, "reportUrl"),

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ImageUrlField } from "@/components/admin/ImageUrlField";
 
 type ImageUploadFieldProps = {
@@ -34,9 +34,11 @@ export function ImageUploadField({
   fallbackLabel = "Görsel önizleme"
 }: ImageUploadFieldProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [removeRequested, setRemoveRequested] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const defaultImageIsValid = useMemo(() => isLikelyImageUrl(defaultUrl), [defaultUrl]);
   const objectUrl = useMemo(() => (selectedFile ? URL.createObjectURL(selectedFile) : null), [selectedFile]);
-  const previewUrl = objectUrl ?? (defaultImageIsValid ? defaultUrl : null);
+  const previewUrl = removeRequested ? null : objectUrl ?? (defaultImageIsValid ? defaultUrl : null);
 
   useEffect(() => {
     return () => {
@@ -57,9 +59,13 @@ export function ImageUploadField({
           <input
             name={fileName}
             type="file"
+            ref={fileInputRef}
             accept="image/jpeg,image/png,image/webp"
             className={fileInputClassName}
-            onChange={(event) => setSelectedFile(event.currentTarget.files?.[0] ?? null)}
+            onChange={(event) => {
+              setSelectedFile(event.currentTarget.files?.[0] ?? null);
+              setRemoveRequested(false);
+            }}
           />
         </label>
       </div>
@@ -83,6 +89,25 @@ export function ImageUploadField({
         <p className="mt-2 text-xs font-bold leading-5 text-ocean-green">
           {selectedFile.name} kaydetme sırasında yüklenecek.
         </p>
+      ) : null}
+
+      {defaultUrl ? (
+        <label className="mt-3 flex items-start gap-2 rounded-lg border border-border-soft bg-soft-gray px-3 py-2 text-xs font-bold leading-5 text-ink-muted">
+          <input
+            name={`${urlName}Remove`}
+            type="checkbox"
+            checked={removeRequested}
+            onChange={(event) => {
+              setRemoveRequested(event.currentTarget.checked);
+              if (event.currentTarget.checked) {
+                setSelectedFile(null);
+                if (fileInputRef.current) fileInputRef.current.value = "";
+              }
+            }}
+            className="mt-0.5 h-4 w-4 accent-ocean-green"
+          />
+          <span>Görseli kaldır</span>
+        </label>
       ) : null}
 
       <details className="mt-4 rounded-lg border border-border-soft bg-soft-gray p-3">

@@ -19,7 +19,7 @@ Bucket içi path yapısı:
 - `projects/{projectId}/cover/{uuid}.jpg`
 - `projects/{projectId}/thumbnail/{uuid}.jpg`
 - `regions/{regionSlug}/cover/{uuid}.jpg`
-- `activities/{activityId}/activity-cover/{uuid}.jpg`
+- `activities/{activityId}/cover/{uuid}.jpg`
 
 Dosya adı ve path parçaları sanitize edilir; her yükleme random UUID içerir.
 
@@ -31,6 +31,7 @@ Admin formlarında URL yazma zorunluluğu yoktur. Görsel alanları:
 - Önizleme
 - Desteklenen format/boyut bilgisi
 - Gelişmiş: URL ile ekle yedek alanı
+- Mevcut görseli kaldırma seçeneği
 
 şeklinde çalışır.
 

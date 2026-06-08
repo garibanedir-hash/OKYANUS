@@ -76,6 +76,7 @@ function parseProjectRegionForm(formData: FormData): ProjectRegionWriteInput {
   if (!slug) throw new Error("Slug alanı zorunludur.");
 
   const coverImageUrl = normalizeOptionalUrl(getOptionalString(formData, "coverImageUrl"));
+  const removeCoverImage = formData.get("coverImageUrlRemove") === "on";
   const country = getOptionalString(formData, "country");
   const cityName = getOptionalString(formData, "locationCityName") ?? getOptionalString(formData, "customCityName");
   const countryFallback = findCountryByName(country);
@@ -105,7 +106,7 @@ function parseProjectRegionForm(formData: FormData): ProjectRegionWriteInput {
     activeProjectCount: parseOptionalNumber(formData, "activeProjectCount"),
     focusAreas: parseCsvOrLines(getString(formData, "focusAreasText")),
     categories: parseCsvOrLines(getString(formData, "categoriesText")),
-    coverImageUrl,
+    coverImageUrl: removeCoverImage ? null : coverImageUrl,
     sortOrder: parseNumberField(formData, "sortOrder", 0),
     isActive: formData.get("isActive") === "on",
     visibility: getString(formData, "visibility") === "internal" ? "internal" : "public",
@@ -134,7 +135,7 @@ async function uploadRegionCoverImage({
     file: coverFile,
     contextType: "region",
     entityId: regionSlug,
-    purpose: "cover",
+    purpose: "region-cover",
     adminUserId
   });
 }

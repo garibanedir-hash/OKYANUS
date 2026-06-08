@@ -10,7 +10,7 @@ const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp"] as const;
 type ProjectMediaMimeType = (typeof allowedMimeTypes)[number];
 
 export type ProjectMediaContextType = "project" | "region" | "activity";
-export type ProjectMediaPurpose = "cover" | "thumbnail" | "gallery" | "activity-cover";
+export type ProjectMediaPurpose = "cover" | "thumbnail" | "gallery" | "activity-cover" | "region-cover";
 
 export type ProjectMediaUploadInput = {
   file: File;
@@ -68,6 +68,11 @@ function folderForContext(contextType: ProjectMediaContextType) {
   return "activities";
 }
 
+function folderForPurpose(purpose: ProjectMediaPurpose) {
+  if (purpose === "activity-cover" || purpose === "region-cover") return "cover";
+  return safePathSegment(purpose);
+}
+
 export function getOptionalProjectMediaFile(formData: FormData, name: string): File | null {
   const value = formData.get(name);
   if (!value || typeof value === "string") return null;
@@ -97,7 +102,7 @@ export function buildProjectMediaPath(input: {
   const extension = extensionForMimeType(input.mimeType);
   const contextFolder = folderForContext(input.contextType);
   const entity = safePathSegment(input.entityId);
-  const purpose = safePathSegment(input.purpose);
+  const purpose = folderForPurpose(input.purpose);
   const baseName = safeFileNameBase(input.fileName);
   return `${contextFolder}/${entity}/${purpose}/${uuid}-${baseName}.${extension}`;
 }
@@ -106,6 +111,22 @@ export function getPublicProjectMediaUrl(path: string) {
   const supabase = getAdminStorageClient();
   const { data } = supabase.storage.from(PROJECT_MEDIA_BUCKET).getPublicUrl(path);
   return data.publicUrl;
+}
+
+export function parseProjectMediaPathFromUrl(url?: string | null) {
+  if (!url) return null;
+
+  try {
+    const parsed = new URL(url);
+    const marker = `/storage/v1/object/public/${PROJECT_MEDIA_BUCKET}/`;
+    const markerIndex = parsed.pathname.indexOf(marker);
+    if (markerIndex < 0) return null;
+
+    const path = parsed.pathname.slice(markerIndex + marker.length);
+    return path ? decodeURIComponent(path) : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function uploadProjectMediaFile(input: ProjectMediaUploadInput): Promise<ProjectMediaUploadResult> {
