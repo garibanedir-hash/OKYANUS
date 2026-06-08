@@ -3,20 +3,27 @@ import type { ProjectRegion } from "@/data/projectRegions";
 import { projectRegionCategoryIconPaths, projectRegionCategoryLabels } from "@/data/projectRegions";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
+import { resolveDonationTarget } from "@/lib/donations/donationTarget";
+import type { DonationPublicConfig } from "@/lib/donations/donationTarget";
 
 type ProjectRegionDetailPanelProps = {
   region: ProjectRegion;
   projects: Project[];
   compact?: boolean;
+  donationConfig?: DonationPublicConfig;
 };
 
 export function ProjectRegionDetailPanel({
   region,
   projects,
-  compact = false
+  compact = false,
+  donationConfig
 }: ProjectRegionDetailPanelProps) {
   const visibleProjects = projects.filter((project) => project.regionSlug === region.slug || region.relatedProjectSlugs.includes(project.slug));
   const projectCount = visibleProjects.length || region.projectCount;
+  const donationTarget = donationConfig
+    ? resolveDonationTarget(donationConfig, { source: "general", campaignTitle: region.name }, "/bagis-yap")
+    : { href: "/bagis-yap", isExternal: false };
 
   return (
     <aside className="min-w-0 rounded-lg border border-[#DDE8E7] bg-white p-4 text-[#0F2547] shadow-sm">
@@ -76,7 +83,13 @@ export function ProjectRegionDetailPanel({
         <Button href="/projeler" variant="light" className="rounded-md text-xs" showIcon>
           Projeleri Gör
         </Button>
-        <Button href="/bagis-yap" className="rounded-md text-xs" showIcon>
+        <Button
+          href={donationTarget.href}
+          target={donationTarget.isExternal ? "_blank" : undefined}
+          rel={donationTarget.isExternal ? "noopener noreferrer" : undefined}
+          className="rounded-md text-xs"
+          showIcon
+        >
           Bağış Yap
         </Button>
       </div>

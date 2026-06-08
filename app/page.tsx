@@ -6,6 +6,7 @@ import { getLatestNews } from "@/lib/data/newsRepository";
 import { mergeProjectsWithRegionalFallbacks } from "@/data/projectRegions";
 import { getPublicProjectActivitiesForProjectIds } from "@/lib/data/projectActivityRepository";
 import { getPublicProjectRegions } from "@/lib/data/projectRegionRepository";
+import { getDonationPublicConfig } from "@/lib/donations/donationMode";
 import { ActivityCard } from "@/components/ActivityCard";
 import { ProjectCard } from "@/components/ProjectCard";
 import { NewsCard } from "@/components/NewsCard";
@@ -27,6 +28,7 @@ const homeFlow: Array<{ icon: LucideIcon; title: string; text: string }> = [
 ];
 
 export default async function HomePage() {
+  const donationConfig = getDonationPublicConfig();
   const [projects, news, regions] = await Promise.all([
     getFeaturedProjects(4),
     getLatestNews(3),
@@ -37,7 +39,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <HeroSection />
+      <HeroSection donationConfig={donationConfig} />
       <StatsSection />
 
       {/* ── Çalışma Bölgeleri ── */}
@@ -52,7 +54,7 @@ export default async function HomePage() {
             />
           </MotionReveal>
           <div className="mt-12">
-            <ProjectRegionSection regions={regions} projects={visibleProjects} activities={regionActivities} compact />
+            <ProjectRegionSection regions={regions} projects={visibleProjects} activities={regionActivities} donationConfig={donationConfig} compact />
           </div>
         </Container>
       </section>
@@ -128,7 +130,7 @@ export default async function HomePage() {
             {visibleProjects.length ? (
               visibleProjects.map((project, index) => (
                 <MotionReveal key={project.slug} delay={index * 0.05}>
-                  <ProjectCard {...project} />
+                  <ProjectCard {...project} donationConfig={donationConfig} />
                 </MotionReveal>
               ))
             ) : (

@@ -8,6 +8,7 @@ import { mergeProjectsWithRegionalFallbacks } from "@/data/projectRegions";
 import { getPublicProjectActivitiesForProjectIds } from "@/lib/data/projectActivityRepository";
 import { getPublicProjectRegions } from "@/lib/data/projectRegionRepository";
 import { getProjectsWithSource } from "@/lib/data/projectsRepository";
+import { getDonationPublicConfig } from "@/lib/donations/donationMode";
 
 export const metadata: Metadata = {
   title: "Projeler",
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectsPage() {
+  const donationConfig = getDonationPublicConfig();
   const [projectsResult, regions] = await Promise.all([
     getProjectsWithSource(),
     getPublicProjectRegions()
@@ -37,7 +39,7 @@ export default async function ProjectsPage() {
             description="Okyanus İnsani Yardım Derneği olarak ihtiyaç odaklı çalışmalarımızı belirli bölgelerde sürdürülebilir, şeffaf ve insan onurunu merkeze alan bir yaklaşımla yürütüyoruz."
           />
           <div className="mt-10">
-            <ProjectRegionSection regions={regions} projects={projects} activities={activities} />
+            <ProjectRegionSection regions={regions} projects={projects} activities={activities} donationConfig={donationConfig} />
           </div>
         </Container>
       </section>
@@ -49,7 +51,7 @@ export default async function ProjectsPage() {
             title="Bölge ve kategoriye göre inceleyin"
             description="Gazze, Lübnan, Mısır ve Türkiye filtreleriyle ya da acil yardım, eğitim, su, yetim ve kurban başlıklarıyla projeleri tarayın."
           />
-          <ProjectFilterGrid projects={projects} />
+          <ProjectFilterGrid projects={projects} donationConfig={donationConfig} />
         </Container>
       </section>
     </>

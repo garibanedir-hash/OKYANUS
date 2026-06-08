@@ -3,6 +3,8 @@ import { Facebook, Instagram, Mail, MapPin, Phone, Twitter } from "lucide-react"
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { OfficialLogo } from "@/components/brand/OfficialLogo";
+import { resolveDonationTarget } from "@/lib/donations/donationTarget";
+import type { DonationPublicConfig } from "@/lib/donations/donationTarget";
 
 const quickLinks = [
   ["Hakkımızda", "/hakkimizda"],
@@ -26,7 +28,14 @@ const legalLinks = [
   ["Bağış Şartları", "/bagis-sartlari"]
 ];
 
-export function Footer() {
+export function Footer({ donationConfig }: { donationConfig: DonationPublicConfig }) {
+  const donationTarget = resolveDonationTarget(donationConfig, { source: "general" }, "/bagis-yap");
+  const donationLinkProps = {
+    href: donationTarget.href,
+    target: donationTarget.isExternal ? "_blank" : undefined,
+    rel: donationTarget.isExternal ? "noopener noreferrer" : undefined
+  };
+
   return (
     <footer className="bg-dark-navy text-white">
       <Container className="py-14">
@@ -35,7 +44,7 @@ export function Footer() {
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-mint-green">Bir damla destek, büyüyen bir iyiliğe dönüşür</p>
             <h2 className="mt-2 text-2xl font-bold">Bağışınız ve emeğiniz güvenle takip edilen projelere ulaşır.</h2>
           </div>
-          <Button href="/bagis-yap" variant="light" showIcon>
+          <Button {...donationLinkProps} variant="light" showIcon>
             Bağış Yap
           </Button>
         </div>
@@ -64,9 +73,20 @@ export function Footer() {
             <ul className="mt-5 space-y-3 text-sm text-white/72">
               {quickLinks.map(([label, href]) => (
                 <li key={href}>
-                  <Link href={href} className="focus-ring rounded-full transition hover:text-white">
-                    {label}
-                  </Link>
+                  {href === "/bagis-yap" ? (
+                    <a
+                      href={donationTarget.href}
+                      target={donationTarget.isExternal ? "_blank" : undefined}
+                      rel={donationTarget.isExternal ? "noopener noreferrer" : undefined}
+                      className="focus-ring rounded-full transition hover:text-white"
+                    >
+                      {label}
+                    </a>
+                  ) : (
+                    <Link href={href} className="focus-ring rounded-full transition hover:text-white">
+                      {label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

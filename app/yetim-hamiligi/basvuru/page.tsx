@@ -6,6 +6,8 @@ import { PageHero } from "@/components/sections/PageHero";
 import { getActiveSponsorshipPrograms } from "@/lib/data/orphanSponsorshipRepository";
 import { formatCurrency } from "@/lib/format";
 import { SponsorshipApplicationForm } from "./SponsorshipApplicationForm";
+import { DonationModePanel } from "@/components/donations/DonationModePanel";
+import { getDonationMode } from "@/lib/donations/donationMode";
 
 export const metadata: Metadata = {
   title: "Yetim Hamiliği Başvurusu",
@@ -23,6 +25,8 @@ export default async function OrphanSponsorshipApplicationPage({ searchParams }:
   const success = params?.durum === "basarili" || params?.durum === "alindi";
   const errorMessage = params?.durum === "hata" ? params?.mesaj : undefined;
   const amount = Number(params?.tutar);
+  const donationMode = getDonationMode();
+  const isOnlineMode = donationMode === "online";
 
   return (
     <>
@@ -75,7 +79,7 @@ export default async function OrphanSponsorshipApplicationPage({ searchParams }:
                   </Button>
                 </div>
               </div>
-            ) : (
+            ) : isOnlineMode ? (
               <div className="grid gap-4">
                 {errorMessage ? (
                   <div className="rounded-lg border border-warm-accent/25 bg-warm-accent/10 p-4 text-sm font-bold leading-6 text-dark-navy">
@@ -84,6 +88,13 @@ export default async function OrphanSponsorshipApplicationPage({ searchParams }:
                 ) : null}
                 <SponsorshipApplicationForm programs={programs} selectedSlug={selectedProgram?.slug} />
               </div>
+            ) : (
+              <DonationModePanel
+                context={{ source: "orphan", campaignTitle: selectedProgram?.title }}
+                onlineHref="/yetim-hamiligi/basvuru"
+                title="Yetim Hamiliği Bilgilendirme Hattı"
+                description="Şu anda yetim hamiliği başvuru ve destek sürecimizi WhatsApp üzerinden yönlendiriyoruz. Destek modeli ve programlar hakkında ekibimizden bilgi alabilirsiniz."
+              />
             )}
 
             <aside className="grid gap-5">

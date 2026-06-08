@@ -6,6 +6,7 @@ import { PageHero } from "@/components/sections/PageHero";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getActiveQurbanCampaigns } from "@/lib/data/qurbanRepository";
 import { formatCurrency } from "@/lib/format";
+import { DonationCtaButton } from "@/components/donations/DonationCtaButton";
 
 export const metadata: Metadata = {
   title: "Kurban Çalışmaları",
@@ -52,9 +53,7 @@ export default async function QurbanPage() {
         description="Okyanus İnsani Yardım Derneği olarak kurban bağışlarınızı vekalet, kesim, dağıtım ve bilgilendirme süreçleriyle kayıt altına alınabilir bir yapıda takip ediyoruz."
       >
         <div className="flex flex-wrap gap-3">
-          <Button href="/kurban/bagis" showIcon>
-            Kurban Bağışı Yap
-          </Button>
+          <DonationCtaButton label="Kurban Bağışı Yap" context={{ source: "qurban" }} onlineHref="/kurban/bagis" showIcon />
           <Button href="#surec" variant="ghost" showIcon>
             Süreci İncele
           </Button>
@@ -106,9 +105,12 @@ export default async function QurbanPage() {
                     <Button href={`/kurban/${campaign.slug}`} variant="secondary" showIcon>
                       Süreci İncele
                     </Button>
-                    <Button href={`/kurban/bagis?kampanya=${campaign.slug}`} variant="ghost">
-                      Kurban Bağışı Yap
-                    </Button>
+                    <DonationCtaButton
+                      label="Kurban Bağışı Yap"
+                      context={{ source: "qurban", campaignTitle: campaign.title }}
+                      onlineHref={`/kurban/bagis?kampanya=${campaign.slug}`}
+                      variant="ghost"
+                    />
                   </div>
                 </article>
               );
@@ -120,9 +122,7 @@ export default async function QurbanPage() {
               <h2 className="text-xl font-extrabold text-dark-navy">Aktif kurban kampanyası yok</h2>
               <p className="mt-2 text-ink-muted">Yeni kurban kampanyaları yayına alındığında bu alanda listelenecektir. Dilerseniz genel bağış çalışmalarımızı inceleyebilirsiniz.</p>
               <div className="mt-5">
-                <Button href="/bagis" variant="secondary">
-                  Genel Bağış Sayfası
-                </Button>
+                <DonationCtaButton label="Genel Bağış Sayfası" context={{ source: "general" }} onlineHref="/bagis-yap" variant="secondary" />
               </div>
             </div>
           ) : null}

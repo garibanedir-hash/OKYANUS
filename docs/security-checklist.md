@@ -169,6 +169,8 @@
 - [ ] Payment write repository `server-only` sınırında kalıyor ve service role client tarafına taşınmıyor mu?
 - [ ] PayTR helper ve callback kodu server-only kalıyor, `PAYTR_MERCHANT_KEY`/`PAYTR_MERCHANT_SALT` client bundle'a taşınmıyor mu?
 - [ ] Public bağış, kurban ve yetim formları payment tablolara doğrudan client-side yazmıyor mu?
+- [ ] `DONATION_MODE=whatsapp` veya `disabled` iken public bağış/kurban/yetim formları render edilmiyor ve yeni payment intent başlatmıyor mu?
+- [ ] WhatsApp telefon/mesaj bilgisi public-safe kabul ediliyor; PayTR merchant key/salt veya Supabase service role secret client bundle'a taşınmıyor mu?
 - [ ] `.env.local` Git'e dahil değil ve Vercel production env değerleri public/server ayrımıyla tanımlı mı?
 - [ ] Production öncesi `NEXT_PUBLIC_ADMIN_DEMO_MODE=false` ve `SITE_MAINTENANCE_MODE` durumu doğrulanıyor mu?
 

@@ -4,6 +4,8 @@ import { CheckCircle2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { OfficialLogo } from "@/components/brand/OfficialLogo";
+import { resolveDonationTarget } from "@/lib/donations/donationTarget";
+import type { DonationPublicConfig } from "@/lib/donations/donationTarget";
 import { motion } from "framer-motion";
 
 const trustPoints = [
@@ -49,7 +51,9 @@ const reveal = {
   }),
 };
 
-export function HeroSection() {
+export function HeroSection({ donationConfig }: { donationConfig: DonationPublicConfig }) {
+  const donationTarget = resolveDonationTarget(donationConfig, { source: "general" }, "/bagis-yap");
+
   return (
     <section className="relative min-h-[calc(100vh-6rem)] overflow-hidden bg-dark-navy">
       {/* Ambient glow top-center */}
@@ -137,7 +141,12 @@ export function HeroSection() {
               custom={0.38}
               className="mt-10 flex flex-col gap-3 sm:flex-row"
             >
-              <Button href="/bagis-yap" showIcon>
+              <Button
+                href={donationTarget.href}
+                target={donationTarget.isExternal ? "_blank" : undefined}
+                rel={donationTarget.isExternal ? "noopener noreferrer" : undefined}
+                showIcon
+              >
                 Bağış Yap
               </Button>
               <Button href="/gonullu-ol" variant="ghost" showIcon>

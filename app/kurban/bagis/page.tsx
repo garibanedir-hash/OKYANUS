@@ -8,6 +8,8 @@ import { createQurbanOrderAction } from "@/app/kurban/bagis/actions";
 import { QurbanDonationForm } from "@/app/kurban/bagis/QurbanDonationForm";
 import { getCurrentQurbanDonorContext } from "@/lib/data/qurbanWriteRepository";
 import { formatCurrency } from "@/lib/format";
+import { DonationModePanel } from "@/components/donations/DonationModePanel";
+import { getDonationMode } from "@/lib/donations/donationMode";
 
 export const metadata: Metadata = {
   title: "Kurban Bağışı",
@@ -32,7 +34,9 @@ export default async function QurbanDonationDemoPage({ searchParams }: QurbanDon
   const params = await searchParams;
   const campaigns = await getActiveQurbanCampaigns();
   const selectedSlug = params?.kampanya ?? params?.campaign;
-  const donorContext = await getCurrentQurbanDonorContext();
+  const donationMode = getDonationMode();
+  const isOnlineMode = donationMode === "online";
+  const donorContext = isOnlineMode ? await getCurrentQurbanDonorContext() : null;
   const donorDefaults = donorContext?.account
     ? {
         fullName: donorContext.account.full_name,
@@ -98,7 +102,7 @@ export default async function QurbanDonationDemoPage({ searchParams }: QurbanDon
                   </Link>
                 </div>
               </div>
-            ) : (
+            ) : isOnlineMode ? (
               <div className="grid gap-4">
                 {params?.durum === "hata" ? (
                   <div className="rounded-lg border border-warm-accent/30 bg-warm-accent/10 p-4 text-sm font-bold leading-6 text-dark-navy">
@@ -112,6 +116,13 @@ export default async function QurbanDonationDemoPage({ searchParams }: QurbanDon
                   action={createQurbanOrderAction}
                 />
               </div>
+            ) : (
+              <DonationModePanel
+                context={{ source: "qurban", campaignTitle: campaigns.find((campaign) => campaign.slug === selectedSlug)?.title }}
+                onlineHref="/kurban/bagis"
+                title="Kurban Bağışı Bilgilendirme Hattı"
+                description="Şu anda kurban bağışı sürecimizi WhatsApp üzerinden yönlendiriyoruz. Kampanya, hisse/adet ve vekalet süreciyle ilgili bilgi almak için ekibimize yazabilirsiniz."
+              />
             )}
 
             <aside className="grid gap-5">

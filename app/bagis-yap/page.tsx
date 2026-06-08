@@ -7,6 +7,9 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
 import { Button } from "@/components/ui/Button";
 import { createGeneralDonationPaymentIntentAction } from "@/app/bagis-yap/actions";
+import { DonationCtaButton } from "@/components/donations/DonationCtaButton";
+import { DonationModePanel } from "@/components/donations/DonationModePanel";
+import { getDonationMode } from "@/lib/donations/donationMode";
 
 export const metadata: Metadata = {
   title: "Bağış Yap",
@@ -33,12 +36,19 @@ type DonatePageProps = {
 
 export default async function DonatePage({ searchParams }: DonatePageProps) {
   const params = await searchParams;
+  const donationMode = getDonationMode();
+  const isOnlineMode = donationMode === "online";
+
   return (
     <>
       <PageHero
         eyebrow="Bağış Yap"
         title="Emanetinizi güvenle destek alanına dönüştürün"
-        description="Bağış ön kayıt akışı, ileride güvenli ödeme ve proje bazlı raporlama sistemine bağlanabilecek şekilde hazırlandı."
+        description={
+          isOnlineMode
+            ? "Bağış ön kayıt akışı, güvenli ödeme ve proje bazlı raporlama sistemine bağlanabilecek şekilde hazırlandı."
+            : "Bağış bilgilendirme sürecimiz şu anda güvenli iletişim kanalları üzerinden yönlendiriliyor."
+        }
       />
       <section className="bg-soft-gray py-16 sm:py-20">
         <Container>
@@ -78,7 +88,9 @@ export default async function DonatePage({ searchParams }: DonatePageProps) {
               <div className="mt-6 rounded-brand border border-primary-blue/20 bg-soft-blue p-6 shadow-card">
                 <h2 className="text-xl font-bold text-dark-navy">Ödeme sağlayıcı bağımsız hazırlık</h2>
                 <p className="mt-2 leading-7 text-slate-600">
-                  Genel bağış için gerçek online ödeme formu bu aşamada açılmaz. Bir sonraki adımda bağış ön kaydı `general_donation` veya proje seçimine göre `project_donation` payment intent bağlamına dönüştürülerek PayTR test iframe akışına bağlanacaktır.
+                  {isOnlineMode
+                    ? "Genel bağış kayıtları, seçilen destek alanı ve proje bilgisiyle birlikte güvenli ödeme akışına hazırlanır."
+                    : "Bu modda online ödeme formu gösterilmez; destek olmak istediğiniz alan için ekibimiz WhatsApp veya iletişim kanalları üzerinden size yardımcı olur."}
                 </p>
               </div>
               <div className="mt-6 rounded-brand border border-ocean-green/20 bg-mint-green/50 p-6 shadow-card">
@@ -90,9 +102,7 @@ export default async function DonatePage({ searchParams }: DonatePageProps) {
                   <Button href="/kurban" variant="secondary" showIcon>
                     Kurban Çalışmaları
                   </Button>
-                  <Button href="/kurban/bagis" variant="ghost">
-                    Kurban Bağışı Yap
-                  </Button>
+                  <DonationCtaButton label="Kurban Bağışı Yap" context={{ source: "qurban" }} onlineHref="/kurban/bagis" variant="ghost" />
                 </div>
               </div>
               <div className="mt-6 rounded-brand border border-border-soft bg-white p-6 shadow-card">
@@ -104,9 +114,7 @@ export default async function DonatePage({ searchParams }: DonatePageProps) {
                   <Button href="/yetim-hamiligi" variant="secondary" showIcon>
                     Yetim Hamiliği
                   </Button>
-                  <Button href="/yetim-hamiligi/basvuru" variant="ghost">
-                    Başvuru
-                  </Button>
+                  <DonationCtaButton label="Başvuru" context={{ source: "orphan" }} onlineHref="/yetim-hamiligi/basvuru" variant="ghost" />
                 </div>
               </div>
               <div className="mt-6 rounded-brand border border-border-soft bg-white p-6 shadow-card">
@@ -121,12 +129,16 @@ export default async function DonatePage({ searchParams }: DonatePageProps) {
                 </div>
               </div>
             </div>
-            <DonationForm
-              initialProjectSlug={params?.proje}
-              action={createGeneralDonationPaymentIntentAction}
-              formError={params?.durum === "hata" ? params?.mesaj ?? "Bağış ödeme niyeti oluşturulamadı." : undefined}
-              formNotice={params?.durum === "alindi" ? "Bağış ön kaydınız alındı." : undefined}
-            />
+            {isOnlineMode ? (
+              <DonationForm
+                initialProjectSlug={params?.proje}
+                action={createGeneralDonationPaymentIntentAction}
+                formError={params?.durum === "hata" ? params?.mesaj ?? "Bağış ödeme niyeti oluşturulamadı." : undefined}
+                formNotice={params?.durum === "alindi" ? "Bağış ön kaydınız alındı." : undefined}
+              />
+            ) : (
+              <DonationModePanel context={{ source: "general" }} onlineHref="/bagis-yap" />
+            )}
           </div>
         </Container>
       </section>

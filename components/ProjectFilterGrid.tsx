@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Project } from "@/data/projects";
 import { ProjectCard } from "@/components/ProjectCard";
+import type { DonationPublicConfig } from "@/lib/donations/donationTarget";
 
 const filters = ["Tüm Projeler", "Gazze", "Lübnan", "Mısır", "Türkiye", "Acil Yardım", "Eğitim", "Su", "Yetim", "Kurban"] as const;
 
@@ -21,7 +22,13 @@ function matchesFilter(project: Project, filter: (typeof filters)[number]) {
   return normalized.includes(filter.toLocaleLowerCase("tr-TR"));
 }
 
-export function ProjectFilterGrid({ projects }: { projects: Project[] }) {
+export function ProjectFilterGrid({
+  projects,
+  donationConfig
+}: {
+  projects: Project[];
+  donationConfig?: DonationPublicConfig;
+}) {
   const [active, setActive] = useState<(typeof filters)[number]>("Tüm Projeler");
   const visibleProjects =
     active === "Tüm Projeler" ? projects : projects.filter((project) => matchesFilter(project, active));
@@ -46,7 +53,7 @@ export function ProjectFilterGrid({ projects }: { projects: Project[] }) {
       <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         {visibleProjects.length ? (
           visibleProjects.map((project) => (
-            <ProjectCard key={project.slug} {...project} />
+            <ProjectCard key={project.slug} {...project} donationConfig={donationConfig} />
           ))
         ) : (
           <div className="rounded-brand border border-border-soft bg-white p-6 text-sm font-semibold leading-6 text-ink-muted md:col-span-2 xl:col-span-4">

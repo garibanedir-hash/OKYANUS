@@ -1,15 +1,18 @@
 import Link from "next/link";
+import type { MouseEventHandler, ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type ButtonProps = {
   href?: string;
-  children: React.ReactNode;
+  children: ReactNode;
   variant?: "primary" | "secondary" | "ghost" | "light";
   className?: string;
   type?: "button" | "submit";
   showIcon?: boolean;
-  onClick?: () => void;
+  onClick?: MouseEventHandler<HTMLElement>;
+  target?: string;
+  rel?: string;
 };
 
 const styles = {
@@ -30,7 +33,9 @@ export function Button({
   className,
   type = "button",
   showIcon = false,
-  onClick
+  onClick,
+  target,
+  rel
 }: ButtonProps) {
   const content = (
     <>
@@ -46,7 +51,7 @@ export function Button({
 
   if (href) {
     return (
-      <Link href={href} className={classNames}>
+      <Link href={href} className={classNames} onClick={onClick} target={target} rel={rel}>
         {content}
       </Link>
     );

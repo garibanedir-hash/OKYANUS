@@ -4,6 +4,7 @@ import path from "node:path";
 import localFont from "next/font/local";
 import "./globals.css";
 import { SiteChrome } from "@/components/SiteChrome";
+import { getDonationPublicConfig } from "@/lib/donations/donationMode";
 
 const faviconPngExists = existsSync(path.join(process.cwd(), "public", "brand", "favicon.png"));
 const markWhitePngExists = existsSync(path.join(process.cwd(), "public", "brand", "mark-white.png"));
@@ -51,10 +52,12 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const donationConfig = getDonationPublicConfig();
+
   return (
     <html lang="tr" className={gilroy.variable}>
       <body className="font-sans antialiased">
-        <SiteChrome>{children}</SiteChrome>
+        <SiteChrome donationConfig={donationConfig}>{children}</SiteChrome>
       </body>
     </html>
   );

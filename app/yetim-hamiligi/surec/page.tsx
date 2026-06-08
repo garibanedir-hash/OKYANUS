@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { DonationCtaButton } from "@/components/donations/DonationCtaButton";
 
 export const metadata: Metadata = {
   title: "Yetim Hamiliği Süreci",
@@ -29,9 +30,7 @@ export default function OrphanSponsorshipProcessPage() {
         description="Başvuru, eşleşme, düzenli destek, güvenli güncelleme ve bilgilendirme adımları birbirinden ayrılmış durumlarla takip edilir."
       >
         <div className="flex flex-wrap gap-3">
-          <Button href="/yetim-hamiligi/basvuru" showIcon>
-            Yetim Hamiliğine Başvur
-          </Button>
+          <DonationCtaButton label="Yetim Hamiliğine Başvur" context={{ source: "orphan" }} onlineHref="/yetim-hamiligi/basvuru" showIcon />
           <Button href="/yetim-hamiligi" variant="ghost">
             Programa Dön
           </Button>

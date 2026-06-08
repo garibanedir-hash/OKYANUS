@@ -7,6 +7,7 @@ import { FAQItem } from "@/components/ui/FAQItem";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
 import { TransparencySection } from "@/components/sections/TransparencySection";
+import { DonationCtaButton } from "@/components/donations/DonationCtaButton";
 
 export const metadata: Metadata = {
   title: "Şeffaflık",
@@ -34,9 +35,7 @@ export default function TransparencyPage() {
           <Button href="/faaliyet-raporlari" showIcon>
             Faaliyet Raporlarını İncele
           </Button>
-          <Button href="/bagis-yap" variant="ghost" showIcon>
-            Bağış Akışını Gör
-          </Button>
+          <DonationCtaButton label="Bağış Akışını Gör" context={{ source: "general" }} onlineHref="/bagis-yap" variant="ghost" showIcon />
         </div>
       </PageHero>
       <section className="bg-warm-white py-16">

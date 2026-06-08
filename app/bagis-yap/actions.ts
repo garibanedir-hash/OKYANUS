@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createPaymentIntentForContext, PaymentWriteError } from "@/lib/data/paymentWriteRepository";
 import { buildGeneralDonationPaymentContext } from "@/lib/payments/paymentContext";
+import { isOnlineDonationMode } from "@/lib/donations/donationMode";
 
 const MIN_DONATION_AMOUNT = 10;
 
@@ -63,6 +64,10 @@ export async function createGeneralDonationPaymentIntentAction(formData: FormDat
   const honeypot = getString(formData, "website");
   if (honeypot) {
     redirectToDonationForm("alindi");
+  }
+
+  if (!isOnlineDonationMode()) {
+    redirectToDonationForm("hata", { mesaj: "Online bağış işlemleri şu anda aktif değildir. Lütfen bağış bilgilendirme hattından destek alın." });
   }
 
   let paymentIntentNo: string | null = null;

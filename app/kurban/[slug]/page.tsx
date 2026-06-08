@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
 import { getActiveQurbanCampaigns, getQurbanCampaignBySlug } from "@/lib/data/qurbanRepository";
 import { formatCurrency, formatDate } from "@/lib/format";
+import { DonationCtaButton } from "@/components/donations/DonationCtaButton";
 
 type QurbanDetailPageProps = {
   params: Promise<{ slug: string }>;
@@ -59,9 +60,12 @@ export default async function QurbanCampaignDetailPage({ params }: QurbanDetailP
       >
         <div className="flex flex-wrap gap-3">
           {canDonate ? (
-            <Button href={donationHref} showIcon>
-              Bu Kampanyaya Kurban Bağışı Yap
-            </Button>
+            <DonationCtaButton
+              label="Bu Kampanyaya Kurban Bağışı Yap"
+              context={{ source: "qurban", campaignTitle: campaign.title }}
+              onlineHref={donationHref}
+              showIcon
+            />
           ) : null}
           <Button href="/kurban" variant="ghost">
             Tüm Kurban Çalışmaları
@@ -135,9 +139,13 @@ export default async function QurbanCampaignDetailPage({ params }: QurbanDetailP
                   </div>
                 </div>
                 {canDonate ? (
-                  <Button href={donationHref} className="mt-6 w-full" showIcon>
-                    Kurban Bağışı Akışına Geç
-                  </Button>
+                  <DonationCtaButton
+                    label="Kurban Bağışı Akışına Geç"
+                    context={{ source: "qurban", campaignTitle: campaign.title }}
+                    onlineHref={donationHref}
+                    className="mt-6 w-full"
+                    showIcon
+                  />
                 ) : (
                   <div className="mt-6 rounded-lg border border-border-soft bg-soft-gray p-4 text-sm font-semibold leading-6 text-ink-muted">
                     {isCampaignOpen

@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/Button";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { getProjectRegionBySlug } from "@/data/projectRegions";
+import { resolveDonationTarget } from "@/lib/donations/donationTarget";
 import { formatCurrency } from "@/lib/format";
+import type { DonationPublicConfig } from "@/lib/donations/donationTarget";
 
 export function ProjectCard({
   slug,
@@ -17,7 +19,8 @@ export function ProjectCard({
   thumbnailUrl,
   status,
   activityCount,
-  compact = false
+  compact = false,
+  donationConfig
 }: {
   slug?: string;
   title: string;
@@ -33,10 +36,18 @@ export function ProjectCard({
   status?: string;
   activityCount?: number;
   compact?: boolean;
+  donationConfig?: DonationPublicConfig;
 }) {
   const progress = goal > 0 ? Math.min(Math.round((raised / goal) * 100), 100) : 0;
   const regionCoverImageUrl = getProjectRegionBySlug(regionSlug)?.coverImageUrl;
   const imageUrl = thumbnailUrl || coverImageUrl || regionCoverImageUrl;
+  const onlineDonationHref = slug ? `/bagis-yap?proje=${slug}` : "/bagis-yap";
+  const donationTarget = donationConfig
+    ? resolveDonationTarget(donationConfig, { source: "project", projectTitle: title }, onlineDonationHref)
+    : {
+        href: onlineDonationHref,
+        isExternal: false
+      };
 
   return (
     <article className="overflow-hidden rounded-brand border border-border-soft bg-white shadow-card transition hover:-translate-y-1 hover:shadow-soft">
@@ -98,7 +109,13 @@ export function ProjectCard({
           Projeyi İncele
         </Button>
         {compact ? null : (
-          <Button href={slug ? `/bagis-yap?proje=${slug}` : "/bagis-yap"} className="mt-3 w-full rounded-md" showIcon>
+          <Button
+            href={donationTarget.href}
+            target={donationTarget.isExternal ? "_blank" : undefined}
+            rel={donationTarget.isExternal ? "noopener noreferrer" : undefined}
+            className="mt-3 w-full rounded-md"
+            showIcon
+          >
             Projeye Destek Ol
           </Button>
         )}

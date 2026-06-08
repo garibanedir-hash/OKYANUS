@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
+import { DonationCtaButton } from "@/components/donations/DonationCtaButton";
 
 export const metadata: Metadata = {
   title: "Faaliyet Alanları",
@@ -48,9 +49,7 @@ export default function ActivitiesPage() {
                   </div>
                 </div>
                 <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                  <Button href="/bagis-yap" showIcon>
-                    Bu Alana Destek Ver
-                  </Button>
+                  <DonationCtaButton label="Bu Alana Destek Ver" context={{ source: "general", campaignTitle: title }} onlineHref="/bagis-yap" showIcon />
                   <Button href="/gonullu-ol" variant="ghost" showIcon>
                     Gönüllü Destek Ol
                   </Button>

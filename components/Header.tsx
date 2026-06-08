@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { OfficialLogo } from "@/components/brand/OfficialLogo";
 import { cn } from "@/lib/utils";
+import { resolveDonationTarget } from "@/lib/donations/donationTarget";
+import type { DonationPublicConfig } from "@/lib/donations/donationTarget";
 
 const navItems = [
   { label: "Ana Sayfa", href: "/" },
@@ -21,10 +23,16 @@ const navItems = [
   { label: "İletişim", href: "/iletisim" }
 ];
 
-export function Header() {
+export function Header({ donationConfig }: { donationConfig: DonationPublicConfig }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const donationTarget = resolveDonationTarget(donationConfig, { source: "general" }, "/bagis-yap");
+  const donationLinkProps = {
+    href: donationTarget.href,
+    target: donationTarget.isExternal ? "_blank" : undefined,
+    rel: donationTarget.isExternal ? "noopener noreferrer" : undefined
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -61,7 +69,7 @@ export function Header() {
 
         <div className="hidden items-center gap-3 lg:flex">
           <Button href="/giris" variant="ghost">Giriş Yap</Button>
-          <Button href="/bagis-yap">Bağış Yap</Button>
+          <Button {...donationLinkProps}>Bağış Yap</Button>
         </div>
 
         <button
@@ -92,7 +100,7 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
-            <Button href="/bagis-yap" className="mt-2 w-full" onClick={() => setOpen(false)}>
+            <Button {...donationLinkProps} className="mt-2 w-full" onClick={() => setOpen(false)}>
               Bağış Yap
             </Button>
             <Button href="/giris" variant="ghost" className="w-full" onClick={() => setOpen(false)}>

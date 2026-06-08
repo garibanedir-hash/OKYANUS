@@ -200,8 +200,10 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 ## 10B Payment Intent Başlatma Kontrolleri
 
 - [ ] `/bagis-yap` formu server action ile `general_donation` payment intent oluşturuyor.
+- [ ] `DONATION_MODE=whatsapp` veya `disabled` iken `/bagis-yap` formu render edilmiyor ve server action erken güvenli yönlendirme yapıyor.
 - [ ] Genel bağışta amount, e-posta ve KVKK server-side doğrulanıyor.
 - [ ] Kurban order sonrası `qurban_order` payment intent oluşuyor ve başarı ekranında ödeme linki gösteriliyor.
+- [ ] `DONATION_MODE=whatsapp` veya `disabled` iken `/kurban/bagis` ve `/yetim-hamiligi/basvuru` public form başlatma akışları kapalı bilgi/WhatsApp kartına dönüyor.
 - [ ] Yetim eşleştirme sonrası `orphan_sponsorship` payment intent oluşuyor.
 - [ ] Aynı context için pending/initiated intent tekrar kullanılıyor.
 - [ ] Admin ödeme kayıtları yeni intent'leri PayTR provider ve Türkçe durum etiketiyle gösteriyor.

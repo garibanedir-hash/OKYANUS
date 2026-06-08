@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createPaymentIntentForContext, PaymentWriteError } from "@/lib/data/paymentWriteRepository";
 import { createQurbanOrder, getCampaignForOrder, getCurrentQurbanDonorContext, QurbanWriteError } from "@/lib/data/qurbanWriteRepository";
 import { buildQurbanPaymentContext } from "@/lib/payments/paymentContext";
+import { isOnlineDonationMode } from "@/lib/donations/donationMode";
 import type { QurbanType } from "@/data/qurbanMock";
 
 const qurbanTypes: QurbanType[] = ["vacip", "adak", "akika", "sukur", "nafile", "genel"];
@@ -103,6 +104,10 @@ export async function createQurbanOrderAction(formData: FormData) {
   const honeypot = getString(formData, "website");
   if (honeypot) {
     redirectWithStatus("alindi");
+  }
+
+  if (!isOnlineDonationMode()) {
+    redirectWithStatus("hata", { mesaj: "Kurban bağışı online başvuru akışı şu anda aktif değildir. Lütfen bağış bilgilendirme hattından destek alın." });
   }
 
   const attemptedCampaignSlug = getString(formData, "campaign") || getString(formData, "campaignSlug") || getString(formData, "campaignId");

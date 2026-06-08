@@ -6,6 +6,7 @@ import { PageHero } from "@/components/sections/PageHero";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getActiveSponsorshipPrograms } from "@/lib/data/orphanSponsorshipRepository";
 import { formatCurrency } from "@/lib/format";
+import { DonationCtaButton } from "@/components/donations/DonationCtaButton";
 
 export const metadata: Metadata = {
   title: "Yetim Hamiliği",
@@ -46,9 +47,7 @@ export default async function OrphanSponsorshipPage() {
         description="Okyanus İnsani Yardım Derneği olarak yetim hamiliği çalışmalarını çocuk mahremiyetini koruyan, düzenli takip edilebilir ve şeffaf bir destek anlayışıyla yürütüyoruz."
       >
         <div className="flex flex-wrap gap-3">
-          <Button href="/yetim-hamiligi/basvuru" showIcon>
-            Yetim Hamiliğine Başvur
-          </Button>
+          <DonationCtaButton label="Yetim Hamiliğine Başvur" context={{ source: "orphan" }} onlineHref="/yetim-hamiligi/basvuru" showIcon />
           <Button href="/yetim-hamiligi/surec" variant="ghost" showIcon>
             Süreci İncele
           </Button>
@@ -115,9 +114,13 @@ export default async function OrphanSponsorshipPage() {
                 </div>
                 <p className="mt-4 text-xs font-bold leading-6 text-ink-muted">{program.transparencyNote}</p>
                 <div className="mt-5 flex flex-wrap gap-2">
-                  <Button href={`/yetim-hamiligi/basvuru?program=${program.slug}`} variant="secondary" showIcon>
-                    Başvur
-                  </Button>
+                  <DonationCtaButton
+                    label="Başvur"
+                    context={{ source: "orphan", campaignTitle: program.title }}
+                    onlineHref={`/yetim-hamiligi/basvuru?program=${program.slug}`}
+                    variant="secondary"
+                    showIcon
+                  />
                   <Button href="/yetim-hamiligi/surec" variant="ghost">
                     Süreci İncele
                   </Button>

@@ -6,6 +6,7 @@ import { formatCurrency } from "@/lib/format";
 import { getPublicProjectActivities } from "@/lib/data/projectActivityRepository";
 import { getProjectBySlug, getProjects } from "@/lib/data/projectsRepository";
 import { getProjectRegionBySlug } from "@/lib/data/projectRegionRepository";
+import { getDonationPublicConfig } from "@/lib/donations/donationMode";
 import { Container } from "@/components/ui/Container";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -16,6 +17,7 @@ import { Timeline } from "@/components/ui/Timeline";
 import { ProjectCard } from "@/components/ProjectCard";
 import { ProjectActivityTimeline } from "@/components/project/ProjectActivityTimeline";
 import { VisualPlaceholder } from "@/components/VisualPlaceholder";
+import { DonationCtaButton } from "@/components/donations/DonationCtaButton";
 
 type ProjectPageProps = {
   params: Promise<{ slug: string }>;
@@ -43,6 +45,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
     notFound();
   }
 
+  const donationConfig = getDonationPublicConfig();
   const progress = project.goal > 0 ? Math.min(Math.round((project.raised / project.goal) * 100), 100) : 0;
   const heroImageUrl = project.coverImageUrl || project.thumbnailUrl;
   const [projects, activities, region] = await Promise.all([
@@ -68,9 +71,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               <Badge variant="blue">{project.location}</Badge>
             </div>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button href={project.cta.href} showIcon>
-                {project.cta.label}
-              </Button>
+              <DonationCtaButton label={project.cta.label} context={{ source: "project", projectTitle: project.title }} onlineHref={project.cta.href} showIcon />
               <Button href="/projeler" variant="ghost">
                 Tüm Projeler
               </Button>
@@ -162,7 +163,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
             <h2 className="text-3xl font-bold text-dark-navy">Benzer projeler</h2>
             <div className="mt-8 grid gap-6 md:grid-cols-3">
               {fallbackSimilar.map((item) => (
-                <ProjectCard key={item.slug} {...item} />
+                <ProjectCard key={item.slug} {...item} donationConfig={donationConfig} />
               ))}
             </div>
           </section>

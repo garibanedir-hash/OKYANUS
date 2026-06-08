@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button";
+import { DonationCtaButton } from "@/components/donations/DonationCtaButton";
 import { Container } from "@/components/ui/Container";
 
 export function DonationCTA() {
@@ -14,9 +14,7 @@ export function DonationCTA() {
             </h2>
             <p className="mt-4 text-sm font-semibold text-white/78">İyilik Paylaştıkça Okyanusa Dönüşür.</p>
           </div>
-          <Button href="/bagis-yap" variant="light" showIcon>
-            Şimdi Bağış Yap
-          </Button>
+          <DonationCtaButton label="Şimdi Bağış Yap" context={{ source: "general" }} onlineHref="/bagis-yap" variant="light" showIcon />
         </div>
       </Container>
     </section>

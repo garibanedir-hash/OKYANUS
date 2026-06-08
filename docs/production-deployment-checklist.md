@@ -12,6 +12,9 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Production'da `NEXT_PUBLIC_ADMIN_DEMO_MODE=true` yanlışlıkla verilse bile demo bypass'ın etkisiz kaldığı doğrulandı.
 - [ ] `SITE_MAINTENANCE_MODE` yayın stratejisine göre ayarlandı.
 - [ ] `MAINTENANCE_BYPASS_TOKEN` gerekiyorsa güvenli şekilde tanımlandı.
+- [ ] `DONATION_MODE` (`online` / `whatsapp` / `disabled`) yayın stratejisine göre ayarlandı.
+- [ ] `DONATION_MODE=whatsapp` kullanılacaksa `DONATION_WHATSAPP_PHONE` ve mesaj metni doğrulandı.
+- [ ] Tanıtım modunun bakım modundan farklı olduğu; siteyi kapatmadan yalnızca public bağış CTA'larını yönlendirdiği doğrulandı.
 
 ## Migration ve Supabase
 
@@ -133,6 +136,9 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Duplicate callback ve hash doğrulama senaryoları production geçişinden önce test edildi.
 - [ ] `PAYTR_TEST_MODE=false` yalnızca yönetim, teknik sorumlu ve hukuk/mali süreç onayıyla açılacak.
 - [ ] Genel bağış, kurban ve yetim payment intent başlatma akışları staging'de test edildi.
+- [ ] `DONATION_MODE=whatsapp` ile `/bagis-yap`, `/kurban/bagis` ve `/yetim-hamiligi/basvuru` form göstermeden WhatsApp bilgilendirme kartı gösteriyor.
+- [ ] `DONATION_MODE=disabled` ile bağış form sayfaları geçici kapalı mesajı gösteriyor ve site geneli açık kalıyor.
+- [ ] `DONATION_MODE=online` ile mevcut bağış/kurban/yetim online akışları geri geliyor.
 - [ ] PayTR env eksikken güvenli hata sayfası doğrulandı.
 - [ ] Paid callback sonrası kurban/sponsorluk sınırlı status update sonuçları staging'de kontrol edildi.
 - [ ] Kurban quota_completed ve failed/cancelled quota release işlemleri 10C transaction planı olmadan production'a açılmadı.

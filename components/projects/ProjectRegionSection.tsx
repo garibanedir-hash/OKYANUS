@@ -10,17 +10,20 @@ import { ProjectRegionList } from "@/components/projects/ProjectRegionList";
 import { ProjectRegionMap } from "@/components/projects/ProjectRegionMap";
 import { ProjectRegionProjects } from "@/components/projects/ProjectRegionProjects";
 import { cn } from "@/lib/utils";
+import type { DonationPublicConfig } from "@/lib/donations/donationTarget";
 
 export function ProjectRegionSection({
   regions,
   projects,
   activities = [],
-  compact = false
+  compact = false,
+  donationConfig
 }: {
   regions: ProjectRegion[];
   projects: Project[];
   activities?: PublicProjectActivity[];
   compact?: boolean;
+  donationConfig?: DonationPublicConfig;
 }) {
   const enrichedProjects = useMemo(() => (projects.length ? projects : mergeProjectsWithRegionalFallbacks(projects)), [projects]);
   const initialRegionSlug =
@@ -103,6 +106,7 @@ export function ProjectRegionSection({
               region={activeRegion}
               projects={enrichedProjects}
               compact={compact}
+              donationConfig={donationConfig}
             />
           </div>
         </div>

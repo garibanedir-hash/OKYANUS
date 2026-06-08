@@ -8,6 +8,7 @@ import {
   getProgramForApplication,
   OrphanSponsorshipWriteError
 } from "@/lib/data/orphanSponsorshipWriteRepository";
+import { isOnlineDonationMode } from "@/lib/donations/donationMode";
 
 const supportPeriods = ["monthly", "quarterly", "yearly"] as const;
 
@@ -103,6 +104,10 @@ export async function createSponsorshipApplicationAction(formData: FormData) {
   const honeypot = getString(formData, "website");
   if (honeypot) {
     redirectWithStatus("alindi");
+  }
+
+  if (!isOnlineDonationMode()) {
+    redirectWithStatus("hata", { mesaj: "Yetim hamiliği online başvuru akışı şu anda aktif değildir. Lütfen bağış bilgilendirme hattından destek alın." });
   }
 
   const attemptedProgram = getString(formData, "program") || getString(formData, "programSlug") || getString(formData, "programId");
