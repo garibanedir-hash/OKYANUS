@@ -161,7 +161,7 @@ export function ProjectRegionForm({
   const coordinateLng = manualLng.trim() || selectedCity?.lng || selectedCountry.defaultLng;
 
   return (
-    <form action={action} encType="multipart/form-data" className="grid gap-5">
+    <form action={action} className="grid gap-5">
       {values.id ? <input type="hidden" name="id" value={values.id} /> : null}
       <input type="hidden" name="country" value={selectedCountry.name} />
       <input type="hidden" name="locationCityName" value={locationCityName} />

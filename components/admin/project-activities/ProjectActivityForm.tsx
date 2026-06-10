@@ -59,7 +59,7 @@ function DateTimeInput({
 
 export function ProjectActivityForm({ action, projectId, activity, submitLabel, cancelHref }: ProjectActivityFormProps) {
   return (
-    <form action={action} encType="multipart/form-data" className="grid gap-5">
+    <form action={action} className="grid gap-5">
       <input type="hidden" name="projectId" value={projectId} />
       {activity?.id ? <input type="hidden" name="activityId" value={activity.id} /> : null}
 

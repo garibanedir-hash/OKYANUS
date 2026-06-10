@@ -82,6 +82,10 @@ export function getOptionalProjectMediaFile(formData: FormData, name: string): F
 }
 
 export function validateProjectMediaFile(file: File) {
+  if (!file.size) {
+    throw new Error("Lütfen JPG, PNG veya WebP formatında bir görsel seçin.");
+  }
+
   if (!isProjectMediaMimeType(file.type)) {
     throw new Error("Lütfen JPG, PNG veya WebP formatında bir görsel seçin.");
   }

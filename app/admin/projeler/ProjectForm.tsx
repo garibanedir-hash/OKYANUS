@@ -79,7 +79,7 @@ export function ProjectForm({
   ];
 
   return (
-    <form action={action} encType="multipart/form-data" className="grid gap-5">
+    <form action={action} className="grid gap-5">
       {values.id ? <input type="hidden" name="id" value={values.id} /> : null}
       <div className="grid gap-4 md:grid-cols-2">
         <AdminTextInput label="Proje Başlığı" name="title" defaultValue={values.title} required />

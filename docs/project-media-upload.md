@@ -12,6 +12,18 @@ Bu modül proje, proje bölgesi ve proje faaliyeti görsellerinin admin panelden
 - Public/anon upload açılmaz.
 - Upload/update/delete işlemleri server action üzerinden, server-only service role client ile yapılır.
 
+## Server Action Body Limit
+
+Admin görsel formları `multipart/form-data` ile Next.js Server Action'a gönderilir. Next.js varsayılan action body limiti 1 MB olduğu için `next.config.mjs` içinde `experimental.serverActions.bodySizeLimit = "10mb"` olarak ayarlanmıştır.
+
+Server Action kullanılan React formlarında `encType` veya `method` manuel verilmez; React bu değerleri action fonksiyonu için otomatik yönetir. Dosya inputları yine `FormData` içinde server action'a ulaşır.
+
+Bu ayar sadece action'a taşınabilecek maksimum request boyutunu artırır. Uygulama seviyesindeki kabul limiti değişmez:
+
+- Server-side görsel validasyon limiti: 5 MB.
+- Supabase `project-media` bucket limiti: 5 MB.
+- 5 MB üzerindeki dosyalar Next runtime hatası yerine kullanıcı dostu validasyon mesajıyla reddedilmelidir.
+
 ## Path Standardı
 
 Bucket içi path yapısı:

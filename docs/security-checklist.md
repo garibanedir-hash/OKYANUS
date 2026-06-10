@@ -93,6 +93,7 @@
 - [ ] `project-media` bucket public read, admin upload server action ve anon upload kapalı olacak şekilde doğrulandı mı?
 - [ ] Proje/bölge/faaliyet görsel upload akışı service role key'i client tarafına taşımıyor mu?
 - [ ] Görsel upload server-side MIME ve 5 MB boyut kontrolünden geçiyor mu?
+- [ ] Next.js Server Action body limiti 10 MB olarak ayarlı, ancak uygulama/bucket görsel kabul limiti 5 MB olarak korunuyor mu?
 
 ## Payment webhook security
 

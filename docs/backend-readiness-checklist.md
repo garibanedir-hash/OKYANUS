@@ -289,6 +289,7 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] `023_project_media_storage.sql` staging ortamında çalıştırıldı.
 - [ ] `project-media` bucket public read, admin server action upload ve anon upload kapalı olarak doğrulandı.
 - [ ] Proje kapak/thumbnail, bölge kapak ve faaliyet kapak görselleri dosya seçilerek yükleniyor.
+- [ ] Server Action upload body limiti 10 MB; uygulama ve storage görsel kabul limiti 5 MB olarak korunuyor.
 - [ ] Upload helper `server-only` kalıyor ve service role key client tarafına taşınmıyor.
 - [ ] MIME yalnızca JPG/PNG/WebP, dosya boyutu en fazla 5 MB.
 - [ ] Public kartlar ve detay sayfaları yüklenen public URL değerlerini kullanıyor.
