@@ -7,7 +7,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 export async function registerDemoAction() {
   return {
     ok: false,
-    message: "Bu ekran demo modda çalışmaktadır. Gerçek üyelik Supabase Auth entegrasyonundan sonra aktif olacaktır."
+    message: "Tanıtım döneminde üyelik oluşturma sınırlıdır. Bilgi almak için iletişim kanallarımızı kullanabilirsiniz."
   };
 }
 

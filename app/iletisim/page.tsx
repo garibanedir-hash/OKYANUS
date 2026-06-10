@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Facebook, Instagram, Mail, MapPin, Phone, Twitter } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { Container } from "@/components/ui/Container";
@@ -49,21 +49,15 @@ export default function ContactPage() {
               </div>
               <div className="mt-6 rounded-[1.75rem] bg-white p-5 shadow-card">
                 <p className="text-sm font-bold text-dark-navy">Sosyal medya</p>
-                <div className="mt-4 flex gap-3">
-                  {[Facebook, Instagram, Twitter].map((Icon, index) => (
-                    <a
-                      key={index}
-                      href="#"
-                      aria-label="Okyanus sosyal medya hesabı"
-                      className="focus-ring flex h-11 w-11 items-center justify-center rounded-full bg-soft-blue text-deep-blue transition hover:bg-ocean-green hover:text-white"
-                    >
-                      <Icon aria-hidden className="h-5 w-5" />
-                    </a>
-                  ))}
-                </div>
+                <p className="mt-3 text-sm leading-7 text-slate-600">
+                  Resmi sosyal medya hesaplarımız netleştikçe bu alanda paylaşılacaktır. Güncel duyurular için iletişim formu, telefon ve e-posta kanallarımızdan bize ulaşabilirsiniz.
+                </p>
               </div>
-              <div className="mt-6 flex h-64 items-center justify-center rounded-[1.75rem] border border-dashed border-primary-blue/30 bg-white text-center text-sm font-semibold text-slate-500">
-                Harita alanı placeholder
+              <div className="mt-6 rounded-[1.75rem] border border-border-soft bg-white p-6 shadow-card">
+                <p className="text-sm font-bold text-dark-navy">Çalışma ve iletişim merkezi</p>
+                <p className="mt-3 text-sm leading-7 text-slate-600">
+                  Adres ve ziyaret bilgileri güncellendikçe bu alanda duyurulacaktır. Şimdilik bağış, gönüllülük ve proje iş birlikleri için iletişim formu üzerinden ekibimize ulaşabilirsiniz.
+                </p>
               </div>
             </div>
             <ContactForm />

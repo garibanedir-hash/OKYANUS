@@ -16,7 +16,7 @@ export function LegalPageLayout({
       <section className="bg-warm-white py-16">
         <Container className="max-w-4xl">
           <div className="rounded-2xl border border-warm-accent/30 bg-warm-accent/10 p-5 text-sm font-semibold leading-7 text-dark-navy">
-            Taslak metindir. Resmi kullanım öncesinde hukuki danışmanlıkla gözden geçirilmelidir.
+            Bu sayfa bilgilendirme amacıyla hazırlanmıştır. Detaylı talepleriniz için dernek iletişim kanallarından bize ulaşabilirsiniz.
           </div>
           <div className="mt-8 grid gap-5">
             {sections.map((section) => (

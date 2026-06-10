@@ -54,7 +54,7 @@ export default async function NewsDetailPage({ params }: NewsPageProps) {
           <div className="mt-10 rounded-[1.75rem] bg-soft-gray p-7 leading-8 text-slate-700">
             <p>{item.content}</p>
             <p className="mt-4">
-              Bu detay sayfası CMS entegrasyonuna hazır bir içerik modeliyle çalışır; görsel galeri, rapor bağlantısı ve ilgili proje alanları sonraki aşamada gerçek veriye bağlanabilir.
+              İlgili çalışmalar hakkında yeni saha notları ve proje güncellemeleri yayınlandıkça bu alanda paylaşılır.
             </p>
           </div>
           {(relatedProject || relatedActivity) ? (

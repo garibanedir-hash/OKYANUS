@@ -11,7 +11,7 @@ import { getDonationMode } from "@/lib/donations/donationMode";
 
 export const metadata: Metadata = {
   title: "Yetim Hamiliği Başvurusu",
-  description: "Yetim hamiliği için güvenli başvuru formu. Gerçek ödeme ve düzenli talimat bu aşamada oluşturulmaz."
+  description: "Yetim hamiliği için güvenli başvuru ve bilgilendirme akışı."
 };
 
 type OrphanSponsorshipApplicationPageProps = {
@@ -33,7 +33,7 @@ export default async function OrphanSponsorshipApplicationPage({ searchParams }:
       <PageHero
         eyebrow="Yetim Hamiliği Başvurusu"
         title="Düzenli destek niyetinizi güvenli şekilde iletin"
-        description="Başvurunuz kayıt altına alınır; dernek yetkilileri değerlendirme ve güvenli eşleştirme sürecini yönetir. Ödeme ve düzenli talimat altyapısı sonraki aşamada aktif hale getirilecektir."
+        description="Başvurunuz kayıt altına alınır; dernek yetkilileri değerlendirme, güvenli eşleştirme ve bilgilendirme sürecini yönetir."
       />
 
       <section className="bg-soft-gray py-16 sm:py-20">
@@ -60,9 +60,7 @@ export default async function OrphanSponsorshipApplicationPage({ searchParams }:
                     </p>
                   ) : null}
                   <p>KVKK onayınız ve iletişim tercihiniz başvuru kaydına işlenmiştir.</p>
-                  <p>Ödeme durumu: İlk destek ödemesi için ödeme bekliyor akışına hazırlanır.</p>
-                  <p>Ortak payment intent ve makbuz altyapısı hazırdır; bu aşamada otomatik online ödeme veya düzenli ödeme talimatı başlatılmaz.</p>
-                  <p>PayTR test akışı, eşleşmiş sponsorluk için payment intent oluşturulduğunda panelde “Ödemeye Devam Et” bağlantısı olarak açılacaktır.</p>
+                  <p>Destek süreci: Dernek ekibi başvurunuzu değerlendirerek sizi uygun bilgilendirme kanalına yönlendirir.</p>
                   <p>Başvuru admin tarafında değerlendirme ve eşleştirme süreci için kayıt altına alınmıştır.</p>
                   {params?.panel === "1" ? (
                     <p>Girişli sponsor hesabınızla panelde başvuru ve sponsorluk durumunu takip edebilirsiniz.</p>
@@ -102,9 +100,9 @@ export default async function OrphanSponsorshipApplicationPage({ searchParams }:
                 <div className="flex items-start gap-3">
                   <AlertCircle aria-hidden className="mt-1 h-5 w-5 text-ocean-green" />
                   <div>
-                    <h2 className="text-xl font-extrabold text-dark-navy">Ödeme altyapısı hazırlık modunda</h2>
+                    <h2 className="text-xl font-extrabold text-dark-navy">Yetim hamiliği bilgilendirme hattı</h2>
                     <p className="mt-2 text-sm leading-7 text-ink-muted">
-                      Bu form sponsor başvuru deneyimini hazırlar. Ortak payment intent, makbuz ve bildirim modeli hazırlandı; PayTR test iframe altyapısı yalnızca server-side payment intent üzerinden açılır. Düzenli ödeme, gerçek makbuz PDF, SMS/e-posta ve dosya yükleme bu aşamada yapılmaz.
+                      Tanıtım döneminde yetim hamiliği başvuruları dernek ekibi tarafından WhatsApp veya iletişim kanalları üzerinden yönlendirilir.
                     </p>
                   </div>
                 </div>

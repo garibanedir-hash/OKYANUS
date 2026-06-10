@@ -10,7 +10,7 @@ export const legalPages: LegalPage[] = [
     slug: "gizlilik-politikasi",
     title: "Gizlilik Politikası",
     description:
-      "Bu metin taslak niteliğindedir; resmi kullanım öncesinde hukuki danışmanlıkla gözden geçirilmelidir.",
+      "Okyanus İnsani Yardım Derneği web sitesi ve başvuru kanallarında kişisel verilerin korunmasına ilişkin bilgilendirme.",
     sections: [
       { title: "Toplanabilecek Bilgiler", content: "Bağış, gönüllülük ve iletişim formlarında ad soyad, e-posta, telefon, şehir ve mesaj gibi bilgiler alınabilir." },
       { title: "Kullanım Amacı", content: "Bilgiler başvuruların değerlendirilmesi, iletişim kurulması ve destek süreçlerinin planlanması amacıyla kullanılabilir." },
@@ -22,9 +22,9 @@ export const legalPages: LegalPage[] = [
     slug: "kvkk-aydinlatma-metni",
     title: "KVKK Aydınlatma Metni",
     description:
-      "Bu sayfa KVKK için taslak bilgilendirme yapısıdır; resmi kullanım öncesi hukuki danışmanlık gerektirir.",
+      "Kişisel verilerin hangi amaçlarla ve hangi çerçevede işlenebileceğine ilişkin aydınlatma metni.",
     sections: [
-      { title: "Veri Sorumlusu", content: "Veri sorumlusu bilgisi placeholder olarak bırakılmıştır ve resmi bilgilerle güncellenmelidir." },
+      { title: "Veri Sorumlusu", content: "Kişisel veriler, Okyanus İnsani Yardım Derneği'nin faaliyetleri ve yasal yükümlülükleri kapsamında sınırlı şekilde işlenir." },
       { title: "İşlenen Kişisel Veriler", content: "Kimlik, iletişim, başvuru ve işlem güvenliği kategorilerinde veriler işlenebilir." },
       { title: "İşleme Amaçları", content: "Başvuruların alınması, bağış süreçlerinin yürütülmesi, gönüllü koordinasyonu ve bilgilendirme amacıyla veri işlenebilir." },
       { title: "Haklarınız", content: "KVKK kapsamındaki haklarınız için resmi iletişim kanalları üzerinden başvuru yapılabilir." }
@@ -34,7 +34,7 @@ export const legalPages: LegalPage[] = [
     slug: "cerez-politikasi",
     title: "Çerez Politikası",
     description:
-      "Bu metin çerez kullanımı için frontend taslağıdır; gerçek analitik araçları eklendiğinde güncellenmelidir.",
+      "Web sitesinin temel işlevleri ve ziyaretçi deneyimi için kullanılabilecek çerezlere ilişkin bilgilendirme.",
     sections: [
       { title: "Zorunlu Çerezler", content: "Sitenin temel işlevlerinin çalışması için gerekli çerezler kullanılabilir." },
       { title: "Analitik Çerezler", content: "Ziyaretçi deneyimini anlamak için analitik çerezler ileride eklenebilir." },
@@ -46,12 +46,12 @@ export const legalPages: LegalPage[] = [
     slug: "bagis-sartlari",
     title: "Bağış Şartları",
     description:
-      "Bu sayfa bağış akışı için taslak bilgilendirme metnidir; ödeme entegrasyonu öncesi resmi metinlerle güncellenmelidir.",
+      "Bağış ve destek süreçlerine ilişkin temel bilgilendirme.",
     sections: [
       { title: "Gönüllülük Esası", content: "Bağışlar kullanıcının kendi isteğiyle ve gönüllülük esasına göre yapılır." },
       { title: "Bağış Alanı Seçimi", content: "Bağışçı genel bağış veya belirli destek alanlarından birini seçebilir." },
-      { title: "İade ve Değerlendirme", content: "İade, iptal ve değerlendirme süreçleri için resmi prosedür placeholder olarak bırakılmıştır." },
-      { title: "Demo Notu", content: "Mevcut bağış ekranı demo/frontend akışı olarak hazırlanmıştır; gerçek ödeme alınmamaktadır." }
+      { title: "İade ve Değerlendirme", content: "İade, iptal ve değerlendirme talepleri dernek yönetimi tarafından bağışın niteliği ve yasal çerçeveye göre incelenir." },
+      { title: "Tanıtım Dönemi", content: "Tanıtım döneminde bağış bilgilendirmeleri WhatsApp ve iletişim kanalları üzerinden yönlendirilebilir." }
     ]
   }
 ];

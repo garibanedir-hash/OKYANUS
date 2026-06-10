@@ -100,10 +100,10 @@ export default async function QurbanCampaignDetailPage({ params }: QurbanDetailP
               </div>
 
               <div className="mt-7 rounded-lg border border-border-soft bg-soft-gray p-5">
-                <h2 className="text-lg font-extrabold text-dark-navy">Vekalet Metni Önizlemesi</h2>
+                <h2 className="text-lg font-extrabold text-dark-navy">Vekalet Bilgilendirmesi</h2>
                 <p className="mt-3 text-sm leading-7 text-ink-muted">{delegationPreview}</p>
                 <p className="mt-3 text-xs font-bold leading-6 text-ink-muted">
-                  Bu önizleme taslak niteliktedir; production öncesi dernek yönetimi, hukuk danışmanı ve dini danışman onayı gerekir.
+                  Vekalet ve bilgilendirme süreçleri dernek yönetimi tarafından düzenli olarak gözden geçirilir; ihtiyaç halinde ekibimiz sizinle iletişime geçer.
                 </p>
               </div>
 

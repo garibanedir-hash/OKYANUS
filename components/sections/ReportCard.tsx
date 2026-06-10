@@ -10,7 +10,7 @@ export function ReportCard({ report }: { report: Report }) {
         <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-soft-blue text-deep-blue">
           <FileText aria-hidden className="h-6 w-6" />
         </span>
-        <Badge variant={report.statusLabel === "Demo rapor" ? "green" : "blue"}>{report.statusLabel}</Badge>
+        <Badge variant={report.statusLabel === "Özet yayınlandı" ? "green" : "blue"}>{report.statusLabel}</Badge>
       </div>
       <p className="mt-5 text-sm font-bold uppercase tracking-[0.14em] text-ocean-green">{report.period}</p>
       <h2 className="mt-2 text-2xl font-bold text-dark-navy">{report.title}</h2>

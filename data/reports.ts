@@ -5,7 +5,7 @@ export type Report = {
   period: string;
   category: string;
   summary: string;
-  statusLabel: "Demo rapor" | "PDF yakında";
+  statusLabel: "Özet yayınlandı" | "PDF yakında";
   pdfUrl?: string;
   metrics: Array<{ label: string; value: string }>;
   tags: string[];
@@ -19,8 +19,8 @@ export const reports: Report[] = [
     period: "Ocak - Haziran 2026",
     category: "Genel Faaliyet",
     summary:
-      "Gıda, eğitim ve gönüllülük çalışmalarının ilk dönem özetini görünür kılan demo rapor yapısı.",
-    statusLabel: "Demo rapor",
+      "Gıda, eğitim ve gönüllülük çalışmalarının ilk dönem özetini görünür kılan rapor yapısı.",
+    statusLabel: "Özet yayınlandı",
     metrics: [
       { label: "Faaliyet", value: "18" },
       { label: "Gönüllü", value: "210" },
@@ -51,8 +51,8 @@ export const reports: Report[] = [
     period: "Kasım 2025 - Mart 2026",
     category: "Kış Yardımı",
     summary:
-      "Kış destekleri kapsamında planlanan ve tamamlanan çalışmaların özet rapor modeli.",
-    statusLabel: "Demo rapor",
+      "Kış destekleri kapsamında planlanan ve tamamlanan çalışmaların özet raporu.",
+    statusLabel: "Özet yayınlandı",
     metrics: [
       { label: "Battaniye", value: "1.200" },
       { label: "Aile", value: "520" },

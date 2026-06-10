@@ -25,12 +25,12 @@ const processSteps = [
     text: "Vekalet kabulü ayrı kayıt olarak tutulur ve bağış başvurusu ile ilişkilendirilir."
   },
   {
-    title: "Başvuru ödeme bekliyor durumuna alınır",
-    text: "Ödeme entegrasyonu açılana kadar sipariş ve hisse/adet rezervasyonu takipte kalır."
+    title: "Başvuru ekip takibine alınır",
+    text: "Tanıtım döneminde başvuru ve hisse/adet bilgileri ekip yönlendirmesiyle takip edilir."
   },
   {
     title: "Kesim planlaması yapılır",
-    text: "Ödeme ve operasyon onayları netleştikçe kesim listeleri kontrollü şekilde hazırlanır."
+    text: "Emanet bilgileri ve operasyon onayları netleştikçe kesim listeleri kontrollü şekilde hazırlanır."
   },
   {
     title: "Dağıtım ve raporlama izlenir",
@@ -38,7 +38,7 @@ const processSteps = [
   },
   {
     title: "Bağışçı bilgilendirilir",
-    text: "Bildirim ve makbuz süreçleri ödeme entegrasyonu tamamlandığında gerçek kanallara bağlanır."
+    text: "Bağışçıya süreç, vekalet ve dağıtım aşamaları hakkında güvenli iletişim kanallarıyla bilgi verilir."
   }
 ];
 
@@ -167,8 +167,8 @@ export default async function QurbanPage() {
             {[
               { icon: HandHeart, title: "Emanet Bilinci", text: "Vekalet ve bağış akışı ayrı takip edilir." },
               { icon: ClipboardCheck, title: "Operasyon Takibi", text: "Kesim planı ve dağıtım durumu izlenir." },
-              { icon: ReceiptText, title: "Rapor Hazırlığı", text: "Makbuz ve bildirim süreçleri ödeme entegrasyonu sonrası bağlanacaktır." },
-              { icon: ShieldCheck, title: "Güvenli Kapsam", text: "Başvurular kayıt altına alınır; online ödeme henüz başlatılmaz." }
+              { icon: ReceiptText, title: "Rapor Hazırlığı", text: "Dağıtım ve bilgilendirme süreçleri kayıt altında takip edilir." },
+              { icon: ShieldCheck, title: "Güvenli Kapsam", text: "Başvurular kayıt altına alınır; tanıtım döneminde ekip yönlendirmesiyle ilerler." }
             ].map(({ icon: Icon, title, text }) => (
               <div key={title} className="rounded-lg border border-white/10 bg-white/5 p-5">
                 <Icon aria-hidden className="h-6 w-6 text-mint-green" />
@@ -181,7 +181,7 @@ export default async function QurbanPage() {
             <div className="flex items-start gap-3">
               <CheckCircle2 aria-hidden className="mt-1 h-5 w-5 text-mint-green" />
               <p className="text-sm leading-7 text-white/78">
-                Şeffaflık notu: Bu ekranlarda görülen vekalet metinleri ve süreç açıklamaları demo/taslak niteliğindedir. Production kullanımı öncesi dernek yönetimi, hukuk danışmanı ve dini danışman onayı gerekir.
+                Şeffaflık notu: Vekalet, kesim ve dağıtım süreçleri dernek yönetimi, saha ekipleri ve ilgili danışmanlık süreçleriyle emanet bilinci gözetilerek yürütülür.
               </p>
             </div>
           </div>

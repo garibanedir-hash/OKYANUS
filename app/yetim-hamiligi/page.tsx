@@ -28,11 +28,11 @@ const faqItems = [
   },
   {
     question: "Bu aşamada ödeme alınıyor mu?",
-    answer: "Hayır. Başvuru ekranı demo hazırlık akışıdır; gerçek ödeme ve düzenli talimat sonraki aşamada açılacaktır."
+    answer: "Tanıtım döneminde destek süreci WhatsApp ve iletişim kanalları üzerinden yönlendirilir; online ödeme formu gösterilmez."
   },
   {
     question: "Sponsor nasıl bilgilendirilir?",
-    answer: "Ödeme ve bildirim altyapısı tamamlandığında güvenli özetler ve makbuz süreçleri panel üzerinden takip edilecektir."
+    answer: "Başvuru sonrasında dernek ekibi uygun bilgilendirme kanalı üzerinden sponsor adayına dönüş yapar."
   }
 ];
 
@@ -66,7 +66,7 @@ export default async function OrphanSponsorshipPage() {
               <div className="mt-7 grid gap-4">
                 {[
                   { icon: HandHeart, title: "Sürekli Destek", text: "Tek seferlik yardım yerine takip edilebilir aylık destek modeli hedeflenir." },
-                  { icon: ClipboardCheck, title: "Kayıtlı Süreç", text: "Başvuru, eşleşme, ödeme ve güncelleme adımları ayrı statülerle izlenir." },
+                  { icon: ClipboardCheck, title: "Kayıtlı Süreç", text: "Başvuru, eşleşme, destek ve güncelleme adımları ayrı statülerle izlenir." },
                   { icon: ShieldCheck, title: "Mahremiyet", text: "Sponsor panelinde yalnızca güvenli özetler paylaşılır." }
                 ].map(({ icon: Icon, title, text }) => (
                   <article key={title} className="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
@@ -97,7 +97,7 @@ export default async function OrphanSponsorshipPage() {
           <SectionHeading
             eyebrow="Sponsorluk Programları"
             title="Aylık destek modeli"
-            description="Aktif programlar güvenli ön başvuru akışına yönlendirir. Bu fazda ödeme veya düzenli ödeme talimatı oluşturulmaz."
+            description="Aktif programlar güvenli ön başvuru ve bilgilendirme akışına yönlendirir."
           />
           <div className="mt-8 grid gap-5 lg:grid-cols-3">
             {programs.map((program) => (
@@ -164,7 +164,7 @@ export default async function OrphanSponsorshipPage() {
           <div className="mt-8 flex items-start gap-3 rounded-lg border border-white/10 bg-white/5 p-5">
             <CheckCircle2 aria-hidden className="mt-1 h-5 w-5 text-mint-green" />
             <p className="text-sm leading-7 text-white/76">
-              Bu aşamadaki program metinleri demo/taslak niteliğindedir; production öncesi kurum yönetimi, hukuk danışmanı ve çocuk koruma ilkeleri açısından incelenmelidir.
+              Program metinleri çocuk mahremiyeti, veri minimizasyonu ve kurum içi değerlendirme ilkeleri gözetilerek hazırlanır; detaylı süreçler dernek ekibi tarafından başvuru sahibine aktarılır.
             </p>
           </div>
         </Container>

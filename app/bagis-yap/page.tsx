@@ -27,7 +27,7 @@ const trustNotes: Array<{ icon: LucideIcon; text: string }> = [
   { icon: ShieldCheck, text: "Bağış bilgileriniz güvenle işlenir." },
   { icon: ClipboardCheck, text: "Bağışlar proje bazlı kayıt altına alınır." },
   { icon: BookOpen, text: "Dilerseniz destek olmak istediğiniz alanı seçebilirsiniz." },
-  { icon: CreditCard, text: "PayTR test akışı sonraki adımda payment intent üzerinden bağlanacaktır." }
+  { icon: CreditCard, text: "Tanıtım döneminde bağış bilgilendirmesi ekibimiz tarafından yönlendirilir." }
 ];
 
 type DonatePageProps = {
@@ -80,7 +80,7 @@ export default async function DonatePage({ searchParams }: DonatePageProps) {
                   <div>
                     <h2 className="text-xl font-bold text-dark-navy">Şeffaf bağış süreci</h2>
                     <p className="mt-2 leading-7 text-slate-600">
-                      Bağış türü, tutar, bağışçı bilgisi ve not alanı ayrı tutulur; 9E ortak payment intent, makbuz ve bildirim altyapısına bağlanabilecek şekilde hazırlanır.
+                      Bağış türü, tutar, bağışçı bilgisi ve not alanı ayrı ele alınır; destekleriniz proje ve faaliyet başlıklarıyla düzenli şekilde takip edilir.
                     </p>
                   </div>
                 </div>

@@ -68,7 +68,7 @@ export function mapSupabaseReportToReport(row: SupabaseReportRow): Report {
     period: row.period,
     category: row.category,
     summary: row.summary,
-    statusLabel: row.pdf_asset_id ? "Demo rapor" : "PDF yakında",
+    statusLabel: row.pdf_asset_id ? "Özet yayınlandı" : "PDF yakında",
     pdfUrl: row.file_url ?? undefined,
     metrics: metrics.length ? metrics : [{ label: "Durum", value: "Yayında" }],
     tags: [row.category, row.period].filter(Boolean)

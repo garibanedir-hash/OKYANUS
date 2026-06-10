@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Facebook, Instagram, Mail, MapPin, Phone, Twitter } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { OfficialLogo } from "@/components/brand/OfficialLogo";
@@ -22,6 +22,7 @@ const quickLinks = [
 
 const activityLinks = ["Acil Yardım", "Gıda Desteği", "Eğitim Desteği", "Yetim Hamiliği", "Kurban Çalışmaları"];
 const legalLinks = [
+  ["Hukuki Bilgilendirme", "/hukuki"],
   ["Gizlilik Politikası", "/gizlilik-politikasi"],
   ["KVKK Aydınlatma Metni", "/kvkk-aydinlatma-metni"],
   ["Çerez Politikası", "/cerez-politikasi"],
@@ -54,17 +55,8 @@ export function Footer({ donationConfig }: { donationConfig: DonationPublicConfi
             <p className="mt-5 max-w-sm text-sm leading-7 text-white/70">
               İhtiyaç sahiplerine umut, güven ve destek ulaştırmak için bağışçı, gönüllü ve saha ekiplerimizle birlikte çalışıyoruz.
             </p>
-            <div className="mt-6 flex gap-3">
-              {[Facebook, Instagram, Twitter].map((Icon, index) => (
-                <a
-                  key={index}
-                  href="#"
-                  aria-label="Sosyal medya hesabı"
-                  className="focus-ring flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-ocean-green"
-                >
-                  <Icon aria-hidden className="h-4 w-4" />
-                </a>
-              ))}
+            <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-white/70">
+              Sosyal medya hesaplarımız ve güncel duyurular için iletişim sayfamızdan dernek ekibimize ulaşabilirsiniz.
             </div>
           </div>
 

@@ -6,7 +6,7 @@ import { signInPublic } from "@/app/giris/actions";
 
 export const metadata: Metadata = {
   title: "Giriş Yap | Okyanus",
-  description: "Okyanus bağışçı ve gönüllü hesap girişi demo sayfası."
+  description: "Okyanus bağışçı ve gönüllü hesap giriş sayfası."
 };
 
 export default async function LoginPage({
@@ -16,7 +16,7 @@ export default async function LoginPage({
 }) {
   const params = await searchParams;
   const statusMessages: Record<string, string> = {
-    demo: "Demo mod aktif. Gerçek giriş yapılmaz; paneller önizleme için açıktır.",
+    demo: "Tanıtım döneminde hesap girişi sınırlıdır. Bilgi almak için iletişim kanallarımızı kullanabilirsiniz.",
     "env-eksik": "Supabase env değişkenleri eksik. Giriş akışı başlatılamadı.",
     eksik: "Lütfen e-posta ve şifre alanlarını doldurun.",
     hata: "Giriş bilgileri doğrulanamadı.",
@@ -38,7 +38,7 @@ export default async function LoginPage({
         <AuthSubmitButton idleLabel="Giriş Yap" pendingLabel="Giriş yapılıyor..." />
         <div className="grid gap-2 text-center text-sm text-ink-muted">
           <p>Hesabınız yok mu? <Link className="font-bold text-deep-blue" href="/kayit">Kayıt olun</Link></p>
-          <p><span className="font-semibold">Şifremi unuttum</span> <span className="text-xs">(demo)</span></p>
+          <p><span className="font-semibold">Şifremi unuttum</span> <span className="text-xs">bağlantısı yakında aktif olacaktır.</span></p>
           <p className="pt-2 text-xs">Yönetim paneli girişi için <Link className="font-bold text-deep-blue" href="/admin/giris">buraya tıklayın</Link>.</p>
         </div>
       </form>

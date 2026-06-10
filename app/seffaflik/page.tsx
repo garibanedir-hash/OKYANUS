@@ -43,7 +43,7 @@ export default function TransparencyPage() {
           <SectionHeading
             eyebrow="Şeffaflık Anlayışımız"
             title="Süreçleri sadece iyi niyetle değil, düzenli sistemle de yürütürüz"
-            description="Bu sayfadaki yapı frontend seviyesinde hazırlanmıştır; gerçek operasyon verileri, raporlar ve entegrasyonlarla genişletilebilir."
+            description="Bağış, gönüllülük ve saha çalışmalarını anlaşılır kayıtlar, faaliyet raporları ve insan onurunu koruyan iletişim diliyle destekleriz."
           />
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {transparencyItems.map((item) => (

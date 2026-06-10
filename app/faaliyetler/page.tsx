@@ -27,8 +27,8 @@ export default function ActivitiesPage() {
             description="Her alanın amacı, örnek destek türleri ve bağış çağrısı net biçimde sunulur."
           />
           <div className="mt-10 grid gap-6 md:grid-cols-2">
-            {activities.map(({ icon: Icon, title, description, supportTypes }) => (
-              <article key={title} className="rounded-brand border border-slate-200 bg-white p-7 shadow-card transition hover:-translate-y-1 hover:shadow-soft">
+            {activities.map(({ icon: Icon, title, description, supportTypes, slug }) => (
+              <article id={slug} key={title} className="scroll-mt-32 rounded-brand border border-slate-200 bg-white p-7 shadow-card transition hover:-translate-y-1 hover:shadow-soft">
                 <div className="flex items-start gap-4">
                   <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-soft-blue text-deep-blue">
                     <Icon aria-hidden className="h-6 w-6" />

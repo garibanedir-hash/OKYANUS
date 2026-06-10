@@ -25,7 +25,7 @@ export default async function ReportsPage() {
           <SectionHeading
             eyebrow="Rapor Arşivi"
             title="Yıllara ve faaliyet alanlarına göre rapor yapısı"
-            description="Bu sayfa şimdilik demo verilerle hazırlanmıştır. İleride PDF dosyaları ve CMS içerikleri aynı modele bağlanabilir."
+            description="Yayınlanan raporlar ve dönemsel çalışma özetleri bu alanda ziyaretçilerle paylaşılır."
           />
           <div className="mt-10 grid gap-6 md:grid-cols-2">
             {reports.length ? (

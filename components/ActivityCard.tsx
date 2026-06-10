@@ -42,7 +42,7 @@ export function ActivityCard({
         )}
 
         <Link
-          href={slug ? `/faaliyetler/${slug}` : "/faaliyetler"}
+          href={slug ? `/faaliyetler#${slug}` : "/faaliyetler"}
           className="focus-ring mt-5 inline-flex items-center gap-2 self-start rounded-full text-sm font-semibold text-ocean-green"
         >
           Detaylı İncele

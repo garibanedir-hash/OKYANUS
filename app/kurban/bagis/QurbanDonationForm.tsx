@@ -149,7 +149,7 @@ export function QurbanDonationForm({
           {selectedCampaign?.delegationText ?? "Vekalet metni kampanya bilgisi üzerinden hazırlanır."}
         </p>
         <p className="mt-3 text-xs font-bold leading-6 text-ink-muted">
-          Bu metin taslak önizlemedir; production öncesi dernek yönetimi, hukuk danışmanı ve dini danışman onayı gerekir.
+          Vekalet ve bilgilendirme metinleri dernek yönetimi tarafından düzenli olarak gözden geçirilir; gerekli durumlarda ekibimiz sizinle iletişime geçer.
         </p>
       </div>
 

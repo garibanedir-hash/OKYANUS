@@ -254,9 +254,9 @@ export const mockQurbanCampaigns: QurbanCampaign[] = [
     description:
       "Yurt dışı vacip kurban organizasyonu, bölge sorumluları ve saha ekipleriyle planlı kesim ve dağıtım takibi yapılacak şekilde tasarlanmıştır.",
     delegationText:
-      "Bu taslak metin, bağışçının kurban kesimi için Okyanus İnsani Yardım Derneği'ni vekil tayin ettiğini belirtir. Production öncesi onay gerektirir.",
+      "Bağışçı, kurban kesimi ve dağıtımı için Okyanus İnsani Yardım Derneği'ni vekil tayin ettiğini beyan eder.",
     transparencyNote:
-      "Vekalet, ödeme, kesim ve dağıtım durumları ayrı aşamalar olarak izlenir; bilgilendirme modülü sonraki aşamada gerçek kanallara bağlanacaktır.",
+      "Vekalet, emanet takibi, kesim ve dağıtım durumları ayrı aşamalar olarak izlenir; bağışçı bilgilendirmeleri kayıt altında yürütülür.",
     updatedAt: "2026-05-18"
   },
   {
@@ -282,9 +282,9 @@ export const mockQurbanCampaigns: QurbanCampaign[] = [
     description:
       "Adak ve akika kurbanları için bağışçının niyet bilgisi, vekalet onayı ve kesim planı ayrı kayıtlarda izlenebilir.",
     delegationText:
-      "Bu demo vekalet metni bağışçı onayı, hukuki değerlendirme ve dini danışman görüşü tamamlandıktan sonra kesinleştirilmelidir.",
+      "Bağışçı, adak veya akika kurbanı için vekalet verdiğini ve kesim-dağıtım sürecinin dernek tarafından yürütülmesini kabul eder.",
     transparencyNote:
-      "Bu kampanya, dosya yükleme veya gerçek makbuz üretimi olmadan sadece süreç görünürlüğü için hazırlanmıştır.",
+      "Kesim ve dağıtım süreci bağışçı bilgilendirmesi, emanet takibi ve iç kontrol adımlarıyla izlenir.",
     updatedAt: "2026-05-16"
   },
   {
@@ -306,11 +306,11 @@ export const mockQurbanCampaigns: QurbanCampaign[] = [
     endDate: "2026-10-30",
     status: "paused",
     statusLabel: qurbanCampaignStatusLabels.paused,
-    shortDescription: "Şükür ve nafile kurban süreçleri için planlama durumundaki demo kampanya.",
+    shortDescription: "Şükür ve nafile kurban süreçleri için planlama durumundaki kampanya.",
     description:
-      "Şükür ve nafile kurban destekleri, ödeme entegrasyonu açılmadan önce operasyon planı ve raporlama kurgusu için tutulur.",
+      "Şükür ve nafile kurban destekleri, dönemsel ihtiyaçlara göre planlanan kesim ve dağıtım çalışmaları kapsamında değerlendirilir.",
     delegationText:
-      "Bu metin taslak niteliğindedir; production akışında yönetim, hukuk ve dini danışman onayı olmadan kullanılmamalıdır.",
+      "Bağışçı, şükür veya nafile kurbanı için vekalet verdiğini ve sürecin dernek tarafından yürütülmesini kabul eder.",
     transparencyNote: "Duraklatılmış kampanyalar public aktif listede gösterilmez; admin ekranda operasyon hazırlığı için izlenir.",
     updatedAt: "2026-05-14"
   }

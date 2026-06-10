@@ -328,7 +328,7 @@ export const mockSponsorshipPrograms: SponsorshipProgram[] = [
     country: "Türkiye",
     region: "Hazırlık bölgeleri",
     description: "Kış dönemi temel ihtiyaç destekleri için hazırlık programı.",
-    shortDescription: "Kış dönemi destek planlaması için taslak program.",
+    shortDescription: "Kış dönemi destek planlaması için hazırlık programı.",
     status: "paused",
     statusLabel: sponsorshipProgramStatusLabels.paused,
     startDate: "2026-10-01",

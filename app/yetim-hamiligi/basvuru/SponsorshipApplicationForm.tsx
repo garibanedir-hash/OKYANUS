@@ -107,7 +107,7 @@ export function SponsorshipApplicationForm({
       </div>
 
       <div className="mt-5 rounded-lg border border-ocean-green/15 bg-mint-green/35 p-4 text-sm font-semibold leading-6 text-ink-muted">
-        Başvuru alındıktan sonra dernek yetkilileri güvenli eşleştirme sürecini başlatır. Ödeme ve düzenli destek altyapısı sonraki aşamada aktif hale getirilecektir.
+        Başvuru alındıktan sonra dernek yetkilileri güvenli eşleştirme ve bilgilendirme sürecini başlatır. Düzenli destek detayları sizinle mahremiyet ilkeleri gözetilerek paylaşılır.
       </div>
 
       <button type="submit" className="focus-ring mt-7 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-ocean-green px-5 py-3 text-sm font-extrabold text-white transition hover:bg-deep-blue">

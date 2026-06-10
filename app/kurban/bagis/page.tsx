@@ -13,7 +13,7 @@ import { getDonationMode } from "@/lib/donations/donationMode";
 
 export const metadata: Metadata = {
   title: "Kurban Bağışı",
-  description: "Kurban bağışı için vekalet, başvuru ve hisse rezervasyon formu. Ödeme entegrasyonu henüz kapalıdır."
+  description: "Kurban bağışı için vekalet, başvuru ve hisse/adet bilgilendirme akışı."
 };
 
 type QurbanDonationPageProps = {
@@ -53,7 +53,7 @@ export default async function QurbanDonationDemoPage({ searchParams }: QurbanDon
       <PageHero
         eyebrow="Kurban Başvurusu"
         title="Kurban bağışı ve vekalet akışı"
-        description="Kurban bağış başvurunuz alınır, vekalet kabulünüz kaydedilir ve seçtiğiniz hisse/adet ödeme bekliyor durumunda takip edilir."
+        description="Kurban bağış başvurunuz alınır, vekalet kabulünüz kaydedilir ve seçtiğiniz hisse/adet bilgisi dernek ekibi tarafından takip edilir."
       />
 
       <section className="bg-soft-gray py-16 sm:py-20">
@@ -82,9 +82,8 @@ export default async function QurbanDonationDemoPage({ searchParams }: QurbanDon
                   {params?.odeme_hata === "1" ? (
                     <p>Ödeme bağlantısı şu anda oluşturulamadı; başvurunuz alındı ve yönetim ekranından tekrar hazırlanabilir.</p>
                   ) : (
-                    <p>Ortak payment intent oluşturuldu; PayTR test ödeme sayfasında canlı tahsilat yapılmadan güvenli test akışı başlatılır.</p>
+                    <p>Bağış bilgilendirme kaydınız oluşturuldu; ekibimiz gerekli yönlendirmeyi sizinle paylaşacaktır.</p>
                   )}
-                  <p>PayTR test entegrasyonunda sipariş durumu yalnızca doğrulanmış callback sonrası ilerletilecektir.</p>
                   <p>Başvurunuz dernek yönetim ekranlarında kayıt altına alınmıştır.</p>
                   <p>Bağışçı hesabınızla giriş yaptıysanız kayıt Kurbanlarım panelinde listelenebilir.</p>
                 </div>
@@ -130,17 +129,17 @@ export default async function QurbanDonationDemoPage({ searchParams }: QurbanDon
                 <div className="flex items-start gap-3">
                   <AlertCircle aria-hidden className="mt-1 h-5 w-5 text-ocean-green" />
                   <div>
-                    <h2 className="text-xl font-extrabold text-dark-navy">Ödeme altyapısı hazırlık modunda</h2>
+                    <h2 className="text-xl font-extrabold text-dark-navy">Kurban süreci bilgilendirme hattı</h2>
                     <p className="mt-2 text-sm leading-7 text-ink-muted">
-                      Bu form başvuru, vekalet kabulü ve hisse/adet rezervasyonu oluşturur. Ortak ödeme niyeti, makbuz ve bildirim modeli hazırlandı; PayTR test iframe altyapısı yalnızca payment intent üzerinden açılır. Canlı ödeme, makbuz PDF, SMS/e-posta ve dosya yükleme bu aşamada yapılmaz.
+                      Tanıtım döneminde kurban bağışı başvuruları ve vekalet bilgilendirmesi dernek ekibi tarafından güvenli iletişim kanallarıyla yönlendirilir.
                     </p>
                   </div>
                 </div>
               </div>
               {[
-                { icon: FileCheck2, title: "Vekalet", text: "Metin taslak olup onay süreci gerektirir." },
-                { icon: ShieldCheck, title: "KVKK", text: "Production öncesi veri işleme metinleri gözden geçirilmelidir." },
-                { icon: CheckCircle2, title: "Operasyon", text: "Kesim ve dağıtım takibi sonraki aşamada write action ile bağlanacaktır." }
+                { icon: FileCheck2, title: "Vekalet", text: "Vekalet süreci bağışçı onayı ve kurum takibiyle ilerler." },
+                { icon: ShieldCheck, title: "KVKK", text: "Kişisel veriler yalnızca gerekli süreçlerde sınırlı olarak işlenir." },
+                { icon: CheckCircle2, title: "Operasyon", text: "Kesim ve dağıtım bilgileri kurum içi operasyon takibiyle yönetilir." }
               ].map(({ icon: Icon, title, text }) => (
                 <div key={title} className="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
                   <Icon aria-hidden className="h-5 w-5 text-ocean-green" />

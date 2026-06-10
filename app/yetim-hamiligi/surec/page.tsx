@@ -16,9 +16,9 @@ const steps: Array<{ title: string; text: string; icon: LucideIcon }> = [
   { title: "Başvuru alınır", text: "Sponsor adayının iletişim ve destek tercihleri güvenli ön başvuru olarak değerlendirilir.", icon: ClipboardCheck },
   { title: "Sponsor profili oluşturulur", text: "KVKK ve iletişim tercihleri ile düzenli destek niyeti kayıt altına alınır.", icon: UserCheck },
   { title: "Uygun sponsorluk eşleşmesi yapılır", text: "Eşleşme çocuk mahremiyeti ve saha değerlendirmesi gözetilerek yetkili ekip tarafından hazırlanır.", icon: ShieldCheck },
-  { title: "Düzenli destek süreci başlar", text: "Ödeme entegrasyonu açıldığında düzenli ödeme ve takip statüleri aktif hale getirilir.", icon: CreditCard },
+  { title: "Düzenli destek süreci başlar", text: "Destek niyeti, bağışçı bilgilendirmesi ve takip adımları yetkili ekip tarafından kayıt altında yürütülür.", icon: CreditCard },
   { title: "Güvenli güncellemeler paylaşılır", text: "Sponsor panelinde yalnızca güvenli özetler ve periyodik durum bilgileri görünür.", icon: BellRing },
-  { title: "Makbuz ve bilgilendirme izlenir", text: "Makbuz, SMS/e-posta ve raporlama entegrasyonları sonraki aşamada gerçek sağlayıcılara bağlanır.", icon: FileText }
+  { title: "Makbuz ve bilgilendirme izlenir", text: "Makbuz, iletişim ve raporlama adımları dernek kayıt düzeni içinde güvenli şekilde takip edilir.", icon: FileText }
 ];
 
 export default function OrphanSponsorshipProcessPage() {
@@ -60,7 +60,7 @@ export default function OrphanSponsorshipProcessPage() {
             <div className="flex items-start gap-3">
               <CheckCircle2 aria-hidden className="mt-1 h-5 w-5 text-ocean-green" />
               <p className="text-sm font-semibold leading-7 text-ink-muted">
-                Bu fazda gerçek ödeme, düzenli ödeme talimatı, makbuz, SMS/e-posta ve dosya/PDF yükleme yoktur. Başvuru deneyimi altyapı tamamlandığında gerçek kayıt akışına bağlanacak şekilde hazırlanır.
+                Yetim hamiliği süreci çocuğun mahremiyetini ve bağışçının bilgilendirme hakkını birlikte gözetir. Açık kimlik, adres ve hassas aile bilgileri public alanda paylaşılmaz.
               </p>
             </div>
           </div>
