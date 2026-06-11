@@ -5,6 +5,7 @@ import { AlertCircle, BookOpen, CheckCircle2, HeartHandshake, Package, ShieldChe
 import { projects } from "@/data/projects";
 import { Button } from "@/components/ui/Button";
 import { SelectField, TextAreaField, TextField } from "@/components/ui/FormField";
+import { ConsentCheckbox, LegalTextLink, legalLinks } from "@/components/forms/LegalConsent";
 import { cn } from "@/lib/utils";
 
 const amounts = [
@@ -126,14 +127,14 @@ export function DonationForm({ initialProjectSlug, action, formError, formNotice
       </div>
 
       <div className="mt-6 grid gap-3 text-sm font-semibold leading-6 text-ink-muted">
-        <label className="flex items-start gap-3">
-          <input name="kvkkAccepted" type="checkbox" required className="mt-1 h-4 w-4 accent-ocean-green" />
-          <span>KVKK aydınlatma metnini okudum ve bağış ödeme niyeti oluşturulmasını onaylıyorum.</span>
-        </label>
-        <label className="flex items-start gap-3">
-          <input name="contactPermission" type="checkbox" className="mt-1 h-4 w-4 accent-ocean-green" />
-          <span>Bağış ve makbuz bilgilendirmeleri için benimle iletişime geçilmesine izin veriyorum.</span>
-        </label>
+        <ConsentCheckbox name="kvkkAccepted" required>
+          <LegalTextLink href={legalLinks.kvkk}>KVKK Aydınlatma Metni</LegalTextLink> ile{" "}
+          <LegalTextLink href={legalLinks.donationTerms}>Bağış Bilgilendirme ve Şartları</LegalTextLink>&apos;nı okudum.
+        </ConsentCheckbox>
+        <ConsentCheckbox name="contactPermission">
+          <LegalTextLink href={legalLinks.explicitConsent}>Açık Rıza Metni</LegalTextLink> kapsamında bağış süreci, faaliyet
+          ve bilgilendirme duyuruları için benimle iletişime geçilmesini kabul ediyorum.
+        </ConsentCheckbox>
       </div>
 
       <div className="hidden" aria-hidden="true">
@@ -144,7 +145,7 @@ export function DonationForm({ initialProjectSlug, action, formError, formNotice
       </div>
 
       <Button type="submit" className="mt-7 w-full" showIcon>
-        Güvenli Ödeme Niyeti Oluştur
+        Bağış Ön Kaydı Oluştur
       </Button>
     </form>
   );

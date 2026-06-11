@@ -13,7 +13,7 @@ export async function registerDemoAction() {
 
 export async function registerPublicAccount(formData: FormData) {
   if (isAdminDemoMode) {
-    redirect("/kayit?durum=demo");
+    redirect("/kayit?durum=sinirli");
   }
 
   const accountType = String(formData.get("accountType") ?? "");
@@ -58,6 +58,6 @@ export async function registerPublicAccount(formData: FormData) {
     redirect("/kayit?durum=hata");
   }
 
-  // TODO: 8D'de user_accounts / donor_profiles / volunteer_profiles kayıtları güvenli server action ile oluşturulacak.
+  // User account profile records are handled in a later account provisioning step.
   redirect("/giris?durum=kayit-basarili");
 }

@@ -133,7 +133,7 @@ export default async function DonatePage({ searchParams }: DonatePageProps) {
               <DonationForm
                 initialProjectSlug={params?.proje}
                 action={createGeneralDonationPaymentIntentAction}
-                formError={params?.durum === "hata" ? params?.mesaj ?? "Bağış ödeme niyeti oluşturulamadı." : undefined}
+                formError={params?.durum === "hata" ? params?.mesaj ?? "Bağış ön kaydı oluşturulamadı." : undefined}
                 formNotice={params?.durum === "alindi" ? "Bağış ön kaydınız alındı." : undefined}
               />
             ) : (

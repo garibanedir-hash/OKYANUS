@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { legalPages } from "@/data/legalPages";
+import { getLegalPagePath, legalPages } from "@/data/legalPages";
 import { getNewsPosts } from "@/lib/data/newsRepository";
 import { getProjects } from "@/lib/data/projectsRepository";
 import { getActiveQurbanCampaigns } from "@/lib/data/qurbanRepository";
@@ -35,7 +35,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entry("/seffaflik", 0.75),
     entry("/faaliyet-raporlari", 0.7),
     entry("/hukuki", 0.55),
-    ...legalPages.map((page) => entry(`/${page.slug}`, 0.5)),
+    ...legalPages.map((page) => entry(getLegalPagePath(page.slug), 0.5)),
     ...projects.map((project) => entry(`/projeler/${project.slug}`, 0.78)),
     ...news.map((item) => entry(`/haberler/${item.slug}`, 0.65)),
     ...qurbanCampaigns.map((campaign) => entry(`/kurban/${campaign.slug}`, 0.68))

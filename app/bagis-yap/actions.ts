@@ -57,7 +57,7 @@ function resolveDonationAmount(formData: FormData) {
 
 function getFriendlyError(error: unknown) {
   if (error instanceof PaymentWriteError || error instanceof Error) return error.message;
-  return "Bağış ödeme niyeti oluşturulamadı. Lütfen tekrar deneyin.";
+  return "Bağış ön kaydı oluşturulamadı. Lütfen tekrar deneyin.";
 }
 
 export async function createGeneralDonationPaymentIntentAction(formData: FormData) {

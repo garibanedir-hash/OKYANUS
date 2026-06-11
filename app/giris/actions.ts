@@ -15,7 +15,7 @@ export async function loginDemoAction() {
 
 export async function signInPublic(formData: FormData) {
   if (isAdminDemoMode) {
-    redirect("/giris?durum=demo");
+    redirect("/giris?durum=sinirli");
   }
 
   const email = String(formData.get("email") ?? "").trim();

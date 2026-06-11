@@ -16,7 +16,7 @@ export default async function LoginPage({
 }) {
   const params = await searchParams;
   const statusMessages: Record<string, string> = {
-    demo: "Tanıtım döneminde hesap girişi sınırlıdır. Bilgi almak için iletişim kanallarımızı kullanabilirsiniz.",
+    sinirli: "Tanıtım döneminde hesap girişi sınırlıdır. Bilgi almak için iletişim kanallarımızı kullanabilirsiniz.",
     "env-eksik": "Supabase env değişkenleri eksik. Giriş akışı başlatılamadı.",
     eksik: "Lütfen e-posta ve şifre alanlarını doldurun.",
     hata: "Giriş bilgileri doğrulanamadı.",

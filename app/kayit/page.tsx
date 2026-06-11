@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
+import { ConsentCheckbox, LegalTextLink, legalLinks } from "@/components/forms/LegalConsent";
 import { registerPublicAccount } from "@/app/kayit/actions";
 
 export const metadata: Metadata = {
@@ -16,7 +17,7 @@ export default async function RegisterPage({
 }) {
   const params = await searchParams;
   const statusMessage =
-    params?.durum === "demo"
+    params?.durum === "sinirli"
       ? "Tanıtım döneminde üyelik oluşturma sınırlıdır. Gönüllülük ve bağış bilgilendirmesi için iletişim kanallarımızı kullanabilirsiniz."
       : params?.durum === "env-eksik"
         ? "Supabase env değişkenleri eksik. Kayıt akışı başlatılamadı."
@@ -44,8 +45,13 @@ export default async function RegisterPage({
           <label className="text-sm font-bold text-dark-navy">Şifre<input name="password" className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" type="password" required /></label>
           <label className="text-sm font-bold text-dark-navy">Şifre tekrar<input name="passwordConfirm" className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" type="password" required /></label>
           <div className="grid gap-3 md:col-span-2">
-            <label className="flex gap-3 text-sm font-semibold leading-6 text-ink-muted"><input name="kvkkAccepted" className="mt-1 h-4 w-4" type="checkbox" required />KVKK aydınlatma metnini okudum ve kayıt başvurusu kapsamında bilgilendirildim.</label>
-            <label className="flex gap-3 text-sm font-semibold leading-6 text-ink-muted"><input name="communicationPermission" className="mt-1 h-4 w-4" type="checkbox" />İletişim izni vermek istiyorum.</label>
+            <ConsentCheckbox name="kvkkAccepted" required>
+              <LegalTextLink href={legalLinks.kvkk}>KVKK Aydınlatma Metni</LegalTextLink>&apos;ni okudum.
+            </ConsentCheckbox>
+            <ConsentCheckbox name="communicationPermission">
+              <LegalTextLink href={legalLinks.explicitConsent}>Açık Rıza Metni</LegalTextLink> kapsamında faaliyet ve bilgilendirme
+              duyurularının tarafıma iletilmesini kabul ediyorum.
+            </ConsentCheckbox>
           </div>
           <AuthSubmitButton idleLabel="Hesap Oluştur" pendingLabel="Kayıt oluşturuluyor..." className="md:col-span-2" />
           <p className="text-sm text-ink-muted md:col-span-2">Zaten hesabın var mı? <Link className="font-bold text-deep-blue" href="/giris">Giriş yap</Link></p>

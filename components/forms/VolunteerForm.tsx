@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { SelectField, TextAreaField, TextField } from "@/components/ui/FormField";
+import { ConsentCheckbox, LegalTextLink, legalLinks } from "@/components/forms/LegalConsent";
 
 const interests = [
   "Saha Faaliyetleri",
@@ -46,6 +47,18 @@ export function VolunteerForm() {
         </SelectField>
         <TextAreaField label="Daha önce gönüllülük deneyimi" className="sm:col-span-2" rows={3} />
         <TextAreaField label="Mesaj" className="sm:col-span-2" placeholder="Kısaca kendinizden ve destek olmak istediğiniz alandan bahsedebilirsiniz." />
+      </div>
+      <div className="mt-6 grid gap-3">
+        <ConsentCheckbox name="volunteerKvkkAccepted" required>
+          <LegalTextLink href={legalLinks.volunteerNotice}>Gönüllü Başvuru Aydınlatma Metni</LegalTextLink>&apos;ni okudum.
+        </ConsentCheckbox>
+        <ConsentCheckbox name="volunteerExplicitConsent">
+          <LegalTextLink href={legalLinks.explicitConsent}>Açık Rıza Metni</LegalTextLink> kapsamında gönüllülük başvurumun
+          değerlendirilmesi ve uygun gönüllülük alanları için benimle iletişim kurulmasını kabul ediyorum.
+        </ConsentCheckbox>
+        <ConsentCheckbox name="volunteerAnnouncementPermission">
+          Faaliyet ve bilgilendirme duyurularının tarafıma iletilmesini kabul ediyorum.
+        </ConsentCheckbox>
       </div>
       <Button type="submit" className="mt-7 w-full" showIcon>
         Başvuruyu Gönder

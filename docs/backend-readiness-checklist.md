@@ -294,3 +294,14 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] MIME yalnızca JPG/PNG/WebP, dosya boyutu en fazla 5 MB.
 - [ ] Public kartlar ve detay sayfaları yüklenen public URL değerlerini kullanıyor.
 - [ ] URL ile ekleme yalnızca gelişmiş/yedek seçenek olarak kalıyor.
+
+## 14A Hukuki Görünüm ve Form Onayları
+
+- [ ] `/hukuki/[slug]` route'u legal metinleri tek veri kaynağından render ediyor.
+- [ ] KVKK Aydınlatma Metni ve Açık Rıza Metni public sitede ayrı metinler olarak sunuluyor.
+- [ ] İletişim, gönüllü, bağış, kurban, yetim hamiliği ve kayıt formlarında aydınlatma beyanı, açık rıza ve duyuru/iletişim izni ayrı checkbox alanlarıyla gösteriliyor.
+- [ ] `DONATION_MODE=whatsapp` davranışı korunuyor; form yerine WhatsApp bilgilendirme kartı ve kısa KVKK/Gizlilik notu gösteriliyor.
+- [ ] Bu aşamada PayTR ödeme akışı, makbuz sistemi, Supabase RLS ve admin büyük özellik geliştirmeleri değiştirilmedi.
+- [ ] Hukuki metinler hukukçu kontrolüne sunulacak; resmi adres, sicil ve yetkili iletişim bilgileri nihai kontrolde tamamlanacak.
+- [ ] Çerez politikası analitik/pazarlama araçları eklendiğinde güncellenecek.
+- [ ] Online ödeme aktif edilmeden önce bağış bilgilendirme ve mesafeli bağış/online ödeme metinleri yeniden gözden geçirilecek.

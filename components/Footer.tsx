@@ -3,6 +3,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { OfficialLogo } from "@/components/brand/OfficialLogo";
+import { getLegalPagePath } from "@/data/legalPages";
 import { resolveDonationTarget } from "@/lib/donations/donationTarget";
 import type { DonationPublicConfig } from "@/lib/donations/donationTarget";
 
@@ -22,11 +23,11 @@ const quickLinks = [
 
 const activityLinks = ["Acil Yardım", "Gıda Desteği", "Eğitim Desteği", "Yetim Hamiliği", "Kurban Çalışmaları"];
 const legalLinks = [
-  ["Hukuki Bilgilendirme", "/hukuki"],
-  ["Gizlilik Politikası", "/gizlilik-politikasi"],
-  ["KVKK Aydınlatma Metni", "/kvkk-aydinlatma-metni"],
-  ["Çerez Politikası", "/cerez-politikasi"],
-  ["Bağış Şartları", "/bagis-sartlari"]
+  ["KVKK Aydınlatma Metni", getLegalPagePath("kvkk-aydinlatma-metni")],
+  ["Gizlilik Politikası", getLegalPagePath("gizlilik-politikasi")],
+  ["Çerez Politikası", getLegalPagePath("cerez-politikasi")],
+  ["Bağış Bilgilendirme", getLegalPagePath("bagis-bilgilendirme-ve-sartlari")],
+  ["İletişim", "/iletisim"]
 ];
 
 export function Footer({ donationConfig }: { donationConfig: DonationPublicConfig }) {

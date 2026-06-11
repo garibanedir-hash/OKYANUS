@@ -198,6 +198,18 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] KVKK/hukuk danışmanı yasal metinleri kontrol etti.
 - [ ] Veri saklama ve imha politikası belirlendi.
 
+## 14A Hukuki Metinler ve Public Form Onayları
+
+- [ ] `/hukuki` ve `/hukuki/[slug]` sayfaları KVKK Aydınlatma Metni, Açık Rıza Metni, Gizlilik Politikası, Çerez Politikası, Bağış Bilgilendirme ve Şartları, Gönüllü Başvuru Aydınlatma Metni, İletişim Formu Aydınlatma Metni, Kullanım Şartları ve Mesafeli Bağış / Online Ödeme Bilgilendirmesi başlıklarını gösteriyor.
+- [ ] Hukuki metinler hukukçu kontrolüne sunuldu; kesin hukuki uygunluk iddiası production metinlerinde kullanılmıyor.
+- [ ] Resmi dernek adresi, sicil bilgileri, yetkili iletişim bilgileri ve varsa MERSİS/dernek sicil alanları nihai hukukçu/yönetim kontrolünde tamamlandı.
+- [ ] KVKK Aydınlatma Metni ile Açık Rıza Metni ayrı sayfalarda ve formlarda ayrı beyanlarla kullanılıyor.
+- [ ] İletişim, gönüllü, bağış, kurban, yetim hamiliği ve kayıt formlarında zorunlu aydınlatma okuma beyanı ile opsiyonel açık rıza/duyuru izni ayrıldı.
+- [ ] Çerez Politikası, analitik veya pazarlama aracı eklendiğinde güncellenecek şekilde kontrol edildi.
+- [ ] Online ödeme aktif edilmeden önce Bağış Bilgilendirme ve Şartları ile Mesafeli Bağış / Online Ödeme Bilgilendirmesi yeniden gözden geçirildi.
+- [ ] `DONATION_MODE=whatsapp` modunda WhatsApp hukuki notu kısa, anlaşılır ve KVKK/Gizlilik linkleriyle görünüyor.
+- [ ] Footer hukuki linkleri `/hukuki/...` rotalarına gidiyor ve eski tekil hukuki URL'ler yeni sayfalara yönleniyor.
+
 ## Export ve Raporlama
 
 - [ ] Export işlemleri yetki kontrolünden geçiyor.

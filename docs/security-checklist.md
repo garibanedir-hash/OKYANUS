@@ -213,6 +213,14 @@
 - [ ] Panel erişimleri server-side doğrulanıyor mu?
 - [ ] Public kayıt spam/rate limit ile korunuyor mu?
 - [ ] Hesap oluşturma KVKK onayı alıyor mu?
+- [ ] KVKK Aydınlatma Metni ve Açık Rıza Metni public sitede ayrı sayfalar ve ayrı checkbox beyanları olarak sunuluyor mu?
+- [ ] İletişim ve gönüllü formlarında zorunlu aydınlatma beyanı, opsiyonel açık rıza/duyuru izninden ayrıldı mı?
+- [ ] Bağış, kurban ve yetim hamiliği formlarında bağış şartları/KVKK bağlantıları görünüyor ve opsiyonel iletişim izni ayrı tutuluyor mu?
+- [ ] WhatsApp yönlendirmelerinde kullanıcıya paylaşacağı bilgilerin talebin yanıtlanması amacıyla değerlendirileceği kısa şekilde bildiriliyor mu?
+- [ ] Resmi dernek adresi, sicil bilgileri ve yetkili iletişim bilgileri nihai hukukçu/yönetim kontrolünde tamamlanacak mı?
+- [ ] Çerez politikası, analitik veya pazarlama aracı eklendiğinde güncellenecek mi?
+- [ ] Online ödeme açılmadan önce bağış bilgilendirme ve online ödeme metinleri güncel ödeme akışına göre tekrar kontrol edilecek mi?
+- [ ] Hukuki metinler hukukçu kontrolüne sunulmadan kesin uygunluk iddiasıyla yayımlanmıyor mu?
 
 ## Deployment security
 

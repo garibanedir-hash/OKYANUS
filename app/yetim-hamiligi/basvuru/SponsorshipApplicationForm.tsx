@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { SponsorshipProgram } from "@/data/orphanSponsorshipMock";
 import { formatCurrency } from "@/lib/format";
+import { ConsentCheckbox, LegalTextLink, legalLinks } from "@/components/forms/LegalConsent";
 import { createSponsorshipApplicationAction } from "./actions";
 
 export function SponsorshipApplicationForm({
@@ -96,14 +97,14 @@ export function SponsorshipApplicationForm({
       </div>
 
       <div className="mt-5 grid gap-3">
-        <label className="flex items-start gap-3 text-sm font-semibold leading-6 text-ink-muted">
-          <input name="kvkkAccepted" type="checkbox" required className="mt-1 h-4 w-4 accent-ocean-green" />
-          KVKK bilgilendirmesini okudum ve başvuru bilgilerimin bu süreç için işlenmesini kabul ediyorum.
-        </label>
-        <label className="flex items-start gap-3 text-sm font-semibold leading-6 text-ink-muted">
-          <input name="contactPermission" type="checkbox" className="mt-1 h-4 w-4 accent-ocean-green" />
-          Yetim hamiliği süreciyle ilgili bilgilendirme almak istiyorum.
-        </label>
+        <ConsentCheckbox name="kvkkAccepted" required>
+          <LegalTextLink href={legalLinks.kvkk}>KVKK Aydınlatma Metni</LegalTextLink> ile{" "}
+          <LegalTextLink href={legalLinks.donationTerms}>Bağış Bilgilendirme ve Şartları</LegalTextLink>&apos;nı okudum.
+        </ConsentCheckbox>
+        <ConsentCheckbox name="contactPermission">
+          <LegalTextLink href={legalLinks.explicitConsent}>Açık Rıza Metni</LegalTextLink> kapsamında yetim hamiliği süreci,
+          faaliyet ve bilgilendirme duyuruları için benimle iletişime geçilmesini kabul ediyorum.
+        </ConsentCheckbox>
       </div>
 
       <div className="mt-5 rounded-lg border border-ocean-green/15 bg-mint-green/35 p-4 text-sm font-semibold leading-6 text-ink-muted">

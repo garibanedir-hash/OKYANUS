@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { MessageCircle, PauseCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { legalLinks } from "@/components/forms/LegalConsent";
 import { getDonationMode, getDonationTarget } from "@/lib/donations/donationMode";
 import type { DonationContext } from "@/lib/donations/donationTarget";
 
@@ -45,7 +47,17 @@ export function DonationModePanel({
         </div>
         <div className="mt-6 flex gap-3 rounded-2xl border border-border-soft bg-soft-gray p-4 text-sm font-semibold leading-6 text-ink-muted">
           <ShieldCheck aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-ocean-green" />
-          <p>Online ödeme formu bu modda açılmaz; bağış niyetiniz ekip tarafından güvenli şekilde yönlendirilir.</p>
+          <p>
+            WhatsApp üzerinden iletişime geçtiğinizde paylaşacağınız bilgiler, talebinizin yanıtlanması amacıyla değerlendirilir.{" "}
+            <Link href={legalLinks.kvkk} className="font-extrabold text-deep-blue underline-offset-4 hover:underline">
+              KVKK
+            </Link>{" "}
+            ve{" "}
+            <Link href={legalLinks.privacy} className="font-extrabold text-deep-blue underline-offset-4 hover:underline">
+              gizlilik
+            </Link>{" "}
+            metinlerini inceleyebilirsiniz.
+          </p>
         </div>
       </div>
     );
