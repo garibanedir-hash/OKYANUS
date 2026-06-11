@@ -134,7 +134,7 @@ export const projectActivityVisibilityLabels: Record<ProjectActivityVisibility, 
 
 export const mockProjectActivities: ProjectActivity[] = [
   {
-    id: "project-activity-demo-001",
+    id: "project-activity-fallback-001",
     projectId: "project-food-001",
     projectTitle: "Bir Koli Bir Umut",
     projectSlug: "bir-koli-bir-umut",
@@ -167,7 +167,7 @@ export const mockProjectActivities: ProjectActivity[] = [
     updatedAt: "2026-05-16T09:00:00.000Z"
   },
   {
-    id: "project-activity-demo-002",
+    id: "project-activity-fallback-002",
     projectId: "project-education-001",
     projectTitle: "Yetim Çocuklara Eğitim Desteği",
     projectSlug: "yetim-cocuklara-egitim-destegi",
@@ -196,20 +196,20 @@ export const mockProjectActivities: ProjectActivity[] = [
 
 export const mockProjectActivityEvents: ProjectActivityEvent[] = [
   {
-    id: "project-activity-event-demo-001",
-    projectActivityId: "project-activity-demo-001",
+    id: "project-activity-event-fallback-001",
+    projectActivityId: "project-activity-fallback-001",
     eventType: "project_activity.create",
     newStatus: "draft",
-    note: "Demo faaliyet kaydı oluşturuldu.",
+    note: "Faaliyet kaydı oluşturuldu.",
     createdAt: "2026-05-14T11:00:00.000Z"
   },
   {
-    id: "project-activity-event-demo-002",
-    projectActivityId: "project-activity-demo-001",
+    id: "project-activity-event-fallback-002",
+    projectActivityId: "project-activity-fallback-001",
     eventType: "project_activity.complete",
     oldStatus: "in_progress",
     newStatus: "completed",
-    note: "Demo faaliyet tamamlandı.",
+    note: "Faaliyet tamamlandı.",
     createdAt: "2026-05-15T15:00:00.000Z"
   }
 ];

@@ -51,7 +51,7 @@ export function Header({ donationConfig }: { donationConfig: DonationPublicConfi
       <Container className="flex h-28 items-center justify-between">
         <OfficialLogo variant="color" context="header" onClick={() => setOpen(false)} />
 
-        <nav aria-label="Ana menü" className="hidden items-center gap-7 lg:flex">
+        <nav aria-label="Ana menü" className="hidden items-center gap-7 xl:flex">
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -67,7 +67,7 @@ export function Header({ donationConfig }: { donationConfig: DonationPublicConfi
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 lg:flex">
+        <div className="hidden items-center gap-3 xl:flex">
           <Button href="/giris" variant="ghost">Giriş Yap</Button>
           <Button {...donationLinkProps}>Bağış Yap</Button>
         </div>
@@ -77,14 +77,14 @@ export function Header({ donationConfig }: { donationConfig: DonationPublicConfi
           aria-label={open ? "Menüyü kapat" : "Menüyü aç"}
           aria-expanded={open}
           onClick={() => setOpen((value) => !value)}
-          className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-full bg-white text-deep-blue shadow-card lg:hidden"
+          className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-full bg-white text-deep-blue shadow-card xl:hidden"
         >
           {open ? <X aria-hidden className="h-5 w-5" /> : <Menu aria-hidden className="h-5 w-5" />}
         </button>
       </Container>
 
       {open ? (
-        <div className="border-t border-slate-200 bg-warm-white lg:hidden">
+        <div className="border-t border-slate-200 bg-warm-white xl:hidden">
           <Container className="grid gap-2 py-5 shadow-soft">
             {navItems.map((item) => (
               <Link

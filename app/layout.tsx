@@ -10,8 +10,7 @@ const faviconPngExists = existsSync(path.join(process.cwd(), "public", "brand", 
 const markWhitePngExists = existsSync(path.join(process.cwd(), "public", "brand", "mark-white.png"));
 const markPngExists = existsSync(path.join(process.cwd(), "public", "brand", "mark.png"));
 const faviconSvgExists = existsSync(path.join(process.cwd(), "public", "brand", "favicon.svg"));
-const socialPreviewExists = existsSync(path.join(process.cwd(), "public", "brand", "social-preview.png"));
-const socialPreviewPath = socialPreviewExists ? "/brand/social-preview.png" : "/brand/logo.png";
+const socialPreviewPath = "/brand/social-preview.png";
 const faviconPath = faviconSvgExists
   ? "/brand/favicon.svg"
   : faviconPngExists
@@ -50,8 +49,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: socialPreviewPath,
-        width: socialPreviewExists ? 1200 : 3125,
-        height: socialPreviewExists ? 630 : 1250,
+        width: 1200,
+        height: 630,
         alt: "Okyanus İnsani Yardım Derneği"
       }
     ]

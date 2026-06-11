@@ -193,11 +193,10 @@ export function HeroSection({ donationConfig }: { donationConfig: DonationPublic
                 ))}
               </div>
 
-              {/* Bottom strip */}
               <div className="mt-6 flex items-center gap-2 rounded-xl border border-ocean-green/20 bg-ocean-green/10 px-4 py-3">
                 <span className="h-2 w-2 rounded-full bg-ocean-green" />
-                <span className="text-xs font-bold text-ocean-green/90">
-                  Demo mod aktif — yakında canlı sisteme geçiş
+                <span className="text-xs font-bold text-white/80">
+                  Bağış bilgilendirme hattımız WhatsApp üzerinden açık
                 </span>
               </div>
             </div>
