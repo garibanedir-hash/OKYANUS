@@ -106,7 +106,7 @@ export function OfficialLogo({
         alt={isMark && !showText ? "Okyanus" : "Okyanus İnsani Yardım Derneği"}
         width={source.width}
         height={source.height}
-        className={cn(isMark ? "shrink-0 object-contain" : "max-w-full object-cover object-center", isMark ? dimensions.mark : dimensions.logo)}
+        className={cn(isMark ? "shrink-0 object-contain" : "max-w-full object-contain object-center", isMark ? dimensions.mark : dimensions.logo)}
         onError={() => setFailed(true)}
         loading={eager ? "eager" : undefined}
         preload={eager}
