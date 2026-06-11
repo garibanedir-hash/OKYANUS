@@ -95,6 +95,20 @@
 - [ ] Görsel upload server-side MIME ve 5 MB boyut kontrolünden geçiyor mu?
 - [ ] Next.js Server Action body limiti 10 MB olarak ayarlı, ancak uygulama/bucket görsel kabul limiti 5 MB olarak korunuyor mu?
 
+## 14B Çerez ve Hukuki Onay Güvenliği
+
+- [ ] `site_cookie_consents` RLS enabled/forced ve anon/public erişime kapalı mı?
+- [ ] Çerez tercih mekanizması ilk sürümde DB'ye public insert/update açmadan localStorage/cookie ile çalışıyor mu?
+- [ ] Zorunlu çerezler kapatılamıyor, işlevsel/analitik/pazarlama tercihleri ayrı tutuluyor mu?
+- [ ] Çerez tercih sürümü değiştiğinde kullanıcıdan yeniden tercih alınması planlandı mı?
+- [ ] İletişim, gönüllü, bağış, kurban, yetim ve kayıt formlarında KVKK aydınlatma beyanı ayrı alan olarak geliyor mu?
+- [ ] Açık rıza gereken formlarda `explicit_consent_given` ayrı tutuluyor mu?
+- [ ] Duyuru/bilgilendirme izni `communication_permission_given` alanında opsiyonel tutuluyor mu?
+- [ ] Consent timestamp, metin sürümü, context ve user-agent server tarafında yazılıyor mu?
+- [ ] Ham IP toplanmıyorsa bu karar metadata/dokümantasyonda açık mı?
+- [ ] Form submitleri public anon table write policy yerine server-only action/repository üzerinden yapılıyor mu?
+- [ ] Hukuki metinler, resmi dernek bilgileri ve saklama-imha yaklaşımı nihai hukukçu kontrolüne gönderildi mi?
+
 ## Payment webhook security
 
 - [ ] 9E'de canlı provider webhook endpoint'i açılmadığı doğrulandı.

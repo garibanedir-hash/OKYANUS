@@ -5,6 +5,7 @@ import { ContactForm } from "@/components/forms/ContactForm";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
+import { createContactMessageAction } from "@/app/iletisim/actions";
 
 export const metadata: Metadata = {
   title: "İletişim",
@@ -17,7 +18,13 @@ const contactItems: Array<{ icon: LucideIcon; title: string; text: string }> = [
   { icon: Mail, title: "E-posta", text: "bilgi@okyanusyardim.org" }
 ];
 
-export default function ContactPage() {
+type ContactPageProps = {
+  searchParams?: Promise<{ durum?: string; mesaj?: string }>;
+};
+
+export default async function ContactPage({ searchParams }: ContactPageProps) {
+  const params = await searchParams;
+
   return (
     <>
       <PageHero
@@ -60,7 +67,15 @@ export default function ContactPage() {
                 </p>
               </div>
             </div>
-            <ContactForm />
+            <ContactForm
+              action={createContactMessageAction}
+              formNotice={
+                params?.durum === "alindi"
+                  ? "Mesajınız bize ulaştı. İlgili ekibimiz talebinizi inceleyip en kısa sürede sizinle iletişime geçecektir."
+                  : undefined
+              }
+              formError={params?.durum === "hata" ? params?.mesaj ?? "Mesajınız kaydedilemedi." : undefined}
+            />
           </div>
         </Container>
       </section>

@@ -5,6 +5,7 @@ import { VolunteerForm } from "@/components/forms/VolunteerForm";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
+import { createVolunteerApplicationAction } from "@/app/gonullu-ol/actions";
 
 export const metadata: Metadata = {
   title: "Gönüllü Ol",
@@ -24,7 +25,13 @@ const process = [
   ["Faaliyet katılımı", "Planlanan saha veya organizasyon çalışmalarına güvenli şekilde dahil olursunuz."]
 ];
 
-export default function VolunteerPage() {
+type VolunteerPageProps = {
+  searchParams?: Promise<{ durum?: string; mesaj?: string }>;
+};
+
+export default async function VolunteerPage({ searchParams }: VolunteerPageProps) {
+  const params = await searchParams;
+
   return (
     <>
       <PageHero
@@ -62,7 +69,15 @@ export default function VolunteerPage() {
               ))}
             </div>
           </div>
-          <VolunteerForm />
+          <VolunteerForm
+            action={createVolunteerApplicationAction}
+            formNotice={
+              params?.durum === "alindi"
+                ? "Başvurunuz bize ulaştı. En kısa sürede sizinle iletişime geçerek iyilik yolculuğundaki uygun alanı birlikte değerlendireceğiz."
+                : undefined
+            }
+            formError={params?.durum === "hata" ? params?.mesaj ?? "Gönüllü başvurunuz kaydedilemedi." : undefined}
+          />
           </div>
         </Container>
       </section>

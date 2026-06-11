@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { CookieConsentBanner } from "@/components/legal/CookieConsentBanner";
 import type { DonationPublicConfig } from "@/lib/donations/donationTarget";
 
 export function SiteChrome({
@@ -31,6 +32,7 @@ export function SiteChrome({
       <Header donationConfig={donationConfig} />
       <main>{children}</main>
       <Footer donationConfig={donationConfig} />
+      <CookieConsentBanner />
     </>
   );
 }

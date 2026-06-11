@@ -210,6 +210,19 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] `DONATION_MODE=whatsapp` modunda WhatsApp hukuki notu kısa, anlaşılır ve KVKK/Gizlilik linkleriyle görünüyor.
 - [ ] Footer hukuki linkleri `/hukuki/...` rotalarına gidiyor ve eski tekil hukuki URL'ler yeni sayfalara yönleniyor.
 
+## 14B Çerez Tercihleri ve Onay Kayıt İzlenebilirliği
+
+- [ ] `024_legal_consent_and_cookie_preferences.sql` staging ortamında çalıştırıldı.
+- [ ] `contact_messages`, `volunteer_applications`, `payment_intents`, `qurban_orders` ve `sponsorship_applications` consent kolonlarını içeriyor.
+- [ ] `site_cookie_consents` tablosu RLS enabled/forced ve anon/public erişime kapalı.
+- [ ] Çerez tercih banner'ı ilk public ziyarette görünüyor; zorunlu, işlevsel, analitik ve pazarlama kategorileri ayrılıyor.
+- [ ] Çerez tercihleri yalnızca tarayıcıda local/cookie kaydıyla saklanıyor; ilk sürümde public DB write açılmadı.
+- [ ] Footer'daki “Çerez Tercihlerimi Yönet” butonu modalı açıyor.
+- [ ] İletişim ve gönüllü formları server action üzerinden kayıt oluşturuyor ve consent timestamp/version/user-agent alanlarını yazıyor.
+- [ ] Bağış, kurban, yetim hamiliği ve kayıt akışları aydınlatma, açık rıza ve duyuru iznini ayrı alanlar olarak gönderiyor.
+- [ ] Hukuki metin sürümü değişirse `LEGAL_CONSENT_VERSION` ve gerekiyorsa cookie consent sürümü güncelleniyor.
+- [ ] Analitik/pazarlama aracı eklenmeden önce Çerez Politikası, tercih paneli ve hukuki kontrol tekrar yapılıyor.
+
 ## Export ve Raporlama
 
 - [ ] Export işlemleri yetki kontrolünden geçiyor.

@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import type { QurbanCampaign, QurbanType } from "@/data/qurbanMock";
 import { qurbanTypeLabels } from "@/data/qurbanMock";
 import { formatCurrency } from "@/lib/format";
-import { ConsentCheckbox, LegalTextLink, legalLinks } from "@/components/forms/LegalConsent";
+import { ConsentCheckbox, LegalConsentFields } from "@/components/forms/LegalConsent";
 
 type DonorDefaults = {
   fullName?: string;
@@ -158,14 +158,7 @@ export function QurbanDonationForm({
         <ConsentCheckbox name="delegationAccepted" required>
           Vekalet metnini okudum ve kurban kesimi için Okyanus İnsani Yardım Derneği&apos;ni vekil tayin ediyorum.
         </ConsentCheckbox>
-        <ConsentCheckbox name="kvkkAccepted" required>
-          <LegalTextLink href={legalLinks.kvkk}>KVKK Aydınlatma Metni</LegalTextLink> ile{" "}
-          <LegalTextLink href={legalLinks.donationTerms}>Bağış Bilgilendirme ve Şartları</LegalTextLink>&apos;nı okudum.
-        </ConsentCheckbox>
-        <ConsentCheckbox name="contactPermission">
-          <LegalTextLink href={legalLinks.explicitConsent}>Açık Rıza Metni</LegalTextLink> kapsamında kurban süreci, faaliyet
-          ve bilgilendirme duyuruları için benimle iletişime geçilmesini kabul ediyorum.
-        </ConsentCheckbox>
+        <LegalConsentFields context="qurban" showCommunicationPermission />
       </div>
 
       <button

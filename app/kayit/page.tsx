@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
-import { ConsentCheckbox, LegalTextLink, legalLinks } from "@/components/forms/LegalConsent";
+import { ConsentCheckbox, LegalConsentFields, LegalTextLink, legalLinks } from "@/components/forms/LegalConsent";
 import { registerPublicAccount } from "@/app/kayit/actions";
 
 export const metadata: Metadata = {
@@ -23,6 +23,8 @@ export default async function RegisterPage({
         ? "Supabase env değişkenleri eksik. Kayıt akışı başlatılamadı."
         : params?.durum === "kvkk"
           ? "Hesap oluşturmak için KVKK onayını işaretlemelisiniz."
+          : params?.durum === "kullanim-sartlari"
+            ? "Hesap oluşturmak için kullanım şartlarını kabul etmelisiniz."
           : params?.durum === "eksik"
             ? "Lütfen zorunlu alanları doldurun ve şifreleri aynı girin."
             : params?.durum === "hata"
@@ -45,12 +47,9 @@ export default async function RegisterPage({
           <label className="text-sm font-bold text-dark-navy">Şifre<input name="password" className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" type="password" required /></label>
           <label className="text-sm font-bold text-dark-navy">Şifre tekrar<input name="passwordConfirm" className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" type="password" required /></label>
           <div className="grid gap-3 md:col-span-2">
-            <ConsentCheckbox name="kvkkAccepted" required>
-              <LegalTextLink href={legalLinks.kvkk}>KVKK Aydınlatma Metni</LegalTextLink>&apos;ni okudum.
-            </ConsentCheckbox>
-            <ConsentCheckbox name="communicationPermission">
-              <LegalTextLink href={legalLinks.explicitConsent}>Açık Rıza Metni</LegalTextLink> kapsamında faaliyet ve bilgilendirme
-              duyurularının tarafıma iletilmesini kabul ediyorum.
+            <LegalConsentFields context="registration" showCommunicationPermission />
+            <ConsentCheckbox name="termsAccepted" required>
+              <LegalTextLink href={legalLinks.terms}>Kullanım Şartları</LegalTextLink>&apos;nı kabul ediyorum.
             </ConsentCheckbox>
           </div>
           <AuthSubmitButton idleLabel="Hesap Oluştur" pendingLabel="Kayıt oluşturuluyor..." className="md:col-span-2" />

@@ -3,6 +3,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { OfficialLogo } from "@/components/brand/OfficialLogo";
+import { CookiePreferencesButton } from "@/components/legal/CookiePreferencesButton";
 import { getLegalPagePath } from "@/data/legalPages";
 import { resolveDonationTarget } from "@/lib/donations/donationTarget";
 import type { DonationPublicConfig } from "@/lib/donations/donationTarget";
@@ -104,6 +105,9 @@ export function Footer({ donationConfig }: { donationConfig: DonationPublicConfi
                   </Link>
                 </li>
               ))}
+              <li>
+                <CookiePreferencesButton />
+              </li>
             </ul>
           </div>
 

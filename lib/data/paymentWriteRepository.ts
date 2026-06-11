@@ -16,6 +16,7 @@ import {
   validatePaymentContextAmount,
   type PaymentIntentDraft
 } from "@/lib/payments/paymentContext";
+import type { LegalConsentAuditFields } from "@/lib/legal/consent";
 
 type PaymentEventType =
   | "created"
@@ -150,6 +151,7 @@ export type CreatePaymentIntentInput = {
   returnUrl?: string | null;
   cancelUrl?: string | null;
   metadata?: Record<string, unknown>;
+  legalConsent?: LegalConsentAuditFields | null;
   expiresAt?: string | null;
   status?: Extract<PaymentIntentStatus, "draft" | "pending" | "initiated">;
 };
@@ -451,6 +453,14 @@ export async function createPaymentIntent(
       return_url: input.returnUrl ?? null,
       cancel_url: input.cancelUrl ?? null,
       metadata: input.metadata ?? {},
+      kvkk_acknowledged: input.legalConsent?.kvkkAcknowledged ?? false,
+      explicit_consent_given: input.legalConsent?.explicitConsentGiven ?? false,
+      communication_permission_given: input.legalConsent?.communicationPermissionGiven ?? false,
+      consent_text_version: input.legalConsent?.consentTextVersion ?? null,
+      consent_given_at: input.legalConsent?.consentGivenAt ?? null,
+      consent_ip: input.legalConsent?.consentIp ?? null,
+      consent_user_agent: input.legalConsent?.consentUserAgent ?? null,
+      consent_metadata: input.legalConsent?.consentMetadata ?? {},
       expires_at: input.expiresAt ?? null
     })
     .select(paymentIntentWriteColumns)
@@ -532,7 +542,8 @@ export async function createOrReusePendingPaymentIntent(
       currency: context.currency,
       provider: context.provider,
       status: "pending",
-      metadata
+      metadata,
+      legalConsent: context.legalConsent
     },
     writeContext
   );

@@ -136,7 +136,8 @@ const restrictedTables = [
   "payment_status_logs",
   "manual_receipts",
   "manual_receipt_events",
-  "project_activity_events"
+  "project_activity_events",
+  "site_cookie_consents"
 ];
 
 function isMissingTable(error) {

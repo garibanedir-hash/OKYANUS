@@ -65,6 +65,7 @@ Public kartlar ve detay sayfaları bu alanları mevcut öncelik sırasıyla kull
 - Server-side validation zorunludur.
 - MIME ve boyut kontrolü server tarafında yapılır.
 - PDF, SVG veya desteklenmeyen dosyalar reddedilir.
+- Görsel/medya kullanımı kişisel veri veya kişi görseli içeriyorsa ilgili aydınlatma ve gerekli açık rıza süreçleri `docs/legal-consent-and-cookies.md` ile birlikte değerlendirilmelidir.
 
 ## Gelecek Geliştirmeler
 

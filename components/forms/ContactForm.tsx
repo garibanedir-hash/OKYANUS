@@ -1,45 +1,45 @@
 "use client";
 
-import { useState } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { TextAreaField, TextField } from "@/components/ui/FormField";
-import { ConsentCheckbox, LegalTextLink, legalLinks } from "@/components/forms/LegalConsent";
+import { LegalConsentFields } from "@/components/forms/LegalConsent";
 
-export function ContactForm() {
-  const [success, setSuccess] = useState(false);
+type ContactFormProps = {
+  action: (formData: FormData) => void | Promise<void>;
+  formNotice?: string;
+  formError?: string;
+};
 
+export function ContactForm({ action, formNotice, formError }: ContactFormProps) {
   return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault();
-        setSuccess(true);
-      }}
-      className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-soft sm:p-8"
-    >
-      {success ? (
+    <form action={action} className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-soft sm:p-8">
+      {formNotice ? (
         <div className="mb-6 flex gap-3 rounded-2xl bg-mint-green p-4 text-ocean-green">
           <CheckCircle2 aria-hidden className="mt-0.5 h-5 w-5" />
-          <p className="text-sm font-semibold">
-            Mesajınız bize ulaştı. İlgili ekibimiz talebinizi inceleyip en kısa sürede sizinle iletişime geçecektir.
-          </p>
+          <p className="text-sm font-semibold">{formNotice}</p>
+        </div>
+      ) : null}
+      {formError ? (
+        <div className="mb-6 flex gap-3 rounded-2xl bg-warm-accent/10 p-4 text-dark-navy">
+          <AlertCircle aria-hidden className="mt-0.5 h-5 w-5 text-warm-accent" />
+          <p className="text-sm font-semibold">{formError}</p>
         </div>
       ) : null}
       <div className="grid gap-4 sm:grid-cols-2">
-        <TextField label="Ad Soyad" required />
-        <TextField label="E-posta" type="email" required />
-        <TextField label="Konu" className="sm:col-span-2" required />
-        <TextAreaField label="Mesaj" required className="sm:col-span-2" rows={5} />
+        <TextField label="Ad Soyad" name="fullName" required autoComplete="name" maxLength={120} />
+        <TextField label="E-posta" name="email" type="email" required autoComplete="email" maxLength={160} />
+        <TextField label="Konu" name="subject" className="sm:col-span-2" required maxLength={160} />
+        <TextAreaField label="Mesaj" name="message" required className="sm:col-span-2" rows={5} maxLength={1500} />
       </div>
       <div className="mt-6 grid gap-3">
-        <ConsentCheckbox name="contactKvkkAccepted" required>
-          <LegalTextLink href={legalLinks.contactNotice}>İletişim Formu Aydınlatma Metni</LegalTextLink>&apos;ni okudum; paylaştığım
-          bilgilerin talebimin yanıtlanması amacıyla işlenebileceğini biliyorum.
-        </ConsentCheckbox>
-        <ConsentCheckbox name="contactAnnouncementPermission">
-          <LegalTextLink href={legalLinks.explicitConsent}>Açık Rıza Metni</LegalTextLink> kapsamında faaliyet ve bilgilendirme
-          duyurularının tarafıma iletilmesini kabul ediyorum.
-        </ConsentCheckbox>
+        <LegalConsentFields context="contact" showCommunicationPermission />
+      </div>
+      <div className="hidden" aria-hidden="true">
+        <label>
+          Website
+          <input name="website" tabIndex={-1} autoComplete="off" />
+        </label>
       </div>
       <Button type="submit" className="mt-7 w-full" showIcon>
         Mesaj Gönder

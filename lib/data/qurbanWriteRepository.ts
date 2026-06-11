@@ -5,6 +5,7 @@ import { asAdminWriteClient, type DbError } from "@/lib/data/adminWriteClient";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { QurbanCampaign, QurbanType } from "@/data/qurbanMock";
+import type { LegalConsentAuditFields } from "@/lib/legal/consent";
 import {
   qurbanCampaignStatusLabels,
   qurbanRegionLabels,
@@ -76,6 +77,7 @@ export type CreateQurbanOrderInput = {
   kvkkAccepted: boolean;
   contactPermission: boolean;
   delegationAccepted: boolean;
+  legalConsent?: LegalConsentAuditFields | null;
 };
 
 export type CreateQurbanOrderContext = {
@@ -166,6 +168,19 @@ function userFriendlyQurbanWriteError(error: DbError | null) {
   if (/hisse|adet/i.test(message)) return "Hisse/adet sayısı 1 ile 20 arasında olmalıdır.";
 
   return "Kurban başvurusu oluşturulamadı. Lütfen bilgileri kontrol edip tekrar deneyin.";
+}
+
+function mapLegalConsent(legalConsent: LegalConsentAuditFields) {
+  return {
+    kvkk_acknowledged: legalConsent.kvkkAcknowledged,
+    explicit_consent_given: legalConsent.explicitConsentGiven,
+    communication_permission_given: legalConsent.communicationPermissionGiven,
+    consent_text_version: legalConsent.consentTextVersion,
+    consent_given_at: legalConsent.consentGivenAt,
+    consent_ip: legalConsent.consentIp,
+    consent_user_agent: legalConsent.consentUserAgent,
+    consent_metadata: legalConsent.consentMetadata
+  };
 }
 
 export class QurbanWriteError extends Error {
@@ -259,6 +274,20 @@ export async function createQurbanOrder(input: CreateQurbanOrderInput, context: 
   const result = Array.isArray(data) ? data[0] : data;
   if (!result) {
     throw new QurbanWriteError("Kurban başvurusu oluşturulamadı. Lütfen tekrar deneyin.", "empty_rpc_result");
+  }
+
+  if (input.legalConsent) {
+    const db = asAdminWriteClient(supabase);
+    const { error: consentUpdateError } = await db
+      .from<{ id: string }>("qurban_orders")
+      .update(mapLegalConsent(input.legalConsent))
+      .eq("id", result.order_id)
+      .select("id")
+      .single();
+
+    if (consentUpdateError) {
+      throw new QurbanWriteError("Kurban başvurusu onay kaydı tamamlanamadı. Lütfen ekibimizle iletişime geçin.", consentUpdateError.code ?? "consent_update_failed");
+    }
   }
 
   if (context.userId) {

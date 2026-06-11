@@ -26,6 +26,8 @@ DONATION_WHATSAPP_MESSAGE=Merhaba, Okyanus İnsani Yardım Derneği bağış ça
 
 Public formlar render edilmediği için WhatsApp/disabled modda yeni payment intent veya yeni public bağış başvurusu başlatılmaz. Eski/var olan PayTR callback, payment finalization, makbuz ve panel ödeme devam akışları değiştirilmez.
 
+WhatsApp bilgilendirme kartlarında kısa KVKK/Gizlilik notu ve ilgili hukuki metin linkleri korunur. Kullanıcı WhatsApp üzerinden iletişime geçtiğinde paylaşacağı bilgiler talebin yanıtlanması amacıyla değerlendirilir; ayrıntılı aydınlatma `/hukuki` altındaki metinlerden takip edilir.
+
 ## Bakım Modundan Farkı
 
 `SITE_MAINTENANCE_MODE` siteyi bakım sayfasına yönlendiren genel yayın modudur. Donation Mode ise yalnızca public bağış başlatma CTA'larını ve bağış form sayfalarını etkiler; tanıtım döneminde site açık kalır.
@@ -36,3 +38,4 @@ Public formlar render edilmediği için WhatsApp/disabled modda yeni payment int
 - `DONATION_MODE=online` yapıldığında normal ödeme akışı geri döner.
 - Env değişikliği deployment ortamında yeniden deploy gerektirebilir.
 - Public client bundle'a PayTR veya Supabase service role secret taşınmaz.
+- `DONATION_MODE=online` açılmadan önce bağış formlarındaki consent kayıtları, Bağış Bilgilendirme ve Mesafeli Bağış / Online Ödeme metinleri tekrar gözden geçirilmelidir.

@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { isAdminDemoMode } from "@/config/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { readServerLegalConsent } from "@/lib/legal/serverConsent";
 
 export async function registerDemoAction() {
   return {
@@ -23,11 +24,18 @@ export async function registerPublicAccount(formData: FormData) {
   const city = String(formData.get("city") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const passwordConfirm = String(formData.get("passwordConfirm") ?? "");
-  const kvkkAccepted = formData.get("kvkkAccepted") === "on";
-  const communicationPermission = formData.get("communicationPermission") === "on";
+  const termsAccepted = formData.get("termsAccepted") === "on";
+  const legalConsent = await readServerLegalConsent(formData, "registration", {
+    form: "registration",
+    legalNoticeSlug: "kvkk-aydinlatma-metni"
+  });
 
-  if (!kvkkAccepted) {
+  if (!legalConsent.kvkkAcknowledged) {
     redirect("/kayit?durum=kvkk");
+  }
+
+  if (!termsAccepted) {
+    redirect("/kayit?durum=kullanim-sartlari");
   }
 
   if (!fullName || !email || !password || password !== passwordConfirm) {
@@ -48,8 +56,17 @@ export async function registerPublicAccount(formData: FormData) {
         full_name: fullName,
         phone,
         city,
-        kvkk_accepted: kvkkAccepted,
-        communication_permission: communicationPermission
+        kvkk_accepted: legalConsent.kvkkAcknowledged,
+        communication_permission: legalConsent.communicationPermissionGiven,
+        kvkk_acknowledged: legalConsent.kvkkAcknowledged,
+        explicit_consent_given: legalConsent.explicitConsentGiven,
+        communication_permission_given: legalConsent.communicationPermissionGiven,
+        consent_text_version: legalConsent.consentTextVersion,
+        consent_given_at: legalConsent.consentGivenAt,
+        consent_user_agent: legalConsent.consentUserAgent,
+        consent_metadata: legalConsent.consentMetadata,
+        terms_accepted: termsAccepted,
+        terms_accepted_at: legalConsent.consentGivenAt
       }
     }
   });

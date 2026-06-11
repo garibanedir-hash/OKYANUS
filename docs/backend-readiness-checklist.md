@@ -305,3 +305,17 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Hukuki metinler hukukçu kontrolüne sunulacak; resmi adres, sicil ve yetkili iletişim bilgileri nihai kontrolde tamamlanacak.
 - [ ] Çerez politikası analitik/pazarlama araçları eklendiğinde güncellenecek.
 - [ ] Online ödeme aktif edilmeden önce bağış bilgilendirme ve mesafeli bağış/online ödeme metinleri yeniden gözden geçirilecek.
+
+## 14B Hukuki Onay Kayıtları ve Çerez Tercihleri
+
+- [ ] `024_legal_consent_and_cookie_preferences.sql` staging ortamında çalıştırıldı.
+- [ ] Form kayıt tablolarında `kvkk_acknowledged`, `explicit_consent_given`, `communication_permission_given`, `consent_text_version`, `consent_given_at`, `consent_user_agent` ve `consent_metadata` alanları bulunuyor.
+- [ ] `site_cookie_consents` tablosu oluşturuldu ancak ilk sürümde public insert/update policy açılmadı.
+- [ ] Smoke test `site_cookie_consents: OK - protected` sonucunu veriyor.
+- [ ] `LegalConsentFields` ortak component'i context bazlı aydınlatma, açık rıza ve duyuru izni checkboxlarını ayrı render ediyor.
+- [ ] İletişim ve gönüllü formları server action ile `contact_messages` ve `volunteer_applications` kayıtlarına consent alanlarını yazıyor.
+- [ ] Genel bağış payment intent metadata ve consent kolonları legal consent bilgisini taşıyor.
+- [ ] Kurban başvurusunda RPC akışı korunuyor; order sonrası consent audit alanları `qurban_orders` kaydına yazılıyor.
+- [ ] Yetim hamiliği başvurusu `sponsorship_applications` kaydına consent audit alanlarını yazıyor.
+- [ ] Kayıt formu Supabase Auth metadata'sına KVKK, duyuru izni, kullanım şartları ve consent sürüm bilgisini yazıyor.
+- [ ] `docs/legal-consent-and-cookies.md` hukukçu ve teknik sorumlu kontrolünde güncel tutuluyor.

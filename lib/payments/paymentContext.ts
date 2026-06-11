@@ -1,4 +1,5 @@
 import { paymentContextTypeLabels, type PaymentContextType, type PaymentProvider } from "@/data/paymentMock";
+import type { LegalConsentAuditFields } from "@/lib/legal/consent";
 
 export type { PaymentContextType };
 
@@ -13,6 +14,7 @@ export type PaymentContextInput = {
   currency?: string;
   provider?: PaymentProvider;
   metadata?: Record<string, unknown>;
+  legalConsent?: LegalConsentAuditFields | null;
 };
 
 export type PaymentIntentDraft = {
@@ -26,6 +28,7 @@ export type PaymentIntentDraft = {
   currency: string;
   provider: PaymentProvider;
   metadata: Record<string, unknown>;
+  legalConsent: LegalConsentAuditFields | null;
 };
 
 function normalizeText(value: string | null | undefined) {
@@ -49,7 +52,8 @@ export function normalizePaymentContext(input: PaymentContextInput): PaymentInte
     amount: input.amount,
     currency: input.currency ?? "TRY",
     provider: input.provider ?? "manual",
-    metadata: input.metadata ?? {}
+    metadata: input.metadata ?? {},
+    legalConsent: input.legalConsent ?? null
   };
 }
 
@@ -81,6 +85,7 @@ export function buildQurbanPaymentContext(input: {
   totalAmount: number;
   currency?: string;
   orderNo?: string | null;
+  legalConsent?: LegalConsentAuditFields | null;
 }) {
   return normalizePaymentContext({
     contextType: "qurban_order",
@@ -94,8 +99,10 @@ export function buildQurbanPaymentContext(input: {
     provider: "paytr",
     metadata: {
       summary: "Kurban siparişi ödeme hazırlığı",
-      orderNo: input.orderNo ?? null
-    }
+      orderNo: input.orderNo ?? null,
+      legalConsent: input.legalConsent ?? null
+    },
+    legalConsent: input.legalConsent ?? null
   });
 }
 
@@ -141,6 +148,7 @@ export function buildGeneralDonationPaymentContext(input: {
   projectSlug?: string | null;
   note?: string | null;
   contactPermission?: boolean;
+  legalConsent?: LegalConsentAuditFields | null;
 }) {
   return normalizePaymentContext({
     contextType: "general_donation",
@@ -157,7 +165,9 @@ export function buildGeneralDonationPaymentContext(input: {
       donationType: input.donationType ?? "Genel Bağış",
       projectSlug: input.projectSlug ?? null,
       note: input.note ?? null,
-      contactPermission: input.contactPermission ?? false
-    }
+      contactPermission: input.contactPermission ?? false,
+      legalConsent: input.legalConsent ?? null
+    },
+    legalConsent: input.legalConsent ?? null
   });
 }

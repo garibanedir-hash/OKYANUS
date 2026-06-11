@@ -6,6 +6,7 @@ import { createPaymentIntentForContext, PaymentWriteError } from "@/lib/data/pay
 import { createQurbanOrder, getCampaignForOrder, getCurrentQurbanDonorContext, QurbanWriteError } from "@/lib/data/qurbanWriteRepository";
 import { buildQurbanPaymentContext } from "@/lib/payments/paymentContext";
 import { isOnlineDonationMode } from "@/lib/donations/donationMode";
+import { assertLegalConsentRequirements, readServerLegalConsent } from "@/lib/legal/serverConsent";
 import type { QurbanType } from "@/data/qurbanMock";
 
 const qurbanTypes: QurbanType[] = ["vacip", "adak", "akika", "sukur", "nafile", "genel"];
@@ -46,8 +47,6 @@ function parseQurbanOrderForm(formData: FormData) {
   const donorCity = getString(formData, "city");
   const note = getString(formData, "note");
   const delegationAccepted = getBoolean(formData, "delegationAccepted");
-  const kvkkAccepted = getBoolean(formData, "kvkkAccepted");
-  const contactPermission = getBoolean(formData, "contactPermission");
 
   if (!campaignSlug) throw new Error("Kurban kampanyası seçilmelidir.");
   if (!qurbanTypes.includes(qurbanType)) throw new Error("Geçerli bir kurban türü seçilmelidir.");
@@ -58,7 +57,6 @@ function parseQurbanOrderForm(formData: FormData) {
   if (donorCity.length > 80) throw new Error("Şehir alanı çok uzun.");
   if (note.length > 500) throw new Error("Not alanı en fazla 500 karakter olabilir.");
   if (!delegationAccepted) throw new Error("Vekalet onayı olmadan kurban başvurusu alınamaz.");
-  if (!kvkkAccepted) throw new Error("KVKK onayı zorunludur.");
 
   return {
     campaignSlug,
@@ -69,9 +67,7 @@ function parseQurbanOrderForm(formData: FormData) {
     donorPhone,
     donorCity: donorCity || null,
     note: note || null,
-    delegationAccepted,
-    kvkkAccepted,
-    contactPermission
+    delegationAccepted
   };
 }
 
@@ -122,6 +118,11 @@ export async function createQurbanOrderAction(formData: FormData) {
 
   try {
     const input = parseQurbanOrderForm(formData);
+    const legalConsent = await readServerLegalConsent(formData, "qurban", {
+      form: "qurban_order",
+      legalNoticeSlug: "bagis-bilgilendirme-ve-sartlari"
+    });
+    assertLegalConsentRequirements(legalConsent);
     const campaign = await getCampaignForOrder(input.campaignSlug);
 
     if (!campaign || campaign.status !== "active") {
@@ -148,9 +149,10 @@ export async function createQurbanOrderAction(formData: FormData) {
         donorPhone: input.donorPhone,
         donorCity: input.donorCity,
         note: input.note,
-        kvkkAccepted: input.kvkkAccepted,
-        contactPermission: input.contactPermission,
-        delegationAccepted: input.delegationAccepted
+        kvkkAccepted: legalConsent.kvkkAcknowledged,
+        contactPermission: legalConsent.communicationPermissionGiven,
+        delegationAccepted: input.delegationAccepted,
+        legalConsent
       },
       {
         userId: donorContext?.userId ?? null,
@@ -170,7 +172,8 @@ export async function createQurbanOrderAction(formData: FormData) {
         donorPhone: input.donorPhone,
         totalAmount: result.totalAmount,
         currency: campaign.currency,
-        orderNo: result.orderNo
+        orderNo: result.orderNo,
+        legalConsent
       });
       const paymentIntent = await createPaymentIntentForContext(paymentContext, {
         actorId: donorContext?.userId ?? null,

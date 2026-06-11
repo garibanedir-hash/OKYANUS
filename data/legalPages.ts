@@ -262,13 +262,15 @@ export const legalPages: LegalPage[] = [
       {
         title: "Çerezleri Nasıl Yönetebilirsiniz?",
         paragraphs: [
+          "Site üzerindeki çerez tercih paneliyle zorunlu çerezler dışındaki kategorileri yönetebilirsiniz. Zorunlu çerezler sitenin güvenli ve düzgün çalışması için açık tutulur.",
           "Tarayıcı ayarlarınız üzerinden çerezleri silebilir, engelleyebilir veya belirli siteler için tercihlerinizi değiştirebilirsiniz. Zorunlu çerezlerin engellenmesi halinde sitenin bazı temel işlevleri beklenen şekilde çalışmayabilir."
         ]
       },
       {
         title: "Şu An Kullanılan Çerezler",
         paragraphs: [
-          "Web sitesinde zorunlu teknik çerezler, güvenlik/oturum yönetimi kayıtları ve varsa kullanıcı tercihinin hatırlanmasına yönelik sınırlı çerezler kullanılabilir.",
+          "Web sitesinde zorunlu teknik çerezler, güvenlik/oturum yönetimi kayıtları ve kullanıcının çerez tercihinin tarayıcıda hatırlanmasına yönelik sınırlı kayıtlar kullanılabilir.",
+          "Çerez tercih kaydı, tercihlerinizi tekrar sormamak ve tercih sürümü değiştiğinde yeniden bilgilendirmek amacıyla saklanır.",
           "Analitik, pazarlama veya üçüncü taraf reklam çerezi kullanımı başlatılırsa bu bölüm güncellenir."
         ]
       }

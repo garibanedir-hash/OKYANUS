@@ -3,6 +3,7 @@ import "server-only";
 import { logAdminAction } from "@/lib/audit/auditLogger";
 import { asAdminWriteClient, type DbError } from "@/lib/data/adminWriteClient";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import type { LegalConsentAuditFields } from "@/lib/legal/consent";
 
 type ProgramForApplicationRow = {
   id: string;
@@ -83,6 +84,7 @@ export type CreateSponsorshipApplicationInput = {
   note?: string | null;
   kvkkAccepted: boolean;
   contactPermission: boolean;
+  legalConsent?: LegalConsentAuditFields | null;
   source?: string;
 };
 
@@ -141,6 +143,21 @@ function friendlyWriteError(error: DbError | null, fallback: string) {
   if (/not null|23502/i.test(message)) return "Zorunlu bilgiler eksik görünüyor.";
 
   return fallback;
+}
+
+function mapLegalConsent(legalConsent: LegalConsentAuditFields | null | undefined) {
+  if (!legalConsent) return {};
+
+  return {
+    kvkk_acknowledged: legalConsent.kvkkAcknowledged,
+    explicit_consent_given: legalConsent.explicitConsentGiven,
+    communication_permission_given: legalConsent.communicationPermissionGiven,
+    consent_text_version: legalConsent.consentTextVersion,
+    consent_given_at: legalConsent.consentGivenAt,
+    consent_ip: legalConsent.consentIp,
+    consent_user_agent: legalConsent.consentUserAgent,
+    consent_metadata: legalConsent.consentMetadata
+  };
 }
 
 function getAdminDb() {
@@ -254,7 +271,8 @@ export async function createSponsorshipApplication(
       status: "pending",
       kvkk_accepted: true,
       contact_permission: input.contactPermission,
-      source: input.source ?? "web"
+      source: input.source ?? "web",
+      ...mapLegalConsent(input.legalConsent)
     })
     .select("id, application_no, requested_amount, currency")
     .single();

@@ -5,17 +5,13 @@ import { redirect } from "next/navigation";
 import { createPaymentIntentForContext, PaymentWriteError } from "@/lib/data/paymentWriteRepository";
 import { buildGeneralDonationPaymentContext } from "@/lib/payments/paymentContext";
 import { isOnlineDonationMode } from "@/lib/donations/donationMode";
+import { assertLegalConsentRequirements, readServerLegalConsent } from "@/lib/legal/serverConsent";
 
 const MIN_DONATION_AMOUNT = 10;
 
 function getString(formData: FormData, key: string) {
   const value = formData.get(key);
   return typeof value === "string" ? value.trim() : "";
-}
-
-function getBoolean(formData: FormData, key: string) {
-  const value = formData.get(key);
-  return value === "on" || value === "true" || value === "1";
 }
 
 function redirectToDonationForm(durum: string, extra?: Record<string, string | number | undefined>) {
@@ -79,15 +75,17 @@ export async function createGeneralDonationPaymentIntentAction(formData: FormDat
     const donationType = getString(formData, "donationType") || "Genel Bağış";
     const selectedProject = getString(formData, "selectedProject");
     const note = getString(formData, "note");
-    const kvkkAccepted = getBoolean(formData, "kvkkAccepted");
-    const contactPermission = getBoolean(formData, "contactPermission");
     const amount = resolveDonationAmount(formData);
+    const legalConsent = await readServerLegalConsent(formData, "donation", {
+      form: "general_donation",
+      legalNoticeSlug: "bagis-bilgilendirme-ve-sartlari"
+    });
 
     if (donorName.length < 3 || donorName.length > 120) throw new Error("Ad soyad alanı zorunludur.");
     if (!validateEmail(donorEmail) || donorEmail.length > 160) throw new Error("Geçerli bir e-posta adresi girilmelidir.");
     if (donorPhone && (donorPhone.length < 7 || donorPhone.length > 30)) throw new Error("Telefon alanı geçerli görünmüyor.");
     if (note.length > 500) throw new Error("Not alanı en fazla 500 karakter olabilir.");
-    if (!kvkkAccepted) throw new Error("KVKK onayı zorunludur.");
+    assertLegalConsentRequirements(legalConsent);
 
     const paymentContext = buildGeneralDonationPaymentContext({
       donorName,
@@ -98,7 +96,8 @@ export async function createGeneralDonationPaymentIntentAction(formData: FormDat
       donationType,
       projectSlug: selectedProject && selectedProject !== "genel" ? selectedProject : null,
       note: note || null,
-      contactPermission
+      contactPermission: legalConsent.communicationPermissionGiven,
+      legalConsent
     });
 
     const paymentIntent = await createPaymentIntentForContext(paymentContext, { actorRole: "donor_form" });

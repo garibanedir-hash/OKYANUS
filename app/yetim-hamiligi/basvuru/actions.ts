@@ -9,17 +9,13 @@ import {
   OrphanSponsorshipWriteError
 } from "@/lib/data/orphanSponsorshipWriteRepository";
 import { isOnlineDonationMode } from "@/lib/donations/donationMode";
+import { assertLegalConsentRequirements, readServerLegalConsent } from "@/lib/legal/serverConsent";
 
 const supportPeriods = ["monthly", "quarterly", "yearly"] as const;
 
 function getString(formData: FormData, key: string) {
   const value = formData.get(key);
   return typeof value === "string" ? value.trim() : "";
-}
-
-function getBoolean(formData: FormData, key: string) {
-  const value = formData.get(key);
-  return value === "on" || value === "true" || value === "1";
 }
 
 function validateEmail(value: string) {
@@ -47,8 +43,6 @@ function parseApplicationForm(formData: FormData) {
   const applicantCity = getString(formData, "city");
   const supportPeriod = getString(formData, "supportPeriod") || getString(formData, "period");
   const note = getString(formData, "note");
-  const kvkkAccepted = getBoolean(formData, "kvkkAccepted");
-  const contactPermission = getBoolean(formData, "contactPermission");
 
   if (!programIdOrSlug) throw new Error("Sponsorluk programı seçilmelidir.");
   if (requestedAmountRaw && !Number.isFinite(Number(requestedAmountRaw))) throw new Error("Aylık destek tutarı sayısal olmalıdır.");
@@ -58,7 +52,6 @@ function parseApplicationForm(formData: FormData) {
   if (applicantCity.length > 80) throw new Error("Şehir alanı çok uzun.");
   if (!supportPeriods.includes(supportPeriod as (typeof supportPeriods)[number])) throw new Error("Geçerli bir destek periyodu seçilmelidir.");
   if (note.length > 500) throw new Error("Not alanı en fazla 500 karakter olabilir.");
-  if (!kvkkAccepted) throw new Error("KVKK onayı zorunludur.");
 
   return {
     programIdOrSlug,
@@ -67,9 +60,7 @@ function parseApplicationForm(formData: FormData) {
     applicantPhone,
     applicantCity: applicantCity || null,
     supportPeriod: supportPeriod as (typeof supportPeriods)[number],
-    note: note || null,
-    kvkkAccepted,
-    contactPermission
+    note: note || null
   };
 }
 
@@ -115,6 +106,11 @@ export async function createSponsorshipApplicationAction(formData: FormData) {
 
   try {
     const input = parseApplicationForm(formData);
+    const legalConsent = await readServerLegalConsent(formData, "orphan", {
+      form: "orphan_sponsorship_application",
+      legalNoticeSlug: "bagis-bilgilendirme-ve-sartlari"
+    });
+    assertLegalConsentRequirements(legalConsent);
     const program = await getProgramForApplication(input.programIdOrSlug);
 
     if (program.status !== "active") {
@@ -123,10 +119,18 @@ export async function createSponsorshipApplicationAction(formData: FormData) {
 
     const donorContext = await getCurrentSponsorshipDonorContext();
     const sponsorAccountId = getSponsorAccountId(donorContext);
-    const result = await createSponsorshipApplication(input, {
-      userId: donorContext?.userId ?? null,
-      sponsorAccountId,
-    });
+    const result = await createSponsorshipApplication(
+      {
+        ...input,
+        kvkkAccepted: legalConsent.kvkkAcknowledged,
+        contactPermission: legalConsent.communicationPermissionGiven,
+        legalConsent
+      },
+      {
+        userId: donorContext?.userId ?? null,
+        sponsorAccountId,
+      }
+    );
 
     revalidatePath("/yetim-hamiligi");
     revalidatePath("/yetim-hamiligi/basvuru");
