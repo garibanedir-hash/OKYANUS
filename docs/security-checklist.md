@@ -112,6 +112,24 @@
 - [ ] 024 migration uygulanmadan consent kolonlarına yazan public formlar production'a alınmıyor mu?
 - [ ] Migration sonrası form test kayıtları gerekiyorsa kontrollü şekilde temizleniyor veya test olarak işaretleniyor mu?
 
+## 15A Production Security Hardening
+
+- [ ] `docs/production-security-hardening.md` teknik sorumlu tarafından gözden geçirildi mi?
+- [ ] `SUPABASE_SECRET_KEY` ve `SUPABASE_SERVICE_ROLE_KEY` yalnızca server-only helper, Server Action ve API route katmanında kalıyor mu?
+- [ ] Build sonrası `.next/static` içinde service role, Supabase secret veya PayTR merchant secret env adları bulunmuyor mu?
+- [ ] `NEXT_PUBLIC_` env adları altında secret/service role veya PayTR key/salt yayınlanmıyor mu?
+- [ ] `npm run test:supabase` yalnızca anon/publishable key ile çalışıyor ve `Security warning: 0` sonucunu koruyor mu?
+- [ ] Smoke test `project-media` public read ve private makbuz bucketlarının anon key ile listelenemediğini kontrol ediyor mu?
+- [ ] Private bucket varlığı ve `public=false` ayarı Supabase Dashboard üzerinden ayrıca doğrulandı mı?
+- [ ] `payment_intents`, provider eventleri, makbuzlar, notification queue, role/profile tabloları ve operasyon tablolarında anon write/read açığı yok mu?
+- [ ] Admin write action'ları UI guard dışında server-side admin/role guard kullanıyor mu?
+- [ ] `/api/paytr/callback` hash doğrulamadan ödeme status update yapmıyor ve duplicate callback idempotent kalıyor mu?
+- [ ] Makbuz download route'ları oturum/rol/donor ownership kontrolü yapıyor ve cancelled donor download'a kapalı mı?
+- [ ] `DONATION_MODE=whatsapp` modunda public bağış sayfaları payment intent/order/sponsorship payment başlatmıyor mu?
+- [ ] Production security header'ları uygulanmış ve tam CSP ayrı kontrollü aşamaya not edilmiş mi?
+- [ ] Public form spam/rate limit ve captcha ihtiyacı production riski olarak takip listesine alındı mı?
+- [ ] Production env için `NEXT_PUBLIC_ADMIN_DEMO_MODE=false`, `DONATION_MODE=whatsapp`, `PAYTR_DEBUG_ON=false` doğrulandı mı?
+
 ## Payment webhook security
 
 - [ ] 9E'de canlı provider webhook endpoint'i açılmadığı doğrulandı.

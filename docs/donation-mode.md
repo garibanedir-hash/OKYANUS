@@ -39,3 +39,6 @@ WhatsApp bilgilendirme kartlarında kısa KVKK/Gizlilik notu ve ilgili hukuki me
 - Env değişikliği deployment ortamında yeniden deploy gerektirebilir.
 - Public client bundle'a PayTR veya Supabase service role secret taşınmaz.
 - `DONATION_MODE=online` açılmadan önce bağış formlarındaki consent kayıtları, Bağış Bilgilendirme ve Mesafeli Bağış / Online Ödeme metinleri tekrar gözden geçirilmelidir.
+- Production tanıtım yayınında önerilen değer `DONATION_MODE=whatsapp` olarak korunmalıdır.
+- WhatsApp modunda `/bagis-yap`, `/kurban/bagis` ve `/yetim-hamiligi/basvuru` payment intent, kurban order veya sponsorluk ödeme başlatmamalıdır; bu durum release öncesi HTTP/browser kontrolünde doğrulanmalıdır.
+- Online moda geçişten önce PayTR callback hash/idempotency, tutar/para birimi doğrulaması, makbuz private bucket erişimi ve rate limit/spam riski `docs/production-security-hardening.md` ile tekrar kontrol edilmelidir.

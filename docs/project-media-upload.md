@@ -66,6 +66,9 @@ Public kartlar ve detay sayfaları bu alanları mevcut öncelik sırasıyla kull
 - MIME ve boyut kontrolü server tarafında yapılır.
 - PDF, SVG veya desteklenmeyen dosyalar reddedilir.
 - Görsel/medya kullanımı kişisel veri veya kişi görseli içeriyorsa ilgili aydınlatma ve gerekli açık rıza süreçleri `docs/legal-consent-and-cookies.md` ile birlikte değerlendirilmelidir.
+- `npm run test:supabase` storage kontrolü `project-media` bucket'ının anon/public key ile listelenebildiğini, private makbuz bucketlarının ise listelenemediğini kontrol eder.
+- Supabase Dashboard üzerinde `project-media` için `public=true`, `receipts-private` ve `manual-receipts-private` için `public=false` durumu production öncesi ayrıca doğrulanmalıdır.
+- `project-media` policy'leri yalnızca public read ve service role manage kapsamındadır; anon upload/update/delete policy eklenmemelidir.
 
 ## Gelecek Geliştirmeler
 

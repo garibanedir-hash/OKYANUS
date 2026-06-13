@@ -322,3 +322,19 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] `docs/legal-final-review-checklist.md` 14C kapanışı için tamamlandı.
 - [ ] 024 migration uygulanmadan `/iletisim` ve `/gonullu-ol` form submit doğrulaması tamamlandı kabul edilmiyor.
 - [ ] Migration sonrası `site_cookie_consents` smoke testte protected görünüyor ve missing değildir.
+
+## 15A Production Security Hardening
+
+- [ ] `docs/production-security-hardening.md` backend/security yayın kontrolünde kullanılıyor.
+- [ ] Service role client sadece `server-only` dosyalarda, Server Action veya API route sınırında kullanılıyor.
+- [ ] Public bundle secret/env adı taraması build sonrası temiz.
+- [ ] RLS smoke testi anon/publishable key ile çalışıyor, service role kullanmıyor ve write işlemi yapmıyor.
+- [ ] Hassas ödeme, makbuz, bildirim, rol/profil, kurban operasyon ve yetim/sponsorluk tabloları anon/public erişime kapalı kalıyor.
+- [ ] `site_cookie_consents` RLS enabled/forced ve public insert/update policy içermiyor.
+- [ ] `project-media` bucket public read; upload/update/delete yalnızca admin server action ve service role helper üzerinden.
+- [ ] `receipts-private` ve `manual-receipts-private` bucketları private; download API route'ları oturum, rol ve ownership kontrolü yapıyor.
+- [ ] `/api/paytr/callback` hash doğrulama, tutar/para birimi doğrulama, provider event log ve idempotency kontrollerini koruyor.
+- [ ] Admin write action'ları `requireAdminUser`/server-side role guard olmadan kayıt değiştirmiyor.
+- [ ] `DONATION_MODE=whatsapp` public bağış sayfalarında payment intent, order veya sponsorship payment başlatmıyor.
+- [ ] Public form validation, honeypot ve consent kontrolleri mevcut; rate limit/captcha production riski olarak planlandı.
+- [ ] Security headers uygulandı; tam CSP kırılma riski nedeniyle ayrı staging test maddesi olarak bırakıldı.

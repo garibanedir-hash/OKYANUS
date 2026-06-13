@@ -140,12 +140,22 @@ const restrictedTables = [
   "site_cookie_consents"
 ];
 
+const storageBuckets = [
+  { bucket: "project-media", expected: "publicRead" },
+  { bucket: "receipts-private", expected: "private" },
+  { bucket: "manual-receipts-private", expected: "private" }
+];
+
 function isMissingTable(error) {
   return error?.code === "42P01" || /does not exist|schema cache/i.test(error?.message ?? "");
 }
 
 function isRlsBlocked(error) {
   return /permission denied|row-level security|not authorized|JWT/i.test(error?.message ?? "");
+}
+
+function isStorageAccessBlocked(error) {
+  return /permission|not authorized|unauthorized|row-level security|JWT|not found|not exist/i.test(error?.message ?? "");
 }
 
 async function checkTable(supabase, table, expectedPublic, okLabel = "public read", options = {}) {
@@ -184,6 +194,44 @@ async function checkTable(supabase, table, expectedPublic, okLabel = "public rea
   }
 
   console.log(`${table}: kontrol hatası (${error.code ?? "no-code"}) ${error.message}`);
+  return "error";
+}
+
+async function checkStorageBucket(supabase, item) {
+  const { bucket, expected } = item;
+  const { data, error } = await supabase.storage.from(bucket).list("", { limit: 1 });
+
+  if (!error) {
+    if (expected === "publicRead") {
+      console.log(`${bucket}: OK - public storage list/read policy reachable with public key`);
+      return "publicOk";
+    }
+
+    if ((data ?? []).length > 0) {
+      console.log(`${bucket}: FAIL / SECURITY WARNING - private bucket anon/public key ile obje listeliyor`);
+      return "securityWarning";
+    }
+
+    console.log(`${bucket}: OK - private bucket anon key ile görünür obje döndürmüyor; public=false Dashboard'da doğrulanmalı`);
+    return "protectedOk";
+  }
+
+  if (expected === "private") {
+    if (isStorageAccessBlocked(error)) {
+      console.log(`${bucket}: OK - private/protected from anon public key`);
+      return "protectedOk";
+    }
+
+    console.log(`${bucket}: storage kontrol hatası (${error.statusCode ?? error.status ?? "no-status"}) ${error.message}`);
+    return "error";
+  }
+
+  if (/not found|not exist/i.test(error.message ?? "")) {
+    console.log(`${bucket}: bucket bulunamadı; 023 migration veya storage kurulumu eksik olabilir.`);
+    return "missing";
+  }
+
+  console.log(`${bucket}: public storage kontrol hatası (${error.statusCode ?? error.status ?? "no-status"}) ${error.message}`);
   return "error";
 }
 
@@ -234,6 +282,14 @@ const summary = {
   error: 0
 };
 
+const storageSummary = {
+  publicOk: 0,
+  protectedOk: 0,
+  securityWarning: 0,
+  missing: 0,
+  error: 0
+};
+
 for (const item of publicReadTables) {
   summary[await checkTable(supabase, item.table, true, item.okLabel, item)] += 1;
 }
@@ -251,6 +307,11 @@ for (const table of restrictedTables) {
   summary[await checkTable(supabase, table, false)] += 1;
 }
 
+console.log("Storage bucket anon/public key kontrolü");
+for (const item of storageBuckets) {
+  storageSummary[await checkStorageBucket(supabase, item)] += 1;
+}
+
 console.log("Smoke test özeti");
 console.log(`Public read OK: ${summary.publicOk}`);
 console.log(`Protected OK: ${summary.protectedOk}`);
@@ -258,9 +319,14 @@ console.log(`Security warning: ${summary.securityWarning}`);
 console.log(`Missing table: ${summary.missing}`);
 console.log(`Public blocked: ${summary.publicBlocked}`);
 console.log(`Diğer hata: ${summary.error}`);
-console.log("Manual storage check: receipts-private bucket 017 migration sonrası, manual-receipts-private bucket 018 migration sonrası private/public=false; project-media bucket 023 migration sonrası public=true ve anon upload kapalı olarak doğrulanmalıdır.");
+console.log(`Storage public OK: ${storageSummary.publicOk}`);
+console.log(`Storage protected OK: ${storageSummary.protectedOk}`);
+console.log(`Storage security warning: ${storageSummary.securityWarning}`);
+console.log(`Storage missing: ${storageSummary.missing}`);
+console.log(`Storage diğer hata: ${storageSummary.error}`);
+console.log("Manual storage check: private bucket varlığı ve public=false durumu Supabase Dashboard'da ayrıca doğrulanmalıdır; anon key private bucket yok/protected ayrımını güvenli şekilde gizleyebilir.");
 console.log("Supabase smoke test tamamlandı.");
 
-if (summary.securityWarning > 0) {
+if (summary.securityWarning > 0 || storageSummary.securityWarning > 0 || storageSummary.missing > 0) {
   process.exit(1);
 }

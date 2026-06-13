@@ -90,6 +90,14 @@ Kod tarafında aktif consent sürümü `LEGAL_CONSENT_VERSION = "2026-06-11"` de
 - Üçüncü taraf sağlayıcı sözleşmeleri, veri aktarımı ve saklama süreleri hukukçu kontrolünden geçmeli.
 - Server-side veya client-side entegrasyonlar kişisel veri minimizasyonu prensibiyle yapılmalı.
 
+## Production Security Notları
+
+- `site_cookie_consents` tablosu ilk sürümde public insert/update almaz; kullanıcı tercihleri localStorage/cookie içinde tutulur.
+- Çerez tercihleri için server-side audit kaydı istenirse önce rate limit, bot koruması, veri minimizasyonu ve hukukçu kontrolü tamamlanmalıdır.
+- İletişim, gönüllü, bağış, kurban, yetim ve kayıt formlarında consent validasyonu server tarafında kalmalıdır; sadece client-side checkbox yeterli kabul edilmez.
+- Production trafiği başlamadan önce public form spam/rate limit ihtiyacı `docs/production-security-hardening.md` kapsamında takip edilmelidir.
+- Build sonrası public bundle içinde service role, Supabase secret veya PayTR merchant secret env adları bulunmadığı kontrol edilmelidir.
+
 ## Kalan Hukuki Kontroller
 
 - Resmi dernek adresi, sicil bilgisi ve yetkili iletişim bilgileri nihai metinlere eklenmeli.

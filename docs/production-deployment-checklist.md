@@ -226,6 +226,24 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] 024 migration sonrası `npm run test:supabase` sonucu `site_cookie_consents` missing uyarısı vermiyor.
 - [ ] Staging'de iletişim ve gönüllü formu kontrollü test kaydıyla consent alanlarını dolduruyor.
 
+## 15A Production Security Hardening
+
+- [ ] `docs/production-security-hardening.md` production yayını öncesi teknik sorumlu tarafından kapatıldı.
+- [ ] `next.config.mjs` temel security header'larını uyguluyor: nosniff, strict referrer policy, frame policy ve minimal permissions policy.
+- [ ] Tam Content-Security-Policy ayrı bir staging test aşamasına bırakıldı; Supabase Storage, WhatsApp, Vercel ve Next/Image kaynaklarıyla kırılma riski değerlendirildi.
+- [ ] `.env.example` production-safe varsayımları gösteriyor; gerçek secret değerler yalnızca Vercel/Supabase secret yönetiminde tutuluyor.
+- [ ] Production Vercel env içinde `NEXT_PUBLIC_ADMIN_DEMO_MODE=false`, `DONATION_MODE=whatsapp`, `PAYTR_DEBUG_ON=false`, doğru `NEXT_PUBLIC_SITE_URL` ve doğrulanmış WhatsApp hattı var.
+- [ ] Supabase service role/secret key public bundle'a veya `NEXT_PUBLIC_` env adlarına taşınmadı.
+- [ ] Build sonrası `.next/static` secret/env adı taraması temiz.
+- [ ] `npm run test:supabase` storage kontrolü dahil `Security warning: 0` veriyor.
+- [ ] `project-media` public read, JPG/PNG/WebP ve 5 MB sınırıyla doğrulandı; anon upload kapalı.
+- [ ] `receipts-private` ve `manual-receipts-private` private/public=false ve anon read/write kapalı olarak Dashboard'da doğrulandı.
+- [ ] `/admin`, `/panel`, `/koordinator`, `/personel` oturumsuz erişimde güvenli login yönlendirmesi veriyor.
+- [ ] `/api/receipts/[receiptNo]/download` ve `/api/manual-receipts/[receiptNo]/download` anon erişimde dosya döndürmüyor.
+- [ ] `/bagis-yap`, `/kurban/bagis`, `/yetim-hamiligi/basvuru` WhatsApp modunda form/payment intent başlatmadan bilgilendirme kartı gösteriyor.
+- [ ] PayTR callback hash, tutar/para birimi ve idempotency kontrolü canlı ödeme açılmadan önce staging senaryolarıyla tekrar doğrulanacak.
+- [ ] Public form rate limit/captcha eksikliği kalan production riski olarak takip edildi.
+
 ## Export ve Raporlama
 
 - [ ] Export işlemleri yetki kontrolünden geçiyor.
