@@ -319,3 +319,6 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Yetim hamiliği başvurusu `sponsorship_applications` kaydına consent audit alanlarını yazıyor.
 - [ ] Kayıt formu Supabase Auth metadata'sına KVKK, duyuru izni, kullanım şartları ve consent sürüm bilgisini yazıyor.
 - [ ] `docs/legal-consent-and-cookies.md` hukukçu ve teknik sorumlu kontrolünde güncel tutuluyor.
+- [ ] `docs/legal-final-review-checklist.md` 14C kapanışı için tamamlandı.
+- [ ] 024 migration uygulanmadan `/iletisim` ve `/gonullu-ol` form submit doğrulaması tamamlandı kabul edilmiyor.
+- [ ] Migration sonrası `site_cookie_consents` smoke testte protected görünüyor ve missing değildir.

@@ -108,6 +108,9 @@
 - [ ] Ham IP toplanmıyorsa bu karar metadata/dokümantasyonda açık mı?
 - [ ] Form submitleri public anon table write policy yerine server-only action/repository üzerinden yapılıyor mu?
 - [ ] Hukuki metinler, resmi dernek bilgileri ve saklama-imha yaklaşımı nihai hukukçu kontrolüne gönderildi mi?
+- [ ] `docs/legal-final-review-checklist.md` hukukçu/yönetim/teknik sorumlu tarafından kapatıldı mı?
+- [ ] 024 migration uygulanmadan consent kolonlarına yazan public formlar production'a alınmıyor mu?
+- [ ] Migration sonrası form test kayıtları gerekiyorsa kontrollü şekilde temizleniyor veya test olarak işaretleniyor mu?
 
 ## Payment webhook security
 

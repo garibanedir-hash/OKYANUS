@@ -2,6 +2,8 @@
 
 Bu doküman 14B aşamasında eklenen çerez tercih paneli ve form onay kayıt yaklaşımını açıklar. İçerik hukuki danışmanlık yerine geçmez; nihai metinler ve uygulama kapsamı hukukçu, dernek yönetimi ve teknik sorumlu tarafından birlikte kontrol edilmelidir.
 
+14C final kontrol adımları için ayrıca `docs/legal-final-review-checklist.md` kullanılmalıdır.
+
 ## Çerez Tercih Mekanizması
 
 Public site ilk ziyarette `CookieConsentBanner` bileşenini gösterir. Kullanıcı şu seçeneklerden birini seçebilir:
@@ -94,3 +96,4 @@ Kod tarafında aktif consent sürümü `LEGAL_CONSENT_VERSION = "2026-06-11"` de
 - Açık rıza gereken durumlar form bazında hukukçu tarafından teyit edilmeli.
 - Saklama ve imha süreleri operasyonel süreçlerle eşleştirilmeli.
 - Online ödeme aktif edilmeden önce bağış bilgilendirme ve mesafeli bağış/online ödeme metinleri tekrar gözden geçirilmeli.
+- 024 migration uygulandıktan sonra `site_cookie_consents` missing uyarısı kalkmalı ve form consent kolonları staging DB'de doğrulanmalıdır.

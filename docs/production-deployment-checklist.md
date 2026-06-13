@@ -222,6 +222,9 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Bağış, kurban, yetim hamiliği ve kayıt akışları aydınlatma, açık rıza ve duyuru iznini ayrı alanlar olarak gönderiyor.
 - [ ] Hukuki metin sürümü değişirse `LEGAL_CONSENT_VERSION` ve gerekiyorsa cookie consent sürümü güncelleniyor.
 - [ ] Analitik/pazarlama aracı eklenmeden önce Çerez Politikası, tercih paneli ve hukuki kontrol tekrar yapılıyor.
+- [ ] 14C final kontrol için `docs/legal-final-review-checklist.md` tamamlandı.
+- [ ] 024 migration sonrası `npm run test:supabase` sonucu `site_cookie_consents` missing uyarısı vermiyor.
+- [ ] Staging'de iletişim ve gönüllü formu kontrollü test kaydıyla consent alanlarını dolduruyor.
 
 ## Export ve Raporlama
 
