@@ -5,6 +5,7 @@ import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
 import { FormProtectionFields } from "@/components/forms/FormProtectionFields";
 import { ConsentCheckbox, LegalConsentFields, LegalTextLink, legalLinks } from "@/components/forms/LegalConsent";
 import { registerPublicAccount } from "@/app/kayit/actions";
+import { getTurnstilePublicConfig } from "@/lib/security/turnstilePublic";
 
 export const metadata: Metadata = {
   title: "Kayıt Ol | Okyanus",
@@ -35,7 +36,7 @@ export default async function RegisterPage({
   return (
     <AuthShell title="Okyanus’a Katıl" description="Bağışçı veya gönüllü hesabınızı oluşturun.">
         <form action={registerPublicAccount} className="mt-8 grid gap-4 md:grid-cols-2">
-          <FormProtectionFields />
+          <FormProtectionFields turnstile={getTurnstilePublicConfig("registration")} />
           {statusMessage ? (
             <div className="rounded-2xl bg-soft-blue p-4 text-sm font-bold leading-6 text-deep-blue md:col-span-2">
               {statusMessage}

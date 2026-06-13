@@ -5,14 +5,16 @@ import { Button } from "@/components/ui/Button";
 import { TextAreaField, TextField } from "@/components/ui/FormField";
 import { FormProtectionFields } from "@/components/forms/FormProtectionFields";
 import { LegalConsentFields } from "@/components/forms/LegalConsent";
+import type { TurnstilePublicConfig } from "@/lib/security/turnstilePublic";
 
 type ContactFormProps = {
   action: (formData: FormData) => void | Promise<void>;
   formNotice?: string;
   formError?: string;
+  turnstile?: TurnstilePublicConfig;
 };
 
-export function ContactForm({ action, formNotice, formError }: ContactFormProps) {
+export function ContactForm({ action, formNotice, formError, turnstile }: ContactFormProps) {
   return (
     <form action={action} className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-soft sm:p-8">
       {formNotice ? (
@@ -36,7 +38,7 @@ export function ContactForm({ action, formNotice, formError }: ContactFormProps)
       <div className="mt-6 grid gap-3">
         <LegalConsentFields context="contact" showCommunicationPermission />
       </div>
-      <FormProtectionFields />
+      <FormProtectionFields turnstile={turnstile} />
       <Button type="submit" className="mt-7 w-full" showIcon>
         Mesaj Gönder
       </Button>

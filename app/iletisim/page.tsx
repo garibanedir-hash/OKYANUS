@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
 import { createContactMessageAction } from "@/app/iletisim/actions";
+import { getTurnstilePublicConfig } from "@/lib/security/turnstilePublic";
 
 export const metadata: Metadata = {
   title: "İletişim",
@@ -75,6 +76,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                   : undefined
               }
               formError={params?.durum === "hata" ? params?.mesaj ?? "Mesajınız kaydedilemedi." : undefined}
+              turnstile={getTurnstilePublicConfig("contact")}
             />
           </div>
         </Container>

@@ -89,14 +89,47 @@ Smoke test anon key ile bucket görünürlüğünü kontrol eder; private bucket
 - In-memory best-effort rate limit
 - `consent_metadata.formSecurity` altında güvenlik metadata'sı
 
-Bu koruma dependency eklemeden başlangıç bariyeri sağlar. Buna rağmen serverless memory rate limit kalıcı olmadığı için production trafiğinde aşağıdaki ek kontroller önerilir:
+15C sonrası rate limit provider arayüzü `lib/security/rateLimitProvider.ts` içinde ayrılmıştır. İlk sürümde in-memory fallback devam eder; bu kalıcı ve global güvence değildir.
+
+Kalıcı provider değerlendirmesi:
+
+- Vercel KV: Vercel serverless ortamıyla uyumlu, preview/production ayrımı net yönetilebilir.
+- Upstash Redis: Serverless uyumlu ve global limit için olgun seçenek.
+- Supabase table/RPC: Ek servis gerektirmez, ancak spam yükünü ana DB'ye taşıyabilir.
+- In-memory fallback: Sadece başlangıç bariyeridir.
+
+Turnstile pilotu feature flag ile hazırdır:
+
+- `TURNSTILE_ENABLED=false` varsayılanında formlar mevcut davranışı korur.
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY` client widget için public değerdir.
+- `TURNSTILE_SECRET_KEY` sadece server env'de kalmalıdır.
+- Enabled durumda token doğrulaması fail-closed çalışır ve teknik detay public ekrana basılmaz.
+
+Production trafiğinde aşağıdaki ek kontroller önerilir:
 
 - IP veya kullanıcı bazlı rate limit.
 - Kritik formlar için captcha veya turnstile benzeri bot koruması.
 - Aşırı tekrar eden submitler için audit/alert.
 - Public kayıt ve login brute-force davranışı için Supabase Auth rate limitlerinin izlenmesi.
+- Cloudflare Turnstile aktif edilirse CSP için `https://challenges.cloudflare.com` staging'de test edilmelidir.
 
 Detaylı plan ve staging negatif test listesi için `docs/form-spam-protection.md` kullanılmalıdır.
+
+## Anon Write Negatif Test Harness
+
+`npm run test:supabase` read-only kalır. Staging üzerinde doğrudan anon insert/upload negatif testleri için ayrı komut hazırdır:
+
+```bash
+npm run test:security:negative
+```
+
+Varsayılan çalıştırma write/delete yapmadan skip verir. Gerçek negatif test için:
+
+```bash
+REQUIRE_STAGING_NEGATIVE_TESTS=true NEGATIVE_TEST_ALLOWLIST_PROJECT_REF=staging_project_ref npm run test:security:negative
+```
+
+Bu script production domain gibi görünen `NEXT_PUBLIC_SITE_URL` değerinde veya allowlist dışında kalan Supabase project ref üzerinde çalışmayı reddeder. Başarılı anon insert/upload sonucu production deploy öncesi durdurucu security warning kabul edilmelidir.
 
 ## Env ve Production Config Checklist
 

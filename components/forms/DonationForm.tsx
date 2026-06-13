@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { SelectField, TextAreaField, TextField } from "@/components/ui/FormField";
 import { FormProtectionFields } from "@/components/forms/FormProtectionFields";
 import { LegalConsentFields } from "@/components/forms/LegalConsent";
+import type { TurnstilePublicConfig } from "@/lib/security/turnstilePublic";
 import { cn } from "@/lib/utils";
 
 const amounts = [
@@ -30,9 +31,10 @@ type DonationFormProps = {
   action: (formData: FormData) => void | Promise<void>;
   formError?: string;
   formNotice?: string;
+  turnstile?: TurnstilePublicConfig;
 };
 
-export function DonationForm({ initialProjectSlug, action, formError, formNotice }: DonationFormProps) {
+export function DonationForm({ initialProjectSlug, action, formError, formNotice, turnstile }: DonationFormProps) {
   const [amount, setAmount] = useState<number | "custom">(250);
   const [donationType, setDonationType] = useState("Genel Bağış");
   const [selectedProject, setSelectedProject] = useState(initialProjectSlug ?? "genel");
@@ -131,7 +133,7 @@ export function DonationForm({ initialProjectSlug, action, formError, formNotice
         <LegalConsentFields context="donation" showCommunicationPermission />
       </div>
 
-      <FormProtectionFields />
+      <FormProtectionFields turnstile={turnstile} />
 
       <Button type="submit" className="mt-7 w-full" showIcon>
         Bağış Ön Kaydı Oluştur

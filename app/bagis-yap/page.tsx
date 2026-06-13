@@ -10,6 +10,7 @@ import { createGeneralDonationPaymentIntentAction } from "@/app/bagis-yap/action
 import { DonationCtaButton } from "@/components/donations/DonationCtaButton";
 import { DonationModePanel } from "@/components/donations/DonationModePanel";
 import { getDonationMode } from "@/lib/donations/donationMode";
+import { getTurnstilePublicConfig } from "@/lib/security/turnstilePublic";
 
 export const metadata: Metadata = {
   title: "Bağış Yap",
@@ -135,6 +136,7 @@ export default async function DonatePage({ searchParams }: DonatePageProps) {
                 action={createGeneralDonationPaymentIntentAction}
                 formError={params?.durum === "hata" ? params?.mesaj ?? "Bağış ön kaydı oluşturulamadı." : undefined}
                 formNotice={params?.durum === "alindi" ? "Bağış ön kaydınız alındı." : undefined}
+                turnstile={getTurnstilePublicConfig("donation")}
               />
             ) : (
               <DonationModePanel context={{ source: "general" }} onlineHref="/bagis-yap" />

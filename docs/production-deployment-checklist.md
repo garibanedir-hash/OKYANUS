@@ -257,6 +257,19 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Turnstile/Captcha entegrasyonu spam artışı halinde ayrı aşama olarak planlandı.
 - [ ] Anon write negatif testleri yalnızca staging ve cleanup planıyla yapılacak.
 
+## 15C Rate Limit Provider ve Turnstile Pilot
+
+- [ ] `.env.example` `TURNSTILE_ENABLED`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY` ve `TURNSTILE_SECRET_KEY` alanlarını içeriyor.
+- [ ] Production'da Turnstile anahtarları provision edilmeden `TURNSTILE_ENABLED=false` kalıyor.
+- [ ] Turnstile pilotu açılacaksa önce Vercel Preview/Staging env'de site key ve secret key tanımlanıyor.
+- [ ] `TURNSTILE_SECRET_KEY` yalnızca server environment olarak tanımlı; `NEXT_PUBLIC_` altında secret yok.
+- [ ] Turnstile aktif edilirse `/iletisim`, `/gonullu-ol`, `/kayit` ve online donation formları gerçek tarayıcıda tokenlı/tokensız test ediliyor.
+- [ ] Kalıcı rate limit provider seçimi yapılmadan in-memory limitin yalnızca best-effort olduğu production risk notunda kalıyor.
+- [ ] Vercel KV veya Upstash Redis seçilecekse preview/production ayrımı, hash/fingerprint retention ve KVKK veri minimizasyonu ayrıca onaylanıyor.
+- [ ] `npm run test:security:negative` production env'de çalıştırılmıyor; staging için project ref allowlist ve cleanup planı zorunlu.
+- [ ] Negatif test harness çıktısında security warning varsa production deploy durduruluyor.
+- [ ] Smoke test read-only kalıyor; write negatif testleri ayrı komut ve ayrı onayla yönetiliyor.
+
 ## Export ve Raporlama
 
 - [ ] Export işlemleri yetki kontrolünden geçiyor.

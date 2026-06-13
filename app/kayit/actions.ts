@@ -10,6 +10,7 @@ import {
   validatePhoneFormat,
   validateTextLength
 } from "@/lib/security/formProtection";
+import { validateTurnstileFromFormData } from "@/lib/security/turnstile";
 
 export async function registerDemoAction() {
   return {
@@ -32,6 +33,14 @@ export async function registerPublicAccount(formData: FormData) {
   }
 
   if (formProtection.rateLimited) {
+    redirect("/kayit?durum=hata");
+  }
+
+  let turnstileMetadata: Record<string, unknown> = {};
+  try {
+    const turnstile = await validateTurnstileFromFormData(formData, { form: "registration" });
+    turnstileMetadata = turnstile.metadata;
+  } catch {
     redirect("/kayit?durum=hata");
   }
 
@@ -76,7 +85,8 @@ export async function registerPublicAccount(formData: FormData) {
   const legalConsent = await readServerLegalConsent(formData, "registration", {
     form: "registration",
     legalNoticeSlug: "kvkk-aydinlatma-metni",
-    ...formProtection.metadata
+    ...formProtection.metadata,
+    ...turnstileMetadata
   });
 
   if (!legalConsent.kvkkAcknowledged) {

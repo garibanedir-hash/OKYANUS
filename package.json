@@ -10,6 +10,7 @@
     "check:supabase-env": "node scripts/check-supabase-env.mjs",
     "test:supabase": "node scripts/supabase-smoke-test.mjs",
     "test:supabase-auth": "node scripts/supabase-auth-smoke-test.mjs",
+    "test:security:negative": "node scripts/anon-write-negative-test.mjs",
     "audit:security": "npm audit --audit-level=high",
     "audit:full": "npm audit"
   },

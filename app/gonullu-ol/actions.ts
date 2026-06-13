@@ -11,6 +11,7 @@ import {
   validatePhoneFormat,
   validateTextLength
 } from "@/lib/security/formProtection";
+import { validateTurnstileFromFormData } from "@/lib/security/turnstile";
 
 function getString(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -49,6 +50,7 @@ export async function createVolunteerApplicationAction(formData: FormData) {
   }
 
   try {
+    const turnstile = await validateTurnstileFromFormData(formData, { form: "volunteer" });
     const fullName = validateTextLength(getString(formData, "fullName"), {
       fieldLabel: "Ad soyad",
       min: 3,
@@ -79,7 +81,8 @@ export async function createVolunteerApplicationAction(formData: FormData) {
     const legalConsent = await readServerLegalConsent(formData, "volunteer", {
       form: "volunteer",
       legalNoticeSlug: "gonullu-basvuru-aydinlatma-metni",
-      ...formProtection.metadata
+      ...formProtection.metadata,
+      ...turnstile.metadata
     });
 
     if (age !== null && (age < 16 || age > 100)) throw new Error("Yaş alanı geçerli görünmüyor.");

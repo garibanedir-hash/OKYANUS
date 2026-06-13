@@ -6,6 +6,7 @@ import { qurbanTypeLabels } from "@/data/qurbanMock";
 import { formatCurrency } from "@/lib/format";
 import { FormProtectionFields } from "@/components/forms/FormProtectionFields";
 import { ConsentCheckbox, LegalConsentFields } from "@/components/forms/LegalConsent";
+import type { TurnstilePublicConfig } from "@/lib/security/turnstilePublic";
 
 type DonorDefaults = {
   fullName?: string;
@@ -18,12 +19,14 @@ export function QurbanDonationForm({
   campaigns,
   selectedSlug,
   donorDefaults,
-  action
+  action,
+  turnstile
 }: {
   campaigns: QurbanCampaign[];
   selectedSlug?: string;
   donorDefaults?: DonorDefaults;
   action: (formData: FormData) => void | Promise<void>;
+  turnstile?: TurnstilePublicConfig;
 }) {
   const initialCampaign = campaigns.find((campaign) => campaign.slug === selectedSlug) ?? campaigns[0];
   const [campaignSlug, setCampaignSlug] = useState(initialCampaign?.slug ?? "");
@@ -53,7 +56,7 @@ export function QurbanDonationForm({
 
   return (
     <form action={action} className="rounded-brand border border-border-soft bg-white p-6 shadow-card">
-      <FormProtectionFields />
+      <FormProtectionFields turnstile={turnstile} />
 
       <div className="grid gap-5 md:grid-cols-2">
         <label className="text-sm font-bold text-dark-navy">

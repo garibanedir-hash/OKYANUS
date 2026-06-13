@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { SelectField, TextAreaField, TextField } from "@/components/ui/FormField";
 import { FormProtectionFields } from "@/components/forms/FormProtectionFields";
 import { LegalConsentFields } from "@/components/forms/LegalConsent";
+import type { TurnstilePublicConfig } from "@/lib/security/turnstilePublic";
 
 const interests = [
   "Saha Faaliyetleri",
@@ -19,9 +20,10 @@ type VolunteerFormProps = {
   action: (formData: FormData) => void | Promise<void>;
   formNotice?: string;
   formError?: string;
+  turnstile?: TurnstilePublicConfig;
 };
 
-export function VolunteerForm({ action, formNotice, formError }: VolunteerFormProps) {
+export function VolunteerForm({ action, formNotice, formError, turnstile }: VolunteerFormProps) {
   return (
     <form action={action} className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-soft sm:p-8">
       {formNotice ? (
@@ -60,7 +62,7 @@ export function VolunteerForm({ action, formNotice, formError }: VolunteerFormPr
       <div className="mt-6 grid gap-3">
         <LegalConsentFields context="volunteer" requireExplicitConsent showCommunicationPermission />
       </div>
-      <FormProtectionFields />
+      <FormProtectionFields turnstile={turnstile} />
       <Button type="submit" className="mt-7 w-full" showIcon>
         Başvuruyu Gönder
       </Button>

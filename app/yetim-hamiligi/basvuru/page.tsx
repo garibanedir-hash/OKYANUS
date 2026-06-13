@@ -8,6 +8,7 @@ import { formatCurrency } from "@/lib/format";
 import { SponsorshipApplicationForm } from "./SponsorshipApplicationForm";
 import { DonationModePanel } from "@/components/donations/DonationModePanel";
 import { getDonationMode } from "@/lib/donations/donationMode";
+import { getTurnstilePublicConfig } from "@/lib/security/turnstilePublic";
 
 export const metadata: Metadata = {
   title: "Yetim Hamiliği Başvurusu",
@@ -84,7 +85,7 @@ export default async function OrphanSponsorshipApplicationPage({ searchParams }:
                     {errorMessage}
                   </div>
                 ) : null}
-                <SponsorshipApplicationForm programs={programs} selectedSlug={selectedProgram?.slug} />
+                <SponsorshipApplicationForm programs={programs} selectedSlug={selectedProgram?.slug} turnstile={getTurnstilePublicConfig("orphan")} />
               </div>
             ) : (
               <DonationModePanel

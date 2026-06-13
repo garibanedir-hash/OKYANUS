@@ -1,8 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { TurnstileField } from "@/components/forms/TurnstileField";
+import type { TurnstilePublicConfig } from "@/lib/security/turnstilePublic";
 
-export function FormProtectionFields() {
+type FormProtectionFieldsProps = {
+  turnstile?: TurnstilePublicConfig;
+};
+
+export function FormProtectionFields({ turnstile }: FormProtectionFieldsProps) {
   const formStartedAtRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -14,6 +20,7 @@ export function FormProtectionFields() {
   return (
     <>
       <input ref={formStartedAtRef} type="hidden" name="formStartedAt" />
+      <TurnstileField config={turnstile} />
       <div className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
         <label>
           Website

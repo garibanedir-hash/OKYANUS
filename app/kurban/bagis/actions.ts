@@ -14,6 +14,7 @@ import {
   validatePhoneFormat,
   validateTextLength
 } from "@/lib/security/formProtection";
+import { validateTurnstileFromFormData } from "@/lib/security/turnstile";
 import type { QurbanType } from "@/data/qurbanMock";
 
 const qurbanTypes: QurbanType[] = ["vacip", "adak", "akika", "sukur", "nafile", "genel"];
@@ -132,11 +133,13 @@ export async function createQurbanOrderAction(formData: FormData) {
   } | null = null;
 
   try {
+    const turnstile = await validateTurnstileFromFormData(formData, { form: "qurban" });
     const input = parseQurbanOrderForm(formData);
     const legalConsent = await readServerLegalConsent(formData, "qurban", {
       form: "qurban_order",
       legalNoticeSlug: "bagis-bilgilendirme-ve-sartlari",
-      ...formProtection.metadata
+      ...formProtection.metadata,
+      ...turnstile.metadata
     });
     assertLegalConsentRequirements(legalConsent);
 

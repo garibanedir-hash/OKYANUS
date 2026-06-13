@@ -2,21 +2,15 @@ import "server-only";
 
 import crypto from "node:crypto";
 import { headers } from "next/headers";
+import {
+  checkRateLimit,
+  type RateLimitOptions,
+  type RateLimitResult
+} from "@/lib/security/rateLimitProvider";
 
 export const FORM_HONEYPOT_FIELDS = ["website", "companyWebsite"] as const;
 export const FORM_STARTED_AT_FIELD = "formStartedAt";
 export const FORM_SECURITY_GENERIC_ERROR = "Form gönderilirken bir sorun oluştu. Lütfen bilgileri kontrol edip tekrar deneyin.";
-
-type RateLimitBucket = {
-  count: number;
-  resetAt: number;
-  lastSeenAt: number;
-};
-
-type RateLimitOptions = {
-  maxAttempts?: number;
-  windowMs?: number;
-};
 
 type FormProtectionOptions = {
   form: string;
@@ -28,17 +22,10 @@ type TimingOptions = {
   maxSubmitMs?: number;
 };
 
-const defaultRateLimit = {
-  maxAttempts: 8,
-  windowMs: 10 * 60 * 1000
-};
-
 const defaultTiming = {
   minSubmitMs: 2000,
   maxSubmitMs: 2 * 60 * 60 * 1000
 };
-
-const rateLimitBuckets = new Map<string, RateLimitBucket>();
 
 export class FormProtectionError extends Error {
   constructor(message: string, public code = "form_protection_failed") {
@@ -50,16 +37,6 @@ export class FormProtectionError extends Error {
 function getString(formData: FormData, key: string) {
   const value = formData.get(key);
   return typeof value === "string" ? value.trim() : "";
-}
-
-function cleanExpiredRateLimits(now: number) {
-  if (rateLimitBuckets.size < 500) return;
-
-  for (const [key, bucket] of Array.from(rateLimitBuckets.entries())) {
-    if (bucket.resetAt <= now) {
-      rateLimitBuckets.delete(key);
-    }
-  }
 }
 
 function hashValue(value: string) {
@@ -101,7 +78,7 @@ export function validateSubmissionTiming(formData: FormData, options: TimingOpti
   };
 }
 
-export function getClientFingerprint(requestHeaders: Headers) {
+export function getClientFingerprint(requestHeaders: Pick<Headers, "get">) {
   const forwardedFor = requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "";
   const realIp = requestHeaders.get("x-real-ip")?.trim() ?? "";
   const userAgent = requestHeaders.get("user-agent")?.slice(0, 300) ?? "";
@@ -116,37 +93,7 @@ export function checkBasicRateLimit(input: {
   fingerprint: string;
   options?: RateLimitOptions;
 }) {
-  const now = Date.now();
-  const maxAttempts = input.options?.maxAttempts ?? defaultRateLimit.maxAttempts;
-  const windowMs = input.options?.windowMs ?? defaultRateLimit.windowMs;
-  const key = `${input.form}:${input.fingerprint}`;
-  const current = rateLimitBuckets.get(key);
-
-  cleanExpiredRateLimits(now);
-
-  if (!current || current.resetAt <= now) {
-    const next = { count: 1, resetAt: now + windowMs, lastSeenAt: now };
-    rateLimitBuckets.set(key, next);
-    return {
-      limited: false,
-      count: next.count,
-      maxAttempts,
-      resetAt: new Date(next.resetAt).toISOString(),
-      windowSeconds: Math.round(windowMs / 1000)
-    };
-  }
-
-  current.count += 1;
-  current.lastSeenAt = now;
-  rateLimitBuckets.set(key, current);
-
-  return {
-    limited: current.count > maxAttempts,
-    count: current.count,
-    maxAttempts,
-    resetAt: new Date(current.resetAt).toISOString(),
-    windowSeconds: Math.round(windowMs / 1000)
-  };
+  return checkRateLimit(input);
 }
 
 export async function evaluateFormProtection(formData: FormData, options: FormProtectionOptions) {
@@ -154,7 +101,7 @@ export async function evaluateFormProtection(formData: FormData, options: FormPr
   const honeypot = validateHoneypot(formData);
   const timing = validateSubmissionTiming(formData);
   const fingerprint = getClientFingerprint(requestHeaders);
-  const rateLimit = checkBasicRateLimit({
+  const rateLimit = await checkBasicRateLimit({
     form: options.form,
     fingerprint,
     options: options.rateLimit
@@ -179,7 +126,7 @@ export function buildFormSecurityMetadata(input: {
   fingerprint: string;
   honeypot: ReturnType<typeof validateHoneypot>;
   timing: ReturnType<typeof validateSubmissionTiming>;
-  rateLimit: ReturnType<typeof checkBasicRateLimit>;
+  rateLimit: RateLimitResult;
   userAgentPresent: boolean;
 }) {
   return {
@@ -198,7 +145,9 @@ export function buildFormSecurityMetadata(input: {
         count: input.rateLimit.count,
         maxAttempts: input.rateLimit.maxAttempts,
         windowSeconds: input.rateLimit.windowSeconds,
-        resetAt: input.rateLimit.resetAt
+        resetAt: input.rateLimit.resetAt,
+        provider: input.rateLimit.provider,
+        persistent: input.rateLimit.persistent
       },
       userAgentPresent: input.userAgentPresent,
       checkedAt: new Date().toISOString()

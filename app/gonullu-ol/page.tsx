@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
 import { createVolunteerApplicationAction } from "@/app/gonullu-ol/actions";
+import { getTurnstilePublicConfig } from "@/lib/security/turnstilePublic";
 
 export const metadata: Metadata = {
   title: "Gönüllü Ol",
@@ -77,6 +78,7 @@ export default async function VolunteerPage({ searchParams }: VolunteerPageProps
                 : undefined
             }
             formError={params?.durum === "hata" ? params?.mesaj ?? "Gönüllü başvurunuz kaydedilemedi." : undefined}
+            turnstile={getTurnstilePublicConfig("volunteer")}
           />
           </div>
         </Container>

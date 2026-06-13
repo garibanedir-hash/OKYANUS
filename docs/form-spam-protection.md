@@ -1,6 +1,6 @@
 # Public Form Spam Protection
 
-Bu doküman public formlar için 15B aşamasında eklenen temel spam koruma yaklaşımını açıklar. Amaç public write yüzeyini genişletmeden, kullanıcı deneyimini bozmadan ve büyük captcha entegrasyonu zorunlu kılmadan başlangıç güvenliğini artırmaktır.
+Bu doküman public formlar için 15B ve 15C aşamalarında eklenen spam koruma yaklaşımını açıklar. Amaç public write yüzeyini genişletmeden, kullanıcı deneyimini bozmadan ve Turnstile/Captcha entegrasyonunu kontrollü feature flag ile yöneterek başlangıç güvenliğini artırmaktır.
 
 ## Kapsam
 
@@ -26,11 +26,16 @@ Korunan public form akışları:
 - `buildFormSecurityMetadata(input)`
 - `validateTextLength`, `validateEmailFormat`, `validatePhoneFormat`
 
+`lib/security/rateLimitProvider.ts` kalıcı rate limit sağlayıcıları için ortak arayüzü tanımlar. İlk sürümde in-memory provider fallback olarak kalır; Vercel KV, Upstash Redis veya Supabase RPC-backed provider aynı arayüze eklenebilir.
+
+`lib/security/turnstile.ts` server-only Turnstile doğrulamasını yapar. `TURNSTILE_SECRET_KEY` bu dosya dışında kullanılmamalı, client componentlere taşınmamalıdır.
+
 `components/forms/FormProtectionFields.tsx` her public forma ortak hidden alanları ekler:
 
 - `website`
 - `companyWebsite`
 - `formStartedAt`
+- `TURNSTILE_ENABLED=true` ve site key tanımlıysa `cf-turnstile-response`
 
 Honeypot alanları normal kullanıcıya görünmez ve tab sırasına girmez.
 
@@ -74,34 +79,66 @@ Metadata ham IP içermez. Fingerprint hash, user-agent var/yok bilgisi, timing f
 - Varsayılan: form + fingerprint başına 10 dakikada 8 deneme
 - Kayıt formu: 10 dakikada 4 deneme
 
-Serverless/Vercel ortamında memory-based limit kalıcı ve küresel değildir. Bu nedenle production için önerilen kalıcı rate limit seçenekleri:
+Serverless/Vercel ortamında memory-based limit kalıcı ve küresel değildir. 15C ile provider arayüzü hazırlandı, ancak kalıcı provider bilinçli olarak bağlanmadı.
 
-- Upstash Redis
-- Vercel KV veya eşdeğer managed KV
-- Supabase tabanlı hash/fingerprint audit tablosu
+Değerlendirilen seçenekler:
 
-Kalıcı çözümde ham IP yerine hashlenmiş IP/fingerprint yaklaşımı tercih edilmeli ve KVKK veri minimizasyonu tekrar değerlendirilmelidir.
+- Vercel KV: Vercel ortamıyla doğal uyumlu, preview/production ayrımı yönetilebilir. Production için güçlü adaydır.
+- Upstash Redis: Serverless uyumlu, global rate limit için olgun ve düşük operasyon yükü sunar. Vercel KV yoksa önerilen seçenektir.
+- Supabase table/RPC: Ek provider gerektirmez, ancak yüksek hacimli spam trafiğini ana DB'ye taşıyabilir. Audit ihtiyacı yüksekse dikkatli tasarlanmalıdır.
+- In-memory fallback: Dependency gerektirmez, fakat yalnızca temel bariyer sağlar ve çok instance ortamında global güvence vermez.
 
-## Captcha / Turnstile Değerlendirmesi
+Production önerisi: Tanıtım yayını sonrası gerçek spam hacmine göre Vercel KV veya Upstash Redis tercih edilmeli; ham IP yerine hashlenmiş IP/fingerprint kullanılmalı ve saklama süresi kısa tutulmalıdır. Supabase tabanlı çözüm seçilirse RLS, retention ve write amplification etkisi ayrıca gözden geçirilmelidir.
+
+## Turnstile / Captcha Değerlendirmesi
 
 İlk tanıtım döneminde honeypot + server-side validation + best-effort rate limit yeterli başlangıç seviyesi olabilir.
 
-Spam artarsa değerlendirilecek seçenekler:
+15C ile Cloudflare Turnstile pilot entegrasyonu feature flag ile hazırlandı:
+
+- `TURNSTILE_ENABLED=false`: formlar mevcut şekilde çalışır.
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY`: client widget için public site key.
+- `TURNSTILE_SECRET_KEY`: sadece server-side verification için secret.
+
+`TURNSTILE_ENABLED=true` olduğunda server action token doğrulamasını input validation ve consent validation öncesi yapar. Token yoksa, secret eksikse veya provider verification başarısızsa fail-closed davranılır ve kullanıcıya teknik detay içermeyen genel hata döner.
+
+Alternatifler:
 
 - Cloudflare Turnstile
 - hCaptcha
 - reCAPTCHA
 
-Turnstile veya captcha eklenecekse:
+Turnstile veya captcha aktif edilecekse:
 
 - Client token form submit ile gönderilmeli.
 - Server action token’ı provider endpointinde doğrulamalı.
 - Verification secret client bundle’a veya `NEXT_PUBLIC_` env içine taşınmamalı.
 - Başarısız doğrulama teknik bilgi sızdırmadan genel hata dönmeli.
+- CSP eklenirse `https://challenges.cloudflare.com` script/frame kaynağı staging üzerinde test edilmelidir.
 
 ## Anon Write Negatif Test Planı
 
-Read-only smoke test canlı veriyi kirletmeden RLS görünürlüğünü doğrular. Gerçek insert/update negatif testleri staging ortamında ayrı cleanup planıyla yapılmalıdır.
+Read-only smoke test canlı veriyi kirletmeden RLS görünürlüğünü doğrular. Gerçek insert/update negatif testleri ayrı script ile yalnızca staging ortamında çalıştırılmalıdır.
+
+Komut:
+
+```bash
+npm run test:security:negative
+```
+
+Varsayılan davranış güvenli skip'tir. Gerçek negatif write denemesi için:
+
+```bash
+REQUIRE_STAGING_NEGATIVE_TESTS=true NEGATIVE_TEST_ALLOWLIST_PROJECT_REF=staging_project_ref npm run test:security:negative
+```
+
+Guard koşulları:
+
+- `REQUIRE_STAGING_NEGATIVE_TESTS=true` olmadan write/delete denenmez.
+- Supabase project ref `NEGATIVE_TEST_ALLOWLIST_PROJECT_REF` içinde değilse script durur.
+- `NEXT_PUBLIC_SITE_URL` production domain gibi görünüyorsa script durur.
+- Başarılı insert/upload büyük security warning sayılır ve mümkünse cleanup denenir.
+- Constraint/not-null hataları `INCONCLUSIVE` raporlanır; bu tek başına RLS'in kapalı olduğunu kanıtlamaz.
 
 Anon ile doğrudan yazılamaması gerekenler:
 

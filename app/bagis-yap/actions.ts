@@ -13,6 +13,7 @@ import {
   validatePhoneFormat,
   validateTextLength
 } from "@/lib/security/formProtection";
+import { validateTurnstileFromFormData } from "@/lib/security/turnstile";
 
 const MIN_DONATION_AMOUNT = 10;
 
@@ -72,6 +73,7 @@ export async function createGeneralDonationPaymentIntentAction(formData: FormDat
   let paymentIntentNo: string | null = null;
 
   try {
+    const turnstile = await validateTurnstileFromFormData(formData, { form: "donation" });
     const donorName = validateTextLength(getString(formData, "fullName"), {
       fieldLabel: "Ad soyad",
       min: 3,
@@ -97,7 +99,8 @@ export async function createGeneralDonationPaymentIntentAction(formData: FormDat
     const legalConsent = await readServerLegalConsent(formData, "donation", {
       form: "general_donation",
       legalNoticeSlug: "bagis-bilgilendirme-ve-sartlari",
-      ...formProtection.metadata
+      ...formProtection.metadata,
+      ...turnstile.metadata
     });
 
     assertLegalConsentRequirements(legalConsent);

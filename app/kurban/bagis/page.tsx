@@ -10,6 +10,7 @@ import { getCurrentQurbanDonorContext } from "@/lib/data/qurbanWriteRepository";
 import { formatCurrency } from "@/lib/format";
 import { DonationModePanel } from "@/components/donations/DonationModePanel";
 import { getDonationMode } from "@/lib/donations/donationMode";
+import { getTurnstilePublicConfig } from "@/lib/security/turnstilePublic";
 
 export const metadata: Metadata = {
   title: "Kurban Bağışı",
@@ -113,6 +114,7 @@ export default async function QurbanDonationDemoPage({ searchParams }: QurbanDon
                   selectedSlug={selectedSlug}
                   donorDefaults={donorDefaults}
                   action={createQurbanOrderAction}
+                  turnstile={getTurnstilePublicConfig("qurban")}
                 />
               </div>
             ) : (

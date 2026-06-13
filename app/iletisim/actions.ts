@@ -10,6 +10,7 @@ import {
   validateEmailFormat,
   validateTextLength
 } from "@/lib/security/formProtection";
+import { validateTurnstileFromFormData } from "@/lib/security/turnstile";
 
 function getString(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -42,6 +43,7 @@ export async function createContactMessageAction(formData: FormData) {
   }
 
   try {
+    const turnstile = await validateTurnstileFromFormData(formData, { form: "contact" });
     const fullName = validateTextLength(getString(formData, "fullName"), {
       fieldLabel: "Ad soyad",
       min: 3,
@@ -64,7 +66,8 @@ export async function createContactMessageAction(formData: FormData) {
     const legalConsent = await readServerLegalConsent(formData, "contact", {
       form: "contact",
       legalNoticeSlug: "iletisim-formu-aydinlatma-metni",
-      ...formProtection.metadata
+      ...formProtection.metadata,
+      ...turnstile.metadata
     });
 
     assertLegalConsentRequirements(legalConsent, {

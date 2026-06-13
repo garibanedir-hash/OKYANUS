@@ -144,6 +144,22 @@
 - [ ] Turnstile/hCaptcha/reCAPTCHA seçenekleri secret client'a taşınmadan server verification modeliyle planlandı mı?
 - [ ] Anon write negatif testleri staging cleanup planı olmadan production DB üzerinde çalıştırılmıyor mu?
 
+## 15C Rate Limit Provider, Turnstile Pilot ve Negatif Test Harness
+
+- [ ] `lib/security/rateLimitProvider.ts` kalıcı provider eklenebilir arayüzle hazır mı?
+- [ ] In-memory provider'ın production için yalnızca best-effort olduğu ekip tarafından biliniyor mu?
+- [ ] Production için Vercel KV veya Upstash Redis gibi kalıcı/global rate limit provider seçimi yapılacak mı?
+- [ ] `TURNSTILE_ENABLED=false` varsayılanında iletişim, gönüllü, kayıt ve online formlar bozulmadan çalışıyor mu?
+- [ ] `TURNSTILE_SECRET_KEY` client component, public bundle veya `NEXT_PUBLIC_` env içine taşınmıyor mu?
+- [ ] `NEXT_PUBLIC_TURNSTILE_SITE_KEY` yalnızca public widget key olarak kullanılıyor mu?
+- [ ] Turnstile enabled olduğunda token yoksa server action fail-closed ve kullanıcı dostu hata veriyor mu?
+- [ ] Turnstile verification metadata'sı `consent_metadata.turnstile` altında teknik secret olmadan tutuluyor mu?
+- [ ] `npm run test:security:negative` varsayılan ortamda write/delete yapmadan güvenli skip veriyor mu?
+- [ ] Negatif test harness yalnızca `REQUIRE_STAGING_NEGATIVE_TESTS=true` ve allowlist project ref ile çalışıyor mu?
+- [ ] Harness production domain veya production project ref üzerinde çalışmayı reddediyor mu?
+- [ ] Hassas tablolara anon insert/read başarılı olursa security warning üretecek şekilde kontrol edildi mi?
+- [ ] Cloudflare Turnstile script'i aktif edilecekse CSP ve browser QA staging'de tekrar yapılacak mı?
+
 ## Payment webhook security
 
 - [ ] 9E'de canlı provider webhook endpoint'i açılmadığı doğrulandı.

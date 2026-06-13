@@ -349,3 +349,16 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] `contact_messages`, `volunteer_applications`, `payment_intents`, `qurban_orders` ve `sponsorship_applications` consent metadata'sında `formSecurity` bilgisi taşıyabiliyor.
 - [ ] Anon doğrudan sensitive tablo write açılmadı; public submitler server-only repository/action sınırında kalıyor.
 - [ ] Kalıcı rate limit provider eklenirse Redis/KV/Supabase tasarımı ve KVKK veri minimizasyonu tekrar gözden geçirilecek.
+
+## 15C Kalıcı Rate Limit ve Turnstile Pilot Hazırlığı
+
+- [ ] `lib/security/rateLimitProvider.ts` provider arayüzüyle in-memory fallback'i ayırıyor.
+- [ ] Production için Vercel KV veya Upstash Redis tercih kararı canlı trafik ve maliyet değerlendirmesiyle netleştirilecek.
+- [ ] Supabase tabanlı rate limit düşünülürse ana DB'ye spam yükü ve retention politikası ayrıca değerlendirilecek.
+- [ ] `lib/security/turnstile.ts` server-only kalıyor ve `TURNSTILE_SECRET_KEY` client tarafına taşınmıyor.
+- [ ] `components/forms/TurnstileField.tsx` yalnızca `TURNSTILE_ENABLED=true` ve public site key varsa render ediyor.
+- [ ] Turnstile enabled durumda server action'lar token doğrulamasını input/consent/DB write öncesi yapıyor ve fail-closed çalışıyor.
+- [ ] `TURNSTILE_ENABLED=false` varsayılanında public formlar 15B davranışını koruyor.
+- [ ] `scripts/anon-write-negative-test.mjs` production guard, staging allowlist ve güvenli skip davranışıyla hazır.
+- [ ] `npm run test:security:negative` production DB üzerinde kontrolsüz insert/delete yapmıyor.
+- [ ] `npm run test:supabase` read-only kalıyor; negatif write harness ayrı komut olarak tutuluyor.

@@ -5,14 +5,17 @@ import type { SponsorshipProgram } from "@/data/orphanSponsorshipMock";
 import { formatCurrency } from "@/lib/format";
 import { FormProtectionFields } from "@/components/forms/FormProtectionFields";
 import { LegalConsentFields } from "@/components/forms/LegalConsent";
+import type { TurnstilePublicConfig } from "@/lib/security/turnstilePublic";
 import { createSponsorshipApplicationAction } from "./actions";
 
 export function SponsorshipApplicationForm({
   programs,
-  selectedSlug
+  selectedSlug,
+  turnstile
 }: {
   programs: SponsorshipProgram[];
   selectedSlug?: string;
+  turnstile?: TurnstilePublicConfig;
 }) {
   const initialSlug = selectedSlug && programs.some((program) => program.slug === selectedSlug) ? selectedSlug : programs[0]?.slug ?? "";
   const [programSlug, setProgramSlug] = useState(initialSlug);
@@ -34,7 +37,7 @@ export function SponsorshipApplicationForm({
 
   return (
     <form action={createSponsorshipApplicationAction} className="rounded-brand border border-border-soft bg-white p-6 shadow-card">
-      <FormProtectionFields />
+      <FormProtectionFields turnstile={turnstile} />
 
       <div className="grid gap-5 md:grid-cols-2">
         <label className="text-sm font-bold text-dark-navy">

@@ -17,6 +17,7 @@ import {
   validatePhoneFormat,
   validateTextLength
 } from "@/lib/security/formProtection";
+import { validateTurnstileFromFormData } from "@/lib/security/turnstile";
 
 const supportPeriods = ["monthly", "quarterly", "yearly"] as const;
 
@@ -120,11 +121,13 @@ export async function createSponsorshipApplicationAction(formData: FormData) {
   let success: { applicationNo: string; amount: number; programSlug: string; linkedPanel: boolean } | null = null;
 
   try {
+    const turnstile = await validateTurnstileFromFormData(formData, { form: "orphan" });
     const input = parseApplicationForm(formData);
     const legalConsent = await readServerLegalConsent(formData, "orphan", {
       form: "orphan_sponsorship_application",
       legalNoticeSlug: "bagis-bilgilendirme-ve-sartlari",
-      ...formProtection.metadata
+      ...formProtection.metadata,
+      ...turnstile.metadata
     });
     assertLegalConsentRequirements(legalConsent);
 
