@@ -130,6 +130,20 @@
 - [ ] Public form spam/rate limit ve captcha ihtiyacı production riski olarak takip listesine alındı mı?
 - [ ] Production env için `NEXT_PUBLIC_ADMIN_DEMO_MODE=false`, `DONATION_MODE=whatsapp`, `PAYTR_DEBUG_ON=false` doğrulandı mı?
 
+## 15B Public Form Spam Koruması
+
+- [ ] `docs/form-spam-protection.md` teknik sorumlu tarafından gözden geçirildi mi?
+- [ ] İletişim, gönüllü, kayıt, bağış, kurban ve yetim public formları ortak `FormProtectionFields` hidden alanlarını kullanıyor mu?
+- [ ] Server action'lar DB write/RPC öncesi `evaluateFormProtection` ile honeypot, timing ve best-effort rate limit kontrolü yapıyor mu?
+- [ ] Honeypot dolu submitlerde gerçek kayıt veya payment intent oluşmuyor mu?
+- [ ] Form güvenlik metadata'sı mevcut `consent_metadata.formSecurity` altında tutuluyor mu?
+- [ ] Ham IP saklanmadan hash/fingerprint yaklaşımı kullanılıyor mu?
+- [ ] Input uzunluk, e-posta, telefon, şifre ve serbest metin kontrolleri server tarafında yapılıyor mu?
+- [ ] `DONATION_MODE=whatsapp` modunda bağış/kurban/yetim action'ları DB write veya payment intent başlatmadan duruyor mu?
+- [ ] In-memory rate limitin serverless ortamda best-effort olduğu ve kalıcı çözüm için Redis/KV/Supabase seçeneği gerektiği dokümante edildi mi?
+- [ ] Turnstile/hCaptcha/reCAPTCHA seçenekleri secret client'a taşınmadan server verification modeliyle planlandı mı?
+- [ ] Anon write negatif testleri staging cleanup planı olmadan production DB üzerinde çalıştırılmıyor mu?
+
 ## Payment webhook security
 
 - [ ] 9E'de canlı provider webhook endpoint'i açılmadığı doğrulandı.

@@ -4,6 +4,12 @@ import { redirect } from "next/navigation";
 import { isAdminDemoMode } from "@/config/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { readServerLegalConsent } from "@/lib/legal/serverConsent";
+import {
+  evaluateFormProtection,
+  validateEmailFormat,
+  validatePhoneFormat,
+  validateTextLength
+} from "@/lib/security/formProtection";
 
 export async function registerDemoAction() {
   return {
@@ -13,21 +19,64 @@ export async function registerDemoAction() {
 }
 
 export async function registerPublicAccount(formData: FormData) {
+  const formProtection = await evaluateFormProtection(formData, {
+    form: "registration",
+    rateLimit: {
+      maxAttempts: 4,
+      windowMs: 10 * 60 * 1000
+    }
+  });
+
+  if (formProtection.honeypotTrapped) {
+    redirect("/giris?durum=kayit-basarili");
+  }
+
+  if (formProtection.rateLimited) {
+    redirect("/kayit?durum=hata");
+  }
+
   if (isAdminDemoMode) {
     redirect("/kayit?durum=sinirli");
   }
 
-  const accountType = String(formData.get("accountType") ?? "");
-  const fullName = String(formData.get("fullName") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim();
-  const phone = String(formData.get("phone") ?? "").trim();
-  const city = String(formData.get("city") ?? "").trim();
+  let accountType = String(formData.get("accountType") ?? "").trim();
+  let fullName = "";
+  let email = "";
+  let phone = "";
+  let city = "";
   const password = String(formData.get("password") ?? "");
   const passwordConfirm = String(formData.get("passwordConfirm") ?? "");
   const termsAccepted = formData.get("termsAccepted") === "on";
+
+  try {
+    if (!["Bağışçı", "Gönüllü", "Bağışçı + Gönüllü"].includes(accountType)) {
+      accountType = "Bağışçı";
+    }
+
+    fullName = validateTextLength(String(formData.get("fullName") ?? ""), {
+      fieldLabel: "Ad soyad",
+      min: 3,
+      max: 120,
+      required: true
+    });
+    email = validateEmailFormat(String(formData.get("email") ?? ""));
+    phone = validatePhoneFormat(String(formData.get("phone") ?? ""));
+    city = validateTextLength(String(formData.get("city") ?? ""), {
+      fieldLabel: "Şehir",
+      max: 80
+    });
+
+    if (password.length < 8 || password.length > 128 || password !== passwordConfirm) {
+      redirect("/kayit?durum=eksik");
+    }
+  } catch {
+    redirect("/kayit?durum=eksik");
+  }
+
   const legalConsent = await readServerLegalConsent(formData, "registration", {
     form: "registration",
-    legalNoticeSlug: "kvkk-aydinlatma-metni"
+    legalNoticeSlug: "kvkk-aydinlatma-metni",
+    ...formProtection.metadata
   });
 
   if (!legalConsent.kvkkAcknowledged) {
@@ -36,10 +85,6 @@ export async function registerPublicAccount(formData: FormData) {
 
   if (!termsAccepted) {
     redirect("/kayit?durum=kullanim-sartlari");
-  }
-
-  if (!fullName || !email || !password || password !== passwordConfirm) {
-    redirect("/kayit?durum=eksik");
   }
 
   const supabase = await createSupabaseServerClient();

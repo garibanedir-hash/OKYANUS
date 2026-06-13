@@ -4,14 +4,17 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createVolunteerApplication, PublicFormWriteError } from "@/lib/data/publicFormWriteRepository";
 import { assertLegalConsentRequirements, readServerLegalConsent } from "@/lib/legal/serverConsent";
+import {
+  evaluateFormProtection,
+  FORM_SECURITY_GENERIC_ERROR,
+  validateEmailFormat,
+  validatePhoneFormat,
+  validateTextLength
+} from "@/lib/security/formProtection";
 
 function getString(formData: FormData, key: string) {
   const value = formData.get(key);
   return typeof value === "string" ? value.trim() : "";
-}
-
-function validateEmail(value: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
 function parseOptionalAge(value: string) {
@@ -36,32 +39,50 @@ function getFriendlyError(error: unknown) {
 }
 
 export async function createVolunteerApplicationAction(formData: FormData) {
-  const honeypot = getString(formData, "website");
-  if (honeypot) {
+  const formProtection = await evaluateFormProtection(formData, { form: "volunteer" });
+  if (formProtection.honeypotTrapped) {
     redirectWithStatus("alindi");
   }
 
+  if (formProtection.rateLimited) {
+    redirectWithStatus("hata", { mesaj: FORM_SECURITY_GENERIC_ERROR });
+  }
+
   try {
-    const fullName = getString(formData, "fullName");
-    const email = getString(formData, "email").toLowerCase();
-    const phone = getString(formData, "phone");
-    const city = getString(formData, "city");
+    const fullName = validateTextLength(getString(formData, "fullName"), {
+      fieldLabel: "Ad soyad",
+      min: 3,
+      max: 120,
+      required: true
+    });
+    const email = validateEmailFormat(getString(formData, "email"));
+    const phone = validatePhoneFormat(getString(formData, "phone"));
+    const city = validateTextLength(getString(formData, "city"), {
+      fieldLabel: "Şehir",
+      max: 80
+    });
     const age = parseOptionalAge(getString(formData, "age"));
-    const interestArea = getString(formData, "interestArea");
-    const experience = getString(formData, "experience");
-    const note = getString(formData, "note");
+    const interestArea = validateTextLength(getString(formData, "interestArea"), {
+      fieldLabel: "İlgi alanı",
+      min: 2,
+      max: 120,
+      required: true
+    });
+    const experience = validateTextLength(getString(formData, "experience"), {
+      fieldLabel: "Gönüllülük deneyimi",
+      max: 1000
+    });
+    const note = validateTextLength(getString(formData, "note"), {
+      fieldLabel: "Mesaj",
+      max: 1000
+    });
     const legalConsent = await readServerLegalConsent(formData, "volunteer", {
       form: "volunteer",
-      legalNoticeSlug: "gonullu-basvuru-aydinlatma-metni"
+      legalNoticeSlug: "gonullu-basvuru-aydinlatma-metni",
+      ...formProtection.metadata
     });
 
-    if (fullName.length < 3 || fullName.length > 120) throw new Error("Ad soyad alanı zorunludur.");
-    if (!validateEmail(email) || email.length > 160) throw new Error("Geçerli bir e-posta adresi girilmelidir.");
-    if (phone && (phone.length < 7 || phone.length > 30)) throw new Error("Telefon alanı geçerli görünmüyor.");
-    if (city.length > 80) throw new Error("Şehir alanı çok uzun.");
     if (age !== null && (age < 16 || age > 100)) throw new Error("Yaş alanı geçerli görünmüyor.");
-    if (interestArea.length < 2 || interestArea.length > 120) throw new Error("İlgi alanı seçilmelidir.");
-    if (experience.length > 1000 || note.length > 1000) throw new Error("Açıklama alanları en fazla 1000 karakter olabilir.");
 
     assertLegalConsentRequirements(legalConsent, {
       requireExplicitConsent: true,

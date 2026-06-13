@@ -5,6 +5,7 @@ import { AlertCircle, BookOpen, CheckCircle2, HeartHandshake, Package, ShieldChe
 import { projects } from "@/data/projects";
 import { Button } from "@/components/ui/Button";
 import { SelectField, TextAreaField, TextField } from "@/components/ui/FormField";
+import { FormProtectionFields } from "@/components/forms/FormProtectionFields";
 import { LegalConsentFields } from "@/components/forms/LegalConsent";
 import { cn } from "@/lib/utils";
 
@@ -130,12 +131,7 @@ export function DonationForm({ initialProjectSlug, action, formError, formNotice
         <LegalConsentFields context="donation" showCommunicationPermission />
       </div>
 
-      <div className="hidden" aria-hidden="true">
-        <label>
-          Website
-          <input name="website" tabIndex={-1} autoComplete="off" />
-        </label>
-      </div>
+      <FormProtectionFields />
 
       <Button type="submit" className="mt-7 w-full" showIcon>
         Bağış Ön Kaydı Oluştur

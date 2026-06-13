@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { QurbanCampaign, QurbanType } from "@/data/qurbanMock";
 import { qurbanTypeLabels } from "@/data/qurbanMock";
 import { formatCurrency } from "@/lib/format";
+import { FormProtectionFields } from "@/components/forms/FormProtectionFields";
 import { ConsentCheckbox, LegalConsentFields } from "@/components/forms/LegalConsent";
 
 type DonorDefaults = {
@@ -52,7 +53,7 @@ export function QurbanDonationForm({
 
   return (
     <form action={action} className="rounded-brand border border-border-soft bg-white p-6 shadow-card">
-      <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
+      <FormProtectionFields />
 
       <div className="grid gap-5 md:grid-cols-2">
         <label className="text-sm font-bold text-dark-navy">

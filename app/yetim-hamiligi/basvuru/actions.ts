@@ -10,16 +10,19 @@ import {
 } from "@/lib/data/orphanSponsorshipWriteRepository";
 import { isOnlineDonationMode } from "@/lib/donations/donationMode";
 import { assertLegalConsentRequirements, readServerLegalConsent } from "@/lib/legal/serverConsent";
+import {
+  evaluateFormProtection,
+  FORM_SECURITY_GENERIC_ERROR,
+  validateEmailFormat,
+  validatePhoneFormat,
+  validateTextLength
+} from "@/lib/security/formProtection";
 
 const supportPeriods = ["monthly", "quarterly", "yearly"] as const;
 
 function getString(formData: FormData, key: string) {
   const value = formData.get(key);
   return typeof value === "string" ? value.trim() : "";
-}
-
-function validateEmail(value: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
 function redirectWithStatus(durum: string, extra?: Record<string, string | number | undefined>) {
@@ -35,23 +38,35 @@ function redirectWithStatus(durum: string, extra?: Record<string, string | numbe
 }
 
 function parseApplicationForm(formData: FormData) {
-  const programIdOrSlug = getString(formData, "program") || getString(formData, "programSlug") || getString(formData, "programId");
+  const programIdOrSlug = validateTextLength(
+    getString(formData, "program") || getString(formData, "programSlug") || getString(formData, "programId"),
+    {
+      fieldLabel: "Sponsorluk programı",
+      max: 120,
+      required: true
+    }
+  );
   const requestedAmountRaw = getString(formData, "requestedAmount") || getString(formData, "amount");
-  const applicantName = getString(formData, "fullName");
-  const applicantEmail = getString(formData, "email").toLowerCase();
-  const applicantPhone = getString(formData, "phone");
-  const applicantCity = getString(formData, "city");
+  const applicantName = validateTextLength(getString(formData, "fullName"), {
+    fieldLabel: "Ad soyad",
+    min: 3,
+    max: 120,
+    required: true
+  });
+  const applicantEmail = validateEmailFormat(getString(formData, "email"));
+  const applicantPhone = validatePhoneFormat(getString(formData, "phone"), { required: true });
+  const applicantCity = validateTextLength(getString(formData, "city"), {
+    fieldLabel: "Şehir",
+    max: 80
+  });
   const supportPeriod = getString(formData, "supportPeriod") || getString(formData, "period");
-  const note = getString(formData, "note");
+  const note = validateTextLength(getString(formData, "note"), {
+    fieldLabel: "Not",
+    max: 500
+  });
 
-  if (!programIdOrSlug) throw new Error("Sponsorluk programı seçilmelidir.");
   if (requestedAmountRaw && !Number.isFinite(Number(requestedAmountRaw))) throw new Error("Aylık destek tutarı sayısal olmalıdır.");
-  if (applicantName.length < 3 || applicantName.length > 120) throw new Error("Ad soyad alanı zorunludur.");
-  if (!validateEmail(applicantEmail) || applicantEmail.length > 160) throw new Error("Geçerli bir e-posta adresi girilmelidir.");
-  if (applicantPhone.length < 7 || applicantPhone.length > 30) throw new Error("Telefon alanı zorunludur.");
-  if (applicantCity.length > 80) throw new Error("Şehir alanı çok uzun.");
   if (!supportPeriods.includes(supportPeriod as (typeof supportPeriods)[number])) throw new Error("Geçerli bir destek periyodu seçilmelidir.");
-  if (note.length > 500) throw new Error("Not alanı en fazla 500 karakter olabilir.");
 
   return {
     programIdOrSlug,
@@ -92,13 +107,13 @@ function getFriendlyError(error: unknown) {
 }
 
 export async function createSponsorshipApplicationAction(formData: FormData) {
-  const honeypot = getString(formData, "website");
-  if (honeypot) {
+  const formProtection = await evaluateFormProtection(formData, { form: "orphan" });
+  if (formProtection.honeypotTrapped) {
     redirectWithStatus("alindi");
   }
 
-  if (!isOnlineDonationMode()) {
-    redirectWithStatus("hata", { mesaj: "Yetim hamiliği online başvuru akışı şu anda aktif değildir. Lütfen bağış bilgilendirme hattından destek alın." });
+  if (formProtection.rateLimited) {
+    redirectWithStatus("hata", { mesaj: FORM_SECURITY_GENERIC_ERROR });
   }
 
   const attemptedProgram = getString(formData, "program") || getString(formData, "programSlug") || getString(formData, "programId");
@@ -108,9 +123,15 @@ export async function createSponsorshipApplicationAction(formData: FormData) {
     const input = parseApplicationForm(formData);
     const legalConsent = await readServerLegalConsent(formData, "orphan", {
       form: "orphan_sponsorship_application",
-      legalNoticeSlug: "bagis-bilgilendirme-ve-sartlari"
+      legalNoticeSlug: "bagis-bilgilendirme-ve-sartlari",
+      ...formProtection.metadata
     });
     assertLegalConsentRequirements(legalConsent);
+
+    if (!isOnlineDonationMode()) {
+      throw new Error("Yetim hamiliği online başvuru akışı şu anda aktif değildir. Lütfen bağış bilgilendirme hattından destek alın.");
+    }
+
     const program = await getProgramForApplication(input.programIdOrSlug);
 
     if (program.status !== "active") {

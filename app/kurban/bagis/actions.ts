@@ -7,6 +7,13 @@ import { createQurbanOrder, getCampaignForOrder, getCurrentQurbanDonorContext, Q
 import { buildQurbanPaymentContext } from "@/lib/payments/paymentContext";
 import { isOnlineDonationMode } from "@/lib/donations/donationMode";
 import { assertLegalConsentRequirements, readServerLegalConsent } from "@/lib/legal/serverConsent";
+import {
+  evaluateFormProtection,
+  FORM_SECURITY_GENERIC_ERROR,
+  validateEmailFormat,
+  validatePhoneFormat,
+  validateTextLength
+} from "@/lib/security/formProtection";
 import type { QurbanType } from "@/data/qurbanMock";
 
 const qurbanTypes: QurbanType[] = ["vacip", "adak", "akika", "sukur", "nafile", "genel"];
@@ -33,29 +40,37 @@ function redirectWithStatus(durum: string, extra?: Record<string, string | numbe
   redirect(`/kurban/bagis?${params.toString()}`);
 }
 
-function validateEmail(value: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
-
 function parseQurbanOrderForm(formData: FormData) {
-  const campaignSlug = getString(formData, "campaign") || getString(formData, "campaignSlug") || getString(formData, "campaignId");
+  const campaignSlug = validateTextLength(
+    getString(formData, "campaign") || getString(formData, "campaignSlug") || getString(formData, "campaignId"),
+    {
+      fieldLabel: "Kurban kampanyası",
+      max: 120,
+      required: true
+    }
+  );
   const qurbanType = getString(formData, "qurbanType") as QurbanType;
   const shareCount = Number.parseInt(getString(formData, "shareCount"), 10);
-  const donorName = getString(formData, "fullName");
-  const donorEmail = getString(formData, "email").toLowerCase();
-  const donorPhone = getString(formData, "phone");
-  const donorCity = getString(formData, "city");
-  const note = getString(formData, "note");
+  const donorName = validateTextLength(getString(formData, "fullName"), {
+    fieldLabel: "Ad soyad",
+    min: 3,
+    max: 120,
+    required: true
+  });
+  const donorEmail = validateEmailFormat(getString(formData, "email"));
+  const donorPhone = validatePhoneFormat(getString(formData, "phone"), { required: true });
+  const donorCity = validateTextLength(getString(formData, "city"), {
+    fieldLabel: "Şehir",
+    max: 80
+  });
+  const note = validateTextLength(getString(formData, "note"), {
+    fieldLabel: "Not",
+    max: 500
+  });
   const delegationAccepted = getBoolean(formData, "delegationAccepted");
 
-  if (!campaignSlug) throw new Error("Kurban kampanyası seçilmelidir.");
   if (!qurbanTypes.includes(qurbanType)) throw new Error("Geçerli bir kurban türü seçilmelidir.");
   if (!Number.isInteger(shareCount) || shareCount < 1 || shareCount > 20) throw new Error("Hisse/adet sayısı 1 ile 20 arasında olmalıdır.");
-  if (donorName.length < 3 || donorName.length > 120) throw new Error("Ad soyad alanı zorunludur.");
-  if (!validateEmail(donorEmail) || donorEmail.length > 160) throw new Error("Geçerli bir e-posta adresi girilmelidir.");
-  if (donorPhone.length < 7 || donorPhone.length > 30) throw new Error("Telefon alanı zorunludur.");
-  if (donorCity.length > 80) throw new Error("Şehir alanı çok uzun.");
-  if (note.length > 500) throw new Error("Not alanı en fazla 500 karakter olabilir.");
   if (!delegationAccepted) throw new Error("Vekalet onayı olmadan kurban başvurusu alınamaz.");
 
   return {
@@ -97,13 +112,13 @@ function getFriendlyError(error: unknown) {
 }
 
 export async function createQurbanOrderAction(formData: FormData) {
-  const honeypot = getString(formData, "website");
-  if (honeypot) {
+  const formProtection = await evaluateFormProtection(formData, { form: "qurban" });
+  if (formProtection.honeypotTrapped) {
     redirectWithStatus("alindi");
   }
 
-  if (!isOnlineDonationMode()) {
-    redirectWithStatus("hata", { mesaj: "Kurban bağışı online başvuru akışı şu anda aktif değildir. Lütfen bağış bilgilendirme hattından destek alın." });
+  if (formProtection.rateLimited) {
+    redirectWithStatus("hata", { mesaj: FORM_SECURITY_GENERIC_ERROR });
   }
 
   const attemptedCampaignSlug = getString(formData, "campaign") || getString(formData, "campaignSlug") || getString(formData, "campaignId");
@@ -120,9 +135,15 @@ export async function createQurbanOrderAction(formData: FormData) {
     const input = parseQurbanOrderForm(formData);
     const legalConsent = await readServerLegalConsent(formData, "qurban", {
       form: "qurban_order",
-      legalNoticeSlug: "bagis-bilgilendirme-ve-sartlari"
+      legalNoticeSlug: "bagis-bilgilendirme-ve-sartlari",
+      ...formProtection.metadata
     });
     assertLegalConsentRequirements(legalConsent);
+
+    if (!isOnlineDonationMode()) {
+      throw new Error("Kurban bağışı online başvuru akışı şu anda aktif değildir. Lütfen bağış bilgilendirme hattından destek alın.");
+    }
+
     const campaign = await getCampaignForOrder(input.campaignSlug);
 
     if (!campaign || campaign.status !== "active") {

@@ -80,12 +80,23 @@ Smoke test anon key ile bucket görünürlüğünü kontrol eder; private bucket
 
 ## Form Spam ve Rate Limit Riski
 
-Mevcut public formlarda server-side validation, consent kontrolü ve birçok formda honeypot yaklaşımı vardır. Buna rağmen production trafiğinde aşağıdaki ek kontroller önerilir:
+15B sonrası public formlar ortak `FormProtectionFields` ve `lib/security/formProtection.ts` helper'ı ile temel korumadan geçer:
+
+- Honeypot alanları: `website`, `companyWebsite`
+- Timing alanı: `formStartedAt`
+- Server-side input uzunluk ve format validation
+- Ham IP saklamadan fingerprint hash
+- In-memory best-effort rate limit
+- `consent_metadata.formSecurity` altında güvenlik metadata'sı
+
+Bu koruma dependency eklemeden başlangıç bariyeri sağlar. Buna rağmen serverless memory rate limit kalıcı olmadığı için production trafiğinde aşağıdaki ek kontroller önerilir:
 
 - IP veya kullanıcı bazlı rate limit.
 - Kritik formlar için captcha veya turnstile benzeri bot koruması.
 - Aşırı tekrar eden submitler için audit/alert.
 - Public kayıt ve login brute-force davranışı için Supabase Auth rate limitlerinin izlenmesi.
+
+Detaylı plan ve staging negatif test listesi için `docs/form-spam-protection.md` kullanılmalıdır.
 
 ## Env ve Production Config Checklist
 

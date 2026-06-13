@@ -244,6 +244,19 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] PayTR callback hash, tutar/para birimi ve idempotency kontrolü canlı ödeme açılmadan önce staging senaryolarıyla tekrar doğrulanacak.
 - [ ] Public form rate limit/captcha eksikliği kalan production riski olarak takip edildi.
 
+## 15B Public Form Spam Koruması
+
+- [ ] `docs/form-spam-protection.md` production yayını öncesi teknik sorumlu tarafından kapatıldı.
+- [ ] Public formlar ortak honeypot ve `formStartedAt` hidden alanlarını render ediyor.
+- [ ] İletişim ve gönüllü formlarında honeypot doluyken DB kaydı oluşmadığı staging'de doğrulandı.
+- [ ] Kayıt formunda honeypot/rate limit kontrolü Supabase Auth signup çağrısından önce çalışıyor.
+- [ ] Genel bağış, kurban ve yetim action'ları online mode dışında payment/order/application write başlatmıyor.
+- [ ] Server-side input validation çok uzun mesaj, geçersiz e-posta/telefon ve geçersiz sayısal alanları DB öncesi reddediyor.
+- [ ] Consent kayıtları `consent_metadata.formSecurity` ile form güvenlik metadata'sını taşıyor.
+- [ ] In-memory rate limitin production için best-effort olduğu ve kalıcı Redis/KV provider ihtiyacının takip edildiği biliniyor.
+- [ ] Turnstile/Captcha entegrasyonu spam artışı halinde ayrı aşama olarak planlandı.
+- [ ] Anon write negatif testleri yalnızca staging ve cleanup planıyla yapılacak.
+
 ## Export ve Raporlama
 
 - [ ] Export işlemleri yetki kontrolünden geçiyor.

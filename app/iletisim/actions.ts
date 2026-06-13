@@ -4,14 +4,16 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createContactMessage, PublicFormWriteError } from "@/lib/data/publicFormWriteRepository";
 import { assertLegalConsentRequirements, readServerLegalConsent } from "@/lib/legal/serverConsent";
+import {
+  evaluateFormProtection,
+  FORM_SECURITY_GENERIC_ERROR,
+  validateEmailFormat,
+  validateTextLength
+} from "@/lib/security/formProtection";
 
 function getString(formData: FormData, key: string) {
   const value = formData.get(key);
   return typeof value === "string" ? value.trim() : "";
-}
-
-function validateEmail(value: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
 function redirectWithStatus(durum: string, extra?: Record<string, string | undefined>) {
@@ -30,25 +32,40 @@ function getFriendlyError(error: unknown) {
 }
 
 export async function createContactMessageAction(formData: FormData) {
-  const honeypot = getString(formData, "website");
-  if (honeypot) {
+  const formProtection = await evaluateFormProtection(formData, { form: "contact" });
+  if (formProtection.honeypotTrapped) {
     redirectWithStatus("alindi");
   }
 
+  if (formProtection.rateLimited) {
+    redirectWithStatus("hata", { mesaj: FORM_SECURITY_GENERIC_ERROR });
+  }
+
   try {
-    const fullName = getString(formData, "fullName");
-    const email = getString(formData, "email").toLowerCase();
-    const subject = getString(formData, "subject");
-    const message = getString(formData, "message");
+    const fullName = validateTextLength(getString(formData, "fullName"), {
+      fieldLabel: "Ad soyad",
+      min: 3,
+      max: 120,
+      required: true
+    });
+    const email = validateEmailFormat(getString(formData, "email"));
+    const subject = validateTextLength(getString(formData, "subject"), {
+      fieldLabel: "Konu",
+      min: 3,
+      max: 160,
+      required: true
+    });
+    const message = validateTextLength(getString(formData, "message"), {
+      fieldLabel: "Mesaj",
+      min: 10,
+      max: 1500,
+      required: true
+    });
     const legalConsent = await readServerLegalConsent(formData, "contact", {
       form: "contact",
-      legalNoticeSlug: "iletisim-formu-aydinlatma-metni"
+      legalNoticeSlug: "iletisim-formu-aydinlatma-metni",
+      ...formProtection.metadata
     });
-
-    if (fullName.length < 3 || fullName.length > 120) throw new Error("Ad soyad alanı zorunludur.");
-    if (!validateEmail(email) || email.length > 160) throw new Error("Geçerli bir e-posta adresi girilmelidir.");
-    if (subject.length < 3 || subject.length > 160) throw new Error("Konu alanı zorunludur.");
-    if (message.length < 10 || message.length > 1500) throw new Error("Mesaj alanı 10-1500 karakter arasında olmalıdır.");
 
     assertLegalConsentRequirements(legalConsent, {
       kvkkMessage: "İletişim formu aydınlatma metnini okuduğunuzu onaylamalısınız."

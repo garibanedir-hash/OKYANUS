@@ -325,6 +325,7 @@ console.log(`Storage security warning: ${storageSummary.securityWarning}`);
 console.log(`Storage missing: ${storageSummary.missing}`);
 console.log(`Storage diğer hata: ${storageSummary.error}`);
 console.log("Manual storage check: private bucket varlığı ve public=false durumu Supabase Dashboard'da ayrıca doğrulanmalıdır; anon key private bucket yok/protected ayrımını güvenli şekilde gizleyebilir.");
+console.log("Anon write negative test: canlı/staging veriyi kirletmemek için bu smoke test insert/update/delete yapmaz; staging cleanup planı için docs/form-spam-protection.md kullanılmalıdır.");
 console.log("Supabase smoke test tamamlandı.");
 
 if (summary.securityWarning > 0 || storageSummary.securityWarning > 0 || storageSummary.missing > 0) {

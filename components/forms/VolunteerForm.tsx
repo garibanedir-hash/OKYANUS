@@ -3,6 +3,7 @@
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { SelectField, TextAreaField, TextField } from "@/components/ui/FormField";
+import { FormProtectionFields } from "@/components/forms/FormProtectionFields";
 import { LegalConsentFields } from "@/components/forms/LegalConsent";
 
 const interests = [
@@ -59,12 +60,7 @@ export function VolunteerForm({ action, formNotice, formError }: VolunteerFormPr
       <div className="mt-6 grid gap-3">
         <LegalConsentFields context="volunteer" requireExplicitConsent showCommunicationPermission />
       </div>
-      <div className="hidden" aria-hidden="true">
-        <label>
-          Website
-          <input name="website" tabIndex={-1} autoComplete="off" />
-        </label>
-      </div>
+      <FormProtectionFields />
       <Button type="submit" className="mt-7 w-full" showIcon>
         Başvuruyu Gönder
       </Button>

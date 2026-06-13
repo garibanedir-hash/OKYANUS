@@ -6,6 +6,13 @@ import { createPaymentIntentForContext, PaymentWriteError } from "@/lib/data/pay
 import { buildGeneralDonationPaymentContext } from "@/lib/payments/paymentContext";
 import { isOnlineDonationMode } from "@/lib/donations/donationMode";
 import { assertLegalConsentRequirements, readServerLegalConsent } from "@/lib/legal/serverConsent";
+import {
+  evaluateFormProtection,
+  FORM_SECURITY_GENERIC_ERROR,
+  validateEmailFormat,
+  validatePhoneFormat,
+  validateTextLength
+} from "@/lib/security/formProtection";
 
 const MIN_DONATION_AMOUNT = 10;
 
@@ -24,10 +31,6 @@ function redirectToDonationForm(durum: string, extra?: Record<string, string | n
   }
 
   redirect(`/bagis-yap?${params.toString()}`);
-}
-
-function validateEmail(value: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
 function parseAmount(value: string) {
@@ -57,35 +60,51 @@ function getFriendlyError(error: unknown) {
 }
 
 export async function createGeneralDonationPaymentIntentAction(formData: FormData) {
-  const honeypot = getString(formData, "website");
-  if (honeypot) {
+  const formProtection = await evaluateFormProtection(formData, { form: "donation" });
+  if (formProtection.honeypotTrapped) {
     redirectToDonationForm("alindi");
   }
 
-  if (!isOnlineDonationMode()) {
-    redirectToDonationForm("hata", { mesaj: "Online bağış işlemleri şu anda aktif değildir. Lütfen bağış bilgilendirme hattından destek alın." });
+  if (formProtection.rateLimited) {
+    redirectToDonationForm("hata", { mesaj: FORM_SECURITY_GENERIC_ERROR });
   }
 
   let paymentIntentNo: string | null = null;
 
   try {
-    const donorName = getString(formData, "fullName");
-    const donorEmail = getString(formData, "email").toLowerCase();
-    const donorPhone = getString(formData, "phone");
-    const donationType = getString(formData, "donationType") || "Genel Bağış";
-    const selectedProject = getString(formData, "selectedProject");
-    const note = getString(formData, "note");
+    const donorName = validateTextLength(getString(formData, "fullName"), {
+      fieldLabel: "Ad soyad",
+      min: 3,
+      max: 120,
+      required: true
+    });
+    const donorEmail = validateEmailFormat(getString(formData, "email"));
+    const donorPhone = validatePhoneFormat(getString(formData, "phone"));
+    const donationType =
+      validateTextLength(getString(formData, "donationType"), {
+        fieldLabel: "Bağış türü",
+        max: 80
+      }) || "Genel Bağış";
+    const selectedProject = validateTextLength(getString(formData, "selectedProject"), {
+      fieldLabel: "Proje seçimi",
+      max: 120
+    });
+    const note = validateTextLength(getString(formData, "note"), {
+      fieldLabel: "Not",
+      max: 500
+    });
     const amount = resolveDonationAmount(formData);
     const legalConsent = await readServerLegalConsent(formData, "donation", {
       form: "general_donation",
-      legalNoticeSlug: "bagis-bilgilendirme-ve-sartlari"
+      legalNoticeSlug: "bagis-bilgilendirme-ve-sartlari",
+      ...formProtection.metadata
     });
 
-    if (donorName.length < 3 || donorName.length > 120) throw new Error("Ad soyad alanı zorunludur.");
-    if (!validateEmail(donorEmail) || donorEmail.length > 160) throw new Error("Geçerli bir e-posta adresi girilmelidir.");
-    if (donorPhone && (donorPhone.length < 7 || donorPhone.length > 30)) throw new Error("Telefon alanı geçerli görünmüyor.");
-    if (note.length > 500) throw new Error("Not alanı en fazla 500 karakter olabilir.");
     assertLegalConsentRequirements(legalConsent);
+
+    if (!isOnlineDonationMode()) {
+      throw new Error("Online bağış işlemleri şu anda aktif değildir. Lütfen bağış bilgilendirme hattından destek alın.");
+    }
 
     const paymentContext = buildGeneralDonationPaymentContext({
       donorName,

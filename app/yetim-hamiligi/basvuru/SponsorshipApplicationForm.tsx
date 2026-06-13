@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { SponsorshipProgram } from "@/data/orphanSponsorshipMock";
 import { formatCurrency } from "@/lib/format";
+import { FormProtectionFields } from "@/components/forms/FormProtectionFields";
 import { LegalConsentFields } from "@/components/forms/LegalConsent";
 import { createSponsorshipApplicationAction } from "./actions";
 
@@ -33,12 +34,7 @@ export function SponsorshipApplicationForm({
 
   return (
     <form action={createSponsorshipApplicationAction} className="rounded-brand border border-border-soft bg-white p-6 shadow-card">
-      <div className="absolute left-[-9999px]" aria-hidden="true">
-        <label>
-          Website
-          <input name="website" tabIndex={-1} autoComplete="off" />
-        </label>
-      </div>
+      <FormProtectionFields />
 
       <div className="grid gap-5 md:grid-cols-2">
         <label className="text-sm font-bold text-dark-navy">

@@ -338,3 +338,14 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] `DONATION_MODE=whatsapp` public bağış sayfalarında payment intent, order veya sponsorship payment başlatmıyor.
 - [ ] Public form validation, honeypot ve consent kontrolleri mevcut; rate limit/captcha production riski olarak planlandı.
 - [ ] Security headers uygulandı; tam CSP kırılma riski nedeniyle ayrı staging test maddesi olarak bırakıldı.
+
+## 15B Public Form Spam Koruması
+
+- [ ] `docs/form-spam-protection.md` backend/security yayın kontrolünde kullanılıyor.
+- [ ] `lib/security/formProtection.ts` server-only kalıyor ve public bundle'a secret veya ham IP taşımıyor.
+- [ ] Public form server action'ları honeypot ve best-effort rate limit kontrolünü DB/RPC/Auth çağrısından önce yapıyor.
+- [ ] `FormProtectionFields` iletişim, gönüllü, kayıt, bağış, kurban ve yetim formlarında ortak hidden alanları sağlıyor.
+- [ ] Form timing çok hızlı submitleri metadata risk flag olarak işaretliyor, erişilebilirlik nedeniyle katı bloklama yapmıyor.
+- [ ] `contact_messages`, `volunteer_applications`, `payment_intents`, `qurban_orders` ve `sponsorship_applications` consent metadata'sında `formSecurity` bilgisi taşıyabiliyor.
+- [ ] Anon doğrudan sensitive tablo write açılmadı; public submitler server-only repository/action sınırında kalıyor.
+- [ ] Kalıcı rate limit provider eklenirse Redis/KV/Supabase tasarımı ve KVKK veri minimizasyonu tekrar gözden geçirilecek.
