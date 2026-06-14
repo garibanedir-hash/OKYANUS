@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import type { SponsorshipProgram } from "@/data/orphanSponsorshipMock";
-import { formatCurrency } from "@/lib/format";
 import { FormProtectionFields } from "@/components/forms/FormProtectionFields";
 import { LegalConsentFields } from "@/components/forms/LegalConsent";
 import type { TurnstilePublicConfig } from "@/lib/security/turnstilePublic";
@@ -51,15 +50,15 @@ export function SponsorshipApplicationForm({
           >
             {programs.map((program) => (
               <option key={program.id} value={program.slug}>
-                {program.title} · {formatCurrency(program.monthlyAmount)}
+                {program.title}
               </option>
             ))}
           </select>
         </label>
         <label className="text-sm font-bold text-dark-navy">
-          Aylık destek tutarı
+          Destek bilgisi
           <input
-            value={selectedProgram ? formatCurrency(selectedProgram.monthlyAmount) : ""}
+            value={selectedProgram ? "Dernek ekibiyle netleştirilecektir" : ""}
             readOnly
             className="mt-2 w-full rounded-2xl border border-border-soft bg-soft-gray px-4 py-3 text-ink-muted"
           />
@@ -71,7 +70,7 @@ export function SponsorshipApplicationForm({
         </label>
         <label className="text-sm font-bold text-dark-navy">
           E-posta
-          <input name="email" type="email" required className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="ornek@example.org" />
+          <input name="email" type="email" required className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="E-posta adresiniz" />
         </label>
         <label className="text-sm font-bold text-dark-navy">
           Telefon

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { news as fallbackNews } from "@/data/news";
 import { activities } from "@/data/activities";
 import { getNewsPostBySlug, getNewsPosts } from "@/lib/data/newsRepository";
 import { getProjects } from "@/lib/data/projectsRepository";
@@ -10,7 +9,7 @@ import { NewsCard } from "@/components/NewsCard";
 import { Badge } from "@/components/ui/Badge";
 
 export function generateStaticParams() {
-  return fallbackNews.map((item) => ({ slug: item.slug }));
+  return [];
 }
 
 type NewsPageProps = {

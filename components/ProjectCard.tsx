@@ -1,8 +1,6 @@
 import { Button } from "@/components/ui/Button";
-import { ProgressBar } from "@/components/ui/ProgressBar";
 import { getProjectRegionBySlug } from "@/data/projectRegions";
 import { resolveDonationTarget } from "@/lib/donations/donationTarget";
-import { formatCurrency } from "@/lib/format";
 import type { DonationPublicConfig } from "@/lib/donations/donationTarget";
 
 export function ProjectCard({
@@ -10,15 +8,12 @@ export function ProjectCard({
   title,
   category,
   description,
-  goal,
-  raised,
   visualTone,
   regionSlug,
   regionName,
   coverImageUrl,
   thumbnailUrl,
   status,
-  activityCount,
   compact = false,
   donationConfig
 }: {
@@ -38,7 +33,6 @@ export function ProjectCard({
   compact?: boolean;
   donationConfig?: DonationPublicConfig;
 }) {
-  const progress = goal > 0 ? Math.min(Math.round((raised / goal) * 100), 100) : 0;
   const regionCoverImageUrl = getProjectRegionBySlug(regionSlug)?.coverImageUrl;
   const imageUrl = thumbnailUrl || coverImageUrl || regionCoverImageUrl;
   const onlineDonationHref = slug ? `/bagis-yap?proje=${slug}` : "/bagis-yap";
@@ -90,20 +84,11 @@ export function ProjectCard({
               {status}
             </span>
           ) : null}
-          {activityCount ? (
-            <span className="rounded-md bg-[#F4F7F8] px-2.5 py-1 text-[0.68rem] font-extrabold text-[#526574]">
-              {activityCount} faaliyet
-            </span>
-          ) : null}
         </div>
         <h3 className="text-xl font-bold text-dark-navy">{title}</h3>
         <p className={`${compact ? "min-h-16" : "min-h-20"} mt-3 text-sm leading-6 text-slate-600`}>{description}</p>
-        <div className="mt-5">
-          <div className="mb-3 flex items-center justify-between gap-3 text-xs font-bold text-slate-500">
-            <span>{formatCurrency(raised)} ulaşıldı</span>
-            <span>{formatCurrency(goal)} hedef</span>
-          </div>
-          <ProgressBar value={progress} label={`${progress}% tamamlandı`} />
+        <div className="mt-5 rounded-md border border-[#D7E0E7] bg-[#F8FBFA] px-3 py-3 text-sm font-semibold leading-6 text-[#526574]">
+          Faaliyet bilgileri doğrulanan içeriklerle güncellenecektir.
         </div>
         <Button href={slug ? `/projeler/${slug}` : "/projeler"} variant="ghost" className="mt-6 w-full rounded-md" showIcon>
           Projeyi İncele

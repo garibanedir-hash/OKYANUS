@@ -29,7 +29,7 @@ No-go şartları; aşağıdakilerden biri varsa deploy/env değişikliği durur:
 - Donation mode yanlış.
 - Private bucket public.
 - Admin anon erişilebilir.
-- `okyanusyardim.org` DNS çözmüyor veya Vercel production deployment'a bağlı değil.
+- `okyanus.org.tr` DNS çözmüyor veya Vercel production deployment'a bağlı değil.
 - `NEXT_PUBLIC_SITE_URL` production domain dışında bir URL gösteriyor.
 - Public rotalar bakım/tadilat sayfasına yönleniyor ve bu yayın planının parçası değil.
 - Resmi WhatsApp numarası Vercel Production env içinde doğrulanmadı.
@@ -49,23 +49,23 @@ No-go şartları; aşağıdakilerden biri varsa deploy/env değişikliği durur:
 
 - [ ] `docs/promotion-launch-final-qa.md` tanıtım yayını öncesi son kontrol referansı olarak tamamlandı.
 - [ ] Public rota listesi, WhatsApp yönlendirmeleri, hukuki linkler, SEO/metadata ve mobil kırılım kontrolleri gözden geçirildi.
-- [ ] Production env için `SITE_MAINTENANCE_MODE=false`, `DONATION_MODE=whatsapp`, `NEXT_PUBLIC_SITE_URL=https://okyanusyardim.org`, `TURNSTILE_ENABLED=false`, `PAYTR_DEBUG_ON=false` ve `NEXT_PUBLIC_ADMIN_DEMO_MODE=false` doğrulandı.
+- [ ] Production env için `SITE_MAINTENANCE_MODE=false`, `DONATION_MODE=whatsapp`, `NEXT_PUBLIC_SITE_URL=https://www.okyanus.org.tr`, `TURNSTILE_ENABLED=false`, `PAYTR_DEBUG_ON=false` ve `NEXT_PUBLIC_ADMIN_DEMO_MODE=false` doğrulandı.
 - [ ] Production resmi WhatsApp numarası Vercel Production env içinde doğrulandı.
 - [ ] `npm run smoke:production` gerçek base URL ile çalıştırıldı veya base URL yoksa güvenli skip olarak raporlandı.
 - [ ] Public sayfalarda `demo`, `placeholder`, `lorem`, `TODO`, `staging`, `production`, `test`, `payment intent`, `PayTR test` ve `taslak` ifadeleri ziyaretçiye görünmüyor.
 
 ## 16C-Fix Domain, Env ve Bakım Modu
 
-- [ ] Vercel Project > Settings > Domains içinde `okyanusyardim.org` eklendi.
-- [ ] Vercel Project > Settings > Domains içinde `www.okyanusyardim.org` eklendi veya bilinçli olarak canonical redirect stratejisi dışında bırakıldı.
+- [ ] Vercel Project > Settings > Domains içinde `okyanus.org.tr` eklendi.
+- [ ] Vercel Project > Settings > Domains içinde `www.okyanus.org.tr` eklendi veya bilinçli olarak canonical redirect stratejisi dışında bırakıldı.
 - [ ] DNS provider tarafında Vercel'in istediği A/CNAME kayıtları girildi.
-- [ ] SSL aktif; `http://okyanusyardim.org` HTTPS'e yönleniyor.
-- [ ] www/non-www stratejisi net: canonical domain `https://okyanusyardim.org`.
+- [ ] SSL aktif; `http://www.okyanus.org.tr` HTTPS'e yönleniyor.
+- [ ] www/non-www stratejisi net: canonical domain `https://www.okyanus.org.tr`.
 - [ ] Production env içinde `SITE_MAINTENANCE_MODE=false`.
 - [ ] Production env içinde `DONATION_MODE=whatsapp`.
 - [ ] Production env içinde `DONATION_WHATSAPP_PHONE=<resmi_whatsapp_numarası>`; resmi numara kesinleşmeden GO verilmez.
 - [ ] Production env içinde `DONATION_WHATSAPP_MESSAGE=Merhaba, Okyanus İnsani Yardım Derneği bağış çalışmaları hakkında bilgi almak istiyorum.`
-- [ ] Production env içinde `NEXT_PUBLIC_SITE_URL=https://okyanusyardim.org`.
+- [ ] Production env içinde `NEXT_PUBLIC_SITE_URL=https://www.okyanus.org.tr`.
 - [ ] Production env içinde `TURNSTILE_ENABLED=false`.
 - [ ] Production env içinde `RATE_LIMIT_PROVIDER=memory` veya onaylı kalıcı provider değeri.
 - [ ] Production env içinde `PAYTR_DEBUG_ON=false`.
@@ -78,7 +78,7 @@ No-go şartları; aşağıdakilerden biri varsa deploy/env değişikliği durur:
 - [ ] Canlı smoke şu komutla çalıştırıldı:
 
 ```bash
-PRODUCTION_SMOKE_BASE_URL=https://okyanusyardim.org PRODUCTION_SMOKE_EXPECTED_WHATSAPP_PHONE=<resmi_whatsapp_numarası> npm run smoke:production
+PRODUCTION_SMOKE_BASE_URL=https://www.okyanus.org.tr PRODUCTION_SMOKE_EXPECTED_WHATSAPP_PHONE=<resmi_whatsapp_numarası> npm run smoke:production
 ```
 
 - [ ] Public rotalar 200: `/`, `/hakkimizda`, `/projeler`, `/projeler/bir-koli-bir-umut`, `/faaliyetler`, `/kurban`, `/kurban/bagis`, `/yetim-hamiligi`, `/yetim-hamiligi/basvuru`, `/bagis-yap`, `/gonullu-ol`, `/iletisim`, `/seffaflik`, `/faaliyet-raporlari`, `/hukuki`.

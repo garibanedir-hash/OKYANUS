@@ -81,14 +81,14 @@ export type PaytrCallbackPayload = {
 };
 
 export class PaytrConfigError extends Error {
-  constructor(message = "PayTR test yapılandırması eksik.") {
+  constructor(message = "PayTR yapılandırması eksik.") {
     super(message);
     this.name = "PaytrConfigError";
   }
 }
 
 export class PaytrRequestError extends Error {
-  constructor(message = "PayTR test token isteği tamamlanamadı.") {
+  constructor(message = "PayTR token isteği tamamlanamadı.") {
     super(message);
     this.name = "PaytrRequestError";
   }
@@ -105,7 +105,7 @@ function trimSlash(value: string) {
 
 function requiredEnv(name: string) {
   const value = process.env[name]?.trim();
-  if (!value) throw new PaytrConfigError("PayTR test yapılandırması eksik.");
+  if (!value) throw new PaytrConfigError("PayTR yapılandırması eksik.");
   return value;
 }
 
@@ -263,11 +263,11 @@ export async function requestPaytrIframeToken(input: PaytrTokenInput): Promise<P
   try {
     result = await response.json();
   } catch {
-    throw new PaytrRequestError("PayTR test token yanıtı okunamadı.");
+    throw new PaytrRequestError("PayTR token yanıtı okunamadı.");
   }
 
   if (!response.ok || result.status !== "success" || !result.token) {
-    throw new PaytrRequestError(result.reason ? "PayTR test token isteği reddedildi." : "PayTR test token alınamadı.");
+    throw new PaytrRequestError(result.reason ? "PayTR token isteği reddedildi." : "PayTR token alınamadı.");
   }
 
   return {

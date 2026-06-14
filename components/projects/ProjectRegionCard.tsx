@@ -4,12 +4,10 @@ import { cn } from "@/lib/utils";
 export function ProjectRegionCard({
   region,
   active,
-  projectCount,
   onSelect
 }: {
   region: ProjectRegion;
   active?: boolean;
-  projectCount?: number;
   onSelect?: () => void;
 }) {
   return (
@@ -30,7 +28,7 @@ export function ProjectRegionCard({
           <p className="mt-1 text-xs font-bold leading-5 text-[#64748B]">{region.regionLabel}</p>
         </div>
         <span className={cn("rounded-md px-2.5 py-1 text-[0.68rem] font-extrabold", active ? "bg-[#0F2547] text-white" : "bg-[#EEF4F6] text-[#0F2547]")}>
-          {projectCount ?? region.activeProjectCount} proje
+          Güncel
         </span>
       </div>
       <p className="mt-3 line-clamp-3 pl-2 text-sm leading-6 text-[#526574]">{region.shortDescription}</p>

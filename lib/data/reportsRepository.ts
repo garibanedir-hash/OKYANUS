@@ -1,5 +1,4 @@
 import type { Report } from "@/data/reports";
-import { reports as fallbackReports } from "@/data/reports";
 import {
   createReadOnlyAbortSignal,
   createSupabaseReadOnlyClient,
@@ -76,7 +75,7 @@ export function mapSupabaseReportToReport(row: SupabaseReportRow): Report {
     period: row.period,
     category: row.category,
     summary: safePublicReportText(row.summary, "Dönemsel faaliyet çalışmalarına ait özet bilgiler bu alanda paylaşılır."),
-    statusLabel: row.pdf_asset_id ? "Özet yayınlandı" : "PDF yakında",
+    statusLabel: row.pdf_asset_id ? "Özet yayınlandı" : "PDF hazırlanıyor",
     pdfUrl: row.file_url ?? undefined,
     metrics: metrics.length ? metrics : [{ label: "Durum", value: "Yayında" }],
     tags: [row.category, row.period].filter(Boolean)
@@ -118,7 +117,7 @@ export async function getReportsWithSource(): Promise<RepositoryResult<Report[]>
     return { data: supabaseReports, source: "supabase" };
   }
 
-  return { data: fallbackReports, source: "demo" };
+  return { data: [], source: "demo" };
 }
 
 export async function getReports() {
@@ -137,7 +136,7 @@ export async function getPublishedReports() {
 
 export async function getPublishedReportCount(): Promise<RepositoryResult<number>> {
   const supabase = createSupabaseReadOnlyClient();
-  if (!supabase) return { data: fallbackReports.length, source: "demo" };
+  if (!supabase) return { data: 0, source: "demo" };
 
   const timeout = createReadOnlyAbortSignal();
   try {
@@ -149,13 +148,13 @@ export async function getPublishedReportCount(): Promise<RepositoryResult<number
 
     if (error) {
       logReadOnlyFallback("reports-count", error);
-      return { data: fallbackReports.length, source: "demo" };
+      return { data: 0, source: "demo" };
     }
 
     return { data: count ?? 0, source: "supabase" };
   } catch {
     logReadOnlyFallback("reports-count");
-    return { data: fallbackReports.length, source: "demo" };
+    return { data: 0, source: "demo" };
   } finally {
     timeout.clear();
   }

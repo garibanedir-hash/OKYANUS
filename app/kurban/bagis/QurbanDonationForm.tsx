@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import type { QurbanCampaign, QurbanType } from "@/data/qurbanMock";
 import { qurbanTypeLabels } from "@/data/qurbanMock";
-import { formatCurrency } from "@/lib/format";
 import { FormProtectionFields } from "@/components/forms/FormProtectionFields";
 import { ConsentCheckbox, LegalConsentFields } from "@/components/forms/LegalConsent";
 import type { TurnstilePublicConfig } from "@/lib/security/turnstilePublic";
@@ -43,7 +42,6 @@ export function QurbanDonationForm({
   const campaignIsFull = quotaRemaining !== null && quotaRemaining < 1;
   const maxShareCount = campaignIsFull ? 1 : Math.min(20, quotaRemaining ?? 20);
   const selectedShareCount = Math.min(shareCount, maxShareCount);
-  const totalAmount = (selectedCampaign?.unitPrice ?? 0) * selectedShareCount;
 
   if (!campaigns.length) {
     return (
@@ -90,7 +88,7 @@ export function QurbanDonationForm({
           </select>
           {selectedCampaign ? (
             <span className="mt-2 block text-xs font-semibold leading-5 text-ink-muted">
-              {selectedCampaign.regionLabel} · {selectedCampaign.country} · Birim bedel {formatCurrency(selectedCampaign.unitPrice)}
+              {selectedCampaign.regionLabel} · {selectedCampaign.country} · Bağış bilgisi dernek ekibiyle netleşir
             </span>
           ) : null}
         </label>
@@ -110,18 +108,16 @@ export function QurbanDonationForm({
             className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3"
           />
           <span className="mt-2 block text-xs font-semibold leading-5 text-ink-muted">
-            {campaignIsFull ? "Bu kampanyada uygun kontenjan kalmadı." : `Bu başvuruda en fazla ${maxShareCount} hisse/adet seçilebilir.`}
+            {campaignIsFull ? "Bu kampanyada uygun kontenjan kalmadı." : "Başvuru hisse/adet bilgisi dernek ekibi tarafından ayrıca doğrulanır."}
           </span>
         </label>
         <div className="rounded-2xl border border-border-soft bg-soft-gray p-4">
-          <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-ink-muted">Tutar önizlemesi</p>
-          <p className="mt-2 text-2xl font-black text-deep-blue">{formatCurrency(totalAmount)}</p>
-          <p className="mt-1 text-xs font-semibold text-ink-muted">
-            Birim bedel: {formatCurrency(selectedCampaign?.unitPrice ?? 0)}
-            {quotaRemaining !== null ? ` · Kalan kontenjan: ${quotaRemaining}` : ""}
+          <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-ink-muted">Başvuru bilgisi</p>
+          <p className="mt-2 text-sm font-semibold leading-6 text-ink-muted">
+            Bağış, kontenjan ve vekalet detayları dernek ekibi tarafından doğrulanarak paylaşılır.
           </p>
           <p className="mt-2 text-xs font-semibold leading-5 text-ink-muted">
-            Kesin tutar kampanya bedeli üzerinden kayıt sırasında yeniden doğrulanır.
+            Tanıtım döneminde ödeme yönlendirmeleri dernek ekibi tarafından paylaşılır.
           </p>
         </div>
         <label className="text-sm font-bold text-dark-navy">
@@ -130,7 +126,7 @@ export function QurbanDonationForm({
         </label>
         <label className="text-sm font-bold text-dark-navy">
           E-posta
-          <input name="email" type="email" defaultValue={donorDefaults?.email} required className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="ornek@example.org" />
+          <input name="email" type="email" defaultValue={donorDefaults?.email} required className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="E-posta adresiniz" />
           <span className="mt-2 block text-xs font-semibold leading-5 text-ink-muted">Başvuru ve bilgilendirme takibi için kullanılır.</span>
         </label>
         <label className="text-sm font-bold text-dark-navy">

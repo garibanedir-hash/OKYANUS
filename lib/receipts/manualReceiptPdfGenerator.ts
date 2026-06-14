@@ -331,7 +331,7 @@ function drawReceipt(page: PDFPage, receipt: ManualReceipt, fonts: ManualReceipt
     maxWidth: 770,
     embeddedGilroy: fonts.embeddedGilroy
   });
-  drawText(page, "okyanusyardim.org · bilgi@okyanusyardim.org · İstanbul / Türkiye", 36, 32, {
+  drawText(page, "okyanus.org.tr · bilgi@okyanus.org.tr · İstanbul / Türkiye", 36, 32, {
     font: fonts.bold,
     size: 7.8,
     color: NAVY,

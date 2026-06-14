@@ -637,7 +637,7 @@ export async function markPaymentInitiated(
     providerEventId: reference,
     actorId: context.actorId ?? null,
     actorRole: context.actorRole ?? "server",
-    note: "PayTR test iframe token akışı başlatıldı."
+    note: "PayTR iframe token akışı başlatıldı."
   });
   await appendPaymentStatusLog({
     paymentIntentId: updated.id,
@@ -646,7 +646,7 @@ export async function markPaymentInitiated(
     eventType: "initiated",
     actorId: context.actorId ?? null,
     actorRole: context.actorRole ?? "server",
-    note: "PayTR test ödeme ekranı başlatıldı."
+    note: "PayTR ödeme ekranı başlatıldı."
   });
 
   return updated;

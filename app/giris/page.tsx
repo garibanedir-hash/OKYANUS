@@ -17,7 +17,7 @@ export default async function LoginPage({
   const params = await searchParams;
   const statusMessages: Record<string, string> = {
     sinirli: "Tanıtım döneminde hesap girişi sınırlıdır. Bilgi almak için iletişim kanallarımızı kullanabilirsiniz.",
-    "env-eksik": "Supabase env değişkenleri eksik. Giriş akışı başlatılamadı.",
+    "env-eksik": "Giriş akışı şu anda hazırlanıyor. Bilgi almak için iletişim kanallarımızı kullanabilirsiniz.",
     eksik: "Lütfen e-posta ve şifre alanlarını doldurun.",
     hata: "Giriş bilgileri doğrulanamadı.",
     yetkisiz: "Bu alana erişmek için yetkili hesabınızla giriş yapmanız gerekiyor.",
@@ -33,12 +33,12 @@ export default async function LoginPage({
             {statusMessage}
           </div>
         ) : null}
-        <label className="text-sm font-bold text-dark-navy">E-posta<input name="email" className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" type="email" placeholder="ornek@example.com" required /></label>
+        <label className="text-sm font-bold text-dark-navy">E-posta<input name="email" className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" type="email" placeholder="E-posta adresiniz" required /></label>
         <label className="text-sm font-bold text-dark-navy">Şifre<input name="password" className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" type="password" placeholder="••••••••" required /></label>
         <AuthSubmitButton idleLabel="Giriş Yap" pendingLabel="Giriş yapılıyor..." />
         <div className="grid gap-2 text-center text-sm text-ink-muted">
           <p>Hesabınız yok mu? <Link className="font-bold text-deep-blue" href="/kayit">Kayıt olun</Link></p>
-          <p><span className="font-semibold">Şifremi unuttum</span> <span className="text-xs">bağlantısı yakında aktif olacaktır.</span></p>
+          <p><Link className="font-bold text-deep-blue" href="/iletisim">Hesap desteği için iletişime geçin</Link></p>
           <p className="pt-2 text-xs">Yönetim paneli girişi için <Link className="font-bold text-deep-blue" href="/admin/giris">buraya tıklayın</Link>.</p>
         </div>
       </form>

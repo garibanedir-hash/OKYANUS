@@ -16,10 +16,11 @@ import {
 } from "@/lib/payments/paytr";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { paymentIntentStatusLabels } from "@/data/paymentMock";
+import { getDonationMode } from "@/lib/donations/donationMode";
 
 export const metadata: Metadata = {
-  title: "PayTR Test Ödeme",
-  description: "PayTR iFrame test ödeme ekranı. Canlı ödeme alma kapalıdır."
+  title: "Ödeme Bilgilendirme",
+  description: "Okyanus İnsani Yardım Derneği ödeme bilgilendirme ekranı."
 };
 
 export const dynamic = "force-dynamic";
@@ -74,6 +75,10 @@ function PaymentStatusCard({
 
 export default async function PaytrPaymentPage({ params }: PaytrPaymentPageProps) {
   const { intentNo } = await params;
+  if (getDonationMode() !== "online") {
+    notFound();
+  }
+
   const paymentIntent = await getPaymentIntentByIntentNo(decodeURIComponent(intentNo));
   if (!paymentIntent) notFound();
 
@@ -100,12 +105,12 @@ export default async function PaytrPaymentPage({ params }: PaytrPaymentPageProps
       });
 
       iframeToken = result.token;
-      await markPaymentInitiated(paymentIntent.id, result.merchantOid, { actorRole: "paytr_test_page" });
+      await markPaymentInitiated(paymentIntent.id, result.merchantOid, { actorRole: "paytr_payment_page" });
     } catch (error) {
       if (error instanceof PaytrConfigError) {
-        setupError = "Ödeme sağlayıcı test bilgileri tanımlı değil. Lütfen yöneticiyle iletişime geçin.";
+        setupError = "Ödeme sağlayıcı bilgileri tanımlı değil. Lütfen yöneticiyle iletişime geçin.";
       } else if (error instanceof PaytrRequestError) {
-        setupError = "PayTR test ödeme ekranı şu anda hazırlanamadı. Lütfen dernek yönetimiyle iletişime geçin.";
+        setupError = "Ödeme ekranı şu anda hazırlanamadı. Lütfen dernek yönetimiyle iletişime geçin.";
       } else {
         setupError = "Ödeme ekranı hazırlanırken beklenmeyen bir hata oluştu.";
       }
@@ -115,8 +120,8 @@ export default async function PaytrPaymentPage({ params }: PaytrPaymentPageProps
         oldStatus: paymentIntent.status,
         newStatus: paymentIntent.status,
         eventType: "paytr_token_failed",
-        actorRole: "paytr_test_page",
-        note: "PayTR test iframe token alınamadı; ödeme durumu değiştirilmedi."
+        actorRole: "paytr_payment_page",
+        note: "PayTR iframe token alınamadı; ödeme durumu değiştirilmedi."
       });
     }
   }
@@ -128,9 +133,9 @@ export default async function PaytrPaymentPage({ params }: PaytrPaymentPageProps
           <aside className="grid gap-4">
             <section className="rounded-brand border border-border-soft bg-white p-6 shadow-card">
               <CreditCard aria-hidden className="h-7 w-7 text-ocean-green" />
-              <h1 className="mt-4 text-3xl font-extrabold text-dark-navy">PayTR Test Ödeme</h1>
+              <h1 className="mt-4 text-3xl font-extrabold text-dark-navy">Ödeme Bilgilendirme</h1>
               <p className="mt-3 text-sm font-semibold leading-7 text-ink-muted">
-                Bu ekran PayTR iFrame test entegrasyonu içindir. Kart bilgisi Okyanus sistemlerinde toplanmaz veya saklanmaz.
+                Kart bilgisi Okyanus sistemlerinde toplanmaz veya saklanmaz. Ödeme yönlendirmeleri yalnızca yetkili sağlayıcı üzerinden ilerler.
               </p>
               <dl className="mt-5 grid gap-3 text-sm">
                 <div>
@@ -172,15 +177,15 @@ export default async function PaytrPaymentPage({ params }: PaytrPaymentPageProps
                 description="Ödeme durumu kapatılmış görünüyor. Gerekirse dernek yönetimi yeni bir ödeme niyeti oluşturmalıdır."
               />
             ) : null}
-            {setupError ? <PaymentStatusCard tone="warning" title="Test ödeme ekranı hazırlanamadı" description={setupError} /> : null}
+            {setupError ? <PaymentStatusCard tone="warning" title="Ödeme ekranı hazırlanamadı" description={setupError} /> : null}
             {iframeToken ? (
               <div className="grid gap-4">
                 <div className="rounded-lg bg-soft-blue p-4 text-sm font-semibold leading-6 text-deep-blue">
-                  PayTR test iframe açıldı. Bu aşamada canlı tahsilat kapalıdır; sonuç yalnızca `/api/paytr/callback` Bildirim URL doğrulamasıyla işlenir.
+                  Ödeme ekranı açıldı. Sonuç yalnızca sağlayıcı bildirim doğrulamasıyla işlenir.
                 </div>
                 <iframe
                   id="paytriframe"
-                  title="PayTR test ödeme formu"
+                  title="Ödeme formu"
                   src={`https://www.paytr.com/odeme/guvenli/${iframeToken}`}
                   className="min-h-[720px] w-full rounded-lg border border-border-soft bg-white"
                   referrerPolicy="strict-origin-when-cross-origin"

@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 type ProjectRegionListProps = {
   regions: ProjectRegion[];
   activeRegionSlug: ProjectRegion["slug"];
-  projectCountByRegion: Record<string, number>;
   onSelect: (slug: ProjectRegion["slug"]) => void;
   compact?: boolean;
 };
@@ -14,7 +13,6 @@ type ProjectRegionListProps = {
 export function ProjectRegionList({
   regions,
   activeRegionSlug,
-  projectCountByRegion,
   onSelect,
   compact = false
 }: ProjectRegionListProps) {
@@ -33,7 +31,6 @@ export function ProjectRegionList({
 
       {regions.map((region) => {
         const active = region.slug === activeRegionSlug;
-        const projectCount = projectCountByRegion[region.slug] ?? region.projectCount;
 
         return (
           <button
@@ -68,7 +65,7 @@ export function ProjectRegionList({
                   active ? "bg-[#1F8083] text-white" : "bg-[#EEF4F3] text-[#0F2547]"
                 )}
               >
-                {projectCount}
+                Güncel
               </span>
             </span>
           </button>

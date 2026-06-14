@@ -79,13 +79,13 @@ export const projectRegions: ProjectRegion[] = [
     focusAreas: ["Acil yardım", "Gıda", "Sağlık", "Barınma"],
     priorityLabel: "Kriz müdahalesi",
     operatingModel: "Yerel temas + lojistik teyit + dönemsel raporlama",
-    projectCount: 2,
-    activeProjectCount: 2,
-    beneficiaryEstimate: "8.000+ kişi hedefi",
+    projectCount: 0,
+    activeProjectCount: 0,
+    beneficiaryEstimate: "Saha verisi doğrulanınca paylaşılacak",
     stats: [
-      { label: "Yararlanan kişi", value: "8.000+" },
-      { label: "Planlanan paket", value: "2.400" },
-      { label: "Aktif proje", value: "2" }
+      { label: "Bilgi Durumu", value: "Doğrulama bekliyor" },
+      { label: "Paylaşım", value: "Saha notları güncellenecek" },
+      { label: "Kayıt", value: "Faaliyetle birlikte yayınlanır" }
     ],
     categories: ["emergency", "food", "health", "shelter", "qurban"],
     recentUpdates: [
@@ -120,13 +120,13 @@ export const projectRegions: ProjectRegion[] = [
     focusAreas: ["Mülteci destekleri", "Gıda", "Eğitim"],
     priorityLabel: "Aile ve eğitim desteği",
     operatingModel: "Programlı yardım + aile takibi + eğitim materyali",
-    projectCount: 1,
-    activeProjectCount: 1,
-    beneficiaryEstimate: "1.200+ çocuk ve aile",
+    projectCount: 0,
+    activeProjectCount: 0,
+    beneficiaryEstimate: "Saha verisi doğrulanınca paylaşılacak",
     stats: [
-      { label: "Yararlanan aile", value: "1.200+" },
-      { label: "Eğitim desteği", value: "465 set" },
-      { label: "Aktif proje", value: "1" }
+      { label: "Bilgi Durumu", value: "Doğrulama bekliyor" },
+      { label: "Paylaşım", value: "Saha notları güncellenecek" },
+      { label: "Kayıt", value: "Faaliyetle birlikte yayınlanır" }
     ],
     categories: ["food", "education", "orphan"],
     recentUpdates: [
@@ -161,13 +161,13 @@ export const projectRegions: ProjectRegion[] = [
     focusAreas: ["Lojistik", "Sağlık", "Geçiş destekleri"],
     priorityLabel: "Lojistik hazırlık",
     operatingModel: "Geçiş desteği + sağlık/hijyen lojistiği",
-    projectCount: 1,
-    activeProjectCount: 1,
-    beneficiaryEstimate: "2.400+ faydalanıcı",
+    projectCount: 0,
+    activeProjectCount: 0,
+    beneficiaryEstimate: "Saha verisi doğrulanınca paylaşılacak",
     stats: [
-      { label: "Faydalanıcı", value: "2.400+" },
-      { label: "Su/hijyen noktası", value: "12" },
-      { label: "Aktif proje", value: "1" }
+      { label: "Bilgi Durumu", value: "Doğrulama bekliyor" },
+      { label: "Paylaşım", value: "Saha notları güncellenecek" },
+      { label: "Kayıt", value: "Faaliyetle birlikte yayınlanır" }
     ],
     categories: ["health", "water", "emergency"],
     recentUpdates: [
@@ -202,13 +202,13 @@ export const projectRegions: ProjectRegion[] = [
     focusAreas: ["Sosyal destek", "Afet yardımı", "Yetim", "Aile destekleri"],
     priorityLabel: "Merkez koordinasyon",
     operatingModel: "Merkez ekip + saha gönüllüleri + sosyal destek ağı",
-    projectCount: 2,
-    activeProjectCount: 2,
-    beneficiaryEstimate: "3.500+ aile hedefi",
+    projectCount: 0,
+    activeProjectCount: 0,
+    beneficiaryEstimate: "Saha verisi doğrulanınca paylaşılacak",
     stats: [
-      { label: "Hedef aile", value: "3.500+" },
-      { label: "Gönüllü ekip", value: "42" },
-      { label: "Aktif proje", value: "2" }
+      { label: "Bilgi Durumu", value: "Doğrulama bekliyor" },
+      { label: "Paylaşım", value: "Saha notları güncellenecek" },
+      { label: "Kayıt", value: "Faaliyetle birlikte yayınlanır" }
     ],
     categories: ["food", "orphan", "education", "emergency"],
     recentUpdates: [

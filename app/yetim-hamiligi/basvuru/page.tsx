@@ -4,7 +4,6 @@ import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
 import { getActiveSponsorshipPrograms } from "@/lib/data/orphanSponsorshipRepository";
-import { formatCurrency } from "@/lib/format";
 import { SponsorshipApplicationForm } from "./SponsorshipApplicationForm";
 import { DonationModePanel } from "@/components/donations/DonationModePanel";
 import { getDonationMode } from "@/lib/donations/donationMode";
@@ -25,7 +24,6 @@ export default async function OrphanSponsorshipApplicationPage({ searchParams }:
   const selectedProgram = programs.find((program) => program.slug === params?.program) ?? programs[0];
   const success = params?.durum === "basarili" || params?.durum === "alindi";
   const errorMessage = params?.durum === "hata" ? params?.mesaj : undefined;
-  const amount = Number(params?.tutar);
   const donationMode = getDonationMode();
   const isOnlineMode = donationMode === "online";
 
@@ -55,11 +53,7 @@ export default async function OrphanSponsorshipApplicationPage({ searchParams }:
                       Başvuru No: <span className="text-dark-navy">{params.basvuru}</span>
                     </p>
                   ) : null}
-                  {Number.isFinite(amount) && amount > 0 ? (
-                    <p>
-                      Program tutarı: <span className="text-dark-navy">{formatCurrency(amount)}</span>
-                    </p>
-                  ) : null}
+                  <p>Destek bilgisi: <span className="text-dark-navy">Dernek ekibiyle netleştirilecektir.</span></p>
                   <p>KVKK onayınız ve iletişim tercihiniz başvuru kaydına işlenmiştir.</p>
                   <p>Destek süreci: Dernek ekibi başvurunuzu değerlendirerek sizi uygun bilgilendirme kanalına yönlendirir.</p>
                   <p>Başvuru admin tarafında değerlendirme ve eşleştirme süreci için kayıt altına alınmıştır.</p>

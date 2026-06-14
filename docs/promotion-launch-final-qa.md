@@ -133,8 +133,8 @@ Kontrol kriterleri:
 
 ## SEO ve Metadata Kontrolü
 
-- `metadataBase` production domain: `https://okyanusyardim.org`.
-- Production env içinde `NEXT_PUBLIC_SITE_URL=https://okyanusyardim.org`.
+- `metadataBase` production domain: `https://www.okyanus.org.tr`.
+- Production env içinde `NEXT_PUBLIC_SITE_URL=https://www.okyanus.org.tr`.
 - OG image path: `/brand/social-preview.png`.
 - `robots.txt` 200 döner ve sitemap URL içerir.
 - `sitemap.xml` 200 döner ve temel public rotaları içerir.
@@ -150,7 +150,7 @@ SITE_MAINTENANCE_MODE=false
 DONATION_MODE=whatsapp
 DONATION_WHATSAPP_PHONE=<resmi_numara>
 DONATION_WHATSAPP_MESSAGE=<kurumsal_mesaj>
-NEXT_PUBLIC_SITE_URL=https://okyanusyardim.org
+NEXT_PUBLIC_SITE_URL=https://www.okyanus.org.tr
 TURNSTILE_ENABLED=false
 RATE_LIMIT_PROVIDER=memory
 PAYTR_DEBUG_ON=false
@@ -170,7 +170,7 @@ Notlar:
 Gerçek production domain hazır olduğunda:
 
 ```bash
-PRODUCTION_SMOKE_BASE_URL=https://okyanusyardim.org npm run smoke:production
+PRODUCTION_SMOKE_BASE_URL=https://www.okyanus.org.tr npm run smoke:production
 ```
 
 Base URL yoksa komut güvenli skip verir. Script secret kullanmaz, write/delete yapmaz, Supabase DB veya Storage'a dokunmaz.

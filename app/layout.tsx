@@ -34,7 +34,7 @@ const gilroy = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://okyanusyardim.org"),
+  metadataBase: new URL("https://www.okyanus.org.tr"),
   title: {
     default: "Okyanus İnsani Yardım Derneği | İyilik Bir Damlayla Başlar",
     template: "%s | Okyanus İnsani Yardım Derneği"

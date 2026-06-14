@@ -401,7 +401,7 @@ export async function requireAnyRole(allowedRoles: AppRole[]): Promise<RouteGuar
   }
 
   if (!isSupabaseConfigured()) {
-    return { allowed: false, mode: "missing_env", reason: "Supabase env değişkenleri eksik.", loginPath: "/giris" };
+    return { allowed: false, mode: "missing_env", reason: "Giriş altyapısı henüz hazır değil.", loginPath: "/giris" };
   }
 
   const user = await getCurrentUser();

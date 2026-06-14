@@ -42,16 +42,6 @@ export function ProjectActivityTimeline({ activities }: { activities: PublicProj
                 <span className="rounded-full bg-soft-blue px-2.5 py-1 text-[0.68rem] font-extrabold text-deep-blue">
                   {activity.activityTypeLabel}
                 </span>
-                {activity.beneficiaryCount ? (
-                  <span className="rounded-full bg-mint-green px-2.5 py-1 text-[0.68rem] font-extrabold text-dark-navy">
-                    {activity.beneficiaryCount.toLocaleString("tr-TR")} kişiye ulaşıldı
-                  </span>
-                ) : null}
-                {activity.familyCount ? (
-                  <span className="rounded-full bg-soft-gray px-2.5 py-1 text-[0.68rem] font-extrabold text-ink-muted">
-                    {activity.familyCount.toLocaleString("tr-TR")} aile
-                  </span>
-                ) : null}
               </div>
               <h3 className="mt-3 text-xl font-extrabold text-dark-navy">{activity.title}</h3>
               {activity.publicSummary ? (
@@ -60,7 +50,6 @@ export function ProjectActivityTimeline({ activities }: { activities: PublicProj
               {activity.distributedItemType ? (
                 <p className="mt-3 text-sm font-bold text-dark-navy">
                   Dağıtım: {activity.distributedItemType}
-                  {activity.distributedItemCount ? ` - ${activity.distributedItemCount.toLocaleString("tr-TR")} adet` : ""}
                 </p>
               ) : null}
               {activity.reportUrl ? (

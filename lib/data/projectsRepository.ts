@@ -1,5 +1,4 @@
 import type { Project } from "@/data/projects";
-import { projects as fallbackProjects } from "@/data/projects";
 import { enrichProjectWithRegion, inferProjectRegion } from "@/data/projectRegions";
 import {
   createReadOnlyAbortSignal,
@@ -98,12 +97,6 @@ function formatDate(value: string | null | undefined) {
   }).format(date);
 }
 
-function formatMetricAmount(value: number) {
-  return new Intl.NumberFormat("tr-TR", {
-    maximumFractionDigits: 0
-  }).format(value);
-}
-
 function isMetric(value: unknown): value is { label: string; value: string } {
   return (
     value !== null &&
@@ -113,16 +106,12 @@ function isMetric(value: unknown): value is { label: string; value: string } {
   );
 }
 
-function normalizeMetrics(metrics: unknown, goal: number, raised: number, status: Project["status"]) {
+function normalizeMetrics(metrics: unknown) {
   if (Array.isArray(metrics) && metrics.every(isMetric) && metrics.length) {
     return metrics;
   }
 
-  return [
-    { label: "Hedef destek", value: formatMetricAmount(goal) },
-    { label: "Ulaşılan destek", value: formatMetricAmount(raised) },
-    { label: "Durum", value: status }
-  ];
+  return [];
 }
 
 function normalizeStringList(value: string[] | null | undefined, fallback: string[]) {
@@ -170,7 +159,7 @@ export function mapSupabaseProjectToProject(row: SupabaseProjectRow): Project {
     updatedAt: formatDate(row.updated_at),
     visualTone: projectVisualTones[row.category] ?? "from-soft-blue via-warm-white to-mint-green",
     tags: [row.category].filter(Boolean),
-    metrics: normalizeMetrics(row.metrics, goal, raised, status),
+    metrics: normalizeMetrics(row.metrics),
     impactItems: normalizeStringList(row.impact_items, ["Proje bazlı destek", "Kayıtlı takip", "Şeffaf bilgilendirme"]),
     scopeItems: normalizeStringList(row.scope_items, ["İhtiyaç tespiti", "Destek planlama", "Saha koordinasyonu", "Dönemsel raporlama"]),
     transparencyNote:
@@ -255,7 +244,7 @@ export async function getProjectsWithSource(): Promise<RepositoryResult<Project[
     return { data: supabaseProjects, source: "supabase" };
   }
 
-  return { data: fallbackProjects.map((project) => enrichProjectWithRegion(project)), source: "demo" };
+  return { data: [], source: "demo" };
 }
 
 export async function getProjects() {
@@ -270,9 +259,8 @@ export async function getProjectBySlugWithSource(slug: string): Promise<Reposito
     return { data: supabaseProject, source: "supabase" };
   }
 
-  const fallbackProject = fallbackProjects.find((project) => project.slug === slug);
   return {
-    data: fallbackProject ? enrichProjectWithRegion(fallbackProject) : undefined,
+    data: undefined,
     source: "demo"
   };
 }
@@ -299,7 +287,7 @@ export async function getFeaturedProjects(limit = 4) {
 
 export async function getPublishedProjectCount(): Promise<RepositoryResult<number>> {
   const supabase = createSupabaseReadOnlyClient();
-  if (!supabase) return { data: fallbackProjects.length, source: "demo" };
+  if (!supabase) return { data: 0, source: "demo" };
 
   const timeout = createReadOnlyAbortSignal();
   try {
@@ -311,13 +299,13 @@ export async function getPublishedProjectCount(): Promise<RepositoryResult<numbe
 
     if (error) {
       logReadOnlyFallback("projects-count", error);
-      return { data: fallbackProjects.length, source: "demo" };
+      return { data: 0, source: "demo" };
     }
 
     return { data: count ?? 0, source: "supabase" };
   } catch {
     logReadOnlyFallback("projects-count");
-    return { data: fallbackProjects.length, source: "demo" };
+    return { data: 0, source: "demo" };
   } finally {
     timeout.clear();
   }

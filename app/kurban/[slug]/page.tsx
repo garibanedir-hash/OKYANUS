@@ -6,7 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
 import { getActiveQurbanCampaigns, getQurbanCampaignBySlug } from "@/lib/data/qurbanRepository";
-import { formatCurrency, formatDate } from "@/lib/format";
+import { formatDate } from "@/lib/format";
 import { DonationCtaButton } from "@/components/donations/DonationCtaButton";
 
 type QurbanDetailPageProps = {
@@ -38,8 +38,6 @@ export default async function QurbanCampaignDetailPage({ params }: QurbanDetailP
     notFound();
   }
 
-  const reservedRatio = campaign.quotaTotal > 0 ? Math.min(100, Math.round((campaign.quotaReserved / campaign.quotaTotal) * 100)) : 0;
-  const completedRatio = campaign.quotaTotal > 0 ? Math.min(100, Math.round((campaign.quotaCompleted / campaign.quotaTotal) * 100)) : 0;
   const remainingQuota = campaign.quotaTotal > 0 ? Math.max(0, campaign.quotaTotal - campaign.quotaReserved) : null;
   const isCampaignOpen = campaign.status === "active";
   const hasAvailableQuota = remainingQuota === null || remainingQuota > 0;
@@ -82,9 +80,7 @@ export default async function QurbanCampaignDetailPage({ params }: QurbanDetailP
                   { icon: MapPin, label: "Bölge/ülke", value: `${campaign.country} · ${campaign.cityOrRegion}` },
                   { icon: CalendarDays, label: "Tarih aralığı", value: `${formatDate(campaign.startDate)} - ${formatDate(campaign.endDate)}` },
                   { icon: ClipboardCheck, label: "Kurban türü", value: campaign.typeLabel },
-                  { icon: ShieldCheck, label: "Birim bedel", value: formatCurrency(campaign.unitPrice) },
-                  { icon: ClipboardCheck, label: "Kontenjan", value: campaign.quotaTotal > 0 ? `${campaign.quotaTotal} hisse/adet` : "Kontenjan bilgisi güncellenecek" },
-                  { icon: CheckCircle2, label: "Kalan", value: remainingQuota === null ? "Kontenjan bilgisi güncellenecek" : `${remainingQuota} hisse/adet` }
+                  { icon: ShieldCheck, label: "Destek bilgisi", value: "Dernek ekibiyle netleşir" }
                 ].map(({ icon: Icon, label, value }) => (
                   <div key={label} className="rounded-lg bg-soft-gray p-4">
                     <Icon aria-hidden className="h-5 w-5 text-ocean-green" />
@@ -117,27 +113,10 @@ export default async function QurbanCampaignDetailPage({ params }: QurbanDetailP
 
             <aside className="grid gap-5">
               <div className="rounded-brand border border-border-soft bg-white p-6 shadow-card">
-                <h2 className="text-xl font-extrabold text-dark-navy">Kontenjan Durumu</h2>
-                <div className="mt-5 grid gap-4">
-                  <div>
-                    <div className="flex justify-between text-sm font-bold text-ink-muted">
-                      <span>Rezerve</span>
-                      <span>{campaign.quotaReserved}/{campaign.quotaTotal}</span>
-                    </div>
-                    <div className="mt-2 h-2 rounded-full bg-soft-gray">
-                      <div className="h-full rounded-full bg-ocean-green" style={{ width: `${reservedRatio}%` }} />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-sm font-bold text-ink-muted">
-                      <span>Tamamlanan</span>
-                      <span>{campaign.quotaCompleted}/{campaign.quotaTotal}</span>
-                    </div>
-                    <div className="mt-2 h-2 rounded-full bg-soft-gray">
-                      <div className="h-full rounded-full bg-deep-blue" style={{ width: `${completedRatio}%` }} />
-                    </div>
-                  </div>
-                </div>
+                <h2 className="text-xl font-extrabold text-dark-navy">Başvuru Bilgisi</h2>
+                <p className="mt-4 text-sm font-semibold leading-7 text-ink-muted">
+                  Kurban bağışı, hisse/adet ve kontenjan bilgileri dernek ekibi tarafından doğrulanarak paylaşılır. Tanıtım döneminde yönlendirme WhatsApp ve iletişim kanalları üzerinden yapılır.
+                </p>
                 {canDonate ? (
                   <DonationCtaButton
                     label="Kurban Bağışı Akışına Geç"
@@ -158,7 +137,7 @@ export default async function QurbanCampaignDetailPage({ params }: QurbanDetailP
               <div className="rounded-brand border border-border-soft bg-white p-6 shadow-card">
                 <h2 className="text-xl font-extrabold text-dark-navy">Süreç Bilgisi</h2>
                 <ol className="mt-4 grid gap-3 text-sm font-semibold text-ink-muted">
-                  {["Vekalet onayı", "Ödeme durum takibi", "Kesim planlama", "Dağıtım ve bilgilendirme"].map((item, index) => (
+                  {["Vekalet onayı", "Bağış bilgilendirme takibi", "Kesim planlama", "Dağıtım ve bilgilendirme"].map((item, index) => (
                     <li key={item} className="flex items-center gap-3">
                       <span className="flex h-7 w-7 items-center justify-center rounded-full bg-soft-blue text-xs font-black text-deep-blue">{index + 1}</span>
                       {item}

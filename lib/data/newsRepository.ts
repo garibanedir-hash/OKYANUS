@@ -1,5 +1,4 @@
 import type { NewsItem } from "@/data/news";
-import { news as fallbackNews } from "@/data/news";
 import {
   createReadOnlyAbortSignal,
   createSupabaseReadOnlyClient,
@@ -138,7 +137,7 @@ export async function getNewsPostsWithSource(): Promise<RepositoryResult<NewsIte
     return { data: supabaseNews, source: "supabase" };
   }
 
-  return { data: fallbackNews, source: "demo" };
+  return { data: [], source: "demo" };
 }
 
 export async function getNewsPosts() {
@@ -154,7 +153,7 @@ export async function getNewsPostBySlugWithSource(slug: string): Promise<Reposit
   }
 
   return {
-    data: fallbackNews.find((item) => item.slug === slug),
+    data: undefined,
     source: "demo"
   };
 }
@@ -180,7 +179,7 @@ export async function getLatestNews(limit = 3) {
 
 export async function getPublishedNewsCount(): Promise<RepositoryResult<number>> {
   const supabase = createSupabaseReadOnlyClient();
-  if (!supabase) return { data: fallbackNews.length, source: "demo" };
+  if (!supabase) return { data: 0, source: "demo" };
 
   const timeout = createReadOnlyAbortSignal();
   try {
@@ -192,13 +191,13 @@ export async function getPublishedNewsCount(): Promise<RepositoryResult<number>>
 
     if (error) {
       logReadOnlyFallback("news-count", error);
-      return { data: fallbackNews.length, source: "demo" };
+      return { data: 0, source: "demo" };
     }
 
     return { data: count ?? 0, source: "supabase" };
   } catch {
     logReadOnlyFallback("news-count");
-    return { data: fallbackNews.length, source: "demo" };
+    return { data: 0, source: "demo" };
   } finally {
     timeout.clear();
   }

@@ -186,7 +186,7 @@ Bu script boş veya production domain gibi görünen `NEXT_PUBLIC_SITE_URL` değ
 - `DONATION_MODE=whatsapp`.
 - `DONATION_WHATSAPP_PHONE` doğrulanmış resmi public iletişim hattı; numara kesinleşmeden GO verilmez.
 - `DONATION_WHATSAPP_MESSAGE=Merhaba, Okyanus İnsani Yardım Derneği bağış çalışmaları hakkında bilgi almak istiyorum.`
-- `NEXT_PUBLIC_SITE_URL=https://okyanusyardim.org`.
+- `NEXT_PUBLIC_SITE_URL=https://www.okyanus.org.tr`.
 - Supabase publishable/anon key public, service role key yalnızca server env.
 - `RATE_LIMIT_PROVIDER=upstash` production önerisi; `UPSTASH_REDIS_REST_URL` ve `UPSTASH_REDIS_REST_TOKEN` yalnızca server env.
 - Tanıtım yayını için `RATE_LIMIT_PROVIDER=memory` kalabilir; Upstash yoksa risk operasyon notunda durur.
@@ -198,8 +198,8 @@ Bu script boş veya production domain gibi görünen `NEXT_PUBLIC_SITE_URL` değ
 
 ## 16C-Fix Domain ve Bakım Modu Güvenliği
 
-- `okyanusyardim.org` Vercel production project'e bağlı olmalıdır.
-- `www.okyanusyardim.org` ya aynı project'e bağlı olmalı ya da canonical domain stratejisine göre bilinçli yönlendirilmelidir.
+- `okyanus.org.tr` Vercel production project'e bağlı olmalıdır.
+- `www.okyanus.org.tr` ya aynı project'e bağlı olmalı ya da canonical domain stratejisine göre bilinçli yönlendirilmelidir.
 - DNS provider tarafında Vercel'in istediği A/CNAME kayıtları girilmeden canlı GO verilmez.
 - SSL aktif ve HTTP -> HTTPS yönlendirmesi çalışır durumda olmalıdır.
 - Public rotalar beklenmeyen şekilde `/tadilat` sayfasına yönleniyorsa no-go kabul edilir.
@@ -260,7 +260,7 @@ npm run smoke:production
 Bu komut `PRODUCTION_SMOKE_BASE_URL` veya `NEXT_PUBLIC_SITE_URL` ile public HTTP route status/body kontrolü yapar; secret kullanmaz, write/delete yapmaz ve Supabase DB/Storage'a dokunmaz. Base URL yoksa güvenli şekilde skip verir. Canlı domain için önerilen kullanım:
 
 ```bash
-PRODUCTION_SMOKE_BASE_URL=https://okyanusyardim.org PRODUCTION_SMOKE_EXPECTED_WHATSAPP_PHONE=<resmi_numara> npm run smoke:production
+PRODUCTION_SMOKE_BASE_URL=https://www.okyanus.org.tr PRODUCTION_SMOKE_EXPECTED_WHATSAPP_PHONE=<resmi_numara> npm run smoke:production
 ```
 
 `PRODUCTION_SMOKE_EXPECTED_WHATSAPP_PHONE` verilirse WhatsApp CTA hedefi `wa.me/<resmi_numara>` olarak kontrol edilir. Bağış sayfalarında PayTR/iframe/payment intent sinyali görülürse smoke fail verir.

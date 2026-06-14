@@ -4,7 +4,7 @@ import { getNewsPosts } from "@/lib/data/newsRepository";
 import { getProjects } from "@/lib/data/projectsRepository";
 import { getActiveQurbanCampaigns } from "@/lib/data/qurbanRepository";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://okyanusyardim.org";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.okyanus.org.tr";
 
 function entry(path: string, priority = 0.7): MetadataRoute.Sitemap[number] {
   return {

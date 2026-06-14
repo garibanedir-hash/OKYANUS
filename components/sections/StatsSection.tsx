@@ -18,8 +18,8 @@ export function StatsSection() {
                   <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-ocean-green/15 ring-1 ring-ocean-green/25">
                     <Icon aria-hidden className="h-5 w-5 text-ocean-green" />
                   </span>
-                  <p className="text-3xl font-extrabold tracking-tight text-white">{stat.value}</p>
-                  <p className="text-sm font-semibold text-white/50">{stat.label}</p>
+                  <p className="text-xl font-extrabold tracking-tight text-white">{stat.value}</p>
+                  <p className="max-w-40 text-sm font-semibold leading-6 text-white/50">{stat.label}</p>
                 </div>
               </MotionReveal>
             );

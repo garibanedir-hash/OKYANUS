@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import type { Project } from "@/data/projects";
 import type { PublicProjectActivity } from "@/data/projectActivityMock";
 import type { ProjectRegion } from "@/data/projectRegions";
-import { mergeProjectsWithRegionalFallbacks } from "@/data/projectRegions";
 import { ProjectRegionDetailPanel } from "@/components/projects/ProjectRegionDetailPanel";
 import { ProjectRegionList } from "@/components/projects/ProjectRegionList";
 import { ProjectRegionMap } from "@/components/projects/ProjectRegionMap";
@@ -25,22 +24,13 @@ export function ProjectRegionSection({
   compact?: boolean;
   donationConfig?: DonationPublicConfig;
 }) {
-  const enrichedProjects = useMemo(() => (projects.length ? projects : mergeProjectsWithRegionalFallbacks(projects)), [projects]);
+  const enrichedProjects = projects;
   const initialRegionSlug =
     regions.find((region) => enrichedProjects.some((project) => project.regionSlug === region.slug || region.relatedProjectSlugs.includes(project.slug)))?.slug ??
     regions[0]?.slug ??
     "gazze";
   const [activeRegionSlug, setActiveRegionSlug] = useState<ProjectRegion["slug"]>(initialRegionSlug);
   const activeRegion = regions.find((region) => region.slug === activeRegionSlug) ?? regions[0];
-
-  const projectCountByRegion = useMemo(() => {
-    return regions.reduce<Record<string, number>>((acc, region) => {
-      acc[region.slug] = enrichedProjects.filter((project) => project.regionSlug === region.slug || region.relatedProjectSlugs.includes(project.slug)).length;
-      return acc;
-    }, {});
-  }, [enrichedProjects, regions]);
-
-  const totalProjectCount = Object.values(projectCountByRegion).reduce((total, count) => total + count, 0);
 
   if (!activeRegion) return null;
 
@@ -59,16 +49,16 @@ export function ProjectRegionSection({
           </div>
           <div className="grid min-w-0 grid-cols-1 gap-2 text-left sm:min-w-[22rem] sm:grid-cols-3 sm:text-right">
             <div className="min-w-0 rounded-lg border border-[#DDE8E7] bg-white px-3 py-3">
-              <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#64748B]">Bölge</p>
-              <p className="mt-1 text-lg font-semibold text-[#0F2547]">{regions.length}</p>
+              <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#64748B]">Yaklaşım</p>
+              <p className="mt-1 text-sm font-semibold text-[#0F2547]">İhtiyaç odaklı</p>
             </div>
             <div className="min-w-0 rounded-lg border border-[#DDE8E7] bg-white px-3 py-3">
-              <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#64748B]">Proje</p>
-              <p className="mt-1 text-lg font-semibold text-[#0F2547]">{totalProjectCount}</p>
+              <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#64748B]">Kayıt</p>
+              <p className="mt-1 text-sm font-semibold text-[#0F2547]">Doğrulanınca yayınlanır</p>
             </div>
             <div className="min-w-0 rounded-lg border border-[#DDE8E7] bg-white px-3 py-3">
-              <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#64748B]">Etki</p>
-              <p className="mt-1 break-words text-sm font-semibold text-[#0F2547]">{activeRegion.stats[0]?.value ?? activeRegion.beneficiaryEstimate}</p>
+              <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#64748B]">Paylaşım</p>
+              <p className="mt-1 text-sm font-semibold text-[#0F2547]">Güncel saha notları</p>
             </div>
           </div>
         </div>
@@ -92,7 +82,6 @@ export function ProjectRegionSection({
               <ProjectRegionList
                 regions={regions}
                 activeRegionSlug={activeRegion.slug}
-                projectCountByRegion={projectCountByRegion}
                 onSelect={setActiveRegionSlug}
                 compact
               />
@@ -102,7 +91,6 @@ export function ProjectRegionSection({
               <ProjectRegionList
                 regions={regions}
                 activeRegionSlug={activeRegion.slug}
-                projectCountByRegion={projectCountByRegion}
                 onSelect={setActiveRegionSlug}
               />
             </div>
@@ -122,7 +110,6 @@ export function ProjectRegionSection({
           <div className="order-2 min-w-0 self-start xl:order-3">
             <ProjectRegionDetailPanel
               region={activeRegion}
-              projects={enrichedProjects}
               compact={compact}
               donationConfig={donationConfig}
             />

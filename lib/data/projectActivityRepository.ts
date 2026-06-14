@@ -447,33 +447,7 @@ export async function getProjectActivityEvents(activityId: string) {
 export async function getPublicProjectActivities(projectId: string): Promise<PublicProjectActivity[]> {
   const supabase = createSupabaseReadOnlyClient();
   if (!supabase) {
-    return mockProjectActivities
-      .filter((item) => item.projectId === projectId && item.status === "completed" && item.visibility === "public")
-      .map((item) => ({
-        id: item.id,
-        projectId: item.projectId,
-        title: item.title,
-        slug: item.slug,
-        activityType: item.activityType,
-        activityTypeLabel: item.activityTypeLabel,
-        activityDate: item.activityDate,
-        country: item.country,
-        city: item.city,
-        district: item.district,
-        locationName: item.locationName,
-        regionLabel: item.regionLabel,
-        beneficiaryCount: item.beneficiaryCount,
-        familyCount: item.familyCount,
-        distributedItemType: item.distributedItemType,
-        distributedItemCount: item.distributedItemCount,
-        publicSummary: item.publicSummary,
-        coverImageUrl: item.coverImageUrl,
-        galleryUrls: item.galleryUrls,
-        videoUrl: item.videoUrl,
-        reportUrl: item.reportUrl,
-        publishedAt: item.publishedAt,
-        completedAt: item.completedAt
-      }));
+    return [];
   }
 
   const timeout = createReadOnlyAbortSignal();
@@ -507,33 +481,7 @@ export async function getPublicProjectActivitiesForProjectIds(projectIds: string
 
   const supabase = createSupabaseReadOnlyClient();
   if (!supabase) {
-    return mockProjectActivities
-      .filter((item) => uniqueProjectIds.includes(item.projectId) && item.status === "completed" && item.visibility === "public")
-      .map((item) => ({
-        id: item.id,
-        projectId: item.projectId,
-        title: item.title,
-        slug: item.slug,
-        activityType: item.activityType,
-        activityTypeLabel: item.activityTypeLabel,
-        activityDate: item.activityDate,
-        country: item.country,
-        city: item.city,
-        district: item.district,
-        locationName: item.locationName,
-        regionLabel: item.regionLabel,
-        beneficiaryCount: item.beneficiaryCount,
-        familyCount: item.familyCount,
-        distributedItemType: item.distributedItemType,
-        distributedItemCount: item.distributedItemCount,
-        publicSummary: item.publicSummary,
-        coverImageUrl: item.coverImageUrl,
-        galleryUrls: item.galleryUrls,
-        videoUrl: item.videoUrl,
-        reportUrl: item.reportUrl,
-        publishedAt: item.publishedAt,
-        completedAt: item.completedAt
-      }));
+    return [];
   }
 
   const timeout = createReadOnlyAbortSignal();
@@ -564,8 +512,7 @@ export async function getPublicProjectActivitiesForProjectIds(projectIds: string
 export async function getPublicProjectActivitiesByProjectSlug(slug: string): Promise<PublicProjectActivity[]> {
   const supabase = createSupabaseReadOnlyClient();
   if (!supabase) {
-    const project = fallbackProjects.find((item) => item.slug === slug);
-    return project ? getPublicProjectActivities(project.id) : [];
+    return [];
   }
 
   const timeout = createReadOnlyAbortSignal();

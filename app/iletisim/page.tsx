@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 const contactItems: Array<{ icon: LucideIcon; title: string; text: string }> = [
   { icon: MapPin, title: "Adres", text: "İstanbul, Türkiye" },
   { icon: Phone, title: "Telefon", text: "+90 212 000 00 00" },
-  { icon: Mail, title: "E-posta", text: "bilgi@okyanusyardim.org" }
+  { icon: Mail, title: "E-posta", text: "bilgi@okyanus.org.tr" }
 ];
 
 type ContactPageProps = {

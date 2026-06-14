@@ -25,7 +25,7 @@ export default async function NewsPage() {
           <SectionHeading
             eyebrow="Güncel Notlar"
             title="Faaliyetlerden, kampanyalardan ve gönüllü buluşmalarından haberler"
-            description="Detay sayfası mimarisi için link yapısı hazırlandı; mock haber verileri ileride CMS içerikleriyle değiştirilebilir."
+            description="Yayına alınan haber ve duyurular doğrulanan içeriklerle bu alanda paylaşılır."
           />
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             {news.length ? (

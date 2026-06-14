@@ -24,7 +24,7 @@ export default function ActivitiesPage() {
           <SectionHeading
             eyebrow="Destek Kategorileri"
             title="Kime dokunuyor, nasıl destek olabilirsiniz?"
-            description="Her alanın amacı, örnek destek türleri ve bağış çağrısı net biçimde sunulur."
+            description="Her alanın amacı, destek türleri ve bağış çağrısı net biçimde sunulur."
           />
           <div className="mt-10 grid gap-6 md:grid-cols-2">
             {activities.map(({ icon: Icon, title, description, supportTypes, slug }) => (
@@ -39,7 +39,7 @@ export default function ActivitiesPage() {
                   </div>
                 </div>
                 <div className="mt-6 rounded-2xl bg-soft-gray p-4">
-                  <p className="text-sm font-bold text-dark-navy">Örnek destek türleri</p>
+                  <p className="text-sm font-bold text-dark-navy">Destek türleri</p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {supportTypes.map((item) => (
                       <span key={item} className="rounded-full bg-mint-green px-3 py-1 text-xs font-semibold text-ocean-green">

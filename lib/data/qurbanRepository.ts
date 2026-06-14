@@ -230,7 +230,7 @@ function mapCampaign(row: SupabaseQurbanCampaignRow): QurbanCampaign {
     statusLabel: qurbanCampaignStatusLabels[row.status],
     shortDescription: row.short_description ?? "Kurban kampanyası açıklaması güncellenecek.",
     description: row.description ?? row.short_description ?? "Kurban kampanyası detayları güncellenecek.",
-    delegationText: row.delegation_text ?? "Vekalet metni production öncesi onaylanmalıdır.",
+    delegationText: row.delegation_text ?? "Vekalet metni dernek ekibi tarafından güncellenecektir.",
     transparencyNote: row.transparency_note ?? "Vekalet, kesim ve dağıtım süreci kayıt altında izlenir.",
     coverImageUrl: row.cover_image_url ?? undefined,
     updatedAt: row.updated_at ?? "Tarih güncellenecek"
@@ -452,7 +452,7 @@ export async function getQurbanCampaignsWithSource(): Promise<RepositoryResult<Q
     return { data: supabaseCampaigns, source: "supabase" };
   }
 
-  return { data: mockQurbanCampaigns, source: "demo" };
+  return { data: [], source: "demo" };
 }
 
 export async function getQurbanCampaigns() {
@@ -467,7 +467,7 @@ export async function getActiveQurbanCampaignsWithSource(): Promise<RepositoryRe
     return { data: supabaseCampaigns, source: "supabase" };
   }
 
-  return { data: mockQurbanCampaigns.filter((campaign) => campaign.status === "active"), source: "demo" };
+  return { data: [], source: "demo" };
 }
 
 export async function getActiveQurbanCampaigns() {
@@ -483,7 +483,7 @@ export async function getQurbanCampaignBySlugWithSource(slug: string): Promise<R
   }
 
   return {
-    data: mockQurbanCampaigns.find((campaign) => campaign.slug === slug && ["active", "completed"].includes(campaign.status)),
+    data: undefined,
     source: "demo"
   };
 }

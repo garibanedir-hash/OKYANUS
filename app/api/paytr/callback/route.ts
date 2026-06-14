@@ -267,7 +267,7 @@ export async function POST(request: Request) {
       paymentIntentId: paymentIntent.id,
       providerReference: callback.merchant_oid,
       actorRole: "paytr_callback",
-      note: "PayTR test callback status=success ile ödeme onaylandı."
+      note: "PayTR callback status=success ile ödeme onaylandı."
     });
     await finalizePaidPaymentIntent(updatedPaymentIntent);
   } else if (nextStatus === "cancelled") {
@@ -275,27 +275,27 @@ export async function POST(request: Request) {
       paymentIntentId: paymentIntent.id,
       providerReference: callback.merchant_oid,
       actorRole: "paytr_callback",
-      note: "PayTR test callback ile ödeme iptal edildi."
+      note: "PayTR callback ile ödeme iptal edildi."
     });
-    await handleCancelledPaymentIntent(updatedPaymentIntent, callback.failed_reason_msg ?? "PayTR test callback ile ödeme iptal edildi.");
+    await handleCancelledPaymentIntent(updatedPaymentIntent, callback.failed_reason_msg ?? "PayTR callback ile ödeme iptal edildi.");
   } else if (nextStatus === "refunded") {
     updatedPaymentIntent = await markPaymentRefunded({
       paymentIntentId: paymentIntent.id,
       providerReference: callback.merchant_oid,
       actorRole: "paytr_callback",
-      note: "PayTR test callback ile ödeme iade edildi."
+      note: "PayTR callback ile ödeme iade edildi."
     });
-    await handleRefundedPaymentIntent(updatedPaymentIntent, callback.failed_reason_msg ?? "PayTR test callback ile ödeme iade edildi.");
+    await handleRefundedPaymentIntent(updatedPaymentIntent, callback.failed_reason_msg ?? "PayTR callback ile ödeme iade edildi.");
   } else {
     updatedPaymentIntent = await markPaymentFailed({
       paymentIntentId: paymentIntent.id,
       providerReference: callback.merchant_oid,
       actorRole: "paytr_callback",
       note: callback.failed_reason_msg
-        ? `PayTR test callback başarısız: ${callback.failed_reason_msg}`
-        : "PayTR test callback status=failed ile ödeme başarısız işaretlendi."
+        ? `PayTR callback başarısız: ${callback.failed_reason_msg}`
+        : "PayTR callback status=failed ile ödeme başarısız işaretlendi."
     });
-    await handleFailedPaymentIntent(updatedPaymentIntent, callback.failed_reason_msg ?? "PayTR test callback status=failed ile ödeme başarısız işaretlendi.");
+    await handleFailedPaymentIntent(updatedPaymentIntent, callback.failed_reason_msg ?? "PayTR callback status=failed ile ödeme başarısız işaretlendi.");
   }
 
   await safeMarkProviderEventProcessed({

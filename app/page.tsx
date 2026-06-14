@@ -3,7 +3,6 @@ import { HandHeart, ListChecks, ShieldCheck, UsersRound } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { getFeaturedProjects } from "@/lib/data/projectsRepository";
 import { getLatestNews } from "@/lib/data/newsRepository";
-import { mergeProjectsWithRegionalFallbacks } from "@/data/projectRegions";
 import { getPublicProjectActivitiesForProjectIds } from "@/lib/data/projectActivityRepository";
 import { getPublicProjectRegions } from "@/lib/data/projectRegionRepository";
 import { getDonationPublicConfig } from "@/lib/donations/donationMode";
@@ -34,30 +33,30 @@ export default async function HomePage() {
     getLatestNews(3),
     getPublicProjectRegions()
   ]);
-  const visibleProjects = projects.length ? projects : mergeProjectsWithRegionalFallbacks([]).slice(0, 4);
-  const regionActivities = await getPublicProjectActivitiesForProjectIds(visibleProjects.map((project) => project.id));
+  const regionActivities = await getPublicProjectActivitiesForProjectIds(projects.map((project) => project.id));
 
   return (
     <>
       <HeroSection donationConfig={donationConfig} />
       <StatsSection />
 
-      {/* ── Çalışma Bölgeleri ── */}
-      <section className="bg-warm-white py-20 sm:py-24">
-        <Container>
-          <MotionReveal>
-            <SectionHeading
-              eyebrow="Nerelerde Çalışıyoruz?"
-              title="Gazze'den Türkiye'ye bölge odaklı insani yardım"
-              description="Okyanus İnsani Yardım Derneği olarak ihtiyaç odaklı çalışmalarımızı belirli bölgelerde sürdürülebilir, şeffaf ve insan onurunu merkeze alan bir yaklaşımla yürütüyoruz."
-              align="center"
-            />
-          </MotionReveal>
-          <div className="mt-12">
-            <ProjectRegionSection regions={regions} projects={visibleProjects} activities={regionActivities} donationConfig={donationConfig} compact />
-          </div>
-        </Container>
-      </section>
+      {regions.length ? (
+        <section className="bg-warm-white py-20 sm:py-24">
+          <Container>
+            <MotionReveal>
+              <SectionHeading
+                eyebrow="Nerelerde Çalışıyoruz?"
+                title="Bölge odaklı insani yardım"
+                description="Doğrulanan çalışma bölgeleri, ihtiyaç ve saha bilgisiyle birlikte bu alanda paylaşılır."
+                align="center"
+              />
+            </MotionReveal>
+            <div className="mt-12">
+              <ProjectRegionSection regions={regions} projects={projects} activities={regionActivities} donationConfig={donationConfig} compact />
+            </div>
+          </Container>
+        </section>
+      ) : null}
 
       {/* ── Nasıl Çalışıyoruz? ── */}
       <section className="bg-white py-20 sm:py-28">
@@ -122,13 +121,13 @@ export default async function HomePage() {
             <SectionHeading
               eyebrow="Öne Çıkan Projeler"
               title="Desteğinizi proje bazlı görün"
-              description="Her proje, hedef ve ulaşılan destek bilgisini gösterecek şekilde hazırlandı."
+              description="Yayında olan projeler, doğrulanan bilgiler ve sade destek yönlendirmeleriyle paylaşılır."
             />
           </MotionReveal>
 
           <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {visibleProjects.length ? (
-              visibleProjects.map((project, index) => (
+            {projects.length ? (
+              projects.map((project, index) => (
                 <MotionReveal key={project.slug} delay={index * 0.05}>
                   <ProjectCard {...project} donationConfig={donationConfig} />
                 </MotionReveal>

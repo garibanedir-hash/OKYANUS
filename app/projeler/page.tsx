@@ -4,7 +4,6 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ProjectFilterGrid } from "@/components/ProjectFilterGrid";
 import { PageHero } from "@/components/sections/PageHero";
 import { ProjectRegionSection } from "@/components/projects/ProjectRegionSection";
-import { mergeProjectsWithRegionalFallbacks } from "@/data/projectRegions";
 import { getPublicProjectActivitiesForProjectIds } from "@/lib/data/projectActivityRepository";
 import { getPublicProjectRegions } from "@/lib/data/projectRegionRepository";
 import { getProjectsWithSource } from "@/lib/data/projectsRepository";
@@ -21,7 +20,7 @@ export default async function ProjectsPage() {
     getProjectsWithSource(),
     getPublicProjectRegions()
   ]);
-  const projects = projectsResult.data.length ? projectsResult.data : mergeProjectsWithRegionalFallbacks([]);
+  const projects = projectsResult.data;
   const activities = await getPublicProjectActivitiesForProjectIds(projects.map((project) => project.id));
 
   return (
@@ -29,18 +28,24 @@ export default async function ProjectsPage() {
       <PageHero
         eyebrow="Projeler"
         title="Desteğinizin hangi ihtiyaca yöneldiğini görün"
-        description="Proje kartları, hedef ve ulaşılan destek bilgisini şeffaf bir yapı içinde gösterecek şekilde hazırlandı."
+        description="Yayındaki projeler doğrulanan içerikler, çalışma alanı ve destek yönlendirmeleriyle paylaşılır."
       />
       <section className="bg-warm-white py-16 sm:py-20">
         <Container>
           <SectionHeading
             eyebrow="Çalışma Bölgelerimiz"
-            title="Yakın coğrafyada ihtiyaç odaklı çalışma hatları"
-            description="Okyanus İnsani Yardım Derneği olarak ihtiyaç odaklı çalışmalarımızı belirli bölgelerde sürdürülebilir, şeffaf ve insan onurunu merkeze alan bir yaklaşımla yürütüyoruz."
+            title="Doğrulanan çalışma bölgeleri"
+            description="Bölge bilgileri, saha kayıtları doğrulandığında harita ve detaylarıyla birlikte paylaşılır."
           />
-          <div className="mt-10">
-            <ProjectRegionSection regions={regions} projects={projects} activities={activities} donationConfig={donationConfig} />
-          </div>
+          {regions.length ? (
+            <div className="mt-10">
+              <ProjectRegionSection regions={regions} projects={projects} activities={activities} donationConfig={donationConfig} />
+            </div>
+          ) : (
+            <div className="mt-10 rounded-brand border border-border-soft bg-white p-6 text-sm font-semibold leading-6 text-ink-muted shadow-card">
+              Bölge bilgileri doğrulanan kayıtlar hazırlandığında burada paylaşılacaktır.
+            </div>
+          )}
         </Container>
       </section>
 
@@ -49,7 +54,7 @@ export default async function ProjectsPage() {
           <SectionHeading
             eyebrow="Proje Takibi"
             title="Bölge ve kategoriye göre inceleyin"
-            description="Gazze, Lübnan, Mısır ve Türkiye filtreleriyle ya da acil yardım, eğitim, su, yetim ve kurban başlıklarıyla projeleri tarayın."
+            description="Yayındaki projeler kategori, çalışma alanı ve doğrulanan içerik bilgileriyle listelenir."
           />
           <ProjectFilterGrid projects={projects} donationConfig={donationConfig} />
         </Container>

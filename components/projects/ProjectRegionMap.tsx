@@ -20,7 +20,7 @@ type ProjectedRegion = ProjectRegion & {
 const VIEWBOX = { width: 920, height: 620 };
 
 function getMarkerRadius(region: ProjectRegion) {
-  return 4.8 + Math.min(4.5, region.projectCount * 0.35);
+  return region.priorityLabel ? 7 : 6;
 }
 
 function getTransformPoint(point: { x: number; y: number }, center: { x: number; y: number }, zoom: number) {
@@ -53,7 +53,7 @@ function Tooltip({
         {region.region}
       </text>
       <text x="14" y="60" fill="#7BD2D0" fontSize="10.5" fontWeight="700">
-        {region.projectCount} proje · {region.stats[0]?.value ?? region.beneficiaryEstimate}
+        Saha bilgileri doğrulanarak güncellenir
       </text>
     </g>
   );

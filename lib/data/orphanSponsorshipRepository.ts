@@ -749,17 +749,17 @@ async function fetchSafeOrphans() {
 }
 
 export async function getActiveSponsorshipPrograms(): Promise<SponsorshipProgram[]> {
-  return (await fetchActivePrograms()) ?? mockSponsorshipPrograms.filter((program) => program.status === "active");
+  return (await fetchActivePrograms()) ?? [];
 }
 
 export async function getActiveSponsorshipProgramsWithSource(): Promise<RepositoryResult<SponsorshipProgram[]>> {
   const programs = await fetchActivePrograms();
   if (programs) return { data: programs, source: "supabase" };
-  return { data: mockSponsorshipPrograms.filter((program) => program.status === "active"), source: "demo" };
+  return { data: [], source: "demo" };
 }
 
 export async function getSponsorshipProgramBySlug(slug: string): Promise<SponsorshipProgram | undefined> {
-  return (await fetchProgramBySlug(slug)) ?? mockSponsorshipPrograms.find((program) => program.slug === slug && program.status === "active");
+  return (await fetchProgramBySlug(slug)) ?? undefined;
 }
 
 export async function getAdminSponsorshipStats(): Promise<SponsorshipStats> {

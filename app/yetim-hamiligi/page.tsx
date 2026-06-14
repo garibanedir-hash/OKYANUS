@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getActiveSponsorshipPrograms } from "@/lib/data/orphanSponsorshipRepository";
-import { formatCurrency } from "@/lib/format";
 import { DonationCtaButton } from "@/components/donations/DonationCtaButton";
 
 export const metadata: Metadata = {
@@ -109,8 +108,10 @@ export default async function OrphanSponsorshipPage() {
                 <h2 className="mt-3 text-xl font-extrabold leading-snug text-dark-navy">{program.title}</h2>
                 <p className="mt-3 min-h-20 text-sm leading-6 text-ink-muted">{program.shortDescription}</p>
                 <div className="mt-5 rounded-lg bg-soft-gray p-4">
-                  <p className="text-xs font-extrabold uppercase text-ink-muted">Aylık destek önerisi</p>
-                  <p className="mt-1 text-2xl font-black text-deep-blue">{formatCurrency(program.monthlyAmount)}</p>
+                  <p className="text-xs font-extrabold uppercase text-ink-muted">Destek bilgisi</p>
+                  <p className="mt-2 text-sm font-semibold leading-6 text-ink-muted">
+                    Destek modeli ve program detayları dernek ekibi tarafından doğrulanarak paylaşılır.
+                  </p>
                 </div>
                 <p className="mt-4 text-xs font-bold leading-6 text-ink-muted">{program.transparencyNote}</p>
                 <div className="mt-5 flex flex-wrap gap-2">

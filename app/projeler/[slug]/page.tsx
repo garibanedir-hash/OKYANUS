@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CalendarDays, ClipboardCheck, HandHeart, MapPin, ShieldCheck } from "lucide-react";
-import { projects as fallbackProjects } from "@/data/projects";
-import { formatCurrency } from "@/lib/format";
 import { getPublicProjectActivities } from "@/lib/data/projectActivityRepository";
 import { getProjectBySlug, getProjects } from "@/lib/data/projectsRepository";
 import { getProjectRegionBySlug } from "@/lib/data/projectRegionRepository";
@@ -10,8 +8,6 @@ import { getDonationPublicConfig } from "@/lib/donations/donationMode";
 import { Container } from "@/components/ui/Container";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { ProgressBar } from "@/components/ui/ProgressBar";
-import { MetricCard } from "@/components/ui/MetricCard";
 import { InfoBlock } from "@/components/ui/InfoBlock";
 import { Timeline } from "@/components/ui/Timeline";
 import { ProjectCard } from "@/components/ProjectCard";
@@ -24,7 +20,7 @@ type ProjectPageProps = {
 };
 
 export function generateStaticParams() {
-  return fallbackProjects.map((project) => ({ slug: project.slug }));
+  return [];
 }
 
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
@@ -46,7 +42,6 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   }
 
   const donationConfig = getDonationPublicConfig();
-  const progress = project.goal > 0 ? Math.min(Math.round((project.raised / project.goal) * 100), 100) : 0;
   const heroImageUrl = project.coverImageUrl || project.thumbnailUrl;
   const [projects, activities, region] = await Promise.all([
     getProjects(),
@@ -96,17 +91,11 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           <div className="grid gap-8 lg:grid-cols-[1fr_0.42fr]">
             <div className="grid gap-6">
               <div className="rounded-brand border border-border-soft bg-white p-6 shadow-card">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className="text-sm font-bold text-ink-muted">Ulaşılan destek</p>
-                    <p className="mt-1 text-2xl font-extrabold text-deep-blue">{formatCurrency(project.raised)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-ink-muted">Hedeflenen destek</p>
-                    <p className="mt-1 text-2xl font-extrabold text-dark-navy">{formatCurrency(project.goal)}</p>
-                  </div>
-                </div>
-                <ProgressBar value={progress} label={`${progress}% tamamlandı`} className="mt-6" />
+                <p className="text-sm font-bold uppercase tracking-[0.12em] text-ocean-green">Destek bilgisi</p>
+                <h2 className="mt-2 text-2xl font-extrabold text-dark-navy">Proje destek bilgileri doğrulanarak paylaşılır</h2>
+                <p className="mt-3 leading-7 text-ink-muted">
+                  Bu proje için bağış ve saha gerçekleşme bilgileri, doğrulanan kayıtlar hazırlandığında faaliyet raporları ve proje güncellemeleriyle paylaşılacaktır.
+                </p>
               </div>
 
               <InfoBlock icon={HandHeart} title="Bu proje ne için var?">
@@ -148,11 +137,6 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                   <div><dt className="font-bold text-dark-navy">Güncelleme</dt><dd className="text-ink-muted">{project.updatedAt}</dd></div>
                   <div><dt className="font-bold text-dark-navy">Durum</dt><dd className="text-ink-muted">{project.status}</dd></div>
                 </dl>
-              </div>
-              <div className="grid gap-4">
-                {project.metrics.map((metric) => (
-                  <MetricCard key={metric.label} {...metric} />
-                ))}
               </div>
             </aside>
           </div>

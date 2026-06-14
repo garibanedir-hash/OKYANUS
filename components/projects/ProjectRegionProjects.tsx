@@ -17,18 +17,6 @@ function formatActivityDate(value?: string) {
   }).format(date);
 }
 
-function activityMeta(activity: PublicProjectActivity) {
-  const parts = [
-    activity.beneficiaryCount ? `${activity.beneficiaryCount} kişi` : null,
-    activity.familyCount ? `${activity.familyCount} aile` : null,
-    activity.distributedItemCount && activity.distributedItemType
-      ? `${activity.distributedItemCount} ${activity.distributedItemType}`
-      : activity.distributedItemType ?? null
-  ].filter(Boolean);
-
-  return parts.join(" · ");
-}
-
 export function ProjectRegionProjects({
   region,
   projects,
@@ -142,11 +130,6 @@ export function ProjectRegionProjects({
                     {projectById.get(activity.projectId) ? (
                       <span className="rounded-md bg-white px-2.5 py-1 text-[0.68rem] font-bold text-[#0F2547]">
                         {projectById.get(activity.projectId)?.title}
-                      </span>
-                    ) : null}
-                    {activityMeta(activity) ? (
-                      <span className="rounded-md bg-white px-2.5 py-1 text-[0.68rem] font-bold text-[#64748B]">
-                        {activityMeta(activity)}
                       </span>
                     ) : null}
                   </div>

@@ -172,8 +172,8 @@ export function buildReceiptPdfData(receipt: ReceiptPdfInput): ReceiptPdfData {
     thankYouText:
       "Siz değerli bağışçılarımızın desteğiyle daha fazla insana umut oluyoruz. İyiliği birlikte büyütüyoruz.",
     registryNote: "Okyanus İnsani Yardım Derneği, ilgili mevzuat kapsamında faaliyet gösteren bir insani yardım kuruluşudur.",
-    website: "okyanusyardim.org",
-    email: "bilgi@okyanusyardim.org",
+    website: "okyanus.org.tr",
+    email: "bilgi@okyanus.org.tr",
     phone: "+90 212 000 00 00",
     address: "İstanbul / Türkiye"
   };

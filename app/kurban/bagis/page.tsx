@@ -7,7 +7,6 @@ import { getActiveQurbanCampaigns } from "@/lib/data/qurbanRepository";
 import { createQurbanOrderAction } from "@/app/kurban/bagis/actions";
 import { QurbanDonationForm } from "@/app/kurban/bagis/QurbanDonationForm";
 import { getCurrentQurbanDonorContext } from "@/lib/data/qurbanWriteRepository";
-import { formatCurrency } from "@/lib/format";
 import { DonationModePanel } from "@/components/donations/DonationModePanel";
 import { getDonationMode } from "@/lib/donations/donationMode";
 import { getTurnstilePublicConfig } from "@/lib/security/turnstilePublic";
@@ -31,7 +30,7 @@ type QurbanDonationPageProps = {
   }>;
 };
 
-export default async function QurbanDonationDemoPage({ searchParams }: QurbanDonationPageProps) {
+export default async function QurbanDonationPage({ searchParams }: QurbanDonationPageProps) {
   const params = await searchParams;
   const campaigns = await getActiveQurbanCampaigns();
   const selectedSlug = params?.kampanya ?? params?.campaign;
@@ -47,7 +46,6 @@ export default async function QurbanDonationDemoPage({ searchParams }: QurbanDon
       }
     : undefined;
   const success = params?.durum === "basarili" || params?.durum === "alindi";
-  const totalAmount = Number(params?.tutar ?? 0);
 
   return (
     <>
@@ -73,11 +71,11 @@ export default async function QurbanDonationDemoPage({ searchParams }: QurbanDon
                   </p>
                 </div>
                 <div className="mt-5 grid gap-3 text-sm font-semibold leading-6 text-ink-muted">
-                  {params?.adet ? <p>Rezerve edilen hisse/adet: <strong className="text-dark-navy">{params.adet}</strong></p> : null}
-                  {totalAmount > 0 ? <p>Ödeme bekleyen tutar: <strong className="text-dark-navy">{formatCurrency(totalAmount)}</strong></p> : null}
+                  {params?.adet ? <p>Başvuru hisse/adet bilgisi: <strong className="text-dark-navy">{params.adet}</strong></p> : null}
+                  <p>Bağış bilgisi: <strong className="text-dark-navy">Dernek ekibiyle netleştirilecektir</strong></p>
                   <p>Vekalet durumu: <strong className="text-dark-navy">Kaydedildi</strong></p>
-                  <p>Ödeme durumu: <strong className="text-dark-navy">Ödeme bekliyor</strong></p>
-                  {params?.odeme ? (
+                  <p>Başvuru durumu: <strong className="text-dark-navy">Ekip takibinde</strong></p>
+                  {isOnlineMode && params?.odeme ? (
                     <p>Ödeme No: <strong className="text-dark-navy">{params.odeme}</strong></p>
                   ) : null}
                   {params?.odeme_hata === "1" ? (
@@ -89,7 +87,7 @@ export default async function QurbanDonationDemoPage({ searchParams }: QurbanDon
                   <p>Bağışçı hesabınızla giriş yaptıysanız kayıt Kurbanlarım panelinde listelenebilir.</p>
                 </div>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  {params?.odeme ? (
+                  {isOnlineMode && params?.odeme ? (
                     <Link href={`/odeme/paytr/${params.odeme}`} className="focus-ring inline-flex min-h-11 items-center justify-center rounded-full bg-ocean-green px-5 py-2.5 text-sm font-extrabold text-white transition hover:bg-deep-blue">
                       Ödemeye Devam Et
                     </Link>

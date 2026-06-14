@@ -214,18 +214,18 @@
 
 ## 16C-Fix Canlı Domain Güvenlik Kapısı
 
-- [ ] `okyanusyardim.org` Vercel production project domains listesinde bağlı.
-- [ ] `www.okyanusyardim.org` bağlı veya canonical yönlendirme stratejisi bilinçli olarak belirlendi.
+- [ ] `okyanus.org.tr` Vercel production project domains listesinde bağlı.
+- [ ] `www.okyanus.org.tr` bağlı veya canonical yönlendirme stratejisi bilinçli olarak belirlendi.
 - [ ] DNS A/CNAME kayıtları Vercel'in istediği değerlerle uyumlu.
 - [ ] SSL aktif ve HTTP istekleri HTTPS'e yönleniyor.
-- [ ] `NEXT_PUBLIC_SITE_URL=https://okyanusyardim.org`.
+- [ ] `NEXT_PUBLIC_SITE_URL=https://www.okyanus.org.tr`.
 - [ ] `SITE_MAINTENANCE_MODE=false`; public rotalar beklenmeyen şekilde `/tadilat` sayfasına gitmiyor.
 - [ ] `DONATION_MODE=whatsapp`; `DONATION_MODE=online` yapılmadı.
 - [ ] Resmi WhatsApp numarası Production env içinde doğrulandı; doğrulanmadan GO verilmedi.
 - [ ] `TURNSTILE_ENABLED=false`; gerçek Preview/Staging QA tamamlanmadan production'da zorunlu Turnstile açılmadı.
 - [ ] `PAYTR_DEBUG_ON=false`; PayTR online ödeme canlıya alınmadı.
 - [ ] `NEXT_PUBLIC_ADMIN_DEMO_MODE=false`.
-- [ ] `PRODUCTION_SMOKE_BASE_URL=https://okyanusyardim.org PRODUCTION_SMOKE_EXPECTED_WHATSAPP_PHONE=<resmi_numara> npm run smoke:production` canlı domain üzerinde geçti.
+- [ ] `PRODUCTION_SMOKE_BASE_URL=https://www.okyanus.org.tr PRODUCTION_SMOKE_EXPECTED_WHATSAPP_PHONE=<resmi_numara> npm run smoke:production` canlı domain üzerinde geçti.
 - [ ] Smoke test bağış sayfalarında PayTR/iframe/payment intent sinyali görmüyor.
 - [ ] Admin sidebar polish yalnızca UI düzenidir; admin route guard, RLS, payment, makbuz, consent ve storage güvenliği değiştirilmedi.
 

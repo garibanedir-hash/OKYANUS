@@ -160,7 +160,7 @@ export async function createQurbanOrderAction(formData: FormData) {
     }
 
     if (campaign.unitPrice <= 0) {
-      throw new Error("Bu kampanya için birim bedel henüz hazır değil.");
+      throw new Error("Bu kampanya için bağış bilgisi henüz hazır değil.");
     }
 
     if (campaign.quotaTotal > 0 && campaign.quotaReserved + input.shareCount > campaign.quotaTotal) {

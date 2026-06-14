@@ -152,7 +152,7 @@ function mapCampaign(row: QurbanCampaignForOrderRow): QurbanCampaign {
     statusLabel: qurbanCampaignStatusLabels[row.status],
     shortDescription: row.short_description ?? "Kurban kampanyası açıklaması güncellenecek.",
     description: row.description ?? row.short_description ?? "Kurban kampanyası detayları güncellenecek.",
-    delegationText: row.delegation_text ?? "Vekalet metni production öncesi onaylanmalıdır.",
+    delegationText: row.delegation_text ?? "Vekalet metni dernek ekibi tarafından güncellenecektir.",
     transparencyNote: row.transparency_note ?? "Vekalet, kesim ve dağıtım süreci kayıt altında izlenir.",
     coverImageUrl: row.cover_image_url ?? undefined,
     updatedAt: row.updated_at ?? "Tarih güncellenecek"

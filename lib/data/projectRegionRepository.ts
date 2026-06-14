@@ -170,7 +170,7 @@ export function resolveRegionForProject(project: Project) {
 
 export async function getPublicProjectRegionsWithSource(): Promise<RepositoryResult<ProjectRegion[]>> {
   const supabase = createSupabaseReadOnlyClient();
-  if (!supabase) return { data: getFallbackProjectRegions(), source: "demo" };
+  if (!supabase) return { data: [], source: "demo" };
 
   const timeout = createReadOnlyAbortSignal();
   try {
@@ -185,14 +185,14 @@ export async function getPublicProjectRegionsWithSource(): Promise<RepositoryRes
 
     if (error) {
       logReadOnlyFallback("project_regions", error);
-      return { data: getFallbackProjectRegions(), source: "demo" };
+      return { data: [], source: "demo" };
     }
 
     const regions = (data ?? []).map((row) => mapSupabaseProjectRegion(row as unknown as ProjectRegionRow));
-    return regions.length ? { data: regions, source: "supabase" } : { data: getFallbackProjectRegions(), source: "demo" };
+    return regions.length ? { data: regions, source: "supabase" } : { data: [], source: "demo" };
   } catch {
     logReadOnlyFallback("project_regions");
-    return { data: getFallbackProjectRegions(), source: "demo" };
+    return { data: [], source: "demo" };
   } finally {
     timeout.clear();
   }
@@ -206,7 +206,7 @@ export async function getPublicProjectRegions() {
 export async function getProjectRegionBySlug(slug?: string | null) {
   if (!slug) return undefined;
   const regions = await getPublicProjectRegions();
-  return regions.find((region) => region.slug === slug) ?? getFallbackProjectRegionBySlug(slug);
+  return regions.find((region) => region.slug === slug);
 }
 
 function getAdminDb() {

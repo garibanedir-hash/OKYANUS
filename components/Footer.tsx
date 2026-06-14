@@ -124,7 +124,7 @@ export function Footer({ donationConfig }: { donationConfig: DonationPublicConfi
               </li>
               <li className="flex gap-3">
                 <Mail aria-hidden className="mt-0.5 h-4 w-4 text-mint-green" />
-                bilgi@okyanusyardim.org
+                bilgi@okyanus.org.tr
               </li>
             </ul>
           </div>

@@ -45,17 +45,17 @@ Bu runbook Okyanus İnsani Yardım Derneği platformu canlıya çıktıktan sonr
 
 ## 16C-Fix Domain / Env Checklist
 
-Canlı yayın öncesi hedef domain `https://okyanusyardim.org` olmalıdır. Dashboard erişimi olan yetkili kişi aşağıdaki maddeleri production ortamında tek tek doğrular:
+Canlı yayın öncesi hedef domain `https://www.okyanus.org.tr` olmalıdır. Dashboard erişimi olan yetkili kişi aşağıdaki maddeleri production ortamında tek tek doğrular:
 
-- Vercel Project > Settings > Domains içinde `okyanusyardim.org` bağlı.
-- `www.okyanusyardim.org` bağlı veya canonical yönlendirme stratejisi açıkça not edilmiş.
+- Vercel Project > Settings > Domains içinde `okyanus.org.tr` bağlı.
+- `www.okyanus.org.tr` bağlı veya canonical yönlendirme stratejisi açıkça not edilmiş.
 - DNS provider tarafında Vercel'in istediği A/CNAME kayıtları girilmiş.
 - SSL aktif; HTTP istekleri HTTPS'e yönleniyor.
 - Production env: `SITE_MAINTENANCE_MODE=false`.
 - Production env: `DONATION_MODE=whatsapp`.
 - Production env: `DONATION_WHATSAPP_PHONE=<resmi_whatsapp_numarası>`.
 - Production env: `DONATION_WHATSAPP_MESSAGE=Merhaba, Okyanus İnsani Yardım Derneği bağış çalışmaları hakkında bilgi almak istiyorum.`
-- Production env: `NEXT_PUBLIC_SITE_URL=https://okyanusyardim.org`.
+- Production env: `NEXT_PUBLIC_SITE_URL=https://www.okyanus.org.tr`.
 - Production env: `TURNSTILE_ENABLED=false`.
 - Production env: `RATE_LIMIT_PROVIDER=memory` veya onaylı kalıcı provider.
 - Production env: `PAYTR_DEBUG_ON=false`.
@@ -73,7 +73,7 @@ Public rotalar beklenmedik şekilde `/tadilat` sayfasına gidiyorsa şu sırayla
 - Test edilen domain hedef project/deployment yerine başka Vercel project'e bağlı olabilir.
 - Domain alias yanlış deployment'a promote edilmiş olabilir.
 - Middleware veya bakım guard env değerini beklenenden farklı okuyordur.
-- Yanlış domain üzerinden test yapılıyor olabilir; hedef canlı domain `https://okyanusyardim.org`.
+- Yanlış domain üzerinden test yapılıyor olabilir; hedef canlı domain `https://www.okyanus.org.tr`.
 
 Bu teşhis tamamlanmadan public smoke sonucu GO kabul edilmez.
 
@@ -82,7 +82,7 @@ Bu teşhis tamamlanmadan public smoke sonucu GO kabul edilmez.
 Canlı domain DNS/SSL tamamlandıktan sonra ilk komut:
 
 ```bash
-PRODUCTION_SMOKE_BASE_URL=https://okyanusyardim.org PRODUCTION_SMOKE_EXPECTED_WHATSAPP_PHONE=<resmi_whatsapp_numarası> npm run smoke:production
+PRODUCTION_SMOKE_BASE_URL=https://www.okyanus.org.tr PRODUCTION_SMOKE_EXPECTED_WHATSAPP_PHONE=<resmi_whatsapp_numarası> npm run smoke:production
 ```
 
 Beklenen sonuçlar:

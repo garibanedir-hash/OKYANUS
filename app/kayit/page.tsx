@@ -22,7 +22,7 @@ export default async function RegisterPage({
     params?.durum === "sinirli"
       ? "Tanıtım döneminde üyelik oluşturma sınırlıdır. Gönüllülük ve bağış bilgilendirmesi için iletişim kanallarımızı kullanabilirsiniz."
       : params?.durum === "env-eksik"
-        ? "Supabase env değişkenleri eksik. Kayıt akışı başlatılamadı."
+        ? "Kayıt akışı şu anda hazırlanıyor. Bilgi almak için iletişim kanallarımızı kullanabilirsiniz."
         : params?.durum === "kvkk"
           ? "Hesap oluşturmak için KVKK onayını işaretlemelisiniz."
           : params?.durum === "kullanim-sartlari"

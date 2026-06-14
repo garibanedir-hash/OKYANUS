@@ -1,4 +1,3 @@
-import type { Project } from "@/data/projects";
 import type { ProjectRegion } from "@/data/projectRegions";
 import { projectRegionCategoryIconPaths, projectRegionCategoryLabels } from "@/data/projectRegions";
 import { Button } from "@/components/ui/Button";
@@ -8,19 +7,15 @@ import type { DonationPublicConfig } from "@/lib/donations/donationTarget";
 
 type ProjectRegionDetailPanelProps = {
   region: ProjectRegion;
-  projects: Project[];
   compact?: boolean;
   donationConfig?: DonationPublicConfig;
 };
 
 export function ProjectRegionDetailPanel({
   region,
-  projects,
   compact = false,
   donationConfig
 }: ProjectRegionDetailPanelProps) {
-  const visibleProjects = projects.filter((project) => project.regionSlug === region.slug || region.relatedProjectSlugs.includes(project.slug));
-  const projectCount = visibleProjects.length || region.projectCount;
   const donationTarget = donationConfig
     ? resolveDonationTarget(donationConfig, { source: "general", campaignTitle: region.name }, "/bagis-yap")
     : { href: "/bagis-yap", isExternal: false };
@@ -34,8 +29,8 @@ export function ProjectRegionDetailPanel({
           <p className="mt-1 text-sm font-medium leading-5 text-[#64748B]">{region.country} / {region.region}</p>
         </div>
         <div className="shrink-0 rounded border border-[#1F8083]/25 bg-[#F4F8F7] px-3 py-2 text-right">
-          <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#1F8083]">Proje</p>
-          <p className="text-lg font-semibold text-[#0F2547]">{projectCount}</p>
+          <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#1F8083]">Durum</p>
+          <p className="text-sm font-semibold text-[#0F2547]">Güncel</p>
         </div>
       </div>
 
@@ -48,14 +43,12 @@ export function ProjectRegionDetailPanel({
       <p className="mt-4 text-sm font-semibold leading-6 text-[#0F2547]">{region.tagline}</p>
       <p className="mt-2 line-clamp-5 text-sm leading-6 text-[#64748B]">{region.description}</p>
 
-      <dl className={cn("mt-5 grid gap-2", compact ? "grid-cols-1 sm:grid-cols-3 xl:grid-cols-1" : "grid-cols-1")}>
-        {region.stats.slice(0, 3).map((stat) => (
-          <div key={`${region.slug}-${stat.label}`} className="rounded border border-[#DDE8E7] bg-[#F8FBFA] p-3">
-            <dt className="text-[0.62rem] font-bold uppercase tracking-[0.08em] text-[#64748B]">{stat.label}</dt>
-            <dd className="mt-1 text-sm font-semibold text-[#0F2547]">{stat.value}</dd>
-          </div>
-        ))}
-      </dl>
+      <div className={cn("mt-5 rounded border border-[#DDE8E7] bg-[#F8FBFA] p-3", compact && "sm:col-span-3 xl:col-span-1")}>
+        <p className="text-[0.62rem] font-bold uppercase tracking-[0.08em] text-[#64748B]">Saha Bilgisi</p>
+        <p className="mt-1 text-sm font-semibold leading-6 text-[#0F2547]">
+          Sayısal bilgiler, doğrulanan faaliyet kayıtları hazırlandığında paylaşılır.
+        </p>
+      </div>
 
       <div className="mt-5">
         <p className="text-[0.65rem] font-bold uppercase tracking-[0.1em] text-[#64748B]">Odak Alanları</p>

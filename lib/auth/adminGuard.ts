@@ -79,7 +79,7 @@ export async function requireAdmin(allowedRoles: AdminPermission[] = []): Promis
   }
 
   if (!isSupabaseConfigured()) {
-    return { allowed: false, mode: "missing_env", reason: "Supabase env değişkenleri eksik." };
+    return { allowed: false, mode: "missing_env", reason: "Giriş altyapısı henüz hazır değil." };
   }
 
   const profile = await getCurrentAdminProfile();

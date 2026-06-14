@@ -26,5 +26,5 @@ insert into reports (slug, title, period, category, summary, status, metrics, pu
   ('2025-yillik-faaliyet-raporu', '2025 Yıllık Faaliyet Raporu', '2025', 'Yıllık Rapor', 'Demo yıllık rapor.', 'published', '[{"label":"Şehir","value":"18"}]', now());
 
 insert into site_settings (key, value) values
-  ('organization', '{"name":"Okyanus İnsani Yardım Derneği","email":"bilgi@okyanusyardim.org","phone":"+90 212 000 00 00"}'),
+  ('organization', '{"name":"Okyanus İnsani Yardım Derneği","email":"bilgi@okyanus.org.tr","phone":"+90 212 000 00 00"}'),
   ('donation_defaults', '{"amounts":[100,250,500,1000],"currency":"TRY"}');

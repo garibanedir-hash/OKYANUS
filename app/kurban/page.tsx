@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getActiveQurbanCampaigns } from "@/lib/data/qurbanRepository";
-import { formatCurrency } from "@/lib/format";
 import { DonationCtaButton } from "@/components/donations/DonationCtaButton";
 
 export const metadata: Metadata = {
@@ -18,7 +17,7 @@ const qurbanTypes = ["Vacip", "Adak", "Akika", "Şükür", "Nafile"];
 const processSteps = [
   {
     title: "Kurban türü ve kampanya seçilir",
-    text: "Bağışçı uygun kampanyayı, bölgeyi ve hisse/adet bilgisini görerek başvuruya başlar."
+    text: "Bağışçı uygun kampanya, bölge ve destek niyetini ileterek başvuruya başlar."
   },
   {
     title: "Vekalet onayı kaydedilir",
@@ -66,14 +65,12 @@ export default async function QurbanPage() {
             <SectionHeading
               eyebrow="Aktif Kampanyalar"
               title="Kurban kampanyalarını inceleyin"
-              description="Aktif kampanyalarda kurban türü, bölge, birim bedel ve kalan kontenjan bilgilerini inceleyerek başvuru oluşturabilirsiniz."
+              description="Aktif kampanyalarda kurban türü, bölge ve başvuru sürecini inceleyerek dernek ekibinden bilgi alabilirsiniz."
             />
           </div>
 
           <div className="mt-8 grid gap-5 lg:grid-cols-3">
-            {campaigns.map((campaign) => {
-              const reservedRatio = campaign.quotaTotal > 0 ? Math.min(100, Math.round((campaign.quotaReserved / campaign.quotaTotal) * 100)) : 0;
-              return (
+            {campaigns.map((campaign) => (
                 <article key={campaign.id} className="rounded-brand border border-border-soft bg-white p-6 shadow-card">
                   <div className="flex flex-wrap items-center gap-2 text-xs font-extrabold uppercase tracking-[0.12em] text-ocean-green">
                     <span>{campaign.typeLabel}</span>
@@ -87,18 +84,8 @@ export default async function QurbanPage() {
                       <MapPin aria-hidden className="h-4 w-4 text-ocean-green" />
                       {campaign.country} · {campaign.cityOrRegion}
                     </div>
-                    <div className="flex items-center justify-between rounded-lg bg-soft-gray p-3">
-                      <span className="text-xs font-extrabold uppercase text-ink-muted">Birim bedel</span>
-                      <strong className="text-dark-navy">{formatCurrency(campaign.unitPrice)}</strong>
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-xs font-bold text-ink-muted">
-                        <span>Rezerve hisse/adet</span>
-                        <span>{campaign.quotaReserved}/{campaign.quotaTotal}</span>
-                      </div>
-                      <div className="mt-2 h-2 rounded-full bg-soft-gray">
-                        <div className="h-full rounded-full bg-ocean-green" style={{ width: `${reservedRatio}%` }} />
-                      </div>
+                    <div className="rounded-lg bg-soft-gray p-3 text-sm font-semibold leading-6 text-ink-muted">
+                      Bağış ve kontenjan bilgileri dernek ekibi tarafından doğrulanarak paylaşılır.
                     </div>
                   </div>
                   <div className="mt-5 flex flex-wrap gap-2">
@@ -113,8 +100,7 @@ export default async function QurbanPage() {
                     />
                   </div>
                 </article>
-              );
-            })}
+            ))}
           </div>
 
           {!campaigns.length ? (

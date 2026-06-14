@@ -17,11 +17,11 @@ export const metadata: Metadata = {
   description: "Okyanus Derneği için genel bağış, gıda, eğitim, yetim ve acil yardım bağış ön kayıt formu."
 };
 
-const impactItems: Array<{ icon: LucideIcon; amount: string; text: string }> = [
-  { icon: BookOpen, amount: "100 TL", text: "Bir öğrencinin kırtasiye desteğine katkı" },
-  { icon: Utensils, amount: "250 TL", text: "Bir ailenin temel ihtiyaç desteğine katkı" },
-  { icon: PackageCheck, amount: "500 TL", text: "Gıda kolisi desteğine katkı" },
-  { icon: ShieldCheck, amount: "1000 TL", text: "Kapsamlı aile destek paketine katkı" }
+const impactItems: Array<{ icon: LucideIcon; title: string; text: string }> = [
+  { icon: BookOpen, title: "Eğitim Desteği", text: "Öğrencilerin kırtasiye ve eğitim materyali ihtiyaçlarına katkı" },
+  { icon: Utensils, title: "Temel İhtiyaç", text: "Ailelerin gıda ve temel ihtiyaç desteklerine katkı" },
+  { icon: PackageCheck, title: "Saha Hazırlığı", text: "Yardım paketlerinin planlı ve kayıtlı şekilde hazırlanmasına katkı" },
+  { icon: ShieldCheck, title: "Aile Desteği", text: "Mahremiyet ve emanet bilinciyle yürütülen destek süreçlerine katkı" }
 ];
 
 const trustNotes: Array<{ icon: LucideIcon; text: string }> = [
@@ -61,13 +61,13 @@ export default async function DonatePage({ searchParams }: DonatePageProps) {
                 description="Her tutar küçük ya da büyük fark etmeden, planlı ve kayıtlı bir dayanışma sürecinin parçası olur."
               />
               <div className="mt-8 grid gap-4">
-                {impactItems.map(({ icon: Icon, amount, text }) => (
-                  <div key={amount} className="flex items-start gap-4 rounded-2xl bg-white p-5 shadow-card">
+                {impactItems.map(({ icon: Icon, title, text }) => (
+                  <div key={title} className="flex items-start gap-4 rounded-2xl bg-white p-5 shadow-card">
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-mint-green text-ocean-green">
                       <Icon aria-hidden className="h-5 w-5" />
                     </span>
                     <div>
-                      <p className="font-extrabold text-deep-blue">{amount}</p>
+                      <p className="font-extrabold text-deep-blue">{title}</p>
                       <p className="mt-1 text-sm leading-6 text-slate-600">{text}</p>
                     </div>
                   </div>
