@@ -39,6 +39,8 @@ const publicReportColumns = [
   "updated_at"
 ].join(", ");
 
+const publicQaBlockedTextPattern = /\b(demo|placeholder|lorem|todo|staging|production|test)\b|payment\s+intent|paytr\s+test|taslak/i;
+
 function isMetric(value: unknown): value is { label: string; value: string } {
   return (
     value !== null &&
@@ -58,16 +60,22 @@ function normalizeMetrics(metrics: unknown): Report["metrics"] {
   return metrics.filter(isMetric);
 }
 
+function safePublicReportText(value: string | null | undefined, fallback: string) {
+  const text = value?.trim();
+  if (!text || publicQaBlockedTextPattern.test(text)) return fallback;
+  return text;
+}
+
 export function mapSupabaseReportToReport(row: SupabaseReportRow): Report {
   const metrics = normalizeMetrics(row.metrics);
 
   return {
     id: row.id,
     slug: row.slug,
-    title: row.title,
+    title: safePublicReportText(row.title, "Faaliyet Raporu"),
     period: row.period,
     category: row.category,
-    summary: row.summary,
+    summary: safePublicReportText(row.summary, "Dönemsel faaliyet çalışmalarına ait özet bilgiler bu alanda paylaşılır."),
     statusLabel: row.pdf_asset_id ? "Özet yayınlandı" : "PDF yakında",
     pdfUrl: row.file_url ?? undefined,
     metrics: metrics.length ? metrics : [{ label: "Durum", value: "Yayında" }],

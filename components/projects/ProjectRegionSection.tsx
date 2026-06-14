@@ -57,31 +57,47 @@ export function ProjectRegionSection({
               Okyanus İnsani Yardım Derneği olarak çalışmalarımızı bölge, ihtiyaç ve saha bilgisini dikkate alan güvenilir bir yardım yaklaşımıyla yürütüyoruz.
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-2 text-right sm:min-w-[22rem]">
-            <div className="rounded-lg border border-[#DDE8E7] bg-white px-3 py-3">
+          <div className="grid min-w-0 grid-cols-1 gap-2 text-left sm:min-w-[22rem] sm:grid-cols-3 sm:text-right">
+            <div className="min-w-0 rounded-lg border border-[#DDE8E7] bg-white px-3 py-3">
               <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#64748B]">Bölge</p>
               <p className="mt-1 text-lg font-semibold text-[#0F2547]">{regions.length}</p>
             </div>
-            <div className="rounded-lg border border-[#DDE8E7] bg-white px-3 py-3">
+            <div className="min-w-0 rounded-lg border border-[#DDE8E7] bg-white px-3 py-3">
               <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#64748B]">Proje</p>
               <p className="mt-1 text-lg font-semibold text-[#0F2547]">{totalProjectCount}</p>
             </div>
-            <div className="rounded-lg border border-[#DDE8E7] bg-white px-3 py-3">
+            <div className="min-w-0 rounded-lg border border-[#DDE8E7] bg-white px-3 py-3">
               <p className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[#64748B]">Etki</p>
-              <p className="mt-1 text-sm font-semibold text-[#0F2547]">{activeRegion.stats[0]?.value ?? activeRegion.beneficiaryEstimate}</p>
+              <p className="mt-1 break-words text-sm font-semibold text-[#0F2547]">{activeRegion.stats[0]?.value ?? activeRegion.beneficiaryEstimate}</p>
             </div>
           </div>
         </div>
 
         <div
           className={cn(
-            "mt-4 grid min-w-0 gap-4",
+            "mt-4 grid min-w-0 items-start gap-4",
             compact
               ? "xl:grid-cols-[minmax(0,1fr)_minmax(300px,340px)]"
               : "xl:grid-cols-[280px_minmax(0,1fr)_340px] 2xl:grid-cols-[300px_minmax(0,1fr)_370px]"
           )}
         >
-          {compact ? null : (
+          {compact ? (
+            <div className="order-1 grid min-w-0 gap-3 xl:order-1">
+              <ProjectRegionMap
+                regions={regions}
+                activeRegionSlug={activeRegion.slug}
+                onSelect={setActiveRegionSlug}
+                compact
+              />
+              <ProjectRegionList
+                regions={regions}
+                activeRegionSlug={activeRegion.slug}
+                projectCountByRegion={projectCountByRegion}
+                onSelect={setActiveRegionSlug}
+                compact
+              />
+            </div>
+          ) : (
             <div className="order-3 min-w-0 xl:order-1">
               <ProjectRegionList
                 regions={regions}
@@ -92,16 +108,18 @@ export function ProjectRegionSection({
             </div>
           )}
 
-          <div className="order-1 min-w-0 xl:order-2">
-            <ProjectRegionMap
-              regions={regions}
-              activeRegionSlug={activeRegion.slug}
-              onSelect={setActiveRegionSlug}
-              compact={compact}
-            />
-          </div>
+          {compact ? null : (
+            <div className="order-1 min-w-0 self-start xl:order-2">
+              <ProjectRegionMap
+                regions={regions}
+                activeRegionSlug={activeRegion.slug}
+                onSelect={setActiveRegionSlug}
+                compact={compact}
+              />
+            </div>
+          )}
 
-          <div className="order-2 min-w-0 xl:order-3">
+          <div className="order-2 min-w-0 self-start xl:order-3">
             <ProjectRegionDetailPanel
               region={activeRegion}
               projects={enrichedProjects}
@@ -110,18 +128,6 @@ export function ProjectRegionSection({
             />
           </div>
         </div>
-
-        {compact ? (
-          <div className="mt-4">
-            <ProjectRegionList
-              regions={regions}
-              activeRegionSlug={activeRegion.slug}
-              projectCountByRegion={projectCountByRegion}
-              onSelect={setActiveRegionSlug}
-              compact
-            />
-          </div>
-        ) : null}
       </div>
 
       <ProjectRegionProjects region={activeRegion} projects={enrichedProjects} activities={activities} compact={compact} />

@@ -41,6 +41,15 @@ No-go şartları; aşağıdakilerden biri varsa deploy/env değişikliği durur:
 - [ ] `npm run smoke:production` production veya preview base URL ile çalıştırıldı veya base URL yoksa kontrollü skip olarak not edildi.
 - [ ] Vercel Preview Turnstile/Upstash QA açık operasyonel madde olarak kalıyorsa production `TURNSTILE_ENABLED=true` zorunlu açılmadı.
 
+## 16B Tanıtım Modu Final QA
+
+- [ ] `docs/promotion-launch-final-qa.md` tanıtım yayını öncesi son kontrol referansı olarak tamamlandı.
+- [ ] Public rota listesi, WhatsApp yönlendirmeleri, hukuki linkler, SEO/metadata ve mobil kırılım kontrolleri gözden geçirildi.
+- [ ] Production env için `SITE_MAINTENANCE_MODE=false`, `DONATION_MODE=whatsapp`, `NEXT_PUBLIC_SITE_URL=https://okyanusyardim.org`, `TURNSTILE_ENABLED=false`, `PAYTR_DEBUG_ON=false` ve `NEXT_PUBLIC_ADMIN_DEMO_MODE=false` doğrulandı.
+- [ ] Production resmi WhatsApp numarası Vercel Production env içinde doğrulandı.
+- [ ] `npm run smoke:production` gerçek base URL ile çalıştırıldı veya base URL yoksa güvenli skip olarak raporlandı.
+- [ ] Public sayfalarda `demo`, `placeholder`, `lorem`, `TODO`, `staging`, `production`, `test`, `payment intent`, `PayTR test` ve `taslak` ifadeleri ziyaretçiye görünmüyor.
+
 ## Vercel ve Environment
 
 - [ ] Vercel project doğru GitHub repository ile bağlı.

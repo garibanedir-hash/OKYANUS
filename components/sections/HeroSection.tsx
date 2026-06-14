@@ -6,7 +6,6 @@ import { Container } from "@/components/ui/Container";
 import { OfficialLogo } from "@/components/brand/OfficialLogo";
 import { resolveDonationTarget } from "@/lib/donations/donationTarget";
 import type { DonationPublicConfig } from "@/lib/donations/donationTarget";
-import { motion } from "framer-motion";
 
 const trustPoints = [
   "Bağış ve destek alanı kayıt altına alınır.",
@@ -42,15 +41,6 @@ function OceanRings() {
   );
 }
 
-const reveal = {
-  hidden: { opacity: 0, y: 28 },
-  show: (d: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: "easeOut", delay: d },
-  }),
-};
-
 export function HeroSection({ donationConfig }: { donationConfig: DonationPublicConfig }) {
   const donationTarget = resolveDonationTarget(donationConfig, { source: "general" }, "/bagis-yap");
 
@@ -75,72 +65,36 @@ export function HeroSection({ donationConfig }: { donationConfig: DonationPublic
           {/* ── Left column ── */}
           <div className="flex flex-col">
             {/* Logo — no box, no border, just the mark */}
-            <motion.div
-              variants={reveal}
-              initial="hidden"
-              animate="show"
-              custom={0}
-              className="mb-10 self-start"
-            >
+            <div className="mb-10 self-start">
               <OfficialLogo variant="white" size="lg" />
-            </motion.div>
+            </div>
 
             {/* Trust pill */}
-            <motion.div
-              variants={reveal}
-              initial="hidden"
-              animate="show"
-              custom={0.1}
-              className="mb-6 self-start"
-            >
+            <div className="mb-6 self-start">
               <span className="inline-flex items-center gap-2 rounded-full border border-ocean-green/30 bg-ocean-green/12 px-4 py-1.5">
                 <ShieldCheck aria-hidden className="h-3.5 w-3.5 text-ocean-green" />
                 <span className="text-xs font-bold uppercase tracking-[0.13em] text-ocean-green">
                   Güvenilir · Şeffaf · Emanet Bilinçli
                 </span>
               </span>
-            </motion.div>
+            </div>
 
             {/* Headline */}
-            <motion.h1
-              variants={reveal}
-              initial="hidden"
-              animate="show"
-              custom={0.18}
-              className="text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-[3.6rem]"
-            >
+            <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-[3.6rem]">
               İyilik,{" "}
               <span className="text-ocean-green">güvenle</span>{" "}
               büyür.
-            </motion.h1>
+            </h1>
 
-            <motion.p
-              variants={reveal}
-              initial="hidden"
-              animate="show"
-              custom={0.24}
-              className="mt-3 text-sm font-semibold text-ocean-green/75"
-            >
+            <p className="mt-3 text-sm font-semibold text-ocean-green/75">
               İyilik Paylaştıkça Okyanusa Dönüşür.
-            </motion.p>
+            </p>
 
-            <motion.p
-              variants={reveal}
-              initial="hidden"
-              animate="show"
-              custom={0.3}
-              className="mt-6 max-w-[34rem] text-lg leading-8 text-white/60"
-            >
+            <p className="mt-6 max-w-[34rem] text-lg leading-8 text-white/60">
               Bağışları kayıt altına alan, projeleri takip eden ve ihtiyaç sahiplerine insan onurunu gözeten destekler ulaştıran bir dayanışma platformu.
-            </motion.p>
+            </p>
 
-            <motion.div
-              variants={reveal}
-              initial="hidden"
-              animate="show"
-              custom={0.38}
-              className="mt-10 flex flex-col gap-3 sm:flex-row"
-            >
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
               <Button
                 href={donationTarget.href}
                 target={donationTarget.isExternal ? "_blank" : undefined}
@@ -152,16 +106,11 @@ export function HeroSection({ donationConfig }: { donationConfig: DonationPublic
               <Button href="/gonullu-ol" variant="ghost" showIcon>
                 Gönüllü Ol
               </Button>
-            </motion.div>
+            </div>
           </div>
 
           {/* ── Right column — glassmorphism card ── */}
-          <motion.div
-            variants={reveal}
-            initial="hidden"
-            animate="show"
-            custom={0.2}
-          >
+          <div>
             <div className="rounded-[1.75rem] border border-white/10 bg-white/[0.07] p-7 shadow-[0_24px_64px_rgba(0,0,0,0.4)] backdrop-blur-xl">
               <div className="flex items-start gap-4">
                 <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-ocean-green/20 ring-1 ring-ocean-green/30">
@@ -178,18 +127,14 @@ export function HeroSection({ donationConfig }: { donationConfig: DonationPublic
               </div>
 
               <div className="mt-5 grid gap-2.5">
-                {trustPoints.map((item, i) => (
-                  <motion.div
+                {trustPoints.map((item) => (
+                  <div
                     key={item}
-                    variants={reveal}
-                    initial="hidden"
-                    animate="show"
-                    custom={0.35 + i * 0.08}
                     className="flex gap-3 rounded-xl border border-white/8 bg-white/5 px-4 py-3.5 text-sm font-semibold leading-6 text-white/75"
                   >
                     <CheckCircle2 aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-ocean-green" />
                     <span>{item}</span>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
 
@@ -200,7 +145,7 @@ export function HeroSection({ donationConfig }: { donationConfig: DonationPublic
                 </span>
               </div>
             </div>
-          </motion.div>
+          </div>
 
         </div>
       </Container>

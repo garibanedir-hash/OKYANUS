@@ -141,7 +141,7 @@ export function ProjectRegionMap({ regions, activeRegionSlug, onSelect, compact 
   const mapTransform = `translate(${VIEWBOX.width / 2} ${VIEWBOX.height / 2}) scale(${zoom}) translate(${-center.x} ${-center.y})`;
 
   return (
-    <div className={cn("relative min-w-0 overflow-hidden rounded-lg border border-[#DDE8E7] bg-[#08202A]", compact ? "h-[420px] sm:h-[460px]" : "h-[500px] lg:h-[560px]")}>
+    <div className={cn("relative min-w-0 overflow-hidden rounded-lg border border-[#DDE8E7] bg-[#08202A]", compact ? "h-[320px] sm:h-[360px] lg:h-[400px]" : "h-[340px] sm:h-[420px] lg:h-[460px]")}>
       <div className="absolute left-4 top-4 z-20 rounded-md border border-white/10 bg-[#0B2430]/82 px-3 py-2 backdrop-blur">
         <p className="text-[0.62rem] font-bold uppercase tracking-[0.12em] text-[#B9E2E1]">Yardım Çalışmaları Haritası</p>
         <p className="mt-1 text-xs font-medium text-[#CBD5E1]">Seçili bölgeyi harita üzerinde inceleyin</p>

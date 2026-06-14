@@ -35,7 +35,7 @@ export const reports: Report[] = [
     period: "2025",
     category: "Yıllık Rapor",
     summary:
-      "Yıl boyunca yürütülen destek, gönüllülük ve saha koordinasyonu çalışmalarının rapor taslağı.",
+      "Yıl boyunca yürütülen destek, gönüllülük ve saha koordinasyonu çalışmalarının dönemsel rapor özeti.",
     statusLabel: "PDF yakında",
     metrics: [
       { label: "Şehir", value: "18" },
@@ -67,7 +67,7 @@ export const reports: Report[] = [
     period: "2025 Eğitim Dönemi",
     category: "Eğitim",
     summary:
-      "Kırtasiye, eğitim materyali ve öğrenci desteklerinin takip edilebileceği rapor taslağı.",
+      "Kırtasiye, eğitim materyali ve öğrenci desteklerinin takip edilebileceği dönemsel rapor özeti.",
     statusLabel: "PDF yakında",
     metrics: [
       { label: "Öğrenci", value: "750" },

@@ -14,14 +14,14 @@ export function SectionHeading({
   className?: string;
 }) {
   return (
-    <div className={cn("max-w-3xl", align === "center" && "mx-auto text-center", className)}>
+    <div className={cn("min-w-0 max-w-[calc(100vw-2.5rem)] sm:max-w-3xl", align === "center" && "mx-auto text-center", className)}>
       {eyebrow ? (
         <p className="mb-3 text-sm font-semibold uppercase tracking-[0.16em] text-ocean-green">
           {eyebrow}
         </p>
       ) : null}
-      <h2 className="text-3xl font-bold leading-tight text-dark-navy sm:text-4xl">{title}</h2>
-      {description ? <p className="mt-4 text-base leading-7 text-ink-muted sm:text-lg">{description}</p> : null}
+      <h2 className="break-words text-3xl font-bold leading-tight text-dark-navy sm:text-4xl">{title}</h2>
+      {description ? <p className="mt-4 break-words text-base leading-7 text-ink-muted sm:text-lg">{description}</p> : null}
     </div>
   );
 }

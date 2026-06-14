@@ -24,7 +24,7 @@ export default function AboutPage() {
           Şeffaflık Anlayışımız
         </Button>
       </PageHero>
-      <section className="bg-warm-white py-16 sm:py-20">
+      <section id="biz-kimiz" className="bg-warm-white py-16 sm:py-20">
         <Container>
         <SectionHeading
           eyebrow="Biz Kimiz?"
