@@ -419,3 +419,18 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Restore planı yanlış migration, silinen görsel, admin içerik, makbuz PDF, payment callback ve storage policy senaryolarını kapsıyor.
 - [ ] Incident response planı site/admin kesintisi, form spam, yanlış WhatsApp, online ödemeye yanlış yönlenme, private makbuz public görünme, PayTR hata, RLS warning, service role sızıntı şüphesi ve storage kota olaylarını kapsıyor.
 - [ ] Production'da `DONATION_MODE=whatsapp` ve PayTR online ödeme kapalı kalacak; 16A bu davranışı değiştirmiyor.
+
+## 16C-Fix ve 16D Canlı Yayın Hazırlığı
+
+- [ ] Vercel Production env dashboard'da doğrulandı: `SITE_MAINTENANCE_MODE=false`, `DONATION_MODE=whatsapp`, `NEXT_PUBLIC_SITE_URL=https://okyanusyardim.org`, `TURNSTILE_ENABLED=false`, `PAYTR_DEBUG_ON=false`, `NEXT_PUBLIC_ADMIN_DEMO_MODE=false`.
+- [ ] `DONATION_WHATSAPP_PHONE` resmi numara olarak doğrulandı; resmi numara kesinleşmeden GO verilmedi.
+- [ ] `DONATION_WHATSAPP_MESSAGE` kurumsal mesajla uyumlu.
+- [ ] `okyanusyardim.org` ve gerekli ise `www.okyanusyardim.org` Vercel project domains içinde bağlı.
+- [ ] DNS/SSL/HTTP-to-HTTPS kontrolü tamamlandı.
+- [ ] Public rotaların `/tadilat` yönlendirmesi yapmadığı doğrulandı; yapıyorsa env, domain alias, deployment ve middleware guard teşhisi tamamlandı.
+- [ ] `scripts/production-smoke-check.mjs` canlı domain için `PRODUCTION_SMOKE_BASE_URL` ile çalıştırıldı.
+- [ ] Smoke script, `PRODUCTION_SMOKE_EXPECTED_WHATSAPP_PHONE` verilirse `wa.me/<resmi_numara>` hedefini kontrol ediyor.
+- [ ] Smoke script bağış sayfalarında PayTR/iframe/payment intent sinyali görürse fail veriyor.
+- [ ] `/admin` anonim erişimde login redirect veriyor.
+- [ ] `npm run test:supabase` sonucu `Security warning: 0` ve `Missing table: 0`.
+- [ ] Admin sidebar polish yalnızca component görsel düzenidir; backend route guard, RLS, payment, makbuz, consent ve storage akışlarında değişiklik yapılmadı.

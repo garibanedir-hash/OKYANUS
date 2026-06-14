@@ -43,6 +43,57 @@ Bu runbook Okyanus İnsani Yardım Derneği platformu canlıya çıktıktan sonr
 - `receipts-private` ve `manual-receipts-private` Dashboard'da public=false.
 - Vercel logs ilk 15-30 dakika izlendi; tekrar eden 500 veya provider hata piki yok.
 
+## 16C-Fix Domain / Env Checklist
+
+Canlı yayın öncesi hedef domain `https://okyanusyardim.org` olmalıdır. Dashboard erişimi olan yetkili kişi aşağıdaki maddeleri production ortamında tek tek doğrular:
+
+- Vercel Project > Settings > Domains içinde `okyanusyardim.org` bağlı.
+- `www.okyanusyardim.org` bağlı veya canonical yönlendirme stratejisi açıkça not edilmiş.
+- DNS provider tarafında Vercel'in istediği A/CNAME kayıtları girilmiş.
+- SSL aktif; HTTP istekleri HTTPS'e yönleniyor.
+- Production env: `SITE_MAINTENANCE_MODE=false`.
+- Production env: `DONATION_MODE=whatsapp`.
+- Production env: `DONATION_WHATSAPP_PHONE=<resmi_whatsapp_numarası>`.
+- Production env: `DONATION_WHATSAPP_MESSAGE=Merhaba, Okyanus İnsani Yardım Derneği bağış çalışmaları hakkında bilgi almak istiyorum.`
+- Production env: `NEXT_PUBLIC_SITE_URL=https://okyanusyardim.org`.
+- Production env: `TURNSTILE_ENABLED=false`.
+- Production env: `RATE_LIMIT_PROVIDER=memory` veya onaylı kalıcı provider.
+- Production env: `PAYTR_DEBUG_ON=false`.
+- Production env: `NEXT_PUBLIC_ADMIN_DEMO_MODE=false`.
+- Env değişikliği sonrası yeni production deploy/promote yapıldı.
+
+Resmi WhatsApp numarası kesinleşmeden GO verilmez. Eğer resmi numara `905300698976` değilse Production env düzeltilir, yeniden deploy alınır ve smoke test tekrar çalıştırılır.
+
+## `/tadilat` Yönlendirme Teşhisi
+
+Public rotalar beklenmedik şekilde `/tadilat` sayfasına gidiyorsa şu sırayla kontrol edilir:
+
+- `SITE_MAINTENANCE_MODE=true` kalmış olabilir.
+- Production env dashboard'da doğru olsa bile deploy eski env ile build edilmiş olabilir; redeploy gerekir.
+- Test edilen domain hedef project/deployment yerine başka Vercel project'e bağlı olabilir.
+- Domain alias yanlış deployment'a promote edilmiş olabilir.
+- Middleware veya bakım guard env değerini beklenenden farklı okuyordur.
+- Yanlış domain üzerinden test yapılıyor olabilir; hedef canlı domain `https://okyanusyardim.org`.
+
+Bu teşhis tamamlanmadan public smoke sonucu GO kabul edilmez.
+
+## 16D Canlı Smoke Hazırlığı
+
+Canlı domain DNS/SSL tamamlandıktan sonra ilk komut:
+
+```bash
+PRODUCTION_SMOKE_BASE_URL=https://okyanusyardim.org PRODUCTION_SMOKE_EXPECTED_WHATSAPP_PHONE=<resmi_whatsapp_numarası> npm run smoke:production
+```
+
+Beklenen sonuçlar:
+
+- Public rotalar 200.
+- `/admin` login redirect.
+- `/robots.txt` ve `/sitemap.xml` 200.
+- `/bagis-yap`, `/kurban/bagis`, `/yetim-hamiligi/basvuru` WhatsApp modu sinyali gösterir.
+- Online payment form, PayTR iframe veya payment intent sinyali görünmez.
+- Script secret kullanmaz, write/delete yapmaz ve Supabase DB/Storage'a dokunmaz.
+
 ## Bakılacak Loglar
 
 - Vercel deployment logs: build hatası, env eksikliği, Next.js runtime exception.
@@ -270,19 +321,29 @@ Bu runbook Okyanus İnsani Yardım Derneği platformu canlıya çıktıktan sonr
 
 ## Health Check / Smoke Script
 
-`npm run smoke:production` yalnızca public HTTP route kontrolü yapar. Base URL için `PRODUCTION_SMOKE_BASE_URL` veya `NEXT_PUBLIC_SITE_URL` kullanır. Base URL yoksa güvenli şekilde SKIPPED döner.
+`npm run smoke:production` yalnızca public HTTP route kontrolü yapar. Base URL için `PRODUCTION_SMOKE_BASE_URL` veya `NEXT_PUBLIC_SITE_URL` kullanır. Base URL yoksa güvenli şekilde SKIPPED döner. `PRODUCTION_SMOKE_EXPECTED_WHATSAPP_PHONE` verilirse `wa.me/<numara>` hedefini de doğrular.
 
 Kontrol edilen rotalar:
 
 - `/`
-- `/hukuki`
-- `/bagis-yap`
+- `/hakkimizda`
+- `/projeler`
+- `/projeler/bir-koli-bir-umut`
+- `/faaliyetler`
+- `/kurban`
 - `/kurban/bagis`
+- `/yetim-hamiligi`
 - `/yetim-hamiligi/basvuru`
-- `/iletisim`
+- `/bagis-yap`
 - `/gonullu-ol`
+- `/iletisim`
+- `/seffaflik`
+- `/faaliyet-raporlari`
+- `/hukuki`
+- `/hukuki/*` temel hukuki sayfalar
 - `/robots.txt`
 - `/sitemap.xml`
+- `/admin` login redirect
 
 Script secret kullanmaz, write/delete yapmaz, Supabase DB veya Storage'a dokunmaz.
 

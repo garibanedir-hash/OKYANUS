@@ -29,6 +29,10 @@ No-go şartları; aşağıdakilerden biri varsa deploy/env değişikliği durur:
 - Donation mode yanlış.
 - Private bucket public.
 - Admin anon erişilebilir.
+- `okyanusyardim.org` DNS çözmüyor veya Vercel production deployment'a bağlı değil.
+- `NEXT_PUBLIC_SITE_URL` production domain dışında bir URL gösteriyor.
+- Public rotalar bakım/tadilat sayfasına yönleniyor ve bu yayın planının parçası değil.
+- Resmi WhatsApp numarası Vercel Production env içinde doğrulanmadı.
 - Ödeme modu yanlışlıkla online.
 - PayTR canlı merchant test ve mali/yönetim onayı tamamlanmadan online payment açılıyor.
 
@@ -49,6 +53,42 @@ No-go şartları; aşağıdakilerden biri varsa deploy/env değişikliği durur:
 - [ ] Production resmi WhatsApp numarası Vercel Production env içinde doğrulandı.
 - [ ] `npm run smoke:production` gerçek base URL ile çalıştırıldı veya base URL yoksa güvenli skip olarak raporlandı.
 - [ ] Public sayfalarda `demo`, `placeholder`, `lorem`, `TODO`, `staging`, `production`, `test`, `payment intent`, `PayTR test` ve `taslak` ifadeleri ziyaretçiye görünmüyor.
+
+## 16C-Fix Domain, Env ve Bakım Modu
+
+- [ ] Vercel Project > Settings > Domains içinde `okyanusyardim.org` eklendi.
+- [ ] Vercel Project > Settings > Domains içinde `www.okyanusyardim.org` eklendi veya bilinçli olarak canonical redirect stratejisi dışında bırakıldı.
+- [ ] DNS provider tarafında Vercel'in istediği A/CNAME kayıtları girildi.
+- [ ] SSL aktif; `http://okyanusyardim.org` HTTPS'e yönleniyor.
+- [ ] www/non-www stratejisi net: canonical domain `https://okyanusyardim.org`.
+- [ ] Production env içinde `SITE_MAINTENANCE_MODE=false`.
+- [ ] Production env içinde `DONATION_MODE=whatsapp`.
+- [ ] Production env içinde `DONATION_WHATSAPP_PHONE=<resmi_whatsapp_numarası>`; resmi numara kesinleşmeden GO verilmez.
+- [ ] Production env içinde `DONATION_WHATSAPP_MESSAGE=Merhaba, Okyanus İnsani Yardım Derneği bağış çalışmaları hakkında bilgi almak istiyorum.`
+- [ ] Production env içinde `NEXT_PUBLIC_SITE_URL=https://okyanusyardim.org`.
+- [ ] Production env içinde `TURNSTILE_ENABLED=false`.
+- [ ] Production env içinde `RATE_LIMIT_PROVIDER=memory` veya onaylı kalıcı provider değeri.
+- [ ] Production env içinde `PAYTR_DEBUG_ON=false`.
+- [ ] Production env içinde `NEXT_PUBLIC_ADMIN_DEMO_MODE=false`.
+- [ ] Env değişikliği sonrası yeni production deploy veya promote alındı; eski build'in env cache'i kullanılmıyor.
+- [ ] `/tadilat` yönlendirmesi görülürse olası sebepler kontrol edildi: `SITE_MAINTENANCE_MODE=true`, yanlış production env, domainin başka deployment/project'e bağlı olması, middleware/bakım guard env okuma sorunu, env güncellemesi sonrası redeploy yapılmaması veya yanlış domain üzerinden test.
+
+## 16D Canlı Domain Smoke ve Go/No-Go
+
+- [ ] Canlı smoke şu komutla çalıştırıldı:
+
+```bash
+PRODUCTION_SMOKE_BASE_URL=https://okyanusyardim.org PRODUCTION_SMOKE_EXPECTED_WHATSAPP_PHONE=<resmi_whatsapp_numarası> npm run smoke:production
+```
+
+- [ ] Public rotalar 200: `/`, `/hakkimizda`, `/projeler`, `/projeler/bir-koli-bir-umut`, `/faaliyetler`, `/kurban`, `/kurban/bagis`, `/yetim-hamiligi`, `/yetim-hamiligi/basvuru`, `/bagis-yap`, `/gonullu-ol`, `/iletisim`, `/seffaflik`, `/faaliyet-raporlari`, `/hukuki`.
+- [ ] `/admin` anonim kullanıcıyı `/admin/giris` rotasına yönlendiriyor.
+- [ ] `/robots.txt` ve `/sitemap.xml` 200 dönüyor.
+- [ ] `/bagis-yap`, `/kurban/bagis`, `/yetim-hamiligi/basvuru` ve proje detay CTA'ları WhatsApp modu sinyali gösteriyor.
+- [ ] Online payment form, PayTR iframe veya payment intent sinyali görünmüyor.
+- [ ] Header, footer, hukuki linkler ve KVKK/Gizlilik linkleri canlı domain üzerinde kontrol edildi.
+- [ ] Mobil kırılımlar canlıda kontrol edildi: 390px, 768px, 1024px, 1440px.
+- [ ] Admin sidebar polish canlıda kontrol edildi: kapalı gruplar kompakt, açık grup item/badge hizası düzgün, horizontal scroll yok.
 
 ## Vercel ve Environment
 

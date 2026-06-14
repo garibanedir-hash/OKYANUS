@@ -181,18 +181,31 @@ Bu script boş veya production domain gibi görünen `NEXT_PUBLIC_SITE_URL` değ
 
 ## Env ve Production Config Checklist
 
-- `SITE_MAINTENANCE_MODE=false`, yayın stratejisi gerektiriyorsa geçici olarak true.
+- `SITE_MAINTENANCE_MODE=false`; yayın stratejisi gerektiriyorsa geçici olarak true, ancak tanıtım yayını GO öncesi false olmalıdır.
 - `NEXT_PUBLIC_ADMIN_DEMO_MODE=false`.
 - `DONATION_MODE=whatsapp`.
-- `DONATION_WHATSAPP_PHONE` doğrulanmış public iletişim hattı.
-- `NEXT_PUBLIC_SITE_URL` production domain.
+- `DONATION_WHATSAPP_PHONE` doğrulanmış resmi public iletişim hattı; numara kesinleşmeden GO verilmez.
+- `DONATION_WHATSAPP_MESSAGE=Merhaba, Okyanus İnsani Yardım Derneği bağış çalışmaları hakkında bilgi almak istiyorum.`
+- `NEXT_PUBLIC_SITE_URL=https://okyanusyardim.org`.
 - Supabase publishable/anon key public, service role key yalnızca server env.
 - `RATE_LIMIT_PROVIDER=upstash` production önerisi; `UPSTASH_REDIS_REST_URL` ve `UPSTASH_REDIS_REST_TOKEN` yalnızca server env.
-- `TURNSTILE_ENABLED=true` production'a alınacaksa önce Vercel Preview/Staging QA tamamlanır.
+- Tanıtım yayını için `RATE_LIMIT_PROVIDER=memory` kalabilir; Upstash yoksa risk operasyon notunda durur.
+- `TURNSTILE_ENABLED=false`; true production'a alınacaksa önce Vercel Preview/Staging QA tamamlanır.
 - Preview/production ortamlarında `RATE_LIMIT_PROVIDER=upstash` seçili ama Upstash env eksikse deploy öncesi check hata vermelidir.
 - PayTR production credential değerleri canlı ödeme onayı olmadan aktif edilmez.
 - `PAYTR_DEBUG_ON=false`.
 - `.env.local`, `.vercel` ve test credential değerleri Git'e dahil edilmez.
+
+## 16C-Fix Domain ve Bakım Modu Güvenliği
+
+- `okyanusyardim.org` Vercel production project'e bağlı olmalıdır.
+- `www.okyanusyardim.org` ya aynı project'e bağlı olmalı ya da canonical domain stratejisine göre bilinçli yönlendirilmelidir.
+- DNS provider tarafında Vercel'in istediği A/CNAME kayıtları girilmeden canlı GO verilmez.
+- SSL aktif ve HTTP -> HTTPS yönlendirmesi çalışır durumda olmalıdır.
+- Public rotalar beklenmeyen şekilde `/tadilat` sayfasına yönleniyorsa no-go kabul edilir.
+- `/tadilat` yönlendirmesinde ilk kontroller: `SITE_MAINTENANCE_MODE`, Production env scoping, domain alias'ın doğru project/deployment'a bağlı olması, env değişikliği sonrası redeploy alınması ve middleware/bakım guard env okuması.
+- Production env dashboard'dan doğrulanmadan local `.env.local` değerleri canlı kanıt kabul edilmez.
+- Admin sidebar polish yalnızca görsel düzenleme kapsamındadır; route guard, RLS, storage, makbuz, payment ve consent güvenlik sınırlarını değiştirmemelidir.
 
 ## Security Headers
 
@@ -244,4 +257,10 @@ Production smoke:
 npm run smoke:production
 ```
 
-Bu komut `PRODUCTION_SMOKE_BASE_URL` veya `NEXT_PUBLIC_SITE_URL` ile public HTTP route status/body kontrolü yapar; secret kullanmaz, write/delete yapmaz ve Supabase DB/Storage'a dokunmaz. Base URL yoksa güvenli şekilde skip verir.
+Bu komut `PRODUCTION_SMOKE_BASE_URL` veya `NEXT_PUBLIC_SITE_URL` ile public HTTP route status/body kontrolü yapar; secret kullanmaz, write/delete yapmaz ve Supabase DB/Storage'a dokunmaz. Base URL yoksa güvenli şekilde skip verir. Canlı domain için önerilen kullanım:
+
+```bash
+PRODUCTION_SMOKE_BASE_URL=https://okyanusyardim.org PRODUCTION_SMOKE_EXPECTED_WHATSAPP_PHONE=<resmi_numara> npm run smoke:production
+```
+
+`PRODUCTION_SMOKE_EXPECTED_WHATSAPP_PHONE` verilirse WhatsApp CTA hedefi `wa.me/<resmi_numara>` olarak kontrol edilir. Bağış sayfalarında PayTR/iframe/payment intent sinyali görülürse smoke fail verir.

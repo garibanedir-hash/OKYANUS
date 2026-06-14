@@ -1,16 +1,19 @@
 const baseUrlRaw = process.env.PRODUCTION_SMOKE_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || "";
+const expectedWhatsappPhone = (process.env.PRODUCTION_SMOKE_EXPECTED_WHATSAPP_PHONE || "")
+  .replace(/\D/g, "")
+  .trim();
 
 const publicRouteChecks = [
   { path: "/", keywords: ["<main", "Okyanus"] },
   { path: "/hakkimizda", keywords: ["<main", "Hakkımızda"] },
   { path: "/projeler", keywords: ["<main", "Projeler"] },
-  { path: "/projeler/bir-koli-bir-umut", keywords: ["<main", "Bir Koli Bir Umut"], expectWhatsappTarget: true },
+  { path: "/projeler/bir-koli-bir-umut", keywords: ["<main", "Bir Koli Bir Umut"], expectWhatsappTarget: true, forbidOnlinePaymentSignals: true },
   { path: "/faaliyetler", keywords: ["<main", "Faaliyet"] },
   { path: "/kurban", keywords: ["<main", "Kurban"] },
-  { path: "/kurban/bagis", keywords: ["<main", "Kurban", "WhatsApp", "KVKK"], expectWhatsappText: true },
+  { path: "/kurban/bagis", keywords: ["<main", "Kurban", "WhatsApp", "KVKK"], expectWhatsappText: true, forbidOnlinePaymentSignals: true },
   { path: "/yetim-hamiligi", keywords: ["<main", "Yetim"] },
-  { path: "/yetim-hamiligi/basvuru", keywords: ["<main", "Yetim", "WhatsApp", "KVKK"], expectWhatsappText: true },
-  { path: "/bagis-yap", keywords: ["<main", "Bağış", "WhatsApp", "KVKK"], expectWhatsappText: true },
+  { path: "/yetim-hamiligi/basvuru", keywords: ["<main", "Yetim", "WhatsApp", "KVKK"], expectWhatsappText: true, forbidOnlinePaymentSignals: true },
+  { path: "/bagis-yap", keywords: ["<main", "Bağış", "WhatsApp", "KVKK"], expectWhatsappText: true, forbidOnlinePaymentSignals: true },
   { path: "/gonullu-ol", keywords: ["<main", "Gönüllü"] },
   { path: "/iletisim", keywords: ["<main", "İletişim"] },
   { path: "/seffaflik", keywords: ["<main", "Şeffaflık"] },
@@ -55,6 +58,14 @@ const forbiddenVisibleTextPatterns = [
   { label: "taslak", pattern: /taslak/i }
 ];
 
+const onlinePaymentSignalPatterns = [
+  { label: "PayTR", pattern: /\bpaytr\b/i },
+  { label: "payment intent", pattern: /payment\s+intent/i },
+  { label: "paytr iframe", pattern: /\/odeme\/paytr|paytr[\s\S]{0,80}iframe|iframe[\s\S]{0,80}paytr/i },
+  { label: "odeme formu", pattern: /ödeme\s+formu|odeme\s+formu/i },
+  { label: "kart bilgisi", pattern: /kart\s+bilg/i }
+];
+
 function normalizeBaseUrl(value) {
   if (!value.trim()) return null;
 
@@ -97,6 +108,18 @@ function findForbiddenVisibleTerms(body) {
     .map((item) => item.label);
 }
 
+function findOnlinePaymentSignals(body) {
+  const visibleText = visibleTextFromHtml(body);
+  return onlinePaymentSignalPatterns
+    .filter((item) => item.pattern.test(visibleText) || item.pattern.test(body))
+    .map((item) => item.label);
+}
+
+function hasExpectedWhatsappPhone(body) {
+  if (!expectedWhatsappPhone) return true;
+  return body.includes(`wa.me/${expectedWhatsappPhone}`) || body.includes(`wa.me%2F${expectedWhatsappPhone}`);
+}
+
 function isRedirectStatus(status) {
   return [301, 302, 303, 307, 308].includes(status);
 }
@@ -111,6 +134,9 @@ if (!baseUrl) {
 
 console.log(`Production smoke check basliyor: ${baseUrl.origin}${baseUrl.pathname}`);
 console.log("Sadece GET yapilir; Supabase DB, Storage write veya secret kullanimi yoktur.");
+if (expectedWhatsappPhone) {
+  console.log(`Beklenen WhatsApp telefonu kontrol edilecek: ${expectedWhatsappPhone}`);
+}
 
 const summary = {
   ok: 0,
@@ -147,10 +173,11 @@ for (const check of routeChecks) {
     const statusOk = response.status >= 200 && response.status < 300;
     const keywordOk = bodyHasKeyword(body, check.keywords);
     const whatsappOk = check.expectWhatsappText ? /WhatsApp/i.test(visibleTextFromHtml(body)) && /KVKK/i.test(visibleTextFromHtml(body)) : true;
-    const whatsappTargetOk = check.expectWhatsappTarget ? /https:\/\/wa\.me\//i.test(body) : true;
+    const whatsappTargetOk = check.expectWhatsappTarget || check.expectWhatsappText ? /https:\/\/wa\.me\//i.test(body) && hasExpectedWhatsappPhone(body) : true;
     const forbiddenTerms = check.skipForbiddenText ? [] : findForbiddenVisibleTerms(body);
+    const onlinePaymentSignals = check.forbidOnlinePaymentSignals ? findOnlinePaymentSignals(body) : [];
 
-    if (statusOk && keywordOk && whatsappOk && whatsappTargetOk && forbiddenTerms.length === 0) {
+    if (statusOk && keywordOk && whatsappOk && whatsappTargetOk && forbiddenTerms.length === 0 && onlinePaymentSignals.length === 0) {
       console.log(`${check.path}: OK (${response.status})`);
       summary.ok += 1;
       continue;
@@ -161,6 +188,8 @@ for (const check of routeChecks) {
         whatsappOk ? "ok" : "missing"
       }, whatsappTarget=${whatsappTargetOk ? "ok" : "missing"}, forbidden=${
         forbiddenTerms.length ? forbiddenTerms.join(",") : "none"
+      }, onlinePaymentSignals=${
+        onlinePaymentSignals.length ? onlinePaymentSignals.join(",") : "none"
       }, url=${url.toString()})`
     );
     summary.failed += 1;

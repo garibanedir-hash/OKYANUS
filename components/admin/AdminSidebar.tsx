@@ -153,22 +153,22 @@ function CollapsibleSidebarGroup({ group, pathname }: { group: AdminNavGroup; pa
   const open = activeGroup || userOpen;
 
   return (
-    <section className="rounded-lg border border-white/8 bg-white/[0.035]">
+    <section className="border-b border-white/[0.07] pb-1 last:border-b-0">
       <button
         type="button"
         aria-expanded={open}
         onClick={() => setUserOpen((value) => !value)}
         className={cn(
-          "focus-ring flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-left transition",
-          activeGroup ? "bg-white/8 text-white" : "text-white/66 hover:bg-white/6 hover:text-white"
+          "focus-ring flex min-h-[32px] w-full items-center justify-between gap-2 rounded-md px-2 py-1.5 text-left transition",
+          activeGroup ? "bg-white/[0.09] text-white" : "text-white/64 hover:bg-white/[0.06] hover:text-white"
         )}
       >
-        <span className="min-w-0 truncate text-[0.62rem] font-extrabold uppercase tracking-[0.12em]">{group.title}</span>
-        <ChevronDown aria-hidden className={cn("h-3.5 w-3.5 shrink-0 transition", open && "rotate-180")} />
+        <span className="min-w-0 truncate text-[0.62rem] font-extrabold uppercase leading-none tracking-[0.11em]">{group.title}</span>
+        <ChevronDown aria-hidden className={cn("h-3.5 w-3.5 shrink-0 text-white/48 transition", open && "rotate-180 text-ocean-green")} />
       </button>
 
       {open ? (
-        <div className="grid gap-1 px-1.5 pb-2 pt-1">
+        <div className="mt-1 grid gap-0.5 border-l border-white/[0.08] pl-1.5">
           {group.items.map(({ label, href, icon: Icon, badge }) => {
             const active = isAdminItemActive(pathname, href);
             return (
@@ -177,16 +177,21 @@ function CollapsibleSidebarGroup({ group, pathname }: { group: AdminNavGroup; pa
                 href={href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "focus-ring relative flex min-h-[34px] items-center gap-2 rounded-md px-2 py-1.5 text-[0.74rem] font-bold leading-4 transition",
+                  "focus-ring relative flex min-h-[32px] w-full min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-[0.72rem] font-bold leading-4 transition",
                   active
-                    ? "bg-white/12 text-white before:absolute before:left-0 before:top-1 before:h-[calc(100%-0.5rem)] before:w-0.5 before:rounded-full before:bg-ocean-green"
-                    : "text-white/72 hover:bg-white/8 hover:text-white"
+                    ? "bg-white/[0.12] text-white before:absolute before:left-0 before:top-1 before:h-[calc(100%-0.5rem)] before:w-0.5 before:rounded-full before:bg-ocean-green"
+                    : "text-white/72 hover:bg-white/[0.08] hover:text-white"
                 )}
               >
-                <Icon aria-hidden className={cn("h-3.5 w-3.5 shrink-0", active ? "text-ocean-green" : "text-white/52")} />
+                <Icon aria-hidden className={cn("h-3.5 w-3.5 shrink-0", active ? "text-ocean-green" : "text-white/48")} />
                 <span className="min-w-0 flex-1 truncate">{label}</span>
                 {badge ? (
-                  <span className={cn("ml-auto rounded px-1 py-0.5 text-[0.52rem] uppercase", active ? "bg-ocean-green text-white" : "bg-white/10 text-white/58")}>
+                  <span
+                    className={cn(
+                      "ml-auto shrink-0 whitespace-nowrap rounded-full px-1.5 py-0.5 text-[0.5rem] font-extrabold uppercase leading-none",
+                      active ? "bg-ocean-green text-white" : "bg-white/[0.09] text-white/58"
+                    )}
+                  >
                     {badge}
                   </span>
                 ) : null}
@@ -211,7 +216,7 @@ export function AdminSidebar() {
             Demo panel · veri kaydı yoktur
           </p>
         </div>
-        <nav aria-label="Admin menüsü" className="grid gap-2 overflow-x-hidden px-2 py-3 lg:flex-1 lg:overflow-y-auto">
+        <nav aria-label="Admin menüsü" className="grid gap-1 overflow-x-hidden px-2 py-2 lg:flex-1 lg:overflow-y-auto">
           {navGroups.map((group) => (
             <CollapsibleSidebarGroup key={group.title} group={group} pathname={pathname} />
           ))}
