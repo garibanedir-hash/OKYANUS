@@ -27,7 +27,7 @@ const faqItems = [
   },
   {
     question: "Bu aşamada ödeme alınıyor mu?",
-    answer: "Tanıtım döneminde destek süreci WhatsApp ve iletişim kanalları üzerinden yönlendirilir; online ödeme formu gösterilmez."
+    answer: "Tanıtım döneminde destek süreci WhatsApp ve iletişim kanalları üzerinden yönlendirilir."
   },
   {
     question: "Sponsor nasıl bilgilendirilir?",

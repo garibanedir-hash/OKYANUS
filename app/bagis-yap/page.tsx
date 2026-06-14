@@ -87,11 +87,11 @@ export default async function DonatePage({ searchParams }: DonatePageProps) {
                 </div>
               </div>
               <div className="mt-6 rounded-brand border border-primary-blue/20 bg-soft-blue p-6 shadow-card">
-                <h2 className="text-xl font-bold text-dark-navy">Ödeme sağlayıcı bağımsız hazırlık</h2>
+                <h2 className="text-xl font-bold text-dark-navy">Bağış bilgilendirme hazırlığı</h2>
                 <p className="mt-2 leading-7 text-slate-600">
                   {isOnlineMode
                     ? "Genel bağış kayıtları, seçilen destek alanı ve proje bilgisiyle birlikte güvenli ödeme akışına hazırlanır."
-                    : "Bu modda online ödeme formu gösterilmez; destek olmak istediğiniz alan için ekibimiz WhatsApp veya iletişim kanalları üzerinden size yardımcı olur."}
+                    : "Tanıtım döneminde destek olmak istediğiniz alan için ekibimiz WhatsApp veya iletişim kanalları üzerinden size yardımcı olur."}
                 </p>
               </div>
               <div className="mt-6 rounded-brand border border-ocean-green/20 bg-mint-green/50 p-6 shadow-card">
