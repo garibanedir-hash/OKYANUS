@@ -148,7 +148,7 @@
 
 - [ ] `lib/security/rateLimitProvider.ts` kalıcı provider eklenebilir arayüzle hazır mı?
 - [ ] In-memory provider'ın production için yalnızca best-effort olduğu ekip tarafından biliniyor mu?
-- [ ] Production için Vercel KV veya Upstash Redis gibi kalıcı/global rate limit provider seçimi yapılacak mı?
+- [ ] Production için kalıcı/global rate limit provider kararı Upstash Redis olarak dokümante edildi mi?
 - [ ] `TURNSTILE_ENABLED=false` varsayılanında iletişim, gönüllü, kayıt ve online formlar bozulmadan çalışıyor mu?
 - [ ] `TURNSTILE_SECRET_KEY` client component, public bundle veya `NEXT_PUBLIC_` env içine taşınmıyor mu?
 - [ ] `NEXT_PUBLIC_TURNSTILE_SITE_KEY` yalnızca public widget key olarak kullanılıyor mu?
@@ -159,6 +159,18 @@
 - [ ] Harness production domain veya production project ref üzerinde çalışmayı reddediyor mu?
 - [ ] Hassas tablolara anon insert/read başarılı olursa security warning üretecek şekilde kontrol edildi mi?
 - [ ] Cloudflare Turnstile script'i aktif edilecekse CSP ve browser QA staging'de tekrar yapılacak mı?
+
+## 15D Turnstile Pilot ve Provider Kararı
+
+- [ ] Cloudflare resmi test key'leriyle `TURNSTILE_ENABLED=true` lokal/staging pilotu yapıldı mı?
+- [ ] Token yok senaryosu DB write oluşturmadan kullanıcı dostu genel hata veriyor mu?
+- [ ] Always-fails test secret ile dummy token reddediliyor mu?
+- [ ] Always-passes test secret ile dummy token submit akışına devam ediyor ve test kaydı temizleniyor mu?
+- [ ] Gerçek Vercel Preview/Staging Turnstile site key ve secret key tanımlanınca aynı senaryolar tekrar koşulacak mı?
+- [ ] Secret scan `.next/static` içinde `TURNSTILE_SECRET_KEY` ve diğer server secret env adlarını bulmuyor mu?
+- [ ] Negative harness `NEXT_PUBLIC_SITE_URL` boş veya production gibi olduğunda çalışmayı reddediyor mu?
+- [ ] Staging allowlist olmadan `test:security:negative` write/delete yapmadan duruyor mu?
+- [ ] Upstash Redis 15E entegrasyonu için env, key formatı, TTL ve fingerprint hash planı kabul edildi mi?
 
 ## Payment webhook security
 

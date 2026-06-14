@@ -98,12 +98,28 @@ Kalıcı provider değerlendirmesi:
 - Supabase table/RPC: Ek servis gerektirmez, ancak spam yükünü ana DB'ye taşıyabilir.
 - In-memory fallback: Sadece başlangıç bariyeridir.
 
+15D provider kararı: 15E entegrasyonu için önerilen sağlayıcı Upstash Redis'tir. Gerekçe: Vercel serverless ile uyumlu REST API, atomic counter/TTL modeli, preview-production env ayrımının kolay kurulması, Supabase ana DB üzerinde spam write yükü oluşturmaması ve ham IP yerine mevcut fingerprint hash ile limit uygulanabilmesi.
+
+Önerilen limit başlangıcı:
+
+- İletişim/gönüllü formları: fingerprint başına 10 dakikada 5-8 deneme.
+- Kayıt formu: fingerprint başına 10 dakikada 3-4 deneme.
+- Günlük gözlem limiti: fingerprint + form başına 30-50 deneme sonrası soft block veya inceleme flag'i.
+
 Turnstile pilotu feature flag ile hazırdır:
 
 - `TURNSTILE_ENABLED=false` varsayılanında formlar mevcut davranışı korur.
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` client widget için public değerdir.
 - `TURNSTILE_SECRET_KEY` sadece server env'de kalmalıdır.
 - Enabled durumda token doğrulaması fail-closed çalışır ve teknik detay public ekrana basılmaz.
+
+15D Turnstile pilot notu:
+
+- Cloudflare resmi test key'leriyle `TURNSTILE_ENABLED=true` lokal/staging pilotu yapıldı.
+- `/iletisim`, `/gonullu-ol` ve `/kayit` widget script'i ve token alanını render etti.
+- Token yok ve always-fails secret senaryoları genel hata ile reddedildi.
+- Always-passes secret senaryosu submit akışına devam etti; oluşan test kaydı cleanup ile silindi.
+- Gerçek Vercel Preview/Staging Turnstile key'leri bu repoda bulunmadığı için gerçek tenant pilotu env tanımlanınca tekrar yapılmalıdır.
 
 Production trafiğinde aşağıdaki ek kontroller önerilir:
 
@@ -129,7 +145,7 @@ Varsayılan çalıştırma write/delete yapmadan skip verir. Gerçek negatif tes
 REQUIRE_STAGING_NEGATIVE_TESTS=true NEGATIVE_TEST_ALLOWLIST_PROJECT_REF=staging_project_ref npm run test:security:negative
 ```
 
-Bu script production domain gibi görünen `NEXT_PUBLIC_SITE_URL` değerinde veya allowlist dışında kalan Supabase project ref üzerinde çalışmayı reddeder. Başarılı anon insert/upload sonucu production deploy öncesi durdurucu security warning kabul edilmelidir.
+Bu script boş veya production domain gibi görünen `NEXT_PUBLIC_SITE_URL` değerinde, staging/preview/test/localhost olmayan site URL'lerinde ya da allowlist dışında kalan Supabase project ref üzerinde çalışmayı reddeder. Başarılı anon insert/upload sonucu production deploy öncesi durdurucu security warning kabul edilmelidir.
 
 ## Env ve Production Config Checklist
 

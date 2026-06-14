@@ -53,7 +53,7 @@ function getProjectRef(url) {
 }
 
 function isProbablyProductionSite(siteUrl) {
-  if (!siteUrl) return false;
+  if (!siteUrl) return true;
 
   try {
     const hostname = new URL(siteUrl).hostname.toLowerCase();
@@ -325,7 +325,7 @@ if (!projectRef || !allowlist.includes(projectRef)) {
 }
 
 if (isProbablyProductionSite(process.env.NEXT_PUBLIC_SITE_URL)) {
-  console.log(`Anon write negative test durduruldu: NEXT_PUBLIC_SITE_URL production gibi görünüyor (${process.env.NEXT_PUBLIC_SITE_URL}).`);
+  console.log(`Anon write negative test durduruldu: NEXT_PUBLIC_SITE_URL staging/preview/test/localhost olarak tanımlı değil (${process.env.NEXT_PUBLIC_SITE_URL ?? "empty"}).`);
   process.exit(1);
 }
 

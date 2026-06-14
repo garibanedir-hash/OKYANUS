@@ -1,6 +1,6 @@
 # Public Form Spam Protection
 
-Bu doküman public formlar için 15B ve 15C aşamalarında eklenen spam koruma yaklaşımını açıklar. Amaç public write yüzeyini genişletmeden, kullanıcı deneyimini bozmadan ve Turnstile/Captcha entegrasyonunu kontrollü feature flag ile yöneterek başlangıç güvenliğini artırmaktır.
+Bu doküman public formlar için 15B, 15C ve 15D aşamalarında eklenen spam koruma yaklaşımını açıklar. Amaç public write yüzeyini genişletmeden, kullanıcı deneyimini bozmadan ve Turnstile/Captcha entegrasyonunu kontrollü feature flag ile yöneterek başlangıç güvenliğini artırmaktır.
 
 ## Kapsam
 
@@ -88,7 +88,17 @@ Değerlendirilen seçenekler:
 - Supabase table/RPC: Ek provider gerektirmez, ancak yüksek hacimli spam trafiğini ana DB'ye taşıyabilir. Audit ihtiyacı yüksekse dikkatli tasarlanmalıdır.
 - In-memory fallback: Dependency gerektirmez, fakat yalnızca temel bariyer sağlar ve çok instance ortamında global güvence vermez.
 
-Production önerisi: Tanıtım yayını sonrası gerçek spam hacmine göre Vercel KV veya Upstash Redis tercih edilmeli; ham IP yerine hashlenmiş IP/fingerprint kullanılmalı ve saklama süresi kısa tutulmalıdır. Supabase tabanlı çözüm seçilirse RLS, retention ve write amplification etkisi ayrıca gözden geçirilmelidir.
+15D karar önerisi: Kalıcı/global rate limit için Upstash Redis tercih edilmelidir. Vercel serverless ortamıyla uyumlu çalışır, atomic counter + TTL modeli basittir, preview/production env ayrımı net yapılabilir ve ana Supabase DB'yi spam trafiğiyle yormaz. Vercel KV zaten provision edilmişse aynı Redis uyumlu modelle değerlendirilebilir; ancak yeni kurulum için Upstash Redis daha taşınabilir ve açık bir sağlayıcı kararıdır.
+
+15E teknik planı:
+
+- `RATE_LIMIT_PROVIDER=upstash` env flag'i eklenecek.
+- `UPSTASH_REDIS_REST_URL` ve `UPSTASH_REDIS_REST_TOKEN` yalnızca server env'de tutulacak.
+- Key formatı `form:{form}:{fingerprintHash}` ve gerekiyorsa `form-day:{form}:{fingerprintHash}:{yyyy-mm-dd}` olacak.
+- Dakikalık pencere için öneri: iletişim/gönüllü 10 dakikada 5-8 deneme, kayıt 10 dakikada 3-4 deneme.
+- Günlük pencere için öneri: form + fingerprint başına 30-50 deneme üstü soft block veya inceleme flag'i.
+- Ham IP saklanmayacak; mevcut fingerprint hash yaklaşımı korunacak.
+- Rate limit metadata'sında provider adı, persistent flag, count, resetAt ve windowSeconds tutulacak.
 
 ## Turnstile / Captcha Değerlendirmesi
 
@@ -101,6 +111,17 @@ Production önerisi: Tanıtım yayını sonrası gerçek spam hacmine göre Verc
 - `TURNSTILE_SECRET_KEY`: sadece server-side verification için secret.
 
 `TURNSTILE_ENABLED=true` olduğunda server action token doğrulamasını input validation ve consent validation öncesi yapar. Token yoksa, secret eksikse veya provider verification başarısızsa fail-closed davranılır ve kullanıcıya teknik detay içermeyen genel hata döner.
+
+15D pilot sonucu:
+
+- `TURNSTILE_ENABLED=false` varsayılanında public formlar widget render etmeden çalışır.
+- Cloudflare resmi test key'leri ile `TURNSTILE_ENABLED=true` yerel staging pilotunda `/iletisim`, `/gonullu-ol` ve `/kayit` sayfalarında widget script'i ve `cf-turnstile-response` alanı render edildi.
+- Token yok senaryosu genel hata ile reddedildi.
+- Always-fails test secret ile dummy token genel hata ile reddedildi.
+- Always-passes test secret ile dummy token form submit akışına devam etti; oluşan test iletişim kaydı temizlendi.
+- Gerçek staging Cloudflare key'leri bu repoda/env içinde bulunmadığı için gerçek tenant/sitekey pilotu ayrıca Vercel Preview/Staging üzerinde yapılmalıdır.
+
+Cloudflare'ın resmi test key belgeleri: https://developers.cloudflare.com/turnstile/troubleshooting/testing/
 
 Alternatifler:
 
@@ -136,7 +157,7 @@ Guard koşulları:
 
 - `REQUIRE_STAGING_NEGATIVE_TESTS=true` olmadan write/delete denenmez.
 - Supabase project ref `NEGATIVE_TEST_ALLOWLIST_PROJECT_REF` içinde değilse script durur.
-- `NEXT_PUBLIC_SITE_URL` production domain gibi görünüyorsa script durur.
+- `NEXT_PUBLIC_SITE_URL` boşsa veya staging/preview/test/localhost olarak görünmüyorsa script durur.
 - Başarılı insert/upload büyük security warning sayılır ve mümkünse cleanup denenir.
 - Constraint/not-null hataları `INCONCLUSIVE` raporlanır; bu tek başına RLS'in kapalı olduğunu kanıtlamaz.
 

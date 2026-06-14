@@ -353,7 +353,7 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 ## 15C Kalıcı Rate Limit ve Turnstile Pilot Hazırlığı
 
 - [ ] `lib/security/rateLimitProvider.ts` provider arayüzüyle in-memory fallback'i ayırıyor.
-- [ ] Production için Vercel KV veya Upstash Redis tercih kararı canlı trafik ve maliyet değerlendirmesiyle netleştirilecek.
+- [ ] Production için kalıcı provider önerisi Upstash Redis olarak netleştirildi; 15E entegrasyonunda uygulanacak.
 - [ ] Supabase tabanlı rate limit düşünülürse ana DB'ye spam yükü ve retention politikası ayrıca değerlendirilecek.
 - [ ] `lib/security/turnstile.ts` server-only kalıyor ve `TURNSTILE_SECRET_KEY` client tarafına taşınmıyor.
 - [ ] `components/forms/TurnstileField.tsx` yalnızca `TURNSTILE_ENABLED=true` ve public site key varsa render ediyor.
@@ -362,3 +362,13 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] `scripts/anon-write-negative-test.mjs` production guard, staging allowlist ve güvenli skip davranışıyla hazır.
 - [ ] `npm run test:security:negative` production DB üzerinde kontrolsüz insert/delete yapmıyor.
 - [ ] `npm run test:supabase` read-only kalıyor; negatif write harness ayrı komut olarak tutuluyor.
+
+## 15D Turnstile Pilot ve Negatif Test Guard Kontrolleri
+
+- [ ] Cloudflare test key'leriyle `TURNSTILE_ENABLED=true` durumda `/iletisim`, `/gonullu-ol` ve `/kayit` widget/script render ediyor.
+- [ ] Token yok ve fail-secret senaryolarında server action kullanıcı dostu genel hata veriyor.
+- [ ] Pass-secret senaryosunda submit DB write aşamasına geçebiliyor ve test kaydı cleanup ile siliniyor.
+- [ ] Gerçek staging key değerleri Vercel Preview/Staging env'e eklenmeden production Turnstile zorunlu açılmıyor.
+- [ ] `scripts/anon-write-negative-test.mjs` `NEXT_PUBLIC_SITE_URL` boşsa veya staging/preview/test/localhost değilse çalışmayı reddediyor.
+- [ ] `NEGATIVE_TEST_ALLOWLIST_PROJECT_REF` olmadan staging negatif write testi başlamıyor.
+- [ ] 15E için Upstash Redis key formatı, TTL pencereleri ve ham IP saklamama yaklaşımı teknik plana alındı.

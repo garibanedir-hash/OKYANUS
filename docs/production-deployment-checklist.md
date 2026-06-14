@@ -270,6 +270,17 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Negatif test harness çıktısında security warning varsa production deploy durduruluyor.
 - [ ] Smoke test read-only kalıyor; write negatif testleri ayrı komut ve ayrı onayla yönetiliyor.
 
+## 15D Turnstile Staging Pilot ve Rate Limit Kararı
+
+- [ ] Cloudflare test key'leriyle `TURNSTILE_ENABLED=true` pilotunda `/iletisim`, `/gonullu-ol` ve `/kayit` widget render ediyor.
+- [ ] Token yok ve fail-secret senaryoları DB write oluşturmadan genel hata veriyor.
+- [ ] Pass-secret senaryosu submit akışına devam ediyor; oluşan test kayıtları temizleniyor.
+- [ ] Gerçek Vercel Preview/Staging Turnstile key'leri tanımlanmadan production'da `TURNSTILE_ENABLED=true` yapılmıyor.
+- [ ] CSP eklenecekse `https://challenges.cloudflare.com` script/frame kaynağı staging'de doğrulanıyor.
+- [ ] Negative security harness staging allowlist ve staging/preview/test `NEXT_PUBLIC_SITE_URL` olmadan çalışmıyor.
+- [ ] Current/default ortamda `npm run test:security:negative` write/delete yapmadan skip veya guard sonucu veriyor.
+- [ ] Kalıcı rate limit provider önerisi Upstash Redis olarak kabul edildi; 15E entegrasyonu yapılmadan in-memory fallback tek başına production güvence sayılmıyor.
+
 ## Export ve Raporlama
 
 - [ ] Export işlemleri yetki kontrolünden geçiyor.
