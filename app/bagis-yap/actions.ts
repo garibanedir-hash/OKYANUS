@@ -61,7 +61,13 @@ function getFriendlyError(error: unknown) {
 }
 
 export async function createGeneralDonationPaymentIntentAction(formData: FormData) {
-  const formProtection = await evaluateFormProtection(formData, { form: "donation" });
+  const formProtection = await evaluateFormProtection(formData, {
+    form: "donation",
+    rateLimit: {
+      maxAttempts: 5,
+      windowMs: 10 * 60 * 1000
+    }
+  });
   if (formProtection.honeypotTrapped) {
     redirectToDonationForm("alindi");
   }

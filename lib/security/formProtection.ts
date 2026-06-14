@@ -10,7 +10,7 @@ import {
 
 export const FORM_HONEYPOT_FIELDS = ["website", "companyWebsite"] as const;
 export const FORM_STARTED_AT_FIELD = "formStartedAt";
-export const FORM_SECURITY_GENERIC_ERROR = "Form gönderilirken bir sorun oluştu. Lütfen bilgileri kontrol edip tekrar deneyin.";
+export const FORM_SECURITY_GENERIC_ERROR = "Kısa süre içinde çok fazla deneme yapıldı. Lütfen biraz sonra tekrar deneyin.";
 
 type FormProtectionOptions = {
   form: string;
@@ -144,6 +144,7 @@ export function buildFormSecurityMetadata(input: {
         limited: input.rateLimit.limited,
         count: input.rateLimit.count,
         maxAttempts: input.rateLimit.maxAttempts,
+        remaining: input.rateLimit.remaining,
         windowSeconds: input.rateLimit.windowSeconds,
         resetAt: input.rateLimit.resetAt,
         provider: input.rateLimit.provider,

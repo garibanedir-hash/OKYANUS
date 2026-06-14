@@ -9,6 +9,7 @@ export type RateLimitResult = {
   limited: boolean;
   count: number;
   maxAttempts: number;
+  remaining: number;
   resetAt: string;
   windowSeconds: number;
   provider: string;
@@ -33,10 +34,37 @@ type RateLimitBucket = {
   lastSeenAt: number;
 };
 
+type UpstashTransactionItem = {
+  result?: unknown;
+  error?: string;
+};
+
+type UpstashTransactionResponse = UpstashTransactionItem[] | {
+  error?: string;
+};
+
 const defaultRateLimit = {
   maxAttempts: 8,
   windowMs: 10 * 60 * 1000
 };
+
+let missingUpstashEnvWarningLogged = false;
+let upstashRuntimeWarningLogged = false;
+
+function resolveRateLimitOptions(options?: RateLimitOptions) {
+  return {
+    maxAttempts: options?.maxAttempts ?? defaultRateLimit.maxAttempts,
+    windowMs: options?.windowMs ?? defaultRateLimit.windowMs
+  };
+}
+
+function windowMsToSeconds(windowMs: number) {
+  return Math.max(1, Math.ceil(windowMs / 1000));
+}
+
+function buildRateLimitKey(form: string, fingerprint: string) {
+  return `form:${form}:${fingerprint}`;
+}
 
 class InMemoryRateLimitProvider implements RateLimitProvider {
   readonly name = "memory";
@@ -45,9 +73,8 @@ class InMemoryRateLimitProvider implements RateLimitProvider {
 
   check(input: RateLimitInput): RateLimitResult {
     const now = Date.now();
-    const maxAttempts = input.options?.maxAttempts ?? defaultRateLimit.maxAttempts;
-    const windowMs = input.options?.windowMs ?? defaultRateLimit.windowMs;
-    const key = `${input.form}:${input.fingerprint}`;
+    const { maxAttempts, windowMs } = resolveRateLimitOptions(input.options);
+    const key = buildRateLimitKey(input.form, input.fingerprint);
     const current = this.buckets.get(key);
 
     this.cleanExpired(now);
@@ -80,8 +107,70 @@ class InMemoryRateLimitProvider implements RateLimitProvider {
       limited,
       count: bucket.count,
       maxAttempts,
+      remaining: Math.max(0, maxAttempts - bucket.count),
       resetAt: new Date(bucket.resetAt).toISOString(),
       windowSeconds: Math.round(windowMs / 1000),
+      provider: this.name,
+      persistent: this.persistent
+    };
+  }
+}
+
+class UpstashRateLimitProvider implements RateLimitProvider {
+  readonly name = "upstash";
+  readonly persistent = true;
+
+  constructor(
+    private readonly restUrl: string,
+    private readonly token: string
+  ) {}
+
+  async check(input: RateLimitInput): Promise<RateLimitResult> {
+    const now = Date.now();
+    const { maxAttempts, windowMs } = resolveRateLimitOptions(input.options);
+    const windowSeconds = windowMsToSeconds(windowMs);
+    const key = buildRateLimitKey(input.form, input.fingerprint);
+    const response = await fetch(`${this.restUrl}/multi-exec`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify([
+        ["INCR", key],
+        ["EXPIRE", key, windowSeconds, "NX"],
+        ["TTL", key]
+      ]),
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      throw new Error(`Upstash rate limit request failed with ${response.status}`);
+    }
+
+    const result = (await response.json()) as UpstashTransactionResponse;
+
+    if (!Array.isArray(result)) {
+      throw new Error(`Upstash rate limit transaction failed: ${result.error ?? "unexpected response"}`);
+    }
+
+    const commandError = result.find((item) => item.error)?.error;
+
+    if (commandError) {
+      throw new Error(`Upstash rate limit command failed: ${commandError}`);
+    }
+
+    const count = Number(result[0]?.result ?? 1);
+    const ttl = Number(result[2]?.result ?? windowSeconds);
+    const resetSeconds = Number.isFinite(ttl) && ttl > 0 ? ttl : windowSeconds;
+
+    return {
+      limited: count > maxAttempts,
+      count,
+      maxAttempts,
+      remaining: Math.max(0, maxAttempts - count),
+      resetAt: new Date(now + resetSeconds * 1000).toISOString(),
+      windowSeconds,
       provider: this.name,
       persistent: this.persistent
     };
@@ -91,11 +180,38 @@ class InMemoryRateLimitProvider implements RateLimitProvider {
 const memoryProvider = new InMemoryRateLimitProvider();
 
 export function getRateLimitProvider(): RateLimitProvider {
-  // Future providers can be selected here by env, for example Vercel KV,
-  // Upstash Redis, or a Supabase RPC-backed limiter.
+  if (process.env.RATE_LIMIT_PROVIDER === "upstash") {
+    const restUrl = process.env.UPSTASH_REDIS_REST_URL?.replace(/\/+$/, "");
+    const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+    if (restUrl && token) {
+      return new UpstashRateLimitProvider(restUrl, token);
+    }
+
+    if (!missingUpstashEnvWarningLogged) {
+      console.warn("RATE_LIMIT_PROVIDER=upstash ancak Upstash env eksik; memory rate limit fallback kullaniliyor.");
+      missingUpstashEnvWarningLogged = true;
+    }
+  }
+
   return memoryProvider;
 }
 
 export async function checkRateLimit(input: RateLimitInput): Promise<RateLimitResult> {
-  return getRateLimitProvider().check(input);
+  const provider = getRateLimitProvider();
+
+  try {
+    return await provider.check(input);
+  } catch (error) {
+    if (provider.name !== memoryProvider.name && !upstashRuntimeWarningLogged) {
+      console.warn(
+        `Rate limit provider '${provider.name}' failed; memory fallback kullaniliyor: ${
+          error instanceof Error ? error.message : "unknown error"
+        }`
+      );
+      upstashRuntimeWarningLogged = true;
+    }
+
+    return memoryProvider.check(input);
+  }
 }

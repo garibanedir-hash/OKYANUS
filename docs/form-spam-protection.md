@@ -1,6 +1,6 @@
 # Public Form Spam Protection
 
-Bu doküman public formlar için 15B, 15C ve 15D aşamalarında eklenen spam koruma yaklaşımını açıklar. Amaç public write yüzeyini genişletmeden, kullanıcı deneyimini bozmadan ve Turnstile/Captcha entegrasyonunu kontrollü feature flag ile yöneterek başlangıç güvenliğini artırmaktır.
+Bu doküman public formlar için 15B, 15C, 15D ve 15E aşamalarında eklenen spam koruma yaklaşımını açıklar. Amaç public write yüzeyini genişletmeden, kullanıcı deneyimini bozmadan, Turnstile/Captcha entegrasyonunu kontrollü feature flag ile yöneterek ve kalıcı rate limit sağlayıcısını server-side tutarak başlangıç güvenliğini artırmaktır.
 
 ## Kapsam
 
@@ -26,7 +26,7 @@ Korunan public form akışları:
 - `buildFormSecurityMetadata(input)`
 - `validateTextLength`, `validateEmailFormat`, `validatePhoneFormat`
 
-`lib/security/rateLimitProvider.ts` kalıcı rate limit sağlayıcıları için ortak arayüzü tanımlar. İlk sürümde in-memory provider fallback olarak kalır; Vercel KV, Upstash Redis veya Supabase RPC-backed provider aynı arayüze eklenebilir.
+`lib/security/rateLimitProvider.ts` kalıcı rate limit sağlayıcıları için ortak arayüzü tanımlar. 15E ile Upstash Redis provider eklendi; in-memory provider env eksikliği veya provider runtime hatasında güvenli fallback olarak kalır.
 
 `lib/security/turnstile.ts` server-only Turnstile doğrulamasını yapar. `TURNSTILE_SECRET_KEY` bu dosya dışında kullanılmamalı, client componentlere taşınmamalıdır.
 
@@ -70,16 +70,17 @@ Client-side `maxLength` sadece kullanım kolaylığıdır; nihai kontrol server 
 
 Spam koruma metadata’sı mevcut `consent_metadata` alanına `formSecurity` nesnesi olarak eklenir. Yeni migration gerekmez.
 
-Metadata ham IP içermez. Fingerprint hash, user-agent var/yok bilgisi, timing flagleri ve best-effort rate limit sayacı tutulur.
+Metadata ham IP içermez. Fingerprint hash, user-agent var/yok bilgisi, timing flagleri ve rate limit sayacı tutulur.
 
 ## Rate Limit Stratejisi
 
-İlk sürümde dependency eklemeden in-memory best-effort rate limit uygulanır:
+Varsayılan güvenli fallback olarak dependency eklemeden in-memory best-effort rate limit uygulanır:
 
-- Varsayılan: form + fingerprint başına 10 dakikada 8 deneme
+- Varsayılan/iletişim formu: form + fingerprint başına 10 dakikada 8 deneme
+- Gönüllü, bağış, kurban ve yetim hamiliği formları: 10 dakikada 5 deneme
 - Kayıt formu: 10 dakikada 4 deneme
 
-Serverless/Vercel ortamında memory-based limit kalıcı ve küresel değildir. 15C ile provider arayüzü hazırlandı, ancak kalıcı provider bilinçli olarak bağlanmadı.
+Serverless/Vercel ortamında memory-based limit kalıcı ve küresel değildir. 15E ile Upstash Redis provider eklendi; `RATE_LIMIT_PROVIDER=upstash` ve gerekli Upstash env değerleri tanımlıysa global/persistent limit kullanılır, env eksik veya provider erişilemez ise sistem build'i kırmadan memory fallback'e döner.
 
 Değerlendirilen seçenekler:
 
@@ -88,17 +89,19 @@ Değerlendirilen seçenekler:
 - Supabase table/RPC: Ek provider gerektirmez, ancak yüksek hacimli spam trafiğini ana DB'ye taşıyabilir. Audit ihtiyacı yüksekse dikkatli tasarlanmalıdır.
 - In-memory fallback: Dependency gerektirmez, fakat yalnızca temel bariyer sağlar ve çok instance ortamında global güvence vermez.
 
-15D karar önerisi: Kalıcı/global rate limit için Upstash Redis tercih edilmelidir. Vercel serverless ortamıyla uyumlu çalışır, atomic counter + TTL modeli basittir, preview/production env ayrımı net yapılabilir ve ana Supabase DB'yi spam trafiğiyle yormaz. Vercel KV zaten provision edilmişse aynı Redis uyumlu modelle değerlendirilebilir; ancak yeni kurulum için Upstash Redis daha taşınabilir ve açık bir sağlayıcı kararıdır.
+15D karar önerisi ve 15E uygulaması: Kalıcı/global rate limit için Upstash Redis tercih edilmiştir. Vercel serverless ortamıyla uyumlu çalışır, atomic counter + TTL modeli basittir, preview/production env ayrımı net yapılabilir ve ana Supabase DB'yi spam trafiğiyle yormaz. Vercel KV zaten provision edilmişse aynı Redis uyumlu modelle ayrıca değerlendirilebilir; ancak yeni kurulum için Upstash Redis daha taşınabilir ve açık sağlayıcı kararıdır.
 
-15E teknik planı:
+15E implementasyon durumu:
 
-- `RATE_LIMIT_PROVIDER=upstash` env flag'i eklenecek.
-- `UPSTASH_REDIS_REST_URL` ve `UPSTASH_REDIS_REST_TOKEN` yalnızca server env'de tutulacak.
-- Key formatı `form:{form}:{fingerprintHash}` ve gerekiyorsa `form-day:{form}:{fingerprintHash}:{yyyy-mm-dd}` olacak.
-- Dakikalık pencere için öneri: iletişim/gönüllü 10 dakikada 5-8 deneme, kayıt 10 dakikada 3-4 deneme.
-- Günlük pencere için öneri: form + fingerprint başına 30-50 deneme üstü soft block veya inceleme flag'i.
+- `RATE_LIMIT_PROVIDER=upstash` env flag'i desteklenir.
+- `UPSTASH_REDIS_REST_URL` ve `UPSTASH_REDIS_REST_TOKEN` yalnızca server env'de tutulur.
+- Upstash REST API doğrudan `fetch` ile kullanılır; ek npm dependency eklenmedi.
+- Key formatı `form:{form}:{fingerprintHash}` şeklindedir.
+- Pencere mantığı `INCR`, `EXPIRE NX` ve `TTL` komutlarıyla transaction içinde yürütülür.
+- Günlük pencere ve soft block modeli sonraki gözlem aşamasına bırakılmıştır.
 - Ham IP saklanmayacak; mevcut fingerprint hash yaklaşımı korunacak.
-- Rate limit metadata'sında provider adı, persistent flag, count, resetAt ve windowSeconds tutulacak.
+- Rate limit metadata'sında provider adı, persistent flag, count, remaining, resetAt ve windowSeconds tutulur.
+- Upstash env eksik veya provider runtime hatası varsa memory fallback kullanılır. Bu production için geçici güvenlik ağıdır; kalıcı/global güvence olarak kabul edilmemelidir.
 
 ## Turnstile / Captcha Değerlendirmesi
 
@@ -120,6 +123,12 @@ Değerlendirilen seçenekler:
 - Always-fails test secret ile dummy token genel hata ile reddedildi.
 - Always-passes test secret ile dummy token form submit akışına devam etti; oluşan test iletişim kaydı temizlendi.
 - Gerçek staging Cloudflare key'leri bu repoda/env içinde bulunmadığı için gerçek tenant/sitekey pilotu ayrıca Vercel Preview/Staging üzerinde yapılmalıdır.
+
+15E Preview/Staging notu:
+
+- Gerçek Cloudflare staging key'leri, Upstash staging env değerleri ve Vercel Preview URL bu workspace içinde bulunmadığı için gerçek Preview browser QA bu aşamada çalıştırılamadı.
+- Preview QA için `TURNSTILE_ENABLED=true`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `RATE_LIMIT_PROVIDER=upstash`, `UPSTASH_REDIS_REST_URL` ve `UPSTASH_REDIS_REST_TOKEN` staging/preview ortamında tanımlanmalıdır.
+- Preview'da token yok, geçersiz token, başarılı token, honeypot, KVKK/consent ve rate limit senaryoları gerçek tarayıcıda tekrar doğrulanmalıdır.
 
 Cloudflare'ın resmi test key belgeleri: https://developers.cloudflare.com/turnstile/troubleshooting/testing/
 
@@ -161,6 +170,8 @@ Guard koşulları:
 - Başarılı insert/upload büyük security warning sayılır ve mümkünse cleanup denenir.
 - Constraint/not-null hataları `INCONCLUSIVE` raporlanır; bu tek başına RLS'in kapalı olduğunu kanıtlamaz.
 
+15E sonucu: Bu workspace'te gerçek staging project ref, staging URL ve allowlist env değerleri bulunmadığı için harness yalnızca güvenli guard/default modunda çalıştırılmalıdır. Gerçek staging allowlist testi, staging Supabase project ref ve preview/staging URL açıkça sağlandıktan sonra koşulmalıdır; production DB üzerinde negatif write/delete testi yapılmamalıdır.
+
 Anon ile doğrudan yazılamaması gerekenler:
 
 - `payment_intents`
@@ -195,5 +206,5 @@ Staging negatif testlerinde her test kaydı açıkça işaretlenmeli ve test son
 ## Production İzleme Notları
 
 - Kısa sürede artan form hatası veya tekrar submit logları izlenmelidir.
-- İletişim/gönüllü başvurularında olağan dışı yoğunluk görülürse Turnstile entegrasyonu 15C/16A kapsamında ele alınmalıdır.
+- İletişim/gönüllü başvurularında olağan dışı yoğunluk görülürse Turnstile üretim aktivasyonu ve Upstash limit eşikleri ayrı onayla sıkılaştırılmalıdır.
 - Rate limit provider eklenirse secret değerleri server env’de tutulmalı ve public bundle taraması tekrar yapılmalıdır.

@@ -279,7 +279,20 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] CSP eklenecekse `https://challenges.cloudflare.com` script/frame kaynağı staging'de doğrulanıyor.
 - [ ] Negative security harness staging allowlist ve staging/preview/test `NEXT_PUBLIC_SITE_URL` olmadan çalışmıyor.
 - [ ] Current/default ortamda `npm run test:security:negative` write/delete yapmadan skip veya guard sonucu veriyor.
-- [ ] Kalıcı rate limit provider önerisi Upstash Redis olarak kabul edildi; 15E entegrasyonu yapılmadan in-memory fallback tek başına production güvence sayılmıyor.
+- [ ] Kalıcı rate limit provider önerisi Upstash Redis olarak kabul edildi; 15E provider entegrasyonu tamamlandı, ancak gerçek Upstash env tanımlanmadan memory fallback tek başına production güvence sayılmıyor.
+
+## 15E Upstash Redis, Preview Turnstile QA ve Staging Negative Test
+
+- [ ] `RATE_LIMIT_PROVIDER=memory`, `UPSTASH_REDIS_REST_URL` ve `UPSTASH_REDIS_REST_TOKEN` env alanları tanımlı; gerçek token değerleri yalnızca Vercel server env'de tutuluyor.
+- [ ] Production için önerilen ayar `RATE_LIMIT_PROVIDER=upstash`; Upstash staging ve production token/URL değerleri birbirinden ayrı tutuluyor.
+- [ ] Upstash env eksikse veya provider erişilemezse memory fallback çalışıyor, ancak bu durum production için kalıcı güvence kabul edilmiyor.
+- [ ] Vercel Preview ortamında `TURNSTILE_ENABLED=true`, Cloudflare staging site key/secret key ve gerekirse Upstash staging env değerleriyle browser QA tamamlandı.
+- [ ] Preview QA'da `/iletisim`, `/gonullu-ol` ve `/kayit` için widget render, token yok, geçersiz token, başarılı token, honeypot ve KVKK/consent senaryoları doğrulandı.
+- [ ] Preview QA sırasında oluşan test iletişim/gönüllü/kayıt kayıtları temizlendi veya test kaydı olarak işaretlendi.
+- [ ] `npm run test:security:negative` yalnızca staging allowlist project ref ve staging/preview `NEXT_PUBLIC_SITE_URL` ile çalıştırıldı; production DB üzerinde negatif write/delete testi yapılmadı.
+- [ ] Negative harness çıktısında hassas tablo/bucket anon read/write/delete başarılı sonucu yok; varsa production deploy durduruldu.
+- [ ] Build sonrası `.next/static` secret scan `UPSTASH_REDIS_REST_TOKEN`, `TURNSTILE_SECRET_KEY`, Supabase service role ve PayTR secret env adları için temiz.
+- [ ] Tam CSP eklenmeden önce `https://challenges.cloudflare.com` kaynakları Turnstile Preview QA ile uyumlu olacak şekilde ayrıca test edilecek.
 
 ## Export ve Raporlama
 

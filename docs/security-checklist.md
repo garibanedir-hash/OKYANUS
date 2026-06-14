@@ -172,6 +172,21 @@
 - [ ] Staging allowlist olmadan `test:security:negative` write/delete yapmadan duruyor mu?
 - [ ] Upstash Redis 15E entegrasyonu için env, key formatı, TTL ve fingerprint hash planı kabul edildi mi?
 
+## 15E Upstash Redis ve Staging Güvenlik QA
+
+- [ ] `.env.example` `RATE_LIMIT_PROVIDER=memory`, `UPSTASH_REDIS_REST_URL` ve `UPSTASH_REDIS_REST_TOKEN` alanlarını içeriyor mu?
+- [ ] `RATE_LIMIT_PROVIDER=memory` varsayılanında public formlar 15B/15C davranışını koruyor mu?
+- [ ] `RATE_LIMIT_PROVIDER=upstash` ve Upstash env değerleri tanımlıysa `lib/security/rateLimitProvider.ts` kalıcı Redis provider kullanıyor mu?
+- [ ] Upstash env eksik veya provider runtime hatasında sistem build'i kırmadan memory fallback'e dönüyor mu?
+- [ ] Upstash token `NEXT_PUBLIC_` env altında, client componentlerde veya public bundle içinde görünmüyor mu?
+- [ ] Rate limit key formatı ham IP saklamadan `form:{form}:{fingerprintHash}` standardını kullanıyor mu?
+- [ ] İletişim için 10 dakikada 8, gönüllü/bağış/kurban/yetim için 10 dakikada 5, kayıt için 10 dakikada 4 deneme sınırı uygulanıyor mu?
+- [ ] Rate limit aşımında DB/RPC/Auth write başlamadan kullanıcı dostu genel hata dönüyor mu?
+- [ ] Gerçek Vercel Preview/Staging ortamında Cloudflare Turnstile key'leriyle token yok/geçersiz/başarılı senaryoları tekrar koşuldu mu?
+- [ ] Staging allowlist ve staging/preview `NEXT_PUBLIC_SITE_URL` ile `npm run test:security:negative` çalıştırıldı mı?
+- [ ] Build sonrası `.next/static` içinde `UPSTASH_REDIS_REST_TOKEN`, `TURNSTILE_SECRET_KEY`, Supabase service role ve PayTR secret env adları bulunmuyor mu?
+- [ ] Tam CSP eklenecekse `https://challenges.cloudflare.com` script/frame/connect kaynakları Preview üzerinde ayrıca test edildi mi?
+
 ## Payment webhook security
 
 - [ ] 9E'de canlı provider webhook endpoint'i açılmadığı doğrulandı.

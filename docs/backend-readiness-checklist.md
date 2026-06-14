@@ -353,7 +353,7 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 ## 15C Kalıcı Rate Limit ve Turnstile Pilot Hazırlığı
 
 - [ ] `lib/security/rateLimitProvider.ts` provider arayüzüyle in-memory fallback'i ayırıyor.
-- [ ] Production için kalıcı provider önerisi Upstash Redis olarak netleştirildi; 15E entegrasyonunda uygulanacak.
+- [ ] Production için kalıcı provider önerisi Upstash Redis olarak netleştirildi; 15E entegrasyonunda provider eklendi.
 - [ ] Supabase tabanlı rate limit düşünülürse ana DB'ye spam yükü ve retention politikası ayrıca değerlendirilecek.
 - [ ] `lib/security/turnstile.ts` server-only kalıyor ve `TURNSTILE_SECRET_KEY` client tarafına taşınmıyor.
 - [ ] `components/forms/TurnstileField.tsx` yalnızca `TURNSTILE_ENABLED=true` ve public site key varsa render ediyor.
@@ -372,3 +372,16 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] `scripts/anon-write-negative-test.mjs` `NEXT_PUBLIC_SITE_URL` boşsa veya staging/preview/test/localhost değilse çalışmayı reddediyor.
 - [ ] `NEGATIVE_TEST_ALLOWLIST_PROJECT_REF` olmadan staging negatif write testi başlamıyor.
 - [ ] 15E için Upstash Redis key formatı, TTL pencereleri ve ham IP saklamama yaklaşımı teknik plana alındı.
+
+## 15E Upstash Redis ve Negative Harness Hazırlığı
+
+- [ ] `lib/security/rateLimitProvider.ts` memory ve Upstash provider'larını ortak arayüzle seçiyor.
+- [ ] `RATE_LIMIT_PROVIDER=upstash` olduğunda Upstash REST URL/token yalnızca server runtime'da okunuyor.
+- [ ] Upstash provider `form:{form}:{fingerprintHash}` key formatı, atomic counter ve TTL penceresiyle çalışıyor.
+- [ ] Env eksik veya Upstash runtime hatasında memory fallback'e dönülüyor; bu fallback production için kalıcı/global güvence sayılmıyor.
+- [ ] Public form action'ları form bazlı limitleri DB/RPC/Auth çağrısından önce uyguluyor.
+- [ ] Rate limit metadata'sı `consent_metadata.formSecurity.rateLimit` altında provider, persistent, count, remaining, resetAt ve windowSeconds içeriyor.
+- [ ] Upstash token, Turnstile secret, Supabase service role ve PayTR secret client bundle'a taşınmıyor.
+- [ ] Gerçek Vercel Preview/Staging env sağlandığında Turnstile token yok/geçersiz/başarılı senaryoları tekrar doğrulanacak.
+- [ ] Staging negative harness yalnızca allowlist project ref ve staging/preview/test site URL ile hassas tablo/bucket negatif testlerini koşacak.
+- [ ] Production DB üzerinde kontrolsüz anon write/delete negatif testi yapılmayacak.

@@ -113,7 +113,13 @@ function getFriendlyError(error: unknown) {
 }
 
 export async function createQurbanOrderAction(formData: FormData) {
-  const formProtection = await evaluateFormProtection(formData, { form: "qurban" });
+  const formProtection = await evaluateFormProtection(formData, {
+    form: "qurban",
+    rateLimit: {
+      maxAttempts: 5,
+      windowMs: 10 * 60 * 1000
+    }
+  });
   if (formProtection.honeypotTrapped) {
     redirectWithStatus("alindi");
   }

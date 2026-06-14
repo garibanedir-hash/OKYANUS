@@ -86,10 +86,10 @@ Smoke test anon key ile bucket görünürlüğünü kontrol eder; private bucket
 - Timing alanı: `formStartedAt`
 - Server-side input uzunluk ve format validation
 - Ham IP saklamadan fingerprint hash
-- In-memory best-effort rate limit
+- Env durumuna göre Upstash Redis veya in-memory fallback rate limit
 - `consent_metadata.formSecurity` altında güvenlik metadata'sı
 
-15C sonrası rate limit provider arayüzü `lib/security/rateLimitProvider.ts` içinde ayrılmıştır. İlk sürümde in-memory fallback devam eder; bu kalıcı ve global güvence değildir.
+15C sonrası rate limit provider arayüzü `lib/security/rateLimitProvider.ts` içinde ayrılmıştır. 15E ile Upstash Redis provider eklendi; `RATE_LIMIT_PROVIDER=upstash` ve Upstash server env değerleri tanımlıysa kalıcı/global limit kullanılır. Env eksikliği veya provider runtime hatasında in-memory fallback devam eder; bu fallback kalıcı ve global güvence değildir.
 
 Kalıcı provider değerlendirmesi:
 
@@ -98,13 +98,22 @@ Kalıcı provider değerlendirmesi:
 - Supabase table/RPC: Ek servis gerektirmez, ancak spam yükünü ana DB'ye taşıyabilir.
 - In-memory fallback: Sadece başlangıç bariyeridir.
 
-15D provider kararı: 15E entegrasyonu için önerilen sağlayıcı Upstash Redis'tir. Gerekçe: Vercel serverless ile uyumlu REST API, atomic counter/TTL modeli, preview-production env ayrımının kolay kurulması, Supabase ana DB üzerinde spam write yükü oluşturmaması ve ham IP yerine mevcut fingerprint hash ile limit uygulanabilmesi.
+15D provider kararı ve 15E uygulaması: Önerilen sağlayıcı Upstash Redis'tir ve provider kodu eklendi. Gerekçe: Vercel serverless ile uyumlu REST API, atomic counter/TTL modeli, preview-production env ayrımının kolay kurulması, Supabase ana DB üzerinde spam write yükü oluşturmaması ve ham IP yerine mevcut fingerprint hash ile limit uygulanabilmesi.
 
-Önerilen limit başlangıcı:
+Uygulanan limit başlangıcı:
 
-- İletişim/gönüllü formları: fingerprint başına 10 dakikada 5-8 deneme.
-- Kayıt formu: fingerprint başına 10 dakikada 3-4 deneme.
-- Günlük gözlem limiti: fingerprint + form başına 30-50 deneme sonrası soft block veya inceleme flag'i.
+- İletişim formu: fingerprint başına 10 dakikada 8 deneme.
+- Gönüllü, bağış, kurban ve yetim hamiliği formları: fingerprint başına 10 dakikada 5 deneme.
+- Kayıt formu: fingerprint başına 10 dakikada 4 deneme.
+- Günlük gözlem limiti: sonraki izleme aşamasında soft block veya inceleme flag'i olarak değerlendirilecek.
+
+Upstash env/config notları:
+
+- `RATE_LIMIT_PROVIDER=memory` varsayılan güvenli fallback'tir.
+- `RATE_LIMIT_PROVIDER=upstash` production önerisidir.
+- `UPSTASH_REDIS_REST_URL` ve `UPSTASH_REDIS_REST_TOKEN` yalnızca server env'de tutulmalıdır.
+- Key formatı `form:{form}:{fingerprintHash}` olup ham IP saklanmaz.
+- Provider metadata'sı client'a teknik detay olarak dönmez; consent/security metadata tarafında denetim izi için özetlenir.
 
 Turnstile pilotu feature flag ile hazırdır:
 
@@ -120,6 +129,12 @@ Turnstile pilotu feature flag ile hazırdır:
 - Token yok ve always-fails secret senaryoları genel hata ile reddedildi.
 - Always-passes secret senaryosu submit akışına devam etti; oluşan test kaydı cleanup ile silindi.
 - Gerçek Vercel Preview/Staging Turnstile key'leri bu repoda bulunmadığı için gerçek tenant pilotu env tanımlanınca tekrar yapılmalıdır.
+
+15E Preview/Staging notu:
+
+- Bu workspace'te gerçek Cloudflare staging key'leri, Upstash staging env değerleri ve Vercel Preview URL bulunmadığı için gerçek Preview browser QA burada tamamlanmış kabul edilmemelidir.
+- Preview/Staging env tanımlandığında `/iletisim`, `/gonullu-ol` ve `/kayit` için token yok, geçersiz token, başarılı token, honeypot ve KVKK/consent senaryoları yeniden koşulmalıdır.
+- Production'da Turnstile zorunlu açılmadan önce Preview sonucu dokümante edilmelidir.
 
 Production trafiğinde aşağıdaki ek kontroller önerilir:
 
@@ -147,6 +162,8 @@ REQUIRE_STAGING_NEGATIVE_TESTS=true NEGATIVE_TEST_ALLOWLIST_PROJECT_REF=staging_
 
 Bu script boş veya production domain gibi görünen `NEXT_PUBLIC_SITE_URL` değerinde, staging/preview/test/localhost olmayan site URL'lerinde ya da allowlist dışında kalan Supabase project ref üzerinde çalışmayı reddeder. Başarılı anon insert/upload sonucu production deploy öncesi durdurucu security warning kabul edilmelidir.
 
+15E kapsamında gerçek staging project ref ve staging/preview URL bu workspace'te bulunmadığı için negatif harness production'a dokunmadan guard/default davranışıyla doğrulanır; gerçek staging allowlist testi env değerleri sağlandıktan sonra ayrıca çalıştırılmalıdır.
+
 ## Env ve Production Config Checklist
 
 - `SITE_MAINTENANCE_MODE=false`, yayın stratejisi gerektiriyorsa geçici olarak true.
@@ -155,6 +172,8 @@ Bu script boş veya production domain gibi görünen `NEXT_PUBLIC_SITE_URL` değ
 - `DONATION_WHATSAPP_PHONE` doğrulanmış public iletişim hattı.
 - `NEXT_PUBLIC_SITE_URL` production domain.
 - Supabase publishable/anon key public, service role key yalnızca server env.
+- `RATE_LIMIT_PROVIDER=upstash` production önerisi; `UPSTASH_REDIS_REST_URL` ve `UPSTASH_REDIS_REST_TOKEN` yalnızca server env.
+- `TURNSTILE_ENABLED=true` production'a alınacaksa önce Vercel Preview/Staging QA tamamlanır.
 - PayTR production credential değerleri canlı ödeme onayı olmadan aktif edilmez.
 - `PAYTR_DEBUG_ON=false`.
 - `.env.local`, `.vercel` ve test credential değerleri Git'e dahil edilmez.

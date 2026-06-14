@@ -108,7 +108,13 @@ function getFriendlyError(error: unknown) {
 }
 
 export async function createSponsorshipApplicationAction(formData: FormData) {
-  const formProtection = await evaluateFormProtection(formData, { form: "orphan" });
+  const formProtection = await evaluateFormProtection(formData, {
+    form: "orphan",
+    rateLimit: {
+      maxAttempts: 5,
+      windowMs: 10 * 60 * 1000
+    }
+  });
   if (formProtection.honeypotTrapped) {
     redirectWithStatus("alindi");
   }

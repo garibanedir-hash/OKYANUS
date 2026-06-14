@@ -40,7 +40,13 @@ function getFriendlyError(error: unknown) {
 }
 
 export async function createVolunteerApplicationAction(formData: FormData) {
-  const formProtection = await evaluateFormProtection(formData, { form: "volunteer" });
+  const formProtection = await evaluateFormProtection(formData, {
+    form: "volunteer",
+    rateLimit: {
+      maxAttempts: 5,
+      windowMs: 10 * 60 * 1000
+    }
+  });
   if (formProtection.honeypotTrapped) {
     redirectWithStatus("alindi");
   }
