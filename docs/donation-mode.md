@@ -42,3 +42,12 @@ WhatsApp bilgilendirme kartlarında kısa KVKK/Gizlilik notu ve ilgili hukuki me
 - Production tanıtım yayınında önerilen değer `DONATION_MODE=whatsapp` olarak korunmalıdır.
 - WhatsApp modunda `/bagis-yap`, `/kurban/bagis` ve `/yetim-hamiligi/basvuru` payment intent, kurban order veya sponsorluk ödeme başlatmamalıdır; bu durum release öncesi HTTP/browser kontrolünde doğrulanmalıdır.
 - Online moda geçişten önce PayTR callback hash/idempotency, tutar/para birimi doğrulaması, makbuz private bucket erişimi ve rate limit/spam riski `docs/production-security-hardening.md` ile tekrar kontrol edilmelidir.
+
+## 16A Operasyon Kararları
+
+- Tanıtım production yayınında beklenen değer `DONATION_MODE=whatsapp` olarak kalır.
+- WhatsApp numarası yanlışsa veya hat geçici kullanılamıyorsa env düzeltilene kadar `DONATION_MODE=disabled` değerlendirilebilir.
+- Public CTA'lar ödeme formuna gidiyorsa release no-go veya acil incident kabul edilir; env düzeltilip redeploy yapılır.
+- PayTR online ödeme gerçek merchant test, mali/yönetim onayı, callback idempotency kanıtı ve makbuz/private bucket kontrolü tamamlanmadan açılmaz.
+- Deploy sonrası `/bagis-yap`, `/kurban/bagis` ve `/yetim-hamiligi/basvuru` için `npm run smoke:production` ve manuel browser kontrolü yapılır.
+- Ayrıntılı olay müdahalesi `docs/production-operations-runbook.md` içinde tutulur.

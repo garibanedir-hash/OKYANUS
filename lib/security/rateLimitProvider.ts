@@ -1,5 +1,7 @@
 import "server-only";
 
+import { safeLogger } from "@/lib/observability/safeLogger";
+
 export type RateLimitOptions = {
   maxAttempts?: number;
   windowMs?: number;
@@ -189,7 +191,9 @@ export function getRateLimitProvider(): RateLimitProvider {
     }
 
     if (!missingUpstashEnvWarningLogged) {
-      console.warn("RATE_LIMIT_PROVIDER=upstash ancak Upstash env eksik; memory rate limit fallback kullaniliyor.");
+      safeLogger.warn("rate-limit", "missing_upstash_env_memory_fallback", {
+        provider: "upstash"
+      });
       missingUpstashEnvWarningLogged = true;
     }
   }
@@ -204,11 +208,10 @@ export async function checkRateLimit(input: RateLimitInput): Promise<RateLimitRe
     return await provider.check(input);
   } catch (error) {
     if (provider.name !== memoryProvider.name && !upstashRuntimeWarningLogged) {
-      console.warn(
-        `Rate limit provider '${provider.name}' failed; memory fallback kullaniliyor: ${
-          error instanceof Error ? error.message : "unknown error"
-        }`
-      );
+      safeLogger.warn("rate-limit", "provider_failed_memory_fallback", {
+        provider: provider.name,
+        error
+      });
       upstashRuntimeWarningLogged = true;
     }
 

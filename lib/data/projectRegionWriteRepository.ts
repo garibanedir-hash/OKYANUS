@@ -1,6 +1,7 @@
 import "server-only";
 
 import { asAdminWriteClient } from "@/lib/data/adminWriteClient";
+import { safeLogger } from "@/lib/observability/safeLogger";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import type { ProjectRegionRow } from "@/lib/data/projectRegionRepository";
 
@@ -45,7 +46,7 @@ function getDb() {
 }
 
 function logProjectRegionWriteIssue(event: string, payload: Record<string, unknown>) {
-  console.error(`[project_region_write:${event}]`, payload);
+  safeLogger.error("project-region-write", event, payload);
 }
 
 function assertCoordinate(value: number | null | undefined, min: number, max: number, label: string) {

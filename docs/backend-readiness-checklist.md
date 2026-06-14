@@ -405,3 +405,17 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Staging negative harness production DB'ye dokunmadan allowlist staging project ref ile çalıştırıldı.
 - [ ] Test kayıtları temizlendi veya açık test kaydı olarak işaretlendi.
 - [ ] Bu local workspace'te Vercel CLI, agent-browser CLI, staging env secret'ları veya Preview URL yoksa 15G gerçek QA “bekliyor” olarak raporlandı.
+
+## 16A Production Operasyon Hazırlığı
+
+- [ ] `docs/production-operations-runbook.md` backend operasyon referansı olarak eklendi.
+- [ ] `scripts/production-smoke-check.mjs` yalnızca public HTTP GET yapan, secret kullanmayan ve write/delete yapmayan smoke check olarak hazır.
+- [ ] `npm run smoke:production` base URL yoksa güvenli skip veriyor; base URL verilirse public route status/body kontrolü yapıyor.
+- [ ] Supabase izleme checklist'i `Security warning: 0`, `Missing table: 0`, private bucket public=false ve `project-media` public read ayrımını içeriyor.
+- [ ] Payment callback, finalization, receipt download ve notification queue izleme maddeleri runbook'a işlendi.
+- [ ] Error logging yaklaşımı secret/PII/raw provider payload sızıntısını engelleyecek prensiplerle belgelendi.
+- [ ] `lib/observability/safeLogger.ts` yeni log noktaları için ortak redaction helper olarak eklendi.
+- [ ] Backup planı DB, storage, migration, env secret, restore provası ve yetkilendirme başlıklarını içeriyor.
+- [ ] Restore planı yanlış migration, silinen görsel, admin içerik, makbuz PDF, payment callback ve storage policy senaryolarını kapsıyor.
+- [ ] Incident response planı site/admin kesintisi, form spam, yanlış WhatsApp, online ödemeye yanlış yönlenme, private makbuz public görünme, PayTR hata, RLS warning, service role sızıntı şüphesi ve storage kota olaylarını kapsıyor.
+- [ ] Production'da `DONATION_MODE=whatsapp` ve PayTR online ödeme kapalı kalacak; 16A bu davranışı değiştirmiyor.

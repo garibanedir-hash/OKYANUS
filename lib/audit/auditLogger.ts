@@ -3,6 +3,7 @@ import "server-only";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { asAdminWriteClient } from "@/lib/data/adminWriteClient";
 import type { Json } from "@/lib/supabase/types";
+import { safeLogger } from "@/lib/observability/safeLogger";
 
 type AuditPayload = {
   actorId: string;
@@ -40,7 +41,7 @@ export async function logAdminAction({
   });
 
   if (error && process.env.NODE_ENV !== "production") {
-    console.warn("[audit] Admin action could not be logged.", {
+    safeLogger.warn("audit", "admin_action_log_failed", {
       code: error.code ?? "no-code",
       action,
       entityType

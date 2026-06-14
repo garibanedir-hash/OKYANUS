@@ -253,6 +253,21 @@
 - [ ] Storage backup planı var.
 - [ ] Restore testi yapıldı.
 
+## 16A Monitoring, Logging ve Operasyon
+
+- [ ] `docs/production-operations-runbook.md` production operasyon referansı olarak kabul edildi.
+- [ ] Günlük public route, admin, Supabase, form, donation mode, PayTR ve makbuz monitoring checklist'i tanımlandı.
+- [ ] Vercel logs, Supabase logs, Security Advisor, payment provider events, notification queue ve audit log bakılacak kaynaklar olarak belirlendi.
+- [ ] Error logging prensipleri belirlendi: secret, service role, PayTR key/salt, Upstash token, Turnstile secret, tam e-posta/telefon/adres ve provider raw payload loglanmaz.
+- [ ] `lib/observability/safeLogger.ts` ortak redaction helper olarak eklendi ve yeni console loglarında tercih edilecek.
+- [ ] Payment callback payload'ı tam haliyle public loglara yazılmıyor; özet alanlarla kayıt tutuluyor.
+- [ ] `app/error.tsx` kullanıcıya teknik stack trace göstermiyor.
+- [ ] Backup erişimi, retention, storage backup ve restore provası operasyon görevi olarak belgelendi.
+- [ ] Private makbuz bucket public olursa acil incident olarak ele alınacağı belirlendi.
+- [ ] Service role sızıntı şüphesi için rotate/revoke/postmortem adımları tanımlandı.
+- [ ] Production'da `TURNSTILE_ENABLED=true` zorunlu açılmadan önce Vercel Preview Turnstile/Upstash QA kanıtı istenecek.
+- [ ] Production tanıtım yayınında `DONATION_MODE=whatsapp` korunacak ve PayTR online ödeme açılmayacak.
+
 ## Admin route protection
 
 - [ ] Middleware/server guard var.

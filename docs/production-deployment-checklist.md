@@ -2,6 +2,45 @@
 
 Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi son teknik ve operasyonel kontroller için hazırlanmıştır.
 
+## Go / No-Go Kararı
+
+Production deploy veya production env değişikliği için aşağıdaki şartlar release sorumlusu tarafından açıkça işaretlenmelidir.
+
+Go şartları:
+
+- [ ] `npm run lint` geçiyor.
+- [ ] `npm run build` geçiyor.
+- [ ] `npm run check:supabase-env` geçiyor.
+- [ ] `npm run test:supabase` sonucu `Security warning: 0` ve `Missing table: 0`.
+- [ ] `npm run audit:security` high seviyede temiz.
+- [ ] Service role, Supabase secret, PayTR key/salt, Upstash token ve Turnstile secret public bundle'da yok.
+- [ ] `DONATION_MODE` istenen modda; tanıtım production yayını için `whatsapp`.
+- [ ] WhatsApp numarası doğru ve public kullanıma uygun.
+- [ ] Hukuki sayfalar 200 dönüyor.
+- [ ] Admin guard çalışıyor; anon `/admin` erişimi login'e yönleniyor.
+- [ ] `receipts-private` ve `manual-receipts-private` protected/public=false.
+- [ ] Son commit ve push tamam.
+
+No-go şartları; aşağıdakilerden biri varsa deploy/env değişikliği durur:
+
+- Missing table var.
+- Security warning var.
+- Service role/secret public bundle'da veya `NEXT_PUBLIC_` env altında.
+- Donation mode yanlış.
+- Private bucket public.
+- Admin anon erişilebilir.
+- Ödeme modu yanlışlıkla online.
+- PayTR canlı merchant test ve mali/yönetim onayı tamamlanmadan online payment açılıyor.
+
+## 16A Production Operations
+
+- [ ] `docs/production-operations-runbook.md` teknik, operasyon, veri ve yönetim sorumluları tarafından gözden geçirildi.
+- [ ] Günlük/haftalık/deploy sonrası monitoring checklist sahipleri atandı.
+- [ ] Backup ve restore erişim sorumluları belirlendi.
+- [ ] Incident response kararları, bakım modu ve donation mode kapatma koşulları kabul edildi.
+- [ ] `npm run smoke:production` production veya preview base URL ile çalıştırıldı veya base URL yoksa kontrollü skip olarak not edildi.
+- [ ] Vercel Preview Turnstile/Upstash QA açık operasyonel madde olarak kalıyorsa production `TURNSTILE_ENABLED=true` zorunlu açılmadı.
+
 ## Vercel ve Environment
 
 - [ ] Vercel project doğru GitHub repository ile bağlı.

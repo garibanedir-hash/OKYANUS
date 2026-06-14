@@ -225,3 +225,12 @@ Staging negatif testlerinde her test kaydı açıkça işaretlenmeli ve test son
 - Kısa sürede artan form hatası veya tekrar submit logları izlenmelidir.
 - İletişim/gönüllü başvurularında olağan dışı yoğunluk görülürse Turnstile üretim aktivasyonu ve Upstash limit eşikleri ayrı onayla sıkılaştırılmalıdır.
 - Rate limit provider eklenirse secret değerleri server env’de tutulmalı ve public bundle taraması tekrar yapılmalıdır.
+
+## 16A Operasyon İzleme Notları
+
+- Günlük kontrolde iletişim ve gönüllü başvuru sayıları, honeypot tetiklenme oranı, rate limit `limited=true` artışı ve tekrar eden fingerprint hashleri izlenir.
+- `RATE_LIMIT_PROVIDER=upstash` seçili ama env eksikse sistem memory fallback'e döner; bu durum production için kalıcı/global güvence sayılmaz ve operasyonel uyarı kabul edilir.
+- Form hata loglarında tam mesaj metni, tam e-posta, telefon, ham IP, token veya Turnstile secret bulunmamalıdır.
+- Spam saldırısında public table write policy açılmaz; server action sınırı korunur.
+- Turnstile production'da zorunlu açılmadan önce gerçek Vercel Preview/Staging QA, Upstash rate limit kanıtı ve negative harness sonucu runbook'a işlenmelidir.
+- Olay müdahalesi için `docs/production-operations-runbook.md` içindeki “Form Spam Saldırısı” adımları kullanılır.

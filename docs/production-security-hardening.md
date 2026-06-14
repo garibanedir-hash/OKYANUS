@@ -217,3 +217,31 @@ Tam `Content-Security-Policy` ayrı bir aşamada, Next/Image, Supabase Storage, 
 - `project-media` görseller public, private makbuz bucketları public değil.
 - WhatsApp modunda bağış sayfaları payment intent başlatmıyor.
 - Cookie banner ve hukuki linkler production domain üzerinde çalışıyor.
+
+## 16A Monitoring, Safe Logging ve Operasyon
+
+Production güvenliği canlı yayından sonra izlenebilirlik ve müdahale planıyla birlikte ele alınmalıdır. Operasyonel ana referans `docs/production-operations-runbook.md` dosyasıdır.
+
+Safe logging prensipleri:
+
+- Service role, Supabase secret, PayTR merchant key/salt, Upstash token, Turnstile secret, auth token ve session/cookie değerleri loglanmaz.
+- Tam e-posta, telefon, açık adres, kimlik, IBAN, kart/CVV, form mesajı ve çocuk/yetim hassas verisi runtime loglara yazılmaz.
+- Payment callback raw provider payload public loglara yazılmaz; callback route sadece sınırlı `payloadSummary` ve provider event kayıtlarıyla izlenir.
+- Kullanıcıya teknik stack trace dönmez; global error page genel hata mesajı gösterir.
+- Yeni console log noktalarında `lib/observability/safeLogger.ts` tercih edilir.
+
+Production operasyon go/no-go:
+
+- `npm run test:supabase` çıktısında `Security warning: 0` ve `Missing table: 0` olmadan release yapılmaz.
+- Private makbuz bucketları public görünürse release durur ve incident kabul edilir.
+- `DONATION_MODE=whatsapp` tanıtım production yayını için korunur.
+- PayTR online ödeme, gerçek merchant test ve yönetim/mali onay tamamlanmadan açılmaz.
+- Vercel Preview Turnstile/Upstash QA tamamlanmadan production'da `TURNSTILE_ENABLED=true` zorunlu yapılmaz.
+
+Production smoke:
+
+```bash
+npm run smoke:production
+```
+
+Bu komut `PRODUCTION_SMOKE_BASE_URL` veya `NEXT_PUBLIC_SITE_URL` ile public HTTP route status/body kontrolü yapar; secret kullanmaz, write/delete yapmaz ve Supabase DB/Storage'a dokunmaz. Base URL yoksa güvenli şekilde skip verir.
