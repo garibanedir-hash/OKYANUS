@@ -394,3 +394,14 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Preview form submitleri Turnstile verification, rate limit, input validation, consent validation ve DB write sırasını koruyor.
 - [ ] Staging negative harness hassas tablolar ve private bucketlar için anon read/write/delete blocked sonucunu veriyor.
 - [ ] Harness output secret/token yazdırmıyor ve varsa test kayıtlarını cleanup ediyor.
+
+## 15G Operasyonel Preview/Staging Kapanışı
+
+- [ ] Vercel Preview env değerleri yetkili kullanıcı tarafından Dashboard/CLI üzerinden girildi.
+- [ ] Yeni Preview deploy alındı ve Preview URL backend readiness raporuna işlendi.
+- [ ] `VERCEL_ENV=preview npm run check:supabase-env` gerçek Preview env ile geçti; env eksikse fail verdiği doğrulandı.
+- [ ] Gerçek tarayıcıda `/iletisim`, `/gonullu-ol` ve `/kayit` Turnstile widget, token yok/geçersiz/başarılı token, honeypot ve consent senaryolarıyla doğrulandı.
+- [ ] `RATE_LIMIT_PROVIDER=upstash` ile aynı context/fingerprint limit aşımında DB write öncesi duruyor.
+- [ ] Staging negative harness production DB'ye dokunmadan allowlist staging project ref ile çalıştırıldı.
+- [ ] Test kayıtları temizlendi veya açık test kaydı olarak işaretlendi.
+- [ ] Bu local workspace'te Vercel CLI, agent-browser CLI, staging env secret'ları veya Preview URL yoksa 15G gerçek QA “bekliyor” olarak raporlandı.

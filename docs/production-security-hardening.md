@@ -142,6 +142,15 @@ Turnstile pilotu feature flag ile hazırdır:
 - `npm run check:supabase-env`, `VERCEL_ENV=preview|production` veya `REQUIRE_STRICT_PREVIEW_SECURITY_ENV=true` altında Upstash/Turnstile eksiklerini hata olarak raporlar.
 - Gerçek Preview QA ve staging negative harness çıktısı dokümante edilmeden production'da Turnstile zorunlu açılmamalıdır.
 
+15G operasyonel QA notu:
+
+- Bu local workspace'te Vercel CLI, agent-browser CLI, gerçek Cloudflare staging key'leri, Upstash staging env değerleri ve Preview URL bulunmadığı için gerçek Preview browser QA burada tamamlanmış kabul edilmez.
+- Yetkili kullanıcı Preview env değerlerini Vercel Dashboard veya CLI ile girdikten sonra yeni Preview deploy almalı ve Preview URL'yi rapora eklemelidir.
+- Gerçek browser QA'da `/iletisim`, `/gonullu-ol` ve `/kayit` için Turnstile widget render, token yok, geçersiz token, başarılı token, honeypot ve KVKK/consent senaryoları doğrulanmalıdır.
+- Upstash QA'da aynı form/context/fingerprint için limit aşımı DB write öncesi durmalı ve public response teknik provider detayı içermemelidir.
+- Staging negative harness yalnızca `REQUIRE_STAGING_NEGATIVE_TESTS=true`, staging project ref allowlist ve staging/preview `NEXT_PUBLIC_SITE_URL` ile çalıştırılmalıdır; production DB üzerinde negatif write/delete test yapılmamalıdır.
+- 15G kanıtları olmadan production'da Turnstile zorunlu açılmamalı ve Upstash provider production güvence kabul edilmeden önce gerçek staging sonucu kaydedilmelidir.
+
 Production trafiğinde aşağıdaki ek kontroller önerilir:
 
 - IP veya kullanıcı bazlı rate limit.
@@ -168,7 +177,7 @@ REQUIRE_STAGING_NEGATIVE_TESTS=true NEGATIVE_TEST_ALLOWLIST_PROJECT_REF=staging_
 
 Bu script boş veya production domain gibi görünen `NEXT_PUBLIC_SITE_URL` değerinde, staging/preview/test/localhost olmayan site URL'lerinde ya da allowlist dışında kalan Supabase project ref üzerinde çalışmayı reddeder. Başarılı anon insert/upload sonucu production deploy öncesi durdurucu security warning kabul edilmelidir.
 
-15E/15F kapsamında gerçek staging project ref ve staging/preview URL bu workspace'te bulunmadığı için negatif harness production'a dokunmadan guard/default davranışıyla doğrulanır; gerçek staging allowlist testi env değerleri sağlandıktan sonra ayrıca çalıştırılmalıdır.
+15E/15F/15G kapsamında gerçek staging project ref ve staging/preview URL bu workspace'te bulunmadığı için negatif harness production'a dokunmadan guard/default davranışıyla doğrulanır; gerçek staging allowlist testi env değerleri sağlandıktan sonra ayrıca çalıştırılmalıdır.
 
 ## Env ve Production Config Checklist
 

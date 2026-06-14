@@ -307,6 +307,20 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Public bundle secret scan Preview build sonrası temiz.
 - [ ] Bu checklist maddeleri tamamlanmadan production'da `TURNSTILE_ENABLED=true` zorunlu hale getirilmiyor.
 
+## 15G Gerçek Preview/Staging Kapanışı
+
+- [ ] Vercel Dashboard veya CLI erişimi olan yetkili kullanıcı Preview env değerlerini girdi.
+- [ ] Yeni Preview deploy alındı; Preview URL raporda açıkça belirtildi.
+- [ ] Preview route kontrolü yapıldı: `/`, `/iletisim`, `/gonullu-ol`, `/kayit`, `/bagis-yap`, `/kurban/bagis`, `/yetim-hamiligi/basvuru`, `/hukuki`, `/robots.txt`, `/sitemap.xml`.
+- [ ] `DONATION_MODE=whatsapp` Preview üzerinde korundu; online ödeme formu veya payment intent başlatma akışı görünmedi.
+- [ ] Turnstile gerçek browser QA sonucu kaydedildi: widget render, token yok, geçersiz token, başarılı token.
+- [ ] Upstash staging rate limit sonucu kaydedildi; limit aşımı DB write öncesi genel hata ile durdu.
+- [ ] Staging negative security harness `REQUIRE_STAGING_NEGATIVE_TESTS=true`, staging project ref allowlist ve staging/preview URL ile çalıştırıldı.
+- [ ] Negative harness production DB üzerinde çalıştırılmadı; hassas tablo/bucket başarılı anon write/read sonucu bulunmadı.
+- [ ] Preview QA sırasında oluşan test kayıtları temizlendi veya test kaydı olarak işaretlendi.
+- [ ] Public bundle secret scan tekrar temiz; server-only secret değerleri public bundle'a taşınmadı.
+- [ ] Bu workspace'te Vercel CLI, agent-browser CLI, staging secret'lar veya Preview URL yoksa gerçek 15G QA tamamlanmış sayılmadı ve kalan risk olarak işaretlendi.
+
 ## Export ve Raporlama
 
 - [ ] Export işlemleri yetki kontrolünden geçiyor.

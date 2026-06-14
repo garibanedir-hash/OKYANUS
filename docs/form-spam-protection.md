@@ -138,6 +138,15 @@ Değerlendirilen seçenekler:
 - Upstash QA'da aynı form/context/fingerprint ile limit aşımı DB write öncesi durmalı ve kullanıcıya genel rate limit mesajı dönmelidir.
 - Bu yerel workspace'te Vercel CLI, Cloudflare staging key'leri, Upstash staging env değerleri ve Preview URL bulunmadığı için gerçek Preview QA sonucu “bekliyor” kabul edilmelidir.
 
+15G operasyonel kapanış kriterleri:
+
+- Gerçek Vercel Preview deploy, Dashboard/CLI erişimi olan yetkili kullanıcı tarafından env değerleri girildikten sonra alınmalıdır.
+- Preview env için `TURNSTILE_ENABLED=true`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `RATE_LIMIT_PROVIDER=upstash`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `DONATION_MODE=whatsapp`, `SITE_MAINTENANCE_MODE=false` ve Preview `NEXT_PUBLIC_SITE_URL` birlikte tanımlanmalıdır.
+- Bu workspace'te Vercel CLI, agent-browser CLI, staging secret değerleri ve Preview URL bulunmadığı için 15G gerçek browser QA burada tamamlanmış sayılmaz.
+- Preview QA çıktısında `/iletisim`, `/gonullu-ol` ve `/kayit` için widget render, token yok, geçersiz token, başarılı token, honeypot, KVKK/consent ve Upstash limit aşımı kanıtları yer almalıdır.
+- Test submitleri oluşursa staging veritabanında temizlenmeli veya açıkça test kaydı olarak işaretlenmelidir.
+- Production'da `TURNSTILE_ENABLED=true` zorunlu yapılmadan önce 15G Preview kanıtı, negative harness sonucu ve public bundle secret scan sonucu kayda geçirilmelidir.
+
 Cloudflare'ın resmi test key belgeleri: https://developers.cloudflare.com/turnstile/troubleshooting/testing/
 
 Alternatifler:
@@ -178,7 +187,7 @@ Guard koşulları:
 - Başarılı insert/upload büyük security warning sayılır ve mümkünse cleanup denenir.
 - Constraint/not-null hataları `INCONCLUSIVE` raporlanır; bu tek başına RLS'in kapalı olduğunu kanıtlamaz.
 
-15E/15F sonucu: Bu workspace'te gerçek staging project ref, staging URL ve allowlist env değerleri bulunmadığı için harness yalnızca güvenli guard/default modunda çalıştırılmalıdır. Gerçek staging allowlist testi, staging Supabase project ref ve preview/staging URL açıkça sağlandıktan sonra koşulmalıdır; production DB üzerinde negatif write/delete testi yapılmamalıdır.
+15E/15F/15G sonucu: Bu workspace'te gerçek staging project ref, staging URL ve allowlist env değerleri bulunmadığı için harness yalnızca güvenli guard/default modunda çalıştırılmalıdır. Gerçek staging allowlist testi, staging Supabase project ref ve preview/staging URL açıkça sağlandıktan sonra koşulmalıdır; production DB üzerinde negatif write/delete testi yapılmamalıdır.
 
 Anon ile doğrudan yazılamaması gerekenler:
 

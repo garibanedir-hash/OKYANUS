@@ -199,6 +199,19 @@
 - [ ] Negative harness çıktısında hassas tablo/bucket anon read/write/delete başarılı sonucu yok mu?
 - [ ] Production'da Turnstile zorunlu açılmadan önce Preview sonucu, CSP notu ve rollback planı dokümante edildi mi?
 
+## 15G Vercel Preview ve Staging Negative Kapanışı
+
+- [ ] Vercel Preview Dashboard/CLI üzerinden `TURNSTILE_ENABLED=true`, staging Turnstile key'leri, `RATE_LIMIT_PROVIDER=upstash`, staging Upstash URL/token, `DONATION_MODE=whatsapp`, `SITE_MAINTENANCE_MODE=false` ve Preview `NEXT_PUBLIC_SITE_URL` tanımlandı mı?
+- [ ] Yetkili kullanıcı yeni Preview deploy aldı ve Preview URL rapora işlendi mi?
+- [ ] Preview URL üzerinde `/`, `/iletisim`, `/gonullu-ol`, `/kayit`, `/bagis-yap`, `/kurban/bagis`, `/yetim-hamiligi/basvuru`, `/hukuki`, `/robots.txt` ve `/sitemap.xml` kontrol edildi mi?
+- [ ] Turnstile widget render, token yok, geçersiz token ve başarılı token senaryoları gerçek tarayıcıda DB write etkisiyle doğrulandı mı?
+- [ ] Upstash rate limit aynı form/context/fingerprint için limit aşımında DB write öncesi duruyor ve kullanıcıya genel hata dönüyor mu?
+- [ ] `npm run test:security:negative` staging allowlist project ref ve staging/preview `NEXT_PUBLIC_SITE_URL` ile çalıştırıldı mı?
+- [ ] Negative harness production domain, boş URL veya allowlist dışı project ref için çalışmayı reddediyor mu?
+- [ ] Preview QA sırasında oluşan test kayıtları temizlendi veya test kaydı olarak işaretlendi mi?
+- [ ] Public bundle secret scan `UPSTASH_REDIS_REST_TOKEN`, `TURNSTILE_SECRET_KEY`, Supabase service role ve PayTR secret değerleri için temiz mi?
+- [ ] Bu repo workspace'inde Vercel CLI, agent-browser CLI, staging secret'lar veya Preview URL yoksa 15G gerçek QA sonucu “bekliyor” olarak raporlandı mı?
+
 ## Payment webhook security
 
 - [ ] 9E'de canlı provider webhook endpoint'i açılmadığı doğrulandı.
