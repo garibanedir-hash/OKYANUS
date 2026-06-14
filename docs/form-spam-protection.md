@@ -130,6 +130,14 @@ Değerlendirilen seçenekler:
 - Preview QA için `TURNSTILE_ENABLED=true`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `RATE_LIMIT_PROVIDER=upstash`, `UPSTASH_REDIS_REST_URL` ve `UPSTASH_REDIS_REST_TOKEN` staging/preview ortamında tanımlanmalıdır.
 - Preview'da token yok, geçersiz token, başarılı token, honeypot, KVKK/consent ve rate limit senaryoları gerçek tarayıcıda tekrar doğrulanmalıdır.
 
+15F Preview/Staging kapanış kriterleri:
+
+- Vercel Preview env içinde `TURNSTILE_ENABLED=true`, gerçek Cloudflare staging site key/secret key, `RATE_LIMIT_PROVIDER=upstash` ve staging Upstash REST URL/token tanımlanmalıdır.
+- `npm run check:supabase-env`, `VERCEL_ENV=preview` veya `REQUIRE_STRICT_PREVIEW_SECURITY_ENV=true` altında Turnstile/Upstash env eksiklerini hata olarak işaretler.
+- Preview browser QA'da `/iletisim`, `/gonullu-ol` ve `/kayit` için widget render, token yok, geçersiz token ve başarılı token senaryoları doğrulanmalıdır.
+- Upstash QA'da aynı form/context/fingerprint ile limit aşımı DB write öncesi durmalı ve kullanıcıya genel rate limit mesajı dönmelidir.
+- Bu yerel workspace'te Vercel CLI, Cloudflare staging key'leri, Upstash staging env değerleri ve Preview URL bulunmadığı için gerçek Preview QA sonucu “bekliyor” kabul edilmelidir.
+
 Cloudflare'ın resmi test key belgeleri: https://developers.cloudflare.com/turnstile/troubleshooting/testing/
 
 Alternatifler:
@@ -170,7 +178,7 @@ Guard koşulları:
 - Başarılı insert/upload büyük security warning sayılır ve mümkünse cleanup denenir.
 - Constraint/not-null hataları `INCONCLUSIVE` raporlanır; bu tek başına RLS'in kapalı olduğunu kanıtlamaz.
 
-15E sonucu: Bu workspace'te gerçek staging project ref, staging URL ve allowlist env değerleri bulunmadığı için harness yalnızca güvenli guard/default modunda çalıştırılmalıdır. Gerçek staging allowlist testi, staging Supabase project ref ve preview/staging URL açıkça sağlandıktan sonra koşulmalıdır; production DB üzerinde negatif write/delete testi yapılmamalıdır.
+15E/15F sonucu: Bu workspace'te gerçek staging project ref, staging URL ve allowlist env değerleri bulunmadığı için harness yalnızca güvenli guard/default modunda çalıştırılmalıdır. Gerçek staging allowlist testi, staging Supabase project ref ve preview/staging URL açıkça sağlandıktan sonra koşulmalıdır; production DB üzerinde negatif write/delete testi yapılmamalıdır.
 
 Anon ile doğrudan yazılamaması gerekenler:
 

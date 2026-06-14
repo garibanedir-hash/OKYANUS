@@ -136,6 +136,12 @@ Turnstile pilotu feature flag ile hazırdır:
 - Preview/Staging env tanımlandığında `/iletisim`, `/gonullu-ol` ve `/kayit` için token yok, geçersiz token, başarılı token, honeypot ve KVKK/consent senaryoları yeniden koşulmalıdır.
 - Production'da Turnstile zorunlu açılmadan önce Preview sonucu dokümante edilmelidir.
 
+15F Preview/Staging kapanış notu:
+
+- Preview env için `TURNSTILE_ENABLED=true`, staging Turnstile key'leri, `RATE_LIMIT_PROVIDER=upstash`, staging Upstash REST URL/token, `DONATION_MODE=whatsapp`, `SITE_MAINTENANCE_MODE=false` ve Preview `NEXT_PUBLIC_SITE_URL` birlikte tanımlanmalıdır.
+- `npm run check:supabase-env`, `VERCEL_ENV=preview|production` veya `REQUIRE_STRICT_PREVIEW_SECURITY_ENV=true` altında Upstash/Turnstile eksiklerini hata olarak raporlar.
+- Gerçek Preview QA ve staging negative harness çıktısı dokümante edilmeden production'da Turnstile zorunlu açılmamalıdır.
+
 Production trafiğinde aşağıdaki ek kontroller önerilir:
 
 - IP veya kullanıcı bazlı rate limit.
@@ -162,7 +168,7 @@ REQUIRE_STAGING_NEGATIVE_TESTS=true NEGATIVE_TEST_ALLOWLIST_PROJECT_REF=staging_
 
 Bu script boş veya production domain gibi görünen `NEXT_PUBLIC_SITE_URL` değerinde, staging/preview/test/localhost olmayan site URL'lerinde ya da allowlist dışında kalan Supabase project ref üzerinde çalışmayı reddeder. Başarılı anon insert/upload sonucu production deploy öncesi durdurucu security warning kabul edilmelidir.
 
-15E kapsamında gerçek staging project ref ve staging/preview URL bu workspace'te bulunmadığı için negatif harness production'a dokunmadan guard/default davranışıyla doğrulanır; gerçek staging allowlist testi env değerleri sağlandıktan sonra ayrıca çalıştırılmalıdır.
+15E/15F kapsamında gerçek staging project ref ve staging/preview URL bu workspace'te bulunmadığı için negatif harness production'a dokunmadan guard/default davranışıyla doğrulanır; gerçek staging allowlist testi env değerleri sağlandıktan sonra ayrıca çalıştırılmalıdır.
 
 ## Env ve Production Config Checklist
 
@@ -174,6 +180,7 @@ Bu script boş veya production domain gibi görünen `NEXT_PUBLIC_SITE_URL` değ
 - Supabase publishable/anon key public, service role key yalnızca server env.
 - `RATE_LIMIT_PROVIDER=upstash` production önerisi; `UPSTASH_REDIS_REST_URL` ve `UPSTASH_REDIS_REST_TOKEN` yalnızca server env.
 - `TURNSTILE_ENABLED=true` production'a alınacaksa önce Vercel Preview/Staging QA tamamlanır.
+- Preview/production ortamlarında `RATE_LIMIT_PROVIDER=upstash` seçili ama Upstash env eksikse deploy öncesi check hata vermelidir.
 - PayTR production credential değerleri canlı ödeme onayı olmadan aktif edilmez.
 - `PAYTR_DEBUG_ON=false`.
 - `.env.local`, `.vercel` ve test credential değerleri Git'e dahil edilmez.

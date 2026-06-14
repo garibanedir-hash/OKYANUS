@@ -385,3 +385,12 @@ Backend hazırlığının güvenlik odağında tamamlandığını kontrol etmek 
 - [ ] Gerçek Vercel Preview/Staging env sağlandığında Turnstile token yok/geçersiz/başarılı senaryoları tekrar doğrulanacak.
 - [ ] Staging negative harness yalnızca allowlist project ref ve staging/preview/test site URL ile hassas tablo/bucket negatif testlerini koşacak.
 - [ ] Production DB üzerinde kontrolsüz anon write/delete negatif testi yapılmayacak.
+
+## 15F Preview/Staging Doğrulama Kapanışı
+
+- [ ] `scripts/check-supabase-env.mjs` Preview/Production veya `REQUIRE_STRICT_PREVIEW_SECURITY_ENV=true` modunda Turnstile/Upstash eksiklerini hata olarak raporluyor.
+- [ ] Local/dev ortamda eksik Upstash env memory fallback ile çalışıyor; bu durum production güvence sayılmıyor.
+- [ ] Gerçek Vercel Preview env içinde Turnstile ve Upstash staging değerleri tanımlanmadan 15F kapanışı tamamlandı kabul edilmiyor.
+- [ ] Preview form submitleri Turnstile verification, rate limit, input validation, consent validation ve DB write sırasını koruyor.
+- [ ] Staging negative harness hassas tablolar ve private bucketlar için anon read/write/delete blocked sonucunu veriyor.
+- [ ] Harness output secret/token yazdırmıyor ve varsa test kayıtlarını cleanup ediyor.

@@ -187,6 +187,18 @@
 - [ ] Build sonrası `.next/static` içinde `UPSTASH_REDIS_REST_TOKEN`, `TURNSTILE_SECRET_KEY`, Supabase service role ve PayTR secret env adları bulunmuyor mu?
 - [ ] Tam CSP eklenecekse `https://challenges.cloudflare.com` script/frame/connect kaynakları Preview üzerinde ayrıca test edildi mi?
 
+## 15F Preview QA ve Güvenlik Kapanışı
+
+- [ ] Vercel Preview env içinde `TURNSTILE_ENABLED=true`, staging Turnstile site key/secret key, `RATE_LIMIT_PROVIDER=upstash` ve staging Upstash env değerleri tanımlandı mı?
+- [ ] `npm run check:supabase-env` Preview/Production veya `REQUIRE_STRICT_PREVIEW_SECURITY_ENV=true` modunda Turnstile/Upstash env eksiklerini hata olarak yakalıyor mu?
+- [ ] Gerçek Preview URL üzerinde `/iletisim`, `/gonullu-ol`, `/kayit`, `/bagis-yap`, `/kurban/bagis` ve `/yetim-hamiligi/basvuru` route'ları kontrol edildi mi?
+- [ ] Turnstile widget, token yok, geçersiz token ve başarılı token senaryoları DB write ve kullanıcı mesajları açısından doğrulandı mı?
+- [ ] Upstash limit aşımı aynı form/context/fingerprint için DB write öncesi duruyor mu?
+- [ ] Preview QA sırasında oluşan test kayıtları temizlendi veya açık test kaydı olarak işaretlendi mi?
+- [ ] `npm run test:security:negative` staging allowlist ve staging/preview `NEXT_PUBLIC_SITE_URL` ile çalıştırıldı mı?
+- [ ] Negative harness çıktısında hassas tablo/bucket anon read/write/delete başarılı sonucu yok mu?
+- [ ] Production'da Turnstile zorunlu açılmadan önce Preview sonucu, CSP notu ve rollback planı dokümante edildi mi?
+
 ## Payment webhook security
 
 - [ ] 9E'de canlı provider webhook endpoint'i açılmadığı doğrulandı.

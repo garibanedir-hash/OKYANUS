@@ -294,6 +294,19 @@ Bu liste Okyanus İnsani Yardım Derneği platformu production yayını öncesi 
 - [ ] Build sonrası `.next/static` secret scan `UPSTASH_REDIS_REST_TOKEN`, `TURNSTILE_SECRET_KEY`, Supabase service role ve PayTR secret env adları için temiz.
 - [ ] Tam CSP eklenmeden önce `https://challenges.cloudflare.com` kaynakları Turnstile Preview QA ile uyumlu olacak şekilde ayrıca test edilecek.
 
+## 15F Preview Security QA Kapanışı
+
+- [ ] Vercel Preview env şu değerlerle hazırlanıyor: `TURNSTILE_ENABLED=true`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `RATE_LIMIT_PROVIDER=upstash`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `DONATION_MODE=whatsapp`, `SITE_MAINTENANCE_MODE=false`, `NEXT_PUBLIC_SITE_URL=<preview-url>`.
+- [ ] Preview ve production Upstash/Turnstile secret değerleri ayrı tutuluyor; staging token production'a, production token preview'a karıştırılmıyor.
+- [ ] `npm run check:supabase-env` Preview/Production veya `REQUIRE_STRICT_PREVIEW_SECURITY_ENV=true` modunda eksik Turnstile/Upstash env değerlerinde fail veriyor.
+- [ ] Yeni Preview deploy build'i geçiyor ve Preview URL erişilebilir durumda.
+- [ ] `/iletisim`, `/gonullu-ol` ve `/kayit` gerçek tarayıcıda Turnstile widget, token yok/geçersiz/başarılı token ve KVKK/consent senaryolarıyla doğrulandı.
+- [ ] Upstash staging rate limit aynı fingerprint/context için limit aşımında DB write öncesi kullanıcı dostu hata veriyor.
+- [ ] `/bagis-yap`, `/kurban/bagis` ve `/yetim-hamiligi/basvuru` Preview'da `DONATION_MODE=whatsapp` davranışını koruyor.
+- [ ] Staging negative security harness allowlist project ref ile çalıştırıldı; production DB üzerinde negatif write/delete yapılmadı.
+- [ ] Public bundle secret scan Preview build sonrası temiz.
+- [ ] Bu checklist maddeleri tamamlanmadan production'da `TURNSTILE_ENABLED=true` zorunlu hale getirilmiyor.
+
 ## Export ve Raporlama
 
 - [ ] Export işlemleri yetki kontrolünden geçiyor.
