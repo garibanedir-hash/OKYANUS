@@ -78,10 +78,10 @@ export default function AdminSettingsPage() {
       </SettingsPanel>
 
       <SettingsPanel title="İletişim Bilgileri" description="Public sitede görünecek iletişim ve sosyal medya alanları.">
-        <Field label="Telefon" value="+90 212 000 00 00" />
-        <Field label="E-posta" value="bilgi@okyanus.org.tr" />
+        <Field label="Telefon" value="0530 069 89 76" />
+        <Field label="E-posta" value="info@okyanus.org.tr" />
         <Field label="Adres" value="İstanbul, Türkiye" />
-        <Field label="Sosyal medya bağlantıları" value="Instagram, Facebook, X placeholder" />
+        <Field label="Sosyal medya bağlantıları" value="Bağlantılar netleştikçe merkezi sosyal link datasına eklenecek" />
       </SettingsPanel>
 
       <SettingsPanel title="Bağış Ayarları" description="Bağış formu ve ödeme entegrasyonu öncesi demo yapılandırma.">

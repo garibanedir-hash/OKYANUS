@@ -4,12 +4,16 @@ import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { OfficialLogo } from "@/components/brand/OfficialLogo";
 import { CookiePreferencesButton } from "@/components/legal/CookiePreferencesButton";
+import { contactInfo } from "@/data/contactInfo";
 import { getLegalPagePath } from "@/data/legalPages";
+import { activeSocialLinks } from "@/data/socialLinks";
 import { resolveDonationTarget } from "@/lib/donations/donationTarget";
 import type { DonationPublicConfig } from "@/lib/donations/donationTarget";
 
 const quickLinks = [
   ["Hakkımızda", "/hakkimizda"],
+  ["Tüzük", "/tuzuk"],
+  ["SSS", "/sss"],
   ["Faaliyetler", "/faaliyetler"],
   ["Projeler", "/projeler"],
   ["Kurban", "/kurban"],
@@ -22,7 +26,7 @@ const quickLinks = [
   ["İletişim", "/iletisim"]
 ];
 
-const activityLinks = ["Acil Yardım", "Gıda Desteği", "Eğitim Desteği", "Yetim Hamiliği", "Kurban Çalışmaları"];
+const activityLinks = ["Gıda ve Erzak Desteği", "Yetim Hamiliği", "Kurban Çalışmaları", "Gönüllülük", "Faaliyet Raporları"];
 const legalLinks = [
   ["KVKK Aydınlatma Metni", getLegalPagePath("kvkk-aydinlatma-metni")],
   ["Gizlilik Politikası", getLegalPagePath("gizlilik-politikasi")],
@@ -58,7 +62,23 @@ export function Footer({ donationConfig }: { donationConfig: DonationPublicConfi
               İhtiyaç sahiplerine umut, güven ve destek ulaştırmak için bağışçı, gönüllü ve saha ekiplerimizle birlikte çalışıyoruz.
             </p>
             <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-6 text-white/70">
-              Sosyal medya hesaplarımız ve güncel duyurular için iletişim sayfamızdan dernek ekibimize ulaşabilirsiniz.
+              {activeSocialLinks.length ? (
+                <div className="flex flex-wrap gap-2">
+                  {activeSocialLinks.map((item) => (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="focus-ring rounded-full bg-white/10 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-mint-green hover:text-deep-blue"
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                </div>
+              ) : (
+                "Sosyal medya hesaplarımız netleştirildiğinde bu alanda paylaşılacaktır."
+              )}
             </div>
           </div>
 
@@ -116,15 +136,19 @@ export function Footer({ donationConfig }: { donationConfig: DonationPublicConfi
             <ul className="mt-5 space-y-4 text-sm text-white/72">
               <li className="flex gap-3">
                 <MapPin aria-hidden className="mt-0.5 h-4 w-4 text-mint-green" />
-                İstanbul, Türkiye
+                {contactInfo.address}
               </li>
               <li className="flex gap-3">
                 <Phone aria-hidden className="mt-0.5 h-4 w-4 text-mint-green" />
-                +90 212 000 00 00
+                <a href={contactInfo.phoneHref} className="focus-ring rounded-full transition hover:text-white">
+                  {contactInfo.phoneDisplay}
+                </a>
               </li>
               <li className="flex gap-3">
                 <Mail aria-hidden className="mt-0.5 h-4 w-4 text-mint-green" />
-                bilgi@okyanus.org.tr
+                <a href={contactInfo.emailHref} className="focus-ring rounded-full transition hover:text-white">
+                  {contactInfo.email}
+                </a>
               </li>
             </ul>
           </div>

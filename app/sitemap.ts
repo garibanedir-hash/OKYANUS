@@ -25,6 +25,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     entry("/", 1),
     entry("/hakkimizda", 0.85),
+    entry("/tuzuk", 0.65),
+    entry("/sss", 0.65),
     entry("/projeler", 0.9),
     entry("/faaliyetler", 0.8),
     entry("/kurban", 0.8),

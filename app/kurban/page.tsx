@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { CheckCircle2, ClipboardCheck, HandHeart, MapPin, ReceiptText, ShieldCheck } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { getLegalPagePath } from "@/data/legalPages";
 import { getActiveQurbanCampaigns } from "@/lib/data/qurbanRepository";
 import { DonationCtaButton } from "@/components/donations/DonationCtaButton";
 
 export const metadata: Metadata = {
   title: "Kurban Çalışmaları",
-  description: "Okyanus İnsani Yardım Derneği kurban bağışı, vekalet, kesim ve dağıtım takip akışı."
+  description: "Okyanus İnsani Yardım Derneği kurban bağışı, vekalet, kesim ve dağıtım takip akışı.",
+  alternates: {
+    canonical: "/kurban"
+  }
 };
 
 const qurbanTypes = ["Vacip", "Adak", "Akika", "Şükür", "Nafile"];
@@ -41,6 +46,21 @@ const processSteps = [
   }
 ];
 
+const qurbanHighlights = [
+  {
+    title: "Kurban Organizasyonu",
+    text: "Kurban çalışmaları; bağış niyeti, vekalet, kampanya bilgisi ve saha planlaması birbirinden ayrılmış bir süreç olarak ele alınır."
+  },
+  {
+    title: "Vekalet ve Kesim Süreci",
+    text: "Vekalet bilgisi alınır, kesim planlaması netleştikçe kayıt altına alınır ve saha şartlarına uygun biçimde takip edilir."
+  },
+  {
+    title: "Dağıtım ve Bilgilendirme",
+    text: "Dağıtım bilgileri doğrulanan kayıtlarla hazırlanır; bağışçıya güvenli iletişim kanalları üzerinden süreç bilgisi verilir."
+  }
+];
+
 export default async function QurbanPage() {
   const campaigns = await getActiveQurbanCampaigns();
 
@@ -58,6 +78,27 @@ export default async function QurbanPage() {
           </Button>
         </div>
       </PageHero>
+
+      <section className="bg-white py-16 sm:py-20">
+        <Container>
+          <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+            <SectionHeading
+              eyebrow="Kurban Organizasyonu"
+              title="Vekalet, kesim ve dağıtım akışı ayrı takip edilir"
+              description="Tanıtım modunda kurban bağışı için online ödeme açılmaz; bağışçı ekibimizle WhatsApp üzerinden iletişime geçerek süreç hakkında bilgi alır."
+            />
+            <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+              {qurbanHighlights.map((item) => (
+                <article key={item.title} className="rounded-brand border border-border-soft bg-warm-white p-5 shadow-card">
+                  <ShieldCheck aria-hidden className="h-6 w-6 text-ocean-green" />
+                  <h2 className="mt-4 font-extrabold text-dark-navy">{item.title}</h2>
+                  <p className="mt-2 text-sm leading-6 text-ink-muted">{item.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </Container>
+      </section>
 
       <section className="bg-warm-white py-16 sm:py-20">
         <Container>
@@ -168,6 +209,15 @@ export default async function QurbanPage() {
               <CheckCircle2 aria-hidden className="mt-1 h-5 w-5 text-mint-green" />
               <p className="text-sm leading-7 text-white/78">
                 Şeffaflık notu: Vekalet, kesim ve dağıtım süreçleri dernek yönetimi, saha ekipleri ve ilgili danışmanlık süreçleriyle emanet bilinci gözetilerek yürütülür.
+                Kişisel verilerinizin işlenmesine ilişkin bilgilendirmeler için{" "}
+                <Link href={getLegalPagePath("kvkk-aydinlatma-metni")} className="font-bold text-mint-green underline-offset-4 hover:underline">
+                  KVKK Aydınlatma Metni
+                </Link>{" "}
+                ve{" "}
+                <Link href={getLegalPagePath("gizlilik-politikasi")} className="font-bold text-mint-green underline-offset-4 hover:underline">
+                  Gizlilik Politikası
+                </Link>{" "}
+                sayfalarını inceleyebilirsiniz.
               </p>
             </div>
           </div>

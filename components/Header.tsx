@@ -29,8 +29,8 @@ const navGroups: HeaderNavGroup[] = [
     items: [
       { label: "Biz Kimiz", href: "/hakkimizda#biz-kimiz" },
       { label: "Hakkımızda", href: "/hakkimizda" },
-      { label: "Tüzük", href: "/hukuki/kullanim-sartlari" },
-      { label: "SSS", href: "/iletisim" },
+      { label: "Tüzük", href: "/tuzuk" },
+      { label: "SSS", href: "/sss" },
       { label: "İletişim", href: "/iletisim" }
     ]
   },

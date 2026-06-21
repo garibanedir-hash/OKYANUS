@@ -5,21 +5,18 @@ import type { Project } from "@/data/projects";
 import { ProjectCard } from "@/components/ProjectCard";
 import type { DonationPublicConfig } from "@/lib/donations/donationTarget";
 
-const filters = ["Tüm Projeler", "Gazze", "Lübnan", "Mısır", "Türkiye", "Acil Yardım", "Eğitim", "Su", "Yetim", "Kurban"] as const;
+const filters = ["Tüm Projeler", "Gıda", "Genel Destek"] as const;
+const featuredWorkCategories = new Set(["Yetim", "Kurban"]);
 
 function matchesFilter(project: Project, filter: (typeof filters)[number]) {
   if (filter === "Tüm Projeler") return true;
-  if (project.regionName === filter) return true;
-  if (project.category === filter) return true;
+  if (filter === "Gıda") return project.category === "Gıda";
 
-  const normalized = [project.title, project.summary, project.description, project.category, project.regionName, ...(project.tags ?? [])]
-    .filter(Boolean)
-    .join(" ")
-    .toLocaleLowerCase("tr-TR");
+  if (filter === "Genel Destek") {
+    return project.category !== "Gıda" && !featuredWorkCategories.has(project.category);
+  }
 
-  if (filter === "Su") return normalized.includes("su") || normalized.includes("hijyen");
-  if (filter === "Kurban") return normalized.includes("kurban") || normalized.includes("vekalet");
-  return normalized.includes(filter.toLocaleLowerCase("tr-TR"));
+  return false;
 }
 
 export function ProjectFilterGrid({
@@ -30,8 +27,9 @@ export function ProjectFilterGrid({
   donationConfig?: DonationPublicConfig;
 }) {
   const [active, setActive] = useState<(typeof filters)[number]>("Tüm Projeler");
+  const listedProjects = projects.filter((project) => !featuredWorkCategories.has(project.category));
   const visibleProjects =
-    active === "Tüm Projeler" ? projects : projects.filter((project) => matchesFilter(project, active));
+    active === "Tüm Projeler" ? listedProjects : listedProjects.filter((project) => matchesFilter(project, active));
 
   return (
     <>
@@ -57,7 +55,7 @@ export function ProjectFilterGrid({
           ))
         ) : (
           <div className="rounded-brand border border-border-soft bg-white p-6 text-sm font-semibold leading-6 text-ink-muted md:col-span-2 xl:col-span-4">
-            Bu kategoride yayında olan proje bulunmuyor.
+            Bu başlıkta yayında olan proje bulunmuyor. Doğrulanan proje kayıtları hazırlandığında bu alanda paylaşılacaktır.
           </div>
         )}
       </div>

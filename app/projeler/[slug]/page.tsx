@@ -48,8 +48,9 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
     getPublicProjectActivities(project.id),
     getProjectRegionBySlug(project.regionSlug)
   ]);
-  const similar = projects.filter((item) => item.slug !== project.slug && item.category === project.category).slice(0, 3);
-  const fallbackSimilar = similar.length ? similar : projects.filter((item) => item.slug !== project.slug).slice(0, 3);
+  const regularProjects = projects.filter((item) => !["Yetim", "Kurban"].includes(item.category));
+  const similar = regularProjects.filter((item) => item.slug !== project.slug && item.category === project.category).slice(0, 3);
+  const fallbackSimilar = similar.length ? similar : regularProjects.filter((item) => item.slug !== project.slug).slice(0, 3);
 
   return (
     <>
@@ -145,11 +146,17 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
           <section className="mt-16">
             <h2 className="text-3xl font-bold text-dark-navy">Benzer projeler</h2>
-            <div className="mt-8 grid gap-6 md:grid-cols-3">
-              {fallbackSimilar.map((item) => (
-                <ProjectCard key={item.slug} {...item} donationConfig={donationConfig} />
-              ))}
-            </div>
+            {fallbackSimilar.length ? (
+              <div className="mt-8 grid gap-6 md:grid-cols-3">
+                {fallbackSimilar.map((item) => (
+                  <ProjectCard key={item.slug} {...item} donationConfig={donationConfig} />
+                ))}
+              </div>
+            ) : (
+              <div className="mt-8 rounded-brand border border-border-soft bg-white p-6 text-sm font-semibold leading-6 text-ink-muted shadow-card">
+                Benzer proje kayıtları doğrulanan içerikler hazırlandığında burada paylaşılacaktır.
+              </div>
+            )}
           </section>
         </Container>
       </section>

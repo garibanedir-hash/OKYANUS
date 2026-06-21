@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { BookOpen, CheckCircle2, ClipboardCheck, HandHeart, HelpCircle, ShieldCheck } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { PageHero } from "@/components/sections/PageHero";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { getLegalPagePath } from "@/data/legalPages";
 import { getActiveSponsorshipPrograms } from "@/lib/data/orphanSponsorshipRepository";
 import { DonationCtaButton } from "@/components/donations/DonationCtaButton";
 
 export const metadata: Metadata = {
   title: "Yetim Hamiliği",
-  description: "Okyanus İnsani Yardım Derneği yetim hamiliği ve sponsorluk programları."
+  description: "Okyanus İnsani Yardım Derneği yetim hamiliği ve sponsorluk programları.",
+  alternates: {
+    canonical: "/yetim-hamiligi"
+  }
 };
 
 const processItems = [
@@ -166,6 +171,15 @@ export default async function OrphanSponsorshipPage() {
             <CheckCircle2 aria-hidden className="mt-1 h-5 w-5 text-mint-green" />
             <p className="text-sm leading-7 text-white/76">
               Program metinleri çocuk mahremiyeti, veri minimizasyonu ve kurum içi değerlendirme ilkeleri gözetilerek hazırlanır; detaylı süreçler dernek ekibi tarafından başvuru sahibine aktarılır.
+              Kişisel verilerinizin işlenmesine ilişkin bilgilendirmeler için{" "}
+              <Link href={getLegalPagePath("kvkk-aydinlatma-metni")} className="font-bold text-mint-green underline-offset-4 hover:underline">
+                KVKK Aydınlatma Metni
+              </Link>{" "}
+              ve{" "}
+              <Link href={getLegalPagePath("gizlilik-politikasi")} className="font-bold text-mint-green underline-offset-4 hover:underline">
+                Gizlilik Politikası
+              </Link>{" "}
+              sayfalarını inceleyebilirsiniz.
             </p>
           </div>
         </Container>
