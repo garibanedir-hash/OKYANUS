@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CheckCircle2, ClipboardCheck, HandHeart, Scale, ShieldCheck, UsersRound } from "lucide-react";
+import { CheckCircle2, ClipboardCheck } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
@@ -37,29 +37,6 @@ const workPrinciples = [
   "Faaliyet bilgilerini doğrulanan kayıtlarla paylaşmak."
 ];
 
-const identitySections = [
-  {
-    icon: HandHeart,
-    title: "Faaliyet Anlayışımız",
-    text: "Okyanus, yardımı yalnızca dönemsel bir destek olarak değil; insan onurunu koruyan, yerel ihtiyaçları dikkate alan ve sürdürülebilirliği önemseyen bir sorumluluk olarak görür."
-  },
-  {
-    icon: UsersRound,
-    title: "Yerel Katılım ve Sürdürülebilirlik",
-    text: "Çalışmaların etkisinin kalıcı olabilmesi için saha gerçekliği, yerel koordinasyon, gönüllü emeği ve güvenilir paydaşlarla uyumlu hareket edilir."
-  },
-  {
-    icon: Scale,
-    title: "Etik Değerlerimiz",
-    text: "Dernek çalışmalarında tarafsızlık, bağımsızlık, ayrım gözetmeme, hesap verebilirlik ve insan haklarına saygı ilkeleri gözetilir."
-  },
-  {
-    icon: ShieldCheck,
-    title: "Denetim, Risk Analizi ve Uyum",
-    text: "İş birlikleri, saha uygulamaları ve bağış süreçleri; yasal yükümlülükler, kurumsal sorumluluk ve risk değerlendirmesi dikkate alınarak yürütülür."
-  }
-];
-
 const transparencyItems = [
   "Bağış ve destek süreçlerinin proje veya faaliyet başlığıyla ilişkilendirilmesi.",
   "Gider, gelir ve saha notlarının kurum içi kayıt mantığıyla takip edilmesi.",
@@ -76,8 +53,8 @@ export default function AboutPage() {
         description="Okyanus İnsani Yardım Derneği, ihtiyaç sahiplerinin onurunu ve bağışçıların emanetini aynı hassasiyetle gözeten bağımsız bir dayanışma yapısıdır."
       >
         <div className="flex flex-wrap gap-3">
-          <Button href="#biz-kimiz" variant="secondary" showIcon>
-            Biz Kimiz?
+          <Button href="/biz-kimiz" variant="secondary" showIcon>
+            Kurumsal Kimlik
           </Button>
           <Button href="/seffaflik" variant="ghost" showIcon>
             Şeffaflık Anlayışımız
@@ -117,25 +94,6 @@ export default function AboutPage() {
                 </div>
               ))}
             </div>
-          </div>
-        </Container>
-      </section>
-
-      <section id="biz-kimiz" className="scroll-mt-32 bg-white py-16 sm:py-20">
-        <Container>
-          <SectionHeading
-            eyebrow="Biz Kimiz?"
-            title="Bağımsız, sivil ve hak temelli bir yardım anlayışı"
-            description="Okyanus; bağış, gönüllülük ve saha koordinasyonunu insani yardım ilkeleriyle bir araya getiren, kâr amacı gütmeyen bir sivil toplum kuruluşudur."
-          />
-          <div className="mt-10 grid gap-5 md:grid-cols-2">
-            {identitySections.map(({ icon: Icon, title, text }) => (
-              <article key={title} className="rounded-brand border border-border-soft bg-warm-white p-6 shadow-card">
-                <Icon aria-hidden className="h-7 w-7 text-ocean-green" />
-                <h2 className="mt-4 text-xl font-extrabold text-dark-navy">{title}</h2>
-                <p className="mt-3 leading-7 text-ink-muted">{text}</p>
-              </article>
-            ))}
           </div>
         </Container>
       </section>

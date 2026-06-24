@@ -27,7 +27,7 @@ const navGroups: HeaderNavGroup[] = [
     id: "corporate",
     label: "Kurumsal",
     items: [
-      { label: "Biz Kimiz", href: "/hakkimizda#biz-kimiz" },
+      { label: "Biz Kimiz", href: "/biz-kimiz" },
       { label: "Hakkımızda", href: "/hakkimizda" },
       { label: "Tüzük", href: "/tuzuk" },
       { label: "SSS", href: "/sss" },

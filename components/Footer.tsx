@@ -11,6 +11,7 @@ import { resolveDonationTarget } from "@/lib/donations/donationTarget";
 import type { DonationPublicConfig } from "@/lib/donations/donationTarget";
 
 const quickLinks = [
+  ["Biz Kimiz", "/biz-kimiz"],
   ["Hakkımızda", "/hakkimizda"],
   ["Tüzük", "/tuzuk"],
   ["SSS", "/sss"],

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { ChevronDown, FileText, ShieldCheck } from "lucide-react";
+import { ChevronDown, FileText } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/sections/PageHero";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 
 export const metadata: Metadata = {
   title: "Dernek Tüzüğü",
@@ -122,60 +121,44 @@ export default function BylawPage() {
       <PageHero
         eyebrow="Kurumsal"
         title="Dernek Tüzüğü"
-        description="Okyanus İnsani Yardım Derneği'nin kuruluş amacı, organları, çalışma alanları ve işleyiş esaslarına ilişkin tüzük metni aşağıda kamuoyunun bilgisine sunulmuştur."
+        description="Okyanus İnsani Yardım Derneği'nin kuruluş amacı, organları, çalışma alanları ve işleyiş esaslarına ilişkin tüzük metni."
       />
 
       <section className="bg-warm-white py-16 sm:py-20">
         <Container>
-          <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
-            <div>
-              <SectionHeading
-                eyebrow="Okunabilir Tüzük"
-                title="Resmi metin, bütünlüklü bölümler halinde"
-                description="Tüzük içeriği ziyaretçilerin kolay okuyabilmesi için ana başlıklar altında düzenlenmiştir. Hukuki yorum niteliği taşımaz; derneğin işleyiş esaslarını bilgilendirme amacıyla sunar."
-              />
-              <div className="mt-8 rounded-brand border border-border-soft bg-white p-6 shadow-card">
-                <ShieldCheck aria-hidden className="h-7 w-7 text-ocean-green" />
-                <h2 className="mt-4 text-xl font-extrabold text-dark-navy">Şeffaf sunum notu</h2>
-                <p className="mt-3 text-sm leading-7 text-ink-muted">
-                  Metin; ham PDF görünümü yerine, tüzüğün akışını koruyan okunabilir başlıklarla paylaşılır. Gerekli resmi işlemlerde yetkili kurum kayıtları ve imzalı tüzük esas alınır.
-                </p>
-              </div>
-            </div>
-            <div className="grid gap-3">
-              {bylawSections.map((section, index) => (
-                <details
-                  key={section.title}
-                  open={index < 2}
-                  className="group rounded-2xl border border-border-soft bg-white p-5 shadow-sm"
-                >
-                  <summary className="focus-ring flex cursor-pointer list-none items-center justify-between gap-4 rounded-xl text-left [&::-webkit-details-marker]:hidden">
-                    <span className="flex min-w-0 items-center gap-3">
-                      <FileText aria-hidden className="h-5 w-5 shrink-0 text-ocean-green" />
-                      <span className="font-extrabold text-dark-navy">{section.title}</span>
-                    </span>
-                    <ChevronDown aria-hidden className="h-5 w-5 shrink-0 text-ink-muted transition group-open:rotate-180" />
-                  </summary>
-                  <div className="mt-4 space-y-3 border-t border-border-soft pt-4">
-                    {section.paragraphs?.map((paragraph) => (
-                      <p key={paragraph} className="text-sm leading-7 text-ink-muted">
-                        {paragraph}
-                      </p>
-                    ))}
-                    {section.items ? (
-                      <ul className="grid gap-2">
-                        {section.items.map((item) => (
-                          <li key={item} className="flex gap-3 text-sm leading-7 text-ink-muted">
-                            <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-ocean-green" />
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : null}
-                  </div>
-                </details>
-              ))}
-            </div>
+          <div className="mx-auto grid max-w-5xl gap-3">
+            {bylawSections.map((section, index) => (
+              <details
+                key={section.title}
+                open={index < 2}
+                className="group rounded-2xl border border-border-soft bg-white p-5 shadow-sm"
+              >
+                <summary className="focus-ring flex cursor-pointer list-none items-center justify-between gap-4 rounded-xl text-left [&::-webkit-details-marker]:hidden">
+                  <span className="flex min-w-0 items-center gap-3">
+                    <FileText aria-hidden className="h-5 w-5 shrink-0 text-ocean-green" />
+                    <span className="font-extrabold text-dark-navy">{section.title}</span>
+                  </span>
+                  <ChevronDown aria-hidden className="h-5 w-5 shrink-0 text-ink-muted transition group-open:rotate-180" />
+                </summary>
+                <div className="mt-4 space-y-3 border-t border-border-soft pt-4">
+                  {section.paragraphs?.map((paragraph) => (
+                    <p key={paragraph} className="text-sm leading-7 text-ink-muted">
+                      {paragraph}
+                    </p>
+                  ))}
+                  {section.items ? (
+                    <ul className="grid gap-2">
+                      {section.items.map((item) => (
+                        <li key={item} className="flex gap-3 text-sm leading-7 text-ink-muted">
+                          <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-ocean-green" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </div>
+              </details>
+            ))}
           </div>
         </Container>
       </section>

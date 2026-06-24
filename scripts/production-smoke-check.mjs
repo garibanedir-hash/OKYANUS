@@ -6,6 +6,7 @@ const expectedWhatsappPhone = (process.env.PRODUCTION_SMOKE_EXPECTED_WHATSAPP_PH
 const publicRouteChecks = [
   { path: "/", keywords: ["<main", "Okyanus"] },
   { path: "/hakkimizda", keywords: ["<main", "Hakkımızda"] },
+  { path: "/biz-kimiz", keywords: ["<main", "Biz Kimiz"] },
   { path: "/tuzuk", keywords: ["<main", "Dernek Tüzüğü"] },
   { path: "/sss", keywords: ["<main", "Sık Sorulan Sorular"] },
   { path: "/projeler", keywords: ["<main", "Projeler"] },

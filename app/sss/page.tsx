@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { ChevronDown, HelpCircle } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/sections/PageHero";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { Button } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
   title: "Sık Sorulan Sorular",
@@ -48,41 +46,28 @@ export default function FaqPage() {
       <PageHero
         eyebrow="Kurumsal"
         title="Sık Sorulan Sorular"
-        description="Okyanus İnsani Yardım Derneği hakkında en çok merak edilen konuları kısa, açık ve güven veren yanıtlarla derledik."
-      >
-        <Button href="/iletisim" variant="ghost" showIcon>
-          Bize Ulaşın
-        </Button>
-      </PageHero>
+        description="Okyanus İnsani Yardım Derneği hakkında en çok merak edilen konular."
+      />
 
       <section className="bg-warm-white py-16 sm:py-20">
         <Container>
-          <div className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
-            <div>
-              <SectionHeading
-                eyebrow="SSS"
-                title="Kısa ve anlaşılır yanıtlar"
-                description="Soruların yanıtları kurumsal bilgilendirme amacıyla sadeleştirilmiştir. Güncel faaliyet detayları doğrulanan kayıtlar hazırlandığında ilgili sayfalarda ayrıca paylaşılır."
-              />
-            </div>
-            <div className="grid gap-3">
-              {faqItems.map((item, index) => (
-                <details
-                  key={item.question}
-                  open={index === 0}
-                  className="group rounded-2xl border border-border-soft bg-white p-5 shadow-sm"
-                >
-                  <summary className="focus-ring flex cursor-pointer list-none items-start justify-between gap-4 rounded-xl text-left [&::-webkit-details-marker]:hidden">
-                    <span className="flex min-w-0 gap-3">
-                      <HelpCircle aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-ocean-green" />
-                      <span className="font-extrabold leading-6 text-dark-navy">{item.question}</span>
-                    </span>
-                    <ChevronDown aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-ink-muted transition group-open:rotate-180" />
-                  </summary>
-                  <p className="mt-4 border-t border-border-soft pt-4 text-sm leading-7 text-ink-muted">{item.answer}</p>
-                </details>
-              ))}
-            </div>
+          <div className="mx-auto grid max-w-4xl gap-3">
+            {faqItems.map((item, index) => (
+              <details
+                key={item.question}
+                open={index === 0}
+                className="group rounded-2xl border border-border-soft bg-white p-5 shadow-sm"
+              >
+                <summary className="focus-ring flex cursor-pointer list-none items-start justify-between gap-4 rounded-xl text-left [&::-webkit-details-marker]:hidden">
+                  <span className="flex min-w-0 gap-3">
+                    <HelpCircle aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-ocean-green" />
+                    <span className="font-extrabold leading-6 text-dark-navy">{item.question}</span>
+                  </span>
+                  <ChevronDown aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-ink-muted transition group-open:rotate-180" />
+                </summary>
+                <p className="mt-4 border-t border-border-soft pt-4 text-sm leading-7 text-ink-muted">{item.answer}</p>
+              </details>
+            ))}
           </div>
         </Container>
       </section>

@@ -16,7 +16,7 @@ type ContactFormProps = {
 
 export function ContactForm({ action, formNotice, formError, turnstile }: ContactFormProps) {
   return (
-    <form action={action} className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-soft sm:p-8">
+    <form action={action} className="self-start rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-soft sm:p-8">
       {formNotice ? (
         <div className="mb-6 flex gap-3 rounded-2xl bg-mint-green p-4 text-ocean-green">
           <CheckCircle2 aria-hidden className="mt-0.5 h-5 w-5" />
@@ -33,7 +33,7 @@ export function ContactForm({ action, formNotice, formError, turnstile }: Contac
         <TextField label="Ad Soyad" name="fullName" required autoComplete="name" maxLength={120} />
         <TextField label="E-posta" name="email" type="email" required autoComplete="email" maxLength={160} />
         <TextField label="Konu" name="subject" className="sm:col-span-2" required maxLength={160} />
-        <TextAreaField label="Mesaj" name="message" required className="sm:col-span-2" rows={5} maxLength={1500} />
+        <TextAreaField label="Mesaj" name="message" required className="sm:col-span-2" rows={4} maxLength={1500} />
       </div>
       <div className="mt-6 grid gap-3">
         <LegalConsentFields context="contact" showCommunicationPermission />

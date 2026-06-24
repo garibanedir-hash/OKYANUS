@@ -40,7 +40,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
       />
       <section className="bg-soft-gray py-16 sm:py-20">
         <Container>
-          <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div>
               <SectionHeading
                 eyebrow="İletişim Bilgileri"
