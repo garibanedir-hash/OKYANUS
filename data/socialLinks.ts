@@ -7,7 +7,7 @@ export type SocialLink = {
 };
 
 export const socialLinks: SocialLink[] = [
-  { label: "Instagram", href: "", isActive: false },
+  { label: "Instagram", href: "https://www.instagram.com/okyanusorg/", isActive: true },
   { label: "Facebook", href: "", isActive: false },
   { label: "X / Twitter", href: "", isActive: false },
   { label: "YouTube", href: "", isActive: false },
