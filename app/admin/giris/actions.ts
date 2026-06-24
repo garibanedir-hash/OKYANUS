@@ -1,15 +1,11 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { adminHomePath, isAdminDemoMode } from "@/config/admin";
+import { adminHomePath } from "@/config/admin";
 import { type ReadOnlySupabaseClient, verifyAdminAccessForUser } from "@/lib/auth/routeGuard";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function signInAdmin(formData: FormData) {
-  if (isAdminDemoMode) {
-    redirect("/admin/giris?durum=demo");
-  }
-
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
   const supabase = await createSupabaseServerClient();

@@ -102,7 +102,7 @@ export default async function ManualReceiptDetailPage({ params, searchParams }: 
 
       {message ? <div className="rounded-lg border border-ocean-green/20 bg-mint-green/35 p-4 text-sm font-bold text-dark-navy">{message}</div> : null}
       <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
-        {source === "supabase" ? "Supabase manual_receipts" : "Demo/mock fallback"}
+        {source === "supabase" ? "Gerçek kayıt" : "Kayıt yok"}
       </div>
 
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
@@ -159,7 +159,7 @@ export default async function ManualReceiptDetailPage({ params, searchParams }: 
           <h2 className="font-black text-dark-navy">İşlemler</h2>
           {source === "demo" ? (
             <AdminPanelNotice title="Supabase kaydı gerekir">
-              Bu kayıt demo/mock fallback kaydı olduğu için oluşturma, güncelleme, yazdırma, PDF ve iptal aksiyonları çalıştırılmaz.
+              Gerçek kayıt bulunmadığı için oluşturma, güncelleme, yazdırma, PDF ve iptal aksiyonları çalıştırılmaz.
             </AdminPanelNotice>
           ) : null}
           {source === "supabase" && receipt.status === "draft" ? (

@@ -14,7 +14,7 @@ export default function AdminQurbanDelegationsPage() {
         title="Vekaletler"
         description="Vekalet kayıtları bu aşamada demo veriyle gösterilir. Production metni onaylanmadan gerçek vekalet akışı açılmamalıdır."
       />
-      <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">Veri kaynağı: Demo fallback</div>
+      <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">Kayıt yok</div>
       <AdminFilterBar>
         <label className="text-sm font-bold text-dark-navy">Vekalet No<input className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2" placeholder="VKLT-2026..." /></label>
         <label className="text-sm font-bold text-dark-navy">Durum<select className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2"><option>Tümü</option><option>Bekliyor</option><option>Kabul edildi</option><option>Geri alındı</option></select></label>
@@ -29,7 +29,7 @@ export default function AdminQurbanDelegationsPage() {
             <td><QurbanStatusCell status={delegation.statusLabel} /></td>
             <td>{delegation.acceptedAt ? formatDate(delegation.acceptedAt) : "Bekliyor"}</td>
             <td>{delegation.orderNo}</td>
-            <td><AdminActionButton>Vekalet demo</AdminActionButton></td>
+            <td><AdminActionButton>Vekalet</AdminActionButton></td>
           </tr>
         ))}
       </AdminTable>

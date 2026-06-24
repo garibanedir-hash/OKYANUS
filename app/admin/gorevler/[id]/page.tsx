@@ -22,6 +22,20 @@ export default async function AdminTaskDetailPage({ params }: AdminTaskDetailPag
   const { id } = await params;
   const detail = assignmentDetail;
 
+  if (!relatedRecordGroups.length) {
+    return (
+      <div className="grid gap-4">
+        <div className="rounded-lg border border-border-soft bg-white px-4 py-3 shadow-sm">
+          <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-ocean-green">Görev Detayı</p>
+          <h1 className="text-2xl font-black text-dark-navy">Görev ID #{id}</h1>
+        </div>
+        <section className="rounded-lg border border-dashed border-border-soft bg-white p-6 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
+          Henüz görev detayı bulunmuyor. Gerçek kayıtlar oluşturulduğunda bu alanda görüntülenecektir.
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div className="grid gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border-soft bg-white px-4 py-3 shadow-sm">
@@ -30,7 +44,7 @@ export default async function AdminTaskDetailPage({ params }: AdminTaskDetailPag
           <h1 className="text-2xl font-black text-dark-navy">Görev ID #{id}</h1>
         </div>
         <div className="flex flex-wrap gap-2">
-          <AdminActionButton variant="primary">Kaydet demo</AdminActionButton>
+          <AdminActionButton variant="primary">Kaydet</AdminActionButton>
           <AdminActionButton>Yazdır</AdminActionButton>
           <Link className="focus-ring inline-flex min-h-8 items-center gap-1.5 rounded-md border border-border-soft bg-white px-2.5 py-1 text-[0.72rem] font-extrabold text-deep-blue" href="/admin/gorevler">
             <Printer aria-hidden className="h-3.5 w-3.5" />
@@ -74,7 +88,7 @@ export default async function AdminTaskDetailPage({ params }: AdminTaskDetailPag
 
           <div className="rounded-lg border border-border-soft bg-white p-4 shadow-sm">
             <h2 className="font-extrabold text-dark-navy">Görev Raporu ve Notlar</h2>
-            <textarea className="focus-ring mt-3 min-h-28 w-full rounded-md border border-border-soft p-3 text-sm" defaultValue="Saha dağıtım planı ve masraf dokümanları demo olarak bağlantılı kayıt panelinden izlenebilir." />
+            <textarea className="focus-ring mt-3 min-h-28 w-full rounded-md border border-border-soft p-3 text-sm" defaultValue="Gerçek görev notları bağlantılı kayıt panelinden izlenebilir." />
           </div>
         </div>
 

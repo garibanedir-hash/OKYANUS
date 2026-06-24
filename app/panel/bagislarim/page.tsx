@@ -16,11 +16,13 @@ function formatMoney(amount: number, currency: string) {
 
 export default async function MyDonationsPage() {
   const account = await getCurrentAccount();
-  const accountId = account?.status === "active" ? account.id : "demo-donor-account";
-  const [payments, receipts] = await Promise.all([
-    getDonorPayments(accountId),
-    getDonorReceipts(accountId)
-  ]);
+  const accountId = account?.status === "active" ? account.id : null;
+  const [payments, receipts] = accountId
+    ? await Promise.all([
+        getDonorPayments(accountId),
+        getDonorReceipts(accountId)
+      ])
+    : [[], []];
   const receiptsByPaymentIntent = new Map(receipts.filter((receipt) => receipt.paymentIntentId).map((receipt) => [receipt.paymentIntentId, receipt]));
 
   return (
@@ -28,10 +30,10 @@ export default async function MyDonationsPage() {
       <section className="rounded-brand border border-border-soft bg-white p-6 shadow-card">
         <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-ocean-green">Bağış geçmişi</p>
         <h1 className="mt-2 text-3xl font-extrabold text-dark-navy">Bağışlarım</h1>
-        <p className="mt-2 leading-7 text-ink-muted">Bu alan bağış, ödeme ve makbuz durumunu takip etmek içindir. Gerçek sistemde kullanıcı yalnızca kendi bağış geçmişini Supabase RLS ile görebilecektir.</p>
+        <p className="mt-2 leading-7 text-ink-muted">Bu alan bağış, ödeme ve makbuz durumunu takip etmek içindir. Kullanıcı yalnızca kendi bağış geçmişini görebilir.</p>
       </section>
       <section className="rounded-lg border border-ocean-green/15 bg-mint-green/35 p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
-        Genel bağış ödemeleri ortak payment intent üzerinden izlenir. 10D ile hazırlanmış PDF makbuzlar yetki kontrollü indirme endpoint&apos;i üzerinden açılır; canlı ödeme, kart bilgisi toplama ve gerçek bildirim gönderimi yapılmaz.
+        Genel bağış ve makbuz kayıtları yetki kontrollü şekilde izlenir. Canlı ödeme ve kart bilgisi toplama bu aşamada kapalıdır.
       </section>
       <AdminTable headers={["Ödeme No", "Bağış türü", "Tutar", "Ödeme", "Makbuz", "Tarih"]} recordCount={payments.length} empty={!payments.length}>
         {payments.map((payment) => {

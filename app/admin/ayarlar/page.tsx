@@ -150,7 +150,7 @@ export default function AdminSettingsPage() {
       </SettingsPanel>
 
       <SettingsPanel title="Sistem Ayarları" description="Backend, auth ve audit log entegrasyonu sonrası aktif olacak alanlar.">
-        <Field label="Auth modu" value="Demo / Supabase Auth planlandı" />
+        <Field label="Giriş modu" value="Yetkili oturum gerektirir" />
         <Field label="Audit log" value="Dokümante / entegrasyon bekliyor" />
         <Field label="RLS politikası" value="Taslak SQL hazır" />
         <Field label="Son güncelleme" value="Demo veri" />

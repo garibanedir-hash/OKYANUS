@@ -41,7 +41,7 @@ export default async function AdminAllProjectActivitiesPage({
         description="Tüm projelere bağlı saha, dağıtım ve raporlama faaliyetlerini tek ekrandan izleyin. Yeni kayıt eklemek için ilgili projenin faaliyet ekranını kullanın."
       />
       <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
-        Veri kaynağı: {source === "supabase" ? "Supabase" : "Demo fallback"}
+        {source === "supabase" ? "Gerçek kayıt" : "Kayıt yok"}
       </div>
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <AdminMiniStat label="Toplam faaliyet" value={activities.length} />

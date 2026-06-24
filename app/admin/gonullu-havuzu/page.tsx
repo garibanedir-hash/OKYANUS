@@ -19,7 +19,7 @@ export default function AdminVolunteerPoolPage() {
         eyebrow="Gönüllü koordinasyonu"
         title="Gönüllü Havuzu"
         description="Gönüllülerin ilgi alanı, şehir, eğitim ve saha uygunluğu açısından takip edileceği demo ekran."
-        actionLabel="Görev Ata demo"
+        actionLabel="Görev Ata"
       />
       <section className="grid gap-4 md:grid-cols-4">
         <SummaryCard label="Toplam gönüllü" value={mockVolunteerPool.length} />
@@ -31,7 +31,7 @@ export default function AdminVolunteerPoolPage() {
         {["Şehir", "İlgi alanı", "Durum", "Koordinatör"].map((label) => (
           <label key={label} className="text-sm font-bold text-dark-navy">
             {label}
-            <input className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="Demo filtre" />
+            <input className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="Filtre" />
           </label>
         ))}
       </div>

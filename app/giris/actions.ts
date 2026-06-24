@@ -6,13 +6,6 @@ import { getRolesForUser } from "@/lib/auth/routeGuard";
 import { getDefaultPanelPathForRoles } from "@/lib/auth/roleRedirect";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export async function loginDemoAction() {
-  return {
-    ok: false,
-    message: "Tanıtım döneminde hesap girişi sınırlıdır. Bilgi almak için iletişim kanallarımızı kullanabilirsiniz."
-  };
-}
-
 export async function signInPublic(formData: FormData) {
   if (isAdminDemoMode) {
     redirect("/giris?durum=sinirli");

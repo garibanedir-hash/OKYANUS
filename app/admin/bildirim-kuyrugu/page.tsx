@@ -51,7 +51,7 @@ export default async function AdminNotificationQueuePage({ searchParams }: Admin
         description="Ödeme, makbuz, kurban ve yetim hamiliği bilgilendirmeleri için ortak kuyruk görünümü. Gerçek e-posta, SMS veya WhatsApp gönderimi bu aşamada yapılmaz."
       />
       <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
-        {source === "supabase" ? "Supabase notification_queue" : "Demo/mock fallback"}
+        {source === "supabase" ? "Gerçek kayıt" : "Kayıt yok"}
       </div>
       <form>
         <AdminFilterBar>
@@ -110,7 +110,7 @@ export default async function AdminNotificationQueuePage({ searchParams }: Admin
             <td>{formatOptionalDate(item.scheduledAt)}</td>
             <td>{formatOptionalDate(item.sentAt)}</td>
             <td>{item.errorMessage ?? "-"}</td>
-            <td><DisabledDemoButton>Tekrar gönder demo</DisabledDemoButton></td>
+            <td><DisabledDemoButton>Tekrar gönder</DisabledDemoButton></td>
           </tr>
         ))}
       </AdminTable>

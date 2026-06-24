@@ -110,7 +110,7 @@ function ActivityActionPanel({
           </button>
         </form>
       ) : null}
-      {isDemo ? <p className="text-xs font-bold leading-5 text-ink-muted">Demo kayıtlarda aksiyonlar kapalıdır. Supabase kaydı gerekir.</p> : null}
+      {isDemo ? <p className="text-xs font-bold leading-5 text-ink-muted">Gerçek kayıt bulunmadığı için aksiyonlar kapalıdır.</p> : null}
     </div>
   );
 }
@@ -164,7 +164,7 @@ export default async function ProjectActivityDetailPage({
                 {activity.activityTypeLabel}
               </span>
               <span className="inline-flex min-h-7 items-center rounded-full bg-soft-blue px-2.5 py-1 text-[0.7rem] font-extrabold text-deep-blue">
-                Veri: {activityResult.source === "supabase" ? "Supabase" : "Demo"}
+                {activityResult.source === "supabase" ? "Gerçek kayıt" : "Kayıt yok"}
               </span>
             </div>
             <p className="text-sm font-semibold leading-6 text-ink-muted">{activity.summary ?? "Özet girilmemiş."}</p>

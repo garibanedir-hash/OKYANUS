@@ -23,11 +23,13 @@ export default async function PanelQurbanOrdersPage() {
     getCurrentQurbanDonorContext()
   ]);
   const { data: orders, source } = ordersResult;
-  const accountId = donorContext?.account?.status === "active" ? donorContext.account.id : "demo-donor-account";
-  const [donorPayments, donorReceipts] = await Promise.all([
-    getDonorPayments(accountId),
-    getDonorReceipts(accountId)
-  ]);
+  const accountId = donorContext?.account?.status === "active" ? donorContext.account.id : null;
+  const [donorPayments, donorReceipts] = accountId
+    ? await Promise.all([
+        getDonorPayments(accountId),
+        getDonorReceipts(accountId)
+      ])
+    : [[], []];
   const paymentIntentsByOrder = new Map(
     donorPayments.filter((payment) => payment.contextType === "qurban_order" && payment.contextId).map((payment) => [payment.contextId, payment])
   );
@@ -43,13 +45,13 @@ export default async function PanelQurbanOrdersPage() {
         actionHref="/kurban/bagis"
       />
       <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
-        {source === "supabase" ? "Hesabınıza bağlı kayıtlar" : "Demo takip görünümü"}
+        {source === "supabase" ? "Hesabınıza bağlı kayıtlar" : "Kayıt yok"}
       </div>
       <div className="rounded-lg border border-border-soft bg-white p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
         Güvenlik nedeniyle e-posta adresi tek başına hesap eşleştirme için kullanılmaz. Girişsiz başvurular admin kayıtlarında görünür; panelde otomatik görünmesi için sonraki aşamada güvenli eşleştirme akışı gerekir.
       </div>
       <div className="rounded-lg border border-ocean-green/15 bg-mint-green/35 p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
-        Ödeme bekleyen kurban kayıtları ortak payment intent altyapısına bağlıdır. PayTR test callback sonucu onaylandığında ödeme durumu ve kota finalizasyonu server-side işlenir; hazırlanmış PDF makbuzlar yetki kontrollü açılır, canlı ödeme ve gerçek bildirim gönderimi kapalıdır.
+        Ödeme bekleyen kurban kayıtları yetki kontrollü şekilde izlenir. Canlı ödeme ve gerçek bildirim gönderimi bu aşamada kapalıdır.
       </div>
       <section className="grid gap-4 md:grid-cols-3">
         <div className="rounded-lg border border-border-soft bg-white p-5 shadow-sm">
@@ -86,7 +88,7 @@ export default async function PanelQurbanOrdersPage() {
                   </Button>
                 ) : (
                   <span className="mt-2 block text-xs font-semibold text-ink-muted">
-                    {paymentIntent ? paymentIntent.providerLabel : "Payment intent oluştuğunda PayTR test akışı açılır."}
+                    {paymentIntent ? paymentIntent.providerLabel : "Ödeme kaydı oluştuğunda takip bilgisi burada görünür."}
                   </span>
                 )}
               </td>

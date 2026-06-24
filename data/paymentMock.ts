@@ -1,3 +1,7 @@
+import { isAdminDemoMode } from "@/config/admin";
+
+const demoOnly = <T>(items: T[]) => (isAdminDemoMode ? items : []);
+
 export type PaymentContextType =
   | "general_donation"
   | "qurban_order"
@@ -174,7 +178,7 @@ export const notificationQueueStatusLabels: Record<NotificationQueueStatus, stri
   skipped: "Atlandı"
 };
 
-export const mockPaymentIntents: PaymentIntent[] = [
+export const mockPaymentIntents: PaymentIntent[] = demoOnly([
   {
     id: "payment-intent-001",
     intentNo: "PAY-2026-000001",
@@ -302,9 +306,9 @@ export const mockPaymentIntents: PaymentIntent[] = [
     paidAt: "2026-05-18T12:05:00.000Z",
     metadataSummary: "İptal edilmiş makbuz demo kaydı"
   }
-];
+]);
 
-export const mockReceipts: Receipt[] = [
+export const mockReceipts: Receipt[] = demoOnly([
   {
     id: "receipt-001",
     receiptNo: "RCPT-2026-000001",
@@ -407,9 +411,9 @@ export const mockReceipts: Receipt[] = [
     createdAt: "2026-05-18T12:06:00.000Z",
     updatedAt: "2026-05-18T13:00:00.000Z"
   }
-];
+]);
 
-export const mockNotificationQueue: NotificationQueueItem[] = [
+export const mockNotificationQueue: NotificationQueueItem[] = demoOnly([
   {
     id: "notification-queue-001",
     contextType: "general_donation",
@@ -447,7 +451,7 @@ export const mockNotificationQueue: NotificationQueueItem[] = [
     createdAt: "2026-05-21T11:52:00.000Z",
     updatedAt: "2026-05-21T11:52:00.000Z"
   }
-];
+]);
 
 export const mockPaymentStats: PaymentStats = {
   totalIntents: mockPaymentIntents.length,

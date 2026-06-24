@@ -3,7 +3,7 @@ import { AdminShell } from "@/components/admin/AdminShell";
 
 export const metadata: Metadata = {
   title: "Admin Panel",
-  description: "Okyanus İnsani Yardım Derneği demo yönetim paneli."
+  description: "Okyanus İnsani Yardım Derneği yönetim paneli."
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

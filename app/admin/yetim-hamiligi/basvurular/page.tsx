@@ -31,7 +31,7 @@ export default async function AdminSponsorshipApplicationsPage({ searchParams }:
       <AdminSectionHeader
         eyebrow="Yetim Hamiliği"
         title="Başvurular"
-        description="Yetim hamiliği başvuruları maskeli kişisel veriyle listelenir. Supabase erişimi veya yetki yoksa ekran güvenli demo fallback ile çalışır."
+        description="Yetim hamiliği başvuruları maskeli kişisel veriyle listelenir. Yetki veya kayıt yoksa ekran güvenli boş durum gösterir."
       />
       <form>
         <AdminFilterBar>

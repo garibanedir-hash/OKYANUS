@@ -150,7 +150,7 @@ export default async function AdminProjectActivitiesPage({
         <span className="text-sm text-ink-muted">/</span>
         <Link href={`/admin/projeler/${id}/duzenle`} className="text-sm font-bold text-deep-blue hover:underline">Proje Düzenle</Link>
         <span className="rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
-          Veri kaynağı: {source === "supabase" ? "Supabase" : "Demo"}
+          {source === "supabase" ? "Gerçek kayıt" : "Kayıt yok"}
         </span>
       </div>
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

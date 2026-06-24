@@ -34,7 +34,7 @@ export function AdminTaskBoard({ tasks }: { tasks: MockTask[] }) {
           headers={["Kayıt", "Tür", "Durum", "Tarih"]}
           rows={[
             [preview.title, preview.relatedEntityType, preview.status, preview.updatedAt],
-            ["İç koordinasyon notu", "Not", "Demo", preview.createdAt],
+            ["İç koordinasyon notu", "Not", "Hazırlanıyor", preview.createdAt],
             ["Saha takip kaydı", "Operasyon", preview.priority, preview.dueDate]
           ]}
         />

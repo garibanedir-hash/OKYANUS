@@ -18,8 +18,8 @@ export default async function AdminOrphanProfilesPage() {
       />
       <PrivacyNotice />
       <AdminFilterBar>
-        <label>Kod<input disabled placeholder="Demo filtre" /></label>
-        <label>Ülke/bölge<input disabled placeholder="Demo filtre" /></label>
+        <label>Kod<input disabled placeholder="Filtre" /></label>
+        <label>Ülke/bölge<input disabled placeholder="Filtre" /></label>
         <label>Durum<select disabled><option>Tümü</option><option>Sponsor bekliyor</option><option>Sponsorlu</option></select></label>
       </AdminFilterBar>
       <AdminTable headers={["Kod", "Güvenli ad", "Yaş grubu", "Ülke/bölge", "Eğitim durumu", "Destek ihtiyacı", "Durum", "Son güncelleme", "İşlem"]} recordCount={profiles.length} empty={!profiles.length}>
@@ -33,7 +33,7 @@ export default async function AdminOrphanProfilesPage() {
             <td>{formatSponsorshipMoney(profile.sponsorshipNeedAmount, profile.currency)}</td>
             <td><SponsorshipStatusCell status={profile.statusLabel} /></td>
             <td>{formatDate(profile.updatedAt)}</td>
-            <td><AdminActionButton>Detay demo</AdminActionButton></td>
+            <td><AdminActionButton>Detay</AdminActionButton></td>
           </tr>
         ))}
       </AdminTable>

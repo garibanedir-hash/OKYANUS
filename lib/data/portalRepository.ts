@@ -1,58 +1,76 @@
-import {
-  mockDonorProfile,
-  mockPortalNotifications,
-  mockPortalUser,
-  mockSponsoredOrphans,
-  mockUserDonations,
-  mockUserSupportedProjects,
-  mockVolunteerEvents,
-  mockVolunteerProfile
+import type {
+  MockPortalNotification,
+  MockPortalUser,
+  MockSponsoredOrphan,
+  MockSupportedProject,
+  MockUserDonation,
+  MockVolunteerEvent
 } from "@/data/portalMock";
 
-// 8F notu: Portal verileri hassas kullanıcı kapsamı içerdiği için bu repository şimdilik
-// mock-only kalır. CRUD veya Supabase hassas tablo sorgusu bu aşamada yapılmaz.
+const emptyPortalUser: MockPortalUser = {
+  id: "",
+  fullName: "Hesap sahibi",
+  email: "",
+  phone: "",
+  city: "",
+  accountType: "Bağışçı + Gönüllü",
+  profileCompletion: 0
+};
+
+const emptyDonorProfile = {
+  totalDonationCount: 0,
+  totalDonationAmount: 0,
+  supportedProjectCount: 0,
+  activeSponsorshipCount: 0,
+  preferredDonationTypes: [] as string[]
+};
+
+const emptyVolunteerProfile = {
+  status: "Kayıt bulunmuyor",
+  applicationStatus: "Başvuru bulunmuyor",
+  joinedActivities: 0,
+  assignedTasks: 0,
+  interestAreas: [] as string[]
+};
 
 export function getCurrentPortalUser() {
-  // TODO: Supabase Auth session + user_accounts tablosundan beslenecek.
-  return mockPortalUser;
+  return emptyPortalUser;
 }
 
 export function getDonorDashboard() {
-  // TODO: donor_profiles, donations ve sponsorships ilişkileriyle üretilecek.
   return {
-    profile: mockDonorProfile,
-    recentDonations: mockUserDonations.slice(0, 3),
-    supportedProjects: mockUserSupportedProjects.filter((project) => project.relation === "Bağışçı"),
-    sponsorships: mockSponsoredOrphans
+    profile: emptyDonorProfile,
+    recentDonations: [] as MockUserDonation[],
+    supportedProjects: [] as MockSupportedProject[],
+    sponsorships: [] as MockSponsoredOrphan[]
   };
 }
 
 export function getVolunteerDashboard() {
-  // TODO: volunteer_profiles, volunteer_events ve staff_tasks ilişkileriyle üretilecek.
   return {
-    profile: mockVolunteerProfile,
-    events: mockVolunteerEvents,
-    tasks: ["Gıda kolisi sayımına destek", "Oryantasyon dokümanını tamamla"],
-    announcements: ["Yeni saha oryantasyon takvimi yayınlandı.", "Lojistik destek ekipleri güncellendi."]
+    profile: emptyVolunteerProfile,
+    events: [] as MockVolunteerEvent[],
+    tasks: [] as string[],
+    announcements: [] as string[]
   };
 }
 
 export function getUserDonations() {
-  return mockUserDonations;
+  return [] as MockUserDonation[];
 }
 
 export function getSponsoredOrphans() {
-  return mockSponsoredOrphans;
+  return [] as MockSponsoredOrphan[];
 }
 
 export function getVolunteerEvents() {
-  return mockVolunteerEvents;
+  return [] as MockVolunteerEvent[];
 }
 
 export function getPortalNotifications() {
-  return mockPortalNotifications;
+  return [] as MockPortalNotification[];
 }
 
 export function getUserSupportedProjects() {
-  return mockUserSupportedProjects;
+  return [] as MockSupportedProject[];
 }

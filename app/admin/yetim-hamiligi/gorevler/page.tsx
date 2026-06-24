@@ -18,8 +18,8 @@ export default async function AdminOrphanAssignmentsPage() {
       />
       <PrivacyNotice />
       <AdminFilterBar>
-        <label>Görev<input disabled placeholder="Demo filtre" /></label>
-        <label>Sorumlu<input disabled placeholder="Demo filtre" /></label>
+        <label>Görev<input disabled placeholder="Filtre" /></label>
+        <label>Sorumlu<input disabled placeholder="Filtre" /></label>
         <label>Durum<select disabled><option>Tümü</option><option>Atandı</option><option>Devam ediyor</option></select></label>
       </AdminFilterBar>
       <AdminTable headers={["Görev", "Yetim kodu", "Sponsorluk", "Sorumlu", "Durum", "Son tarih", "İşlem"]} recordCount={assignments.length} empty={!assignments.length}>
@@ -31,7 +31,7 @@ export default async function AdminOrphanAssignmentsPage() {
             <td>{assignment.assignedToName}</td>
             <td><SponsorshipStatusCell status={assignment.statusLabel} /></td>
             <td>{assignment.dueDate ? formatDate(assignment.dueDate) : "-"}</td>
-            <td><AdminActionButton>Görev demo</AdminActionButton></td>
+            <td><AdminActionButton>Görev</AdminActionButton></td>
           </tr>
         ))}
       </AdminTable>

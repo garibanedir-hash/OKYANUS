@@ -17,7 +17,7 @@ export default function PortalHomePage() {
       <section className="rounded-brand border border-border-soft bg-white p-6 shadow-card">
         <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-ocean-green">Hesap özeti</p>
         <h1 className="mt-2 text-3xl font-extrabold text-dark-navy">Hesap yönlendirme merkezi</h1>
-        <p className="mt-3 max-w-3xl leading-7 text-ink-muted">Bu alan hesap türünüze göre bağışçı veya gönüllü paneline geçiş yapmanızı sağlar. Demo kullanıcı iki profile de sahip olduğu için iki özet birlikte gösterilir.</p>
+        <p className="mt-3 max-w-3xl leading-7 text-ink-muted">Bu alan hesap türünüze göre bağışçı veya gönüllü paneline geçiş yapmanızı sağlar. Kayıtlar oluştuğunda özetler burada görüntülenir.</p>
         <div className="mt-5 max-w-md">
           <div className="mb-2 flex justify-between text-sm font-bold text-dark-navy"><span>Profil tamamlama</span><span>{user.profileCompletion}%</span></div>
           <ProgressBar value={user.profileCompletion} />
@@ -47,13 +47,17 @@ export default function PortalHomePage() {
         <div className="rounded-brand border border-border-soft bg-white p-6 shadow-card">
           <h2 className="text-xl font-bold text-dark-navy">Desteklediğiniz ve önerilen projeler</h2>
           <div className="mt-4 grid gap-4">
-            {projects.map((project) => (
+            {projects.length ? projects.map((project) => (
               <article key={project.slug} className="rounded-2xl bg-soft-gray p-4">
                 <div className="mb-2 flex justify-between gap-3 text-sm font-bold"><span className="text-dark-navy">{project.title}</span><span className="text-ocean-green">{project.relation}</span></div>
                 <ProgressBar value={project.progress} />
                 <p className="mt-2 text-xs font-semibold text-ink-muted">{project.status} / %{project.progress}</p>
               </article>
-            ))}
+            )) : (
+              <div className="rounded-2xl border border-dashed border-border-soft p-4 text-sm font-semibold leading-6 text-ink-muted">
+                Henüz desteklenen proje kaydı bulunmuyor.
+              </div>
+            )}
           </div>
         </div>
         <PortalNotificationList notifications={notifications} />

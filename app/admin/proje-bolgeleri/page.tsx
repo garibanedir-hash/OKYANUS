@@ -49,7 +49,7 @@ export default async function AdminProjectRegionsPage({
       ) : null}
 
       <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
-        Veri kaynağı: {regionsResult.source === "supabase" ? "Supabase" : "Demo fallback"}
+        {regionsResult.source === "supabase" ? "Gerçek kayıt" : "Kayıt yok"}
       </div>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

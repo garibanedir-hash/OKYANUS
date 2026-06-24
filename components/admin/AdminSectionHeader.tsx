@@ -1,4 +1,5 @@
 import { AdminActionButton } from "@/components/admin/AdminActionButton";
+import { sanitizeAdminUiText } from "@/components/admin/adminUiText";
 
 export function AdminSectionHeader({
   eyebrow,
@@ -18,9 +19,9 @@ export function AdminSectionHeader({
       <div>
         {eyebrow ? <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-ocean-green">{eyebrow}</p> : null}
         <h1 className="mt-1 text-2xl font-extrabold text-dark-navy">{title}</h1>
-        {description ? <p className="mt-1 max-w-4xl text-sm leading-6 text-ink-muted">{description}</p> : null}
+        {description ? <p className="mt-1 max-w-4xl text-sm leading-6 text-ink-muted">{sanitizeAdminUiText(description)}</p> : null}
       </div>
-      {actionLabel ? <AdminActionButton href={actionHref} variant="primary">{actionLabel}</AdminActionButton> : null}
+      {actionLabel ? <AdminActionButton href={actionHref} variant="primary">{sanitizeAdminUiText(actionLabel)}</AdminActionButton> : null}
     </div>
   );
 }

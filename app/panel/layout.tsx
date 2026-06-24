@@ -3,7 +3,7 @@ import { PortalShell } from "@/components/portal/PortalShell";
 
 export const metadata: Metadata = {
   title: "Kullanıcı Paneli | Okyanus",
-  description: "Okyanus bağışçı ve gönüllü demo kullanıcı paneli."
+  description: "Okyanus bağışçı ve gönüllü kullanıcı paneli."
 };
 
 export default function PanelLayout({ children }: { children: React.ReactNode }) {

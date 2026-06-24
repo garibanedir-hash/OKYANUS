@@ -49,7 +49,7 @@ export default async function EditProjectActivityPage({
           </div>
           <div>
             <p className="text-sm font-extrabold text-dark-navy">Veri kaynağı</p>
-            <p className="mt-1 text-sm font-semibold leading-6 text-ink-muted">{activityResult.source === "supabase" ? "Supabase" : "Demo fallback"}</p>
+            <p className="mt-1 text-sm font-semibold leading-6 text-ink-muted">{activityResult.source === "supabase" ? "Gerçek kayıt" : "Kayıt yok"}</p>
           </div>
           <Link href={`/admin/projeler/${id}/faaliyetler/${activity.id}`} className="focus-ring inline-flex min-h-10 items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-extrabold text-deep-blue ring-1 ring-border-soft hover:bg-soft-blue">
             Detaya Dön
@@ -60,7 +60,7 @@ export default async function EditProjectActivityPage({
       {locked || activityResult.source === "demo" ? (
         <div className="rounded-lg border border-warm-accent/25 bg-warm-accent/10 px-4 py-3 text-sm font-bold leading-6 text-dark-navy">
           {activityResult.source === "demo"
-            ? "Demo kayıtlarda düzenleme kapalıdır. Supabase kaydı gerekir."
+            ? "Gerçek kayıt bulunmadığı için düzenleme kapalıdır."
             : "İptal edilmiş veya arşivlenmiş faaliyet düzenlenemez."}
         </div>
       ) : (

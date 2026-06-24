@@ -120,7 +120,7 @@ export default async function ManualReceiptPrintPage({ params, searchParams }: P
         {source === "demo" ? (
           <div className="mt-4">
             <AdminPanelNotice title="Supabase kaydı gerekir">
-              Bu kayıt demo/mock fallback kaydı olduğu için yazdırma kaydı veya PDF üretimi çalıştırılmaz.
+              Gerçek kayıt bulunmadığı için yazdırma kaydı veya PDF üretimi çalıştırılmaz.
             </AdminPanelNotice>
           </div>
         ) : null}

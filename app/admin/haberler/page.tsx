@@ -36,7 +36,7 @@ export default async function AdminNewsPage({
         </div>
       ) : null}
       <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
-        Veri kaynağı: {source === "supabase" ? "Supabase read-only" : "Demo fallback"}
+        {source === "supabase" ? "Gerçek kayıt" : "Kayıt yok"}
       </div>
       <div className="grid gap-3 rounded-brand border border-border-soft bg-white p-4 shadow-card md:grid-cols-2">
         <label className="text-sm font-bold text-dark-navy">Arama<input className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2" placeholder="Haber başlığı ara" /></label>

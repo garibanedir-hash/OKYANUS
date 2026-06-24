@@ -18,7 +18,7 @@ export function createSupabaseBrowserClient(): SupabaseClient<Database> | null {
 
   if (!config.isConfigured || !config.url || !config.key) {
     if (process.env.NODE_ENV !== "production") {
-      console.info("Supabase public env eksik. Uygulama demo modda çalışmaya devam eder.");
+      console.info("Supabase public env eksik. Tarayıcı istemcisi oluşturulmadı.");
     }
     return null;
   }

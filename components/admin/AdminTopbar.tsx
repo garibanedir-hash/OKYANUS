@@ -1,10 +1,7 @@
 import Link from "next/link";
 import { Bell, ExternalLink, Plus, Search, ShieldCheck } from "lucide-react";
-import { adminAuthEnabled, isAdminDemoMode } from "@/config/admin";
 
 export function AdminTopbar() {
-  const authLabel = isAdminDemoMode ? "Demo Mod" : adminAuthEnabled ? "Auth Hazır" : "Demo Mod";
-
   return (
     <header className="sticky top-0 z-30 border-b border-border-soft bg-white/95 backdrop-blur">
       <div className="flex min-h-11 flex-col gap-2 px-3 py-1.5 md:flex-row md:items-center md:justify-between lg:px-4">
@@ -27,7 +24,7 @@ export function AdminTopbar() {
           </button>
           <span className="inline-flex h-8 items-center gap-1.5 rounded-md bg-mint-green px-2 text-[0.65rem] font-extrabold text-ocean-green">
             <ShieldCheck aria-hidden className="h-3.5 w-3.5" />
-            {authLabel}
+            Yetkili oturum
           </span>
           <Link href="/" className="focus-ring inline-flex h-8 items-center gap-1.5 rounded-md bg-white px-2.5 text-[0.7rem] font-bold text-deep-blue ring-1 ring-border-soft">
             Siteye Dön

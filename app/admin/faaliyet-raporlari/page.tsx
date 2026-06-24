@@ -36,7 +36,7 @@ export default async function AdminReportsPage({
         </div>
       ) : null}
       <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
-        Veri kaynağı: {source === "supabase" ? "Supabase read-only" : "Demo fallback"}
+        {source === "supabase" ? "Gerçek kayıt" : "Kayıt yok"}
       </div>
       <div className="rounded-brand border border-border-soft bg-soft-blue p-4 text-sm font-bold leading-6 text-deep-blue">
         PDF yükleme alanı ileride eklenecek. Bu ekran şeffaflık sayfasında yayınlanacak raporların demo yönetimidir.

@@ -73,7 +73,7 @@ function PaymentAction({ intentNo, canOpen }: { intentNo: string; canOpen: boole
     );
   }
 
-  return <DisabledDemoButton>Manuel ödendi demo</DisabledDemoButton>;
+  return <DisabledDemoButton>Manuel ödendi</DisabledDemoButton>;
 }
 
 function getFinalizationStatus(payment: {
@@ -124,7 +124,7 @@ export default async function AdminPaymentRecordsPage({ searchParams }: AdminPay
         description="Genel bağış, kurban ve yetim hamiliği için payment intent kayıtları read-only izlenir. 10C ile PayTR callback sonucu, provider referansı ve bağlam finalizasyon özeti görünür; canlı ödeme alma kapalıdır."
       />
       <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
-        {source === "supabase" ? "Supabase payment_intents" : "Demo/mock fallback"}
+        {source === "supabase" ? "Gerçek kayıt" : "Kayıt yok"}
       </div>
       <section className="grid gap-4 md:grid-cols-4">
         <SummaryCard label="Toplam ödeme niyeti" value={paymentIntents.length} />
@@ -248,7 +248,7 @@ export default async function AdminPaymentRecordsPage({ searchParams }: AdminPay
       </AdminTable>
       <AdminPanelNotice title="10C callback finalizasyonu">
         Bu ekran `payment_intents` tablosuna göre hazırlanmıştır. PayTR test entegrasyonunda kesin onay yalnızca `/api/paytr/callback`
-        hash doğrulaması, tutar kontrolü ve idempotent finalization RPC akışıyla işlenir; manuel aksiyonlar pasif demo kontrol olarak kalır.
+        hash doğrulaması, tutar kontrolü ve idempotent finalization RPC akışıyla işlenir; manuel aksiyonlar pasif kontrol olarak kalır.
       </AdminPanelNotice>
     </div>
   );

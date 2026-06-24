@@ -28,7 +28,7 @@ export function PortalSidebar() {
       <div className="border-b border-white/10 px-5 py-5">
         <OfficialLogo variant="white" context="sidebar" className="-ml-3" />
         <p className="mt-3 border-l-2 border-ocean-green/80 pl-3 text-[0.7rem] font-semibold leading-5 text-white/72">
-          Kullanıcı paneli demo modda çalışır. Gerçek oturum ve veri erişimi 8B sonrası bağlanacaktır.
+          Kullanıcı paneli, yetkili oturumla kişisel kayıtları görüntülemek için hazırlanmıştır.
         </p>
       </div>
       <nav aria-label="Kullanıcı panel menüsü" className="flex gap-1.5 overflow-x-auto px-3 py-4 lg:flex-col lg:overflow-y-auto">

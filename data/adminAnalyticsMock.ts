@@ -6,6 +6,9 @@ import {
   Settings,
   UsersRound
 } from "lucide-react";
+import { isAdminDemoMode } from "@/config/admin";
+
+const demoOnly = <T>(items: T[]) => (isAdminDemoMode ? items : []);
 
 export type DailyDonationPoint = {
   label: string;
@@ -50,7 +53,7 @@ export type SystemStatusItem = {
   status: "Hazır" | "Demo" | "Planlandı" | "Pasif" | "Taslak";
 };
 
-export const dailyDonations: DailyDonationPoint[] = [
+export const dailyDonations: DailyDonationPoint[] = demoOnly([
   { label: "1 May", amount: 12400, count: 18 },
   { label: "2 May", amount: 18350, count: 24 },
   { label: "3 May", amount: 9800, count: 12 },
@@ -58,36 +61,48 @@ export const dailyDonations: DailyDonationPoint[] = [
   { label: "5 May", amount: 28600, count: 37 },
   { label: "6 May", amount: 34250, count: 44 },
   { label: "7 May", amount: 30100, count: 39 }
-];
+]);
 
-export const monthlyDonations: DailyDonationPoint[] = [
+export const monthlyDonations: DailyDonationPoint[] = demoOnly([
   { label: "Ocak", amount: 210000, count: 330 },
   { label: "Şubat", amount: 238000, count: 362 },
   { label: "Mart", amount: 382000, count: 540 },
   { label: "Nisan", amount: 326000, count: 488 },
   { label: "Mayıs", amount: 181000, count: 242 }
-];
+]);
 
-export const topCampaigns: TopCampaign[] = [
+export const topCampaigns: TopCampaign[] = demoOnly([
   { name: "Kış Gelmeden", amount: 291000, supporters: 418, category: "Acil Yardım" },
   { name: "Bir Koli Bir Umut", amount: 318000, supporters: 386, category: "Gıda" },
   { name: "Eğitim Desteği", amount: 372000, supporters: 274, category: "Yetim" },
   { name: "Temiz Suya Ulaşım", amount: 405000, supporters: 196, category: "Sağlık" }
-];
+]);
 
-export const donationSummary = {
-  todayAmount: 30100,
-  todayCount: 39,
-  monthAmount: 181000,
-  successfulPayments: 1248,
-  pendingPayments: 17,
-  failedPayments: 6,
-  averageDonation: 742,
-  topCategory: "Kış Yardımları",
-  thirtyDayTrend: "+18%"
-};
+export const donationSummary = isAdminDemoMode
+  ? {
+      todayAmount: 30100,
+      todayCount: 39,
+      monthAmount: 181000,
+      successfulPayments: 1248,
+      pendingPayments: 17,
+      failedPayments: 6,
+      averageDonation: 742,
+      topCategory: "Kış Yardımları",
+      thirtyDayTrend: "+18%"
+    }
+  : {
+      todayAmount: 0,
+      todayCount: 0,
+      monthAmount: 0,
+      successfulPayments: 0,
+      pendingPayments: 0,
+      failedPayments: 0,
+      averageDonation: 0,
+      topCategory: "Kayıt yok",
+      thirtyDayTrend: "0%"
+    };
 
-export const dashboardStats: DashboardStat[] = [
+export const dashboardStats: DashboardStat[] = demoOnly([
   {
     title: "Bugünkü Bağış Tutarı",
     value: "30.100 TL",
@@ -136,49 +151,49 @@ export const dashboardStats: DashboardStat[] = [
     trendDirection: "up",
     iconName: "project"
   }
-];
+]);
 
-export const recentActivities: RecentActivity[] = [
+export const recentActivities: RecentActivity[] = demoOnly([
   { id: "act-1", type: "Bağış", description: "Bir Koli Bir Umut için yeni demo bağış kaydı oluşturuldu.", time: "10 dk önce", status: "Demo kayıt" },
   { id: "act-2", type: "Gönüllü", description: "İstanbul’dan saha faaliyetleri için gönüllü başvurusu alındı.", time: "32 dk önce", status: "Yeni" },
   { id: "act-3", type: "Rapor", description: "2026 İlk Dönem Faaliyet Özeti taslak olarak eklendi.", time: "1 saat önce", status: "Taslak" },
   { id: "act-4", type: "Haber", description: "Kış Yardımı Kampanyası Başladı haberi yayına alındı.", time: "3 saat önce", status: "Yayında" },
   { id: "act-5", type: "Proje", description: "Temiz Suya Ulaşım proje metrikleri güncellendi.", time: "Dün", status: "Güncellendi" }
-];
+]);
 
-export const quickActions: QuickAction[] = [
+export const quickActions: QuickAction[] = demoOnly([
   { label: "Yeni Proje Ekle", href: "/admin/projeler", description: "Kampanya/proje taslağı hazırla", iconName: "project" },
   { label: "Yeni Haber Ekle", href: "/admin/haberler", description: "Duyuru veya faaliyet notu gir", iconName: "news" },
   { label: "Yeni Rapor Oluştur", href: "/admin/faaliyet-raporlari", description: "Şeffaflık raporu taslağı", iconName: "report" },
   { label: "Bağışları Gör", href: "/admin/bagislar", description: "Demo bağış kayıtlarını incele", iconName: "donation" },
   { label: "Gönüllü Başvuruları", href: "/admin/gonullu-basvurular", description: "Başvuru havuzunu kontrol et", iconName: "volunteer" },
   { label: "Site Ayarları", href: "/admin/ayarlar", description: "Kurumsal alanları düzenle", iconName: "settings" }
-];
+]);
 
-export const systemStatus: SystemStatusItem[] = [
+export const systemStatus: SystemStatusItem[] = demoOnly([
   { label: "Demo mod", value: "Aktif", status: "Demo" },
   { label: "Auth entegrasyonu", value: "Hazır mimari", status: "Planlandı" },
   { label: "RLS politikaları", value: "Dokümante", status: "Planlandı" },
   { label: "Ödeme entegrasyonu", value: "Aktif değil", status: "Pasif" },
   { label: "Son veri güncellemesi", value: "Demo", status: "Demo" },
   { label: "Hukuki metinler", value: "Taslak", status: "Taslak" }
-];
+]);
 
-export const supporterGrowth = [
+export const supporterGrowth = demoOnly([
   { label: "Ocak", supporters: 980 },
   { label: "Şubat", supporters: 1120 },
   { label: "Mart", supporters: 1390 },
   { label: "Nisan", supporters: 1625 },
   { label: "Mayıs", supporters: 1846 }
-];
+]);
 
-export const volunteerTrends = [
+export const volunteerTrends = demoOnly([
   { label: "İstanbul", count: 42 },
   { label: "Ankara", count: 18 },
   { label: "Bursa", count: 14 },
   { label: "Konya", count: 9 },
   { label: "İzmir", count: 11 }
-];
+]);
 
 export const adminIconMap = {
   donation: HeartHandshake,

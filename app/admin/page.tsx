@@ -1,17 +1,11 @@
-import Link from "next/link";
-import { ArrowUpRight, ClipboardList, FileCheck2, Inbox, MessageSquare, ReceiptText, UsersRound, WalletCards } from "lucide-react";
+import { ClipboardList, FileCheck2, Inbox, MessageSquare, ReceiptText, UsersRound, WalletCards } from "lucide-react";
 import type { QuickAction } from "@/data/adminAnalyticsMock";
-import { dailyDonations, topCampaigns } from "@/data/adminAnalyticsMock";
-import { operationFlowItems, operationKpis, recentWorkRecords } from "@/data/adminOperationsMock";
 import { getAdminReadOnlyContentMetrics } from "@/lib/data/adminRepository";
-import { AdminBarChart } from "@/components/admin/AdminBarChart";
 import { AdminChartCard } from "@/components/admin/AdminChartCard";
-import { AdminLineChart } from "@/components/admin/AdminLineChart";
 import { AdminMiniStat } from "@/components/admin/AdminMiniStat";
 import { AdminPanelNotice } from "@/components/admin/AdminPanelNotice";
 import { AdminQuickActions } from "@/components/admin/AdminQuickActions";
 import { AdminSectionHeader } from "@/components/admin/AdminSectionHeader";
-import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
 import { AdminTable } from "@/components/admin/AdminTable";
 
 const quickActions: QuickAction[] = [
@@ -32,6 +26,15 @@ const iconMap = {
   "Açık Mesaj / Talep": MessageSquare
 };
 
+const operationalStats = [
+  { label: "İşlem Bekleyenler", value: 0, helper: "Gerçek kayıt geldikçe güncellenir" },
+  { label: "Takibimdeki Görevler", value: 0, helper: "Atanmış görev bulunmuyor" },
+  { label: "Bugünkü Bağış Hareketi", value: "0 TL", helper: "Online ödeme kapalı; WhatsApp yönlendirme aktif" },
+  { label: "Bekleyen Başvuru", value: 0, helper: "Yeni başvuru bulunmuyor" },
+  { label: "Onay Bekleyen Makbuz", value: 0, helper: "Bekleyen makbuz bulunmuyor" },
+  { label: "Açık Mesaj / Talep", value: 0, helper: "Yanıt bekleyen kayıt bulunmuyor" }
+];
+
 export default async function AdminDashboardPage() {
   const contentMetrics = await getAdminReadOnlyContentMetrics();
 
@@ -40,11 +43,11 @@ export default async function AdminDashboardPage() {
       <AdminSectionHeader
         eyebrow="Genel Bakış"
         title="Operasyon İş Akışı"
-        description="İş kayıtları, görevler, bağış hareketleri, makbuzlar, rezervasyonlar ve personel takipleri tek merkezden izlenir. Bu ekran demo verilerle çalışır."
+        description="İş kayıtları, görevler, bağış hareketleri, makbuzlar, rezervasyonlar ve personel takipleri tek merkezden izlenir."
       />
 
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-        {operationKpis.map((stat) => {
+        {operationalStats.map((stat) => {
           const Icon = iconMap[stat.label as keyof typeof iconMap] ?? FileCheck2;
           return (
             <article key={stat.label} className="rounded-lg border border-border-soft bg-white p-4 shadow-sm">
@@ -68,7 +71,7 @@ export default async function AdminDashboardPage() {
             <h2 className="mt-1 text-lg font-extrabold text-dark-navy">Public içerik sayaçları</h2>
           </div>
           <span className="rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
-            Veri kaynağı: {contentMetrics.source === "supabase" ? "Supabase read-only" : "Demo fallback"}
+            Gerçek kayıt sayaçları
           </span>
         </div>
         <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -80,35 +83,16 @@ export default async function AdminDashboardPage() {
 
       <section className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
         <AdminChartCard title="Akış Şeması" description="Operasyon ekibinin takip ettiği son görev ve iş akışları.">
-          <AdminTable headers={["ID", "Başlık", "Sorumlu", "Modül", "Durum", "Tarih", "İşlem"]} recordCount={operationFlowItems.length}>
-            {operationFlowItems.map((item) => (
-              <tr key={item.id}>
-                <td className="font-bold text-dark-navy">{item.id}</td>
-                <td className="font-bold text-dark-navy">{item.title}</td>
-                <td>{item.owner}</td>
-                <td>{item.module}</td>
-                <td><AdminStatusBadge status={item.status} /></td>
-                <td>{item.date}</td>
-                <td><Link className="focus-ring inline-flex rounded-md p-1 text-ocean-green hover:bg-soft-blue" href="/admin/is-kayitlari"><ArrowUpRight aria-hidden className="h-4 w-4" /></Link></td>
-              </tr>
-            ))}
+          <AdminTable headers={["ID", "Başlık", "Sorumlu", "Modül", "Durum", "Tarih", "İşlem"]} recordCount={0} empty>
+            {null}
           </AdminTable>
         </AdminChartCard>
 
         <AdminChartCard title="Son İş Kayıtları" description="Bağış, görev, makbuz ve mesaj hareketleri.">
           <div className="grid gap-2">
-            {recentWorkRecords.map((record) => (
-              <Link key={record.id} href="/admin/is-kayitlari" className="focus-ring flex items-center justify-between gap-3 rounded-md border border-border-soft px-3 py-2 hover:bg-soft-gray">
-                <div>
-                  <p className="text-sm font-extrabold text-dark-navy">{record.title}</p>
-                  <p className="text-xs font-semibold text-ink-muted">{record.id} · {record.type} · {record.time}</p>
-                </div>
-                <AdminStatusBadge status={record.status} />
-              </Link>
-            ))}
-          </div>
-          <div className="mt-3 rounded-md bg-soft-gray px-3 py-2 text-xs font-semibold text-ink-muted">
-            Okunmamış iş kaydı bulunmadığında bu alan sade boş durum mesajı gösterecek şekilde hazırlanmıştır.
+            <div className="rounded-md border border-dashed border-border-soft px-3 py-5 text-sm font-semibold leading-6 text-ink-muted">
+              Henüz iş kaydı bulunmuyor. Gerçek kayıtlar oluşturulduğunda bu alanda görüntülenecektir.
+            </div>
           </div>
         </AdminChartCard>
       </section>
@@ -117,16 +101,16 @@ export default async function AdminDashboardPage() {
         <AdminChartCard title="Hızlı Erişim" description="Operasyon ekipleri için sık kullanılan ekranlar.">
           <AdminQuickActions actions={quickActions} />
         </AdminChartCard>
-        <AdminChartCard title="Bugünkü Operasyon Özeti" description="Demo gün içi iş yükü dağılımı.">
+        <AdminChartCard title="Bugünkü Operasyon Özeti" description="Gün içi iş yükü gerçek kayıtlar oluştuğunda özetlenir.">
           <div className="grid gap-2 sm:grid-cols-3">
-            <AdminMiniStat label="Açık iş kaydı" value={18} />
-            <AdminMiniStat label="Masraf talebi" value={6} />
-            <AdminMiniStat label="Rezervasyon" value={3} />
+            <AdminMiniStat label="Açık iş kaydı" value={0} />
+            <AdminMiniStat label="Masraf talebi" value={0} />
+            <AdminMiniStat label="Rezervasyon" value={0} />
           </div>
         </AdminChartCard>
         <div className="grid gap-3">
-          <AdminPanelNotice title="Demo mod aktif">
-            Gerçek veri kaydı, ödeme ve CRUD yoktur. RLS/auth güvenliği korunarak demo veri gösterilir.
+          <AdminPanelNotice title="Operasyon notu">
+            Gerçek kayıtlar eklendiğinde dashboard sayaçları ve listeler bu alanda güncellenecektir.
           </AdminPanelNotice>
         </div>
       </section>
@@ -134,25 +118,20 @@ export default async function AdminDashboardPage() {
       <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
         <AdminChartCard
           title="Bağış Akışı"
-          description="Günlük bağış tutarı ve işlem adedi. Adminin finansal hareketi hızlı okuması için tutulur."
-          actions={["7 gün", "30 gün", "90 gün"].map((label, index) => (
-            <button
-              key={label}
-              type="button"
-              className={`focus-ring rounded-md px-2.5 py-1 text-[0.68rem] font-extrabold ${index === 0 ? "bg-deep-blue text-white" : "bg-soft-gray text-ink-muted"}`}
-            >
-              {label}
-            </button>
-          ))}
+          description="Bağış kayıtları oluştuğunda günlük hareket burada izlenir."
         >
-          <AdminLineChart data={dailyDonations} />
+          <div className="rounded-md border border-dashed border-border-soft px-4 py-8 text-center text-sm font-semibold leading-6 text-ink-muted">
+            Henüz grafik oluşturacak bağış kaydı bulunmuyor.
+          </div>
         </AdminChartCard>
 
         <AdminChartCard
           title="Kampanya Performansı"
-          description="En çok destek alan kampanyaların miktar ve destekçi karşılaştırması."
+          description="Kampanya verileri oluştuğunda karşılaştırmalı özet burada görünür."
         >
-          <AdminBarChart data={topCampaigns} />
+          <div className="rounded-md border border-dashed border-border-soft px-4 py-8 text-center text-sm font-semibold leading-6 text-ink-muted">
+            Kampanya performansı için henüz doğrulanmış kayıt bulunmuyor.
+          </div>
         </AdminChartCard>
       </section>
     </div>

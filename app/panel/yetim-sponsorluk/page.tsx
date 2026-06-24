@@ -14,17 +14,20 @@ import { formatSponsorshipMoney, SponsorshipStatusCell } from "@/app/admin/yetim
 
 export default async function SponsorshipPage() {
   const donorContext = await getCurrentSponsorshipDonorContext();
-  const accountId = donorContext?.account?.status === "active" ? donorContext.account.id : "demo-donor-account";
-  const isDemoFallback = accountId === "demo-donor-account" && !donorContext?.account;
-  const [sponsorships, sponsoredOrphans, applications] = await Promise.all([
-    getDonorSponsorships(accountId),
-    getDonorSponsoredOrphans(accountId),
-    getDonorSponsorshipApplications(accountId)
-  ]);
-  const [donorPayments, donorReceipts] = await Promise.all([
-    getDonorPayments(accountId),
-    getDonorReceipts(accountId)
-  ]);
+  const accountId = donorContext?.account?.status === "active" ? donorContext.account.id : null;
+  const [sponsorships, sponsoredOrphans, applications] = accountId
+    ? await Promise.all([
+        getDonorSponsorships(accountId),
+        getDonorSponsoredOrphans(accountId),
+        getDonorSponsorshipApplications(accountId)
+      ])
+    : [[], [], []];
+  const [donorPayments, donorReceipts] = accountId
+    ? await Promise.all([
+        getDonorPayments(accountId),
+        getDonorReceipts(accountId)
+      ])
+    : [[], []];
   const paymentIntentsBySponsorship = new Map(
     donorPayments.filter((payment) => payment.contextType === "orphan_sponsorship" && payment.contextId).map((payment) => [payment.contextId, payment])
   );
@@ -40,11 +43,6 @@ export default async function SponsorshipPage() {
         <p className="mt-2 max-w-3xl leading-7 text-ink-muted">
           Sponsor yalnızca kendi sponsorluk kayıtlarını ve güvenli yetim özetlerini görebilir. Çocuğun tam adı, açık adresi, okul adı, kimlik bilgisi, telefon ve aile detayları gösterilmez.
         </p>
-        {isDemoFallback ? (
-          <p className="mt-3 rounded-lg bg-soft-blue px-4 py-3 text-sm font-bold text-deep-blue">
-            Girişli sponsor hesabı bulunmadığında ekran güvenli demo verisiyle gösterilir. Misafir başvurular panelde otomatik görünmeyebilir.
-          </p>
-        ) : null}
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
@@ -54,7 +52,7 @@ export default async function SponsorshipPage() {
       </section>
 
       <section className="rounded-lg border border-ocean-green/15 bg-mint-green/35 p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
-        Sponsorluklar ortak payment intent modeline bağlıdır. PayTR test callback sonucu onaylandığında destek aktiflenir ve sonraki destek tarihi server-side hesaplanır; hazırlanmış PDF makbuzlar yetki kontrollü açılır, canlı ödeme, düzenli talimat ve gerçek SMS/e-posta gönderimi henüz yapılmaz.
+        Sponsorluk kayıtları yetki kontrollü şekilde izlenir. Canlı ödeme, düzenli talimat ve otomatik SMS/e-posta gönderimi bu aşamada kapalıdır.
       </section>
 
       {openApplications.length ? (
@@ -99,7 +97,7 @@ export default async function SponsorshipPage() {
                   <span className="mt-2 block text-xs font-bold text-ocean-green">Destek aktif</span>
                 ) : (
                   <span className="mt-2 block text-xs font-semibold text-ink-muted">
-                    {paymentIntent ? paymentIntent.providerLabel : "PayTR test akışı payment intent oluşunca açılır."}
+                    {paymentIntent ? paymentIntent.providerLabel : "Ödeme kaydı oluştuğunda takip bilgisi burada görünür."}
                   </span>
                 )}
                 {receipt ? (
@@ -112,7 +110,7 @@ export default async function SponsorshipPage() {
                   )
                 ) : null}
               </td>
-              <td>{item.nextPaymentDate ? formatDate(item.nextPaymentDate) : "Ödeme altyapısı sonraki aşamada aktifleşecek"}</td>
+              <td>{item.nextPaymentDate ? formatDate(item.nextPaymentDate) : "Henüz tarih bulunmuyor"}</td>
               <td><SponsorshipStatusCell status={item.statusLabel} /></td>
             </tr>
           );
@@ -139,7 +137,7 @@ export default async function SponsorshipPage() {
           <div className="mt-3 grid gap-2 text-sm font-semibold leading-6 text-ink-muted">
             <p>Gösterilen bilgiler: yetim kodu, güvenli ad/rumuz, yaş grubu, ülke/bölge, eğitim durumu ve güncelleme tarihi.</p>
             <p>Gösterilmeyen bilgiler: açık adres, okul adı, kimlik numarası, telefon, aile detayları, hassas sağlık verisi ve izinsiz fotoğraf.</p>
-            <p>Payment paid olduğunda sponsorluk ödeme durumu ödendi, sponsorluk durumu aktif ve sonraki ödeme tarihi server-side hesaplanmış şekilde güncellenecektir.</p>
+            <p>Ödeme onayı alındığında sponsorluk durumu ve sonraki destek tarihi yetkili sistem tarafından güncellenir.</p>
           </div>
           <div className="mt-5">
             <Button href="/yetim-hamiligi/basvuru" variant="secondary">

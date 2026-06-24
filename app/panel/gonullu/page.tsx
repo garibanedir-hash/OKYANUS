@@ -19,10 +19,16 @@ export default function VolunteerPanelPage() {
         <PortalStatCard label="Atanan görev" value={profile.assignedTasks} />
       </section>
       <section className="grid gap-6 xl:grid-cols-[1fr_0.7fr]">
-        <div className="grid gap-4 md:grid-cols-2">{events.slice(0, 2).map((event) => <PortalEventCard key={event.id} event={event} />)}</div>
+        <div className="grid gap-4 md:grid-cols-2">
+          {events.length ? events.slice(0, 2).map((event) => <PortalEventCard key={event.id} event={event} />) : (
+            <div className="rounded-brand border border-dashed border-border-soft bg-white p-6 text-sm font-semibold leading-6 text-ink-muted shadow-card md:col-span-2">
+              Henüz gönüllü faaliyet kaydı bulunmuyor.
+            </div>
+          )}
+        </div>
         <div className="grid gap-4">
-          <div className="rounded-brand border border-border-soft bg-white p-6 shadow-card"><h2 className="text-xl font-bold text-dark-navy">Bana atanan görevler</h2><ul className="mt-3 grid gap-2 text-sm font-semibold text-ink-muted">{tasks.map((task) => <li key={task}>- {task}</li>)}</ul></div>
-          <div className="rounded-brand border border-border-soft bg-white p-6 shadow-card"><h2 className="text-xl font-bold text-dark-navy">Duyurular ve eğitim notları</h2><ul className="mt-3 grid gap-2 text-sm font-semibold text-ink-muted">{announcements.map((item) => <li key={item}>- {item}</li>)}<li>- Gönüllü saha güvenliği dokümanı demo alanı hazır.</li></ul></div>
+          <div className="rounded-brand border border-border-soft bg-white p-6 shadow-card"><h2 className="text-xl font-bold text-dark-navy">Bana atanan görevler</h2>{tasks.length ? <ul className="mt-3 grid gap-2 text-sm font-semibold text-ink-muted">{tasks.map((task) => <li key={task}>- {task}</li>)}</ul> : <p className="mt-3 text-sm font-semibold leading-6 text-ink-muted">Henüz atanmış görev bulunmuyor.</p>}</div>
+          <div className="rounded-brand border border-border-soft bg-white p-6 shadow-card"><h2 className="text-xl font-bold text-dark-navy">Duyurular ve eğitim notları</h2>{announcements.length ? <ul className="mt-3 grid gap-2 text-sm font-semibold text-ink-muted">{announcements.map((item) => <li key={item}>- {item}</li>)}</ul> : <p className="mt-3 text-sm font-semibold leading-6 text-ink-muted">Duyurular eklendiğinde burada paylaşılacaktır.</p>}</div>
         </div>
       </section>
     </div>

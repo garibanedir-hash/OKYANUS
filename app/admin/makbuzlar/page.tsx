@@ -189,7 +189,7 @@ export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsP
         </div>
       ) : null}
       <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
-        {source === "supabase" ? "Supabase receipts" : "Demo/mock fallback"}
+        {source === "supabase" ? "Gerçek kayıt" : "Kayıt yok"}
       </div>
       <section className="grid gap-4 md:grid-cols-4">
         <SummaryCard label="Toplam makbuz" value={receipts.length} />
@@ -300,7 +300,7 @@ export default async function AdminReceiptsPage({ searchParams }: AdminReceiptsP
               </td>
               <td>
                 {source === "demo" ? (
-                  <DisabledDemoButton>Supabase kaydı gerekir</DisabledDemoButton>
+                  <DisabledDemoButton>Gerçek kayıt gerekir</DisabledDemoButton>
                 ) : (
                   <div className="flex min-w-44 flex-wrap gap-2">
                     {hasPdf ? <PdfViewLink receiptNo={receipt.receiptNo} /> : null}

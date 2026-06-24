@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { OfficialLogo } from "@/components/brand/OfficialLogo";
+import { isAdminDemoMode } from "@/config/admin";
 import { cn } from "@/lib/utils";
 
 type AdminNavItem = {
@@ -185,7 +186,7 @@ function CollapsibleSidebarGroup({ group, pathname }: { group: AdminNavGroup; pa
               >
                 <Icon aria-hidden className={cn("h-3.5 w-3.5 shrink-0", active ? "text-ocean-green" : "text-white/48")} />
                 <span className="min-w-0 flex-1 truncate">{label}</span>
-                {badge ? (
+                {badge && (badge !== "demo" || isAdminDemoMode) ? (
                   <span
                     className={cn(
                       "ml-auto shrink-0 whitespace-nowrap rounded-full px-1.5 py-0.5 text-[0.5rem] font-extrabold uppercase leading-none",
@@ -213,7 +214,7 @@ export function AdminSidebar() {
         <div className="border-b border-white/10 px-3 py-3">
           <OfficialLogo variant="white" context="sidebar" className="-ml-2" />
           <p className="mt-1 border-l-2 border-ocean-green/80 pl-2 text-[0.62rem] font-semibold leading-4 text-white/62">
-            Demo panel · veri kaydı yoktur
+            Yetkili yönetim alanı
           </p>
         </div>
         <nav aria-label="Admin menüsü" className="grid gap-1 overflow-x-hidden px-2 py-2 lg:flex-1 lg:overflow-y-auto">
@@ -223,7 +224,7 @@ export function AdminSidebar() {
         </nav>
         <div className="border-t border-white/10 p-3">
           <button type="button" className="focus-ring w-full rounded-md bg-white/8 px-2 py-2 text-left text-[0.68rem] font-extrabold text-white/60 hover:bg-white/12">
-            Menüyü daralt · demo
+            Menüyü daralt
           </button>
         </div>
       </div>

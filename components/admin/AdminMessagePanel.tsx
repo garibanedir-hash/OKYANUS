@@ -24,7 +24,7 @@ export function AdminMessagePanel({
         ))}
       </div>
       <label className="mt-6 block text-sm font-bold text-dark-navy">
-        Demo mesaj kutusu
+        Mesaj kutusu
         <textarea className="focus-ring mt-2 min-h-24 w-full rounded-2xl border border-border-soft p-4" placeholder="Gerçek mesajlaşma backend'i sonraki aşamada bağlanacak." />
       </label>
     </section>

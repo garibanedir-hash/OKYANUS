@@ -31,7 +31,7 @@ export default async function AdminOrphanReportsPage() {
             <Icon aria-hidden className="h-6 w-6 text-ocean-green" />
             <h2 className="mt-4 text-lg font-extrabold text-dark-navy">{title}</h2>
             <p className="mt-2 min-h-12 text-sm leading-6 text-ink-muted">{description}</p>
-            <div className="mt-4"><AdminActionButton>Rapor demo</AdminActionButton></div>
+            <div className="mt-4"><AdminActionButton>Rapor</AdminActionButton></div>
           </article>
         ))}
       </section>

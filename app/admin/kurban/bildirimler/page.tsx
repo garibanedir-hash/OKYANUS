@@ -13,7 +13,7 @@ export default function AdminQurbanNotificationsPage() {
         title="Bildirimler"
         description="Bağışçı bilgilendirme kayıtları demo olarak hazırlanır. Gerçek SMS/e-posta gönderimi bu aşamada yapılmaz."
       />
-      <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">Veri kaynağı: Demo fallback</div>
+      <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">Kayıt yok</div>
       <AdminFilterBar>
         <label className="text-sm font-bold text-dark-navy">Sipariş<input className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2" placeholder="KRB-2026..." /></label>
         <label className="text-sm font-bold text-dark-navy">Kanal<select className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2"><option>Tümü</option><option>E-posta</option><option>SMS</option><option>WhatsApp</option></select></label>
@@ -29,7 +29,7 @@ export default function AdminQurbanNotificationsPage() {
             <td><QurbanStatusCell status={notification.statusLabel} /></td>
             <td>{notification.sentAt ?? "Bekliyor"}</td>
             <td>{notification.errorMessage ?? "-"}</td>
-            <td><AdminActionButton>Gönderim demo</AdminActionButton></td>
+            <td><AdminActionButton>Gönderim</AdminActionButton></td>
           </tr>
         ))}
       </AdminTable>

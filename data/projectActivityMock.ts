@@ -1,3 +1,7 @@
+import { isAdminDemoMode } from "@/config/admin";
+
+const demoOnly = <T>(items: T[]) => (isAdminDemoMode ? items : []);
+
 export type ProjectActivityType =
   | "distribution"
   | "field_visit"
@@ -132,7 +136,7 @@ export const projectActivityVisibilityLabels: Record<ProjectActivityVisibility, 
   public: "Public Görünür"
 };
 
-export const mockProjectActivities: ProjectActivity[] = [
+export const mockProjectActivities: ProjectActivity[] = demoOnly([
   {
     id: "project-activity-fallback-001",
     projectId: "project-food-001",
@@ -192,9 +196,9 @@ export const mockProjectActivities: ProjectActivity[] = [
     createdAt: "2026-05-28T08:30:00.000Z",
     updatedAt: "2026-05-28T08:30:00.000Z"
   }
-];
+]);
 
-export const mockProjectActivityEvents: ProjectActivityEvent[] = [
+export const mockProjectActivityEvents: ProjectActivityEvent[] = demoOnly([
   {
     id: "project-activity-event-fallback-001",
     projectActivityId: "project-activity-fallback-001",
@@ -212,4 +216,4 @@ export const mockProjectActivityEvents: ProjectActivityEvent[] = [
     note: "Faaliyet tamamlandı.",
     createdAt: "2026-05-15T15:00:00.000Z"
   }
-];
+]);

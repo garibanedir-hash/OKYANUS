@@ -95,7 +95,7 @@ export default async function AdminManualReceiptsPage({ searchParams }: PageProp
       />
       {message ? <div className="rounded-lg border border-ocean-green/20 bg-mint-green/35 p-4 text-sm font-bold text-dark-navy">{message}</div> : null}
       <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
-        {source === "supabase" ? "Supabase manual_receipts" : "Demo/mock fallback"}
+        {source === "supabase" ? "Gerçek kayıt" : "Kayıt yok"}
       </div>
 
       <form>

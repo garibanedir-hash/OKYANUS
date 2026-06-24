@@ -1,3 +1,7 @@
+import { isAdminDemoMode } from "@/config/admin";
+
+const demoOnly = <T>(items: T[]) => (isAdminDemoMode ? items : []);
+
 export type OrphanProfileStatus = "draft" | "active" | "sponsored" | "waiting" | "inactive" | "archived";
 export type SponsorshipProgramStatus = "draft" | "active" | "paused" | "completed" | "archived";
 export type SponsorshipStatus = "pending" | "active" | "payment_pending" | "payment_failed" | "paused" | "completed" | "cancelled" | "archived";
@@ -286,7 +290,7 @@ export const sponsorshipSupportPeriodLabels: Record<SponsorshipSupportPeriod, st
   yearly: "Yıllık planlama"
 };
 
-export const mockSponsorshipPrograms: SponsorshipProgram[] = [
+export const mockSponsorshipPrograms: SponsorshipProgram[] = demoOnly([
   {
     id: "sp-regular-education",
     slug: "duzenli-yetim-egitim-destegi",
@@ -335,9 +339,9 @@ export const mockSponsorshipPrograms: SponsorshipProgram[] = [
     transparencyNote: "Program aktif edilmeden başvuru ve ödeme süreci açılmaz.",
     updatedAt: "2026-05-16"
   }
-];
+]);
 
-export const mockOrphanProfiles: OrphanProfile[] = [
+export const mockOrphanProfiles: OrphanProfile[] = demoOnly([
   {
     id: "orphan-001",
     code: "YTM-2026-001",
@@ -401,9 +405,9 @@ export const mockOrphanProfiles: OrphanProfile[] = [
     internalNotes: "Eşleşme hazırlığı sürüyor.",
     updatedAt: "2026-05-17"
   }
-];
+]);
 
-export const mockSponsorships: Sponsorship[] = [
+export const mockSponsorships: Sponsorship[] = demoOnly([
   {
     id: "sponsorship-001",
     sponsorshipNo: "YSP-2026-0001",
@@ -453,9 +457,9 @@ export const mockSponsorships: Sponsorship[] = [
     note: "Ödeme entegrasyonu bekliyor.",
     updatedAt: "2026-05-18"
   }
-];
+]);
 
-export const mockSponsorshipApplications: SponsorshipApplication[] = [
+export const mockSponsorshipApplications: SponsorshipApplication[] = demoOnly([
   {
     id: "application-001",
     applicationNo: "YHB-2026-DEMO01",
@@ -526,9 +530,9 @@ export const mockSponsorshipApplications: SponsorshipApplication[] = [
     createdAt: "2026-05-19",
     updatedAt: "2026-05-20"
   }
-];
+]);
 
-export const mockSponsorshipMatches: SponsorshipMatch[] = [
+export const mockSponsorshipMatches: SponsorshipMatch[] = demoOnly([
   {
     id: "match-001",
     applicationId: "application-001",
@@ -546,9 +550,9 @@ export const mockSponsorshipMatches: SponsorshipMatch[] = [
     createdAt: "2026-05-20",
     updatedAt: "2026-05-20"
   }
-];
+]);
 
-export const mockSponsorshipPayments: SponsorshipPayment[] = [
+export const mockSponsorshipPayments: SponsorshipPayment[] = demoOnly([
   {
     id: "payment-001",
     sponsorshipId: "sponsorship-001",
@@ -574,9 +578,9 @@ export const mockSponsorshipPayments: SponsorshipPayment[] = [
     receiptStatus: "Ödeme bekleniyor",
     createdAt: "2026-05-18"
   }
-];
+]);
 
-export const mockOrphanUpdates: OrphanUpdate[] = [
+export const mockOrphanUpdates: OrphanUpdate[] = demoOnly([
   {
     id: "update-001",
     orphanId: "orphan-001",
@@ -606,9 +610,9 @@ export const mockOrphanUpdates: OrphanUpdate[] = [
     createdBy: "Personel Demo",
     updatedAt: "2026-05-19"
   }
-];
+]);
 
-export const mockOrphanAssignments: OrphanAssignment[] = [
+export const mockOrphanAssignments: OrphanAssignment[] = demoOnly([
   {
     id: "assignment-001",
     orphanId: "orphan-001",
@@ -641,9 +645,9 @@ export const mockOrphanAssignments: OrphanAssignment[] = [
     notes: "Açık okul adı ve adres bilgisi yazılmamalı.",
     updatedAt: "2026-05-19"
   }
-];
+]);
 
-export const mockSponsorshipNotifications: SponsorshipNotification[] = [
+export const mockSponsorshipNotifications: SponsorshipNotification[] = demoOnly([
   {
     id: "snotif-001",
     sponsorshipId: "sponsorship-001",
@@ -670,7 +674,7 @@ export const mockSponsorshipNotifications: SponsorshipNotification[] = [
     status: "pending",
     statusLabel: "Bekliyor"
   }
-];
+]);
 
 export const mockDonorSponsoredOrphans: DonorSponsoredOrphan[] = mockSponsorships.map((sponsorship) => {
   const orphan = mockOrphanProfiles.find((item) => item.id === sponsorship.orphanId);
@@ -700,12 +704,12 @@ export const mockSponsorshipStats: SponsorshipStats = {
   paymentPending: mockSponsorships.filter((item) => item.paymentStatus === "pending").length,
   updatesPending: mockOrphanUpdates.filter((item) => item.status === "draft").length,
   assignmentsPending: mockOrphanAssignments.filter((item) => ["assigned", "in_progress"].includes(item.status)).length,
-  countryBreakdown: [
+  countryBreakdown: demoOnly([
     { label: "Türkiye", value: 2 },
     { label: "Yurt dışı", value: 1 }
-  ],
-  statusBreakdown: [
+  ]),
+  statusBreakdown: demoOnly([
     { label: "Sponsorlu", value: 1 },
     { label: "Sponsor bekliyor", value: 2 }
-  ]
+  ])
 };

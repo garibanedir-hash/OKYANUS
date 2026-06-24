@@ -12,7 +12,7 @@ export function createSupabaseAdminClient(): SupabaseClient<Database> | null {
   const secretKey = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !secretKey) {
-    console.info("Supabase admin env eksik. Server-side admin işlemler demo modda devre dışıdır.");
+    console.info("Supabase admin env eksik. Server-side admin istemcisi oluşturulmadı.");
     return null;
   }
 

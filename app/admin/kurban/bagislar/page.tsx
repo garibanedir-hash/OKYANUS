@@ -33,11 +33,11 @@ export default async function AdminQurbanOrdersPage() {
       />
       <QurbanDataSourceBadge source={source} />
       <div className="rounded-lg border border-border-soft bg-white p-4 text-sm font-semibold leading-6 text-ink-muted shadow-sm">
-        Filtre alanları 9C.1 kapsamında demo/read-only görünüm içindir; liste gerçek kayıtları veya güvenli demo fallback verisini gösterir.
+        Filtre alanları gerçek kayıtlar geldiğinde listeyi daraltmak için kullanılır; kayıt yoksa güvenli boş durum gösterilir.
       </div>
       <AdminFilterBar>
-        <label className="text-sm font-bold text-dark-navy">Sipariş<input disabled className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2 disabled:bg-soft-gray" placeholder="Demo filtre" /></label>
-        <label className="text-sm font-bold text-dark-navy">Kampanya<input disabled className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2 disabled:bg-soft-gray" placeholder="Demo filtre" /></label>
+        <label className="text-sm font-bold text-dark-navy">Sipariş<input disabled className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2 disabled:bg-soft-gray" placeholder="Filtre" /></label>
+        <label className="text-sm font-bold text-dark-navy">Kampanya<input disabled className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2 disabled:bg-soft-gray" placeholder="Filtre" /></label>
         <label className="text-sm font-bold text-dark-navy">Ödeme<select disabled className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2 disabled:bg-soft-gray"><option>Tümü</option><option>Ödeme bekliyor</option><option>Ödendi</option></select></label>
         <label className="text-sm font-bold text-dark-navy">Vekalet<select disabled className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2 disabled:bg-soft-gray"><option>Tümü</option><option>Bekliyor</option><option>Kabul edildi</option></select></label>
         <label className="text-sm font-bold text-dark-navy">Durum<select disabled className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2 disabled:bg-soft-gray"><option>Tümü</option><option>Kesim planlandı</option><option>Kesim tamamlandı</option></select></label>
@@ -66,7 +66,7 @@ export default async function AdminQurbanOrdersPage() {
               <td><QurbanStatusCell status={getDelegationLabel(order.delegationStatus, order.delegationStatusLabel)} /></td>
               <td><QurbanStatusCell status={order.orderStatusLabel} /></td>
               <td>{formatDate(order.createdAt)}</td>
-              <td><AdminActionButton>Detay demo</AdminActionButton></td>
+              <td><AdminActionButton>Detay</AdminActionButton></td>
             </tr>
           );
         })}

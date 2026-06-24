@@ -38,7 +38,7 @@ export default async function EditManualReceiptPage({ params }: PageProps) {
       {locked ? (
         <AdminPanelNotice title={source === "demo" ? "Supabase kaydı gerekir" : "Düzenleme kapalı"}>
           {source === "demo"
-            ? "Bu kayıt demo/mock fallback kaydı olduğu için düzenlenemez."
+            ? "Gerçek kayıt bulunmadığı için düzenlenemez."
             : `Bu manuel makbuz ${receipt.statusLabel.toLocaleLowerCase("tr-TR")} durumunda olduğu için düzenlenemez.`}
         </AdminPanelNotice>
       ) : (

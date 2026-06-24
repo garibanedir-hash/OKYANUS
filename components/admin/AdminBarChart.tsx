@@ -15,6 +15,14 @@ export function AdminBarChart({ data }: { data: TopCampaign[] }) {
     return <div className="h-64 w-full rounded-lg bg-soft-gray" aria-hidden />;
   }
 
+  if (!data.length) {
+    return (
+      <div className="grid h-64 w-full place-items-center rounded-lg border border-dashed border-border-soft bg-white px-4 text-center text-sm font-semibold leading-6 text-ink-muted">
+        Kampanya performansı için henüz doğrulanmış kayıt bulunmuyor.
+      </div>
+    );
+  }
+
   return (
     <div className="h-64 w-full min-w-0">
       <ResponsiveContainer width="100%" height="100%">

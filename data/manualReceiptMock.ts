@@ -1,3 +1,7 @@
+import { isAdminDemoMode } from "@/config/admin";
+
+const demoOnly = <T>(items: T[]) => (isAdminDemoMode ? items : []);
+
 export type ManualReceiptStatus = "draft" | "prepared" | "printed" | "delivered" | "signed" | "archived" | "cancelled";
 
 export type ManualReceiptPaymentMethod = "cash" | "bank_transfer" | "pos" | "manual_card" | "in_kind" | "other";
@@ -118,7 +122,7 @@ export const manualReceiptOutputTypeLabels: Record<ManualReceiptOutputType, stri
   custom_form: "Özel Form"
 };
 
-export const mockManualReceipts: ManualReceipt[] = [
+export const mockManualReceipts: ManualReceipt[] = demoOnly([
   {
     id: "manual-receipt-demo-001",
     receiptNo: "MRC-2026-000001",
@@ -177,9 +181,9 @@ export const mockManualReceipts: ManualReceipt[] = [
     createdAt: "2026-05-25T14:38:00.000Z",
     updatedAt: "2026-05-25T15:00:00.000Z"
   }
-];
+]);
 
-export const mockManualReceiptEvents: ManualReceiptEvent[] = [
+export const mockManualReceiptEvents: ManualReceiptEvent[] = demoOnly([
   {
     id: "manual-receipt-event-demo-001",
     manualReceiptId: "manual-receipt-demo-001",
@@ -197,4 +201,4 @@ export const mockManualReceiptEvents: ManualReceiptEvent[] = [
     note: "Demo yazdırma kaydı.",
     createdAt: "2026-05-26T10:22:00.000Z"
   }
-];
+]);

@@ -33,7 +33,7 @@ export default async function AdminQurbanSlaughterTrackingPage() {
             <td>{operation.responsibleStaffName}</td>
             <td><QurbanProgress completed={operation.completedShares} total={operation.totalShares} /></td>
             <td><QurbanStatusCell status={operation.statusLabel} /></td>
-            <td><AdminActionButton>Operasyon demo</AdminActionButton></td>
+            <td><AdminActionButton>Operasyon</AdminActionButton></td>
           </tr>
         ))}
       </AdminTable>

@@ -5,7 +5,7 @@ import { formatCurrency } from "@/lib/format";
 export function SponsorshipDataSourceBadge({ source = "demo" }: { source?: "supabase" | "demo" }) {
   return (
     <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
-      {source === "supabase" ? "Supabase read-only" : "Demo fallback"}
+      {source === "supabase" ? "Gerçek kayıt" : "Kayıt yok"}
     </div>
   );
 }

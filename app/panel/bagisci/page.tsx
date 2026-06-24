@@ -14,7 +14,7 @@ export default function DonorPanelPage() {
         <div>
           <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-ocean-green">Bağışçı paneli</p>
           <h1 className="mt-2 text-3xl font-extrabold text-dark-navy">Desteklerinizin özeti</h1>
-          <p className="mt-2 leading-7 text-ink-muted">Kendi bağışlarınızı, makbuz durumunuzu, desteklediğiniz projeleri ve sponsorluk özetinizi takip edebileceğiniz demo alan.</p>
+          <p className="mt-2 leading-7 text-ink-muted">Kendi bağışlarınızı, makbuz durumunuzu, desteklediğiniz projeleri ve sponsorluk özetinizi takip edebilirsiniz.</p>
         </div>
         <Button href="/bagis-yap">Bağış Yap</Button>
       </section>
@@ -35,12 +35,16 @@ export default function DonorPanelPage() {
             <Button href="/panel/bagislarim" variant="ghost">Geçmiş</Button>
           </div>
           <div className="mt-4 grid gap-4">
-            {supportedProjects.map((project) => (
+            {supportedProjects.length ? supportedProjects.map((project) => (
               <article key={project.slug} className="rounded-2xl bg-soft-gray p-4">
                 <div className="mb-2 flex justify-between text-sm font-bold"><span>{project.title}</span><span>%{project.progress}</span></div>
                 <ProgressBar value={project.progress} />
               </article>
-            ))}
+            )) : (
+              <div className="rounded-2xl border border-dashed border-border-soft p-4 text-sm font-semibold leading-6 text-ink-muted">
+                Henüz desteklenen proje kaydı bulunmuyor.
+              </div>
+            )}
           </div>
           <div className="mt-5 rounded-2xl border border-border-soft bg-white p-4 text-sm leading-6 text-ink-muted">
             <strong className="text-dark-navy">İkincil not:</strong> Gönüllü olmak da isterseniz başvurunuzu ayrı gönüllü panelinden takip edebilirsiniz.

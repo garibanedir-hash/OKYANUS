@@ -5,7 +5,7 @@ import { formatCurrency } from "@/lib/format";
 export function QurbanDataSourceBadge({ source }: { source: "supabase" | "demo" }) {
   return (
     <div className="w-fit rounded bg-soft-blue px-3 py-1 text-xs font-extrabold text-deep-blue">
-      Veri kaynağı: {source === "supabase" ? "Supabase read-only" : "Demo fallback"}
+      {source === "supabase" ? "Gerçek kayıt" : "Kayıt yok"}
     </div>
   );
 }

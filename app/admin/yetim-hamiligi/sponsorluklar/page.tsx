@@ -22,7 +22,7 @@ export default async function AdminSponsorshipsPage() {
       />
       <PrivacyNotice />
       <AdminFilterBar>
-        <label>Sponsorluk No<input disabled placeholder="Demo filtre" /></label>
+        <label>Sponsorluk No<input disabled placeholder="Filtre" /></label>
         <label>Ödeme<select disabled><option>Tümü</option><option>Ödeme bekliyor</option><option>Ödendi</option></select></label>
         <label>Durum<select disabled><option>Tümü</option><option>Aktif</option><option>Bekliyor</option></select></label>
       </AdminFilterBar>
@@ -48,7 +48,7 @@ export default async function AdminSponsorshipsPage() {
               <td><SponsorshipStatusCell status={item.statusLabel} /></td>
               <td>{formatDate(item.startDate)}</td>
               <td>{item.lastPaymentDate ? formatDate(item.lastPaymentDate) : "Bekliyor"}</td>
-              <td><AdminActionButton>Detay demo</AdminActionButton></td>
+              <td><AdminActionButton>Detay</AdminActionButton></td>
             </tr>
           );
         })}

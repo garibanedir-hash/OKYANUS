@@ -46,7 +46,7 @@ export function logReadOnlyFallback(context: string, error?: { code?: string } |
     return;
   }
 
-  console.warn(`[read-only:${context}] Supabase read failed; demo fallback used.`, {
+  console.warn(`[read-only:${context}] Supabase read failed; empty state fallback used.`, {
     code: error?.code ?? "no-code"
   });
 }

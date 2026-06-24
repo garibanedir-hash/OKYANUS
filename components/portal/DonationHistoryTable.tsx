@@ -6,7 +6,7 @@ import { AdminTable } from "@/components/admin/AdminTable";
 
 export function DonationHistoryTable({ donations }: { donations: MockUserDonation[] }) {
   return (
-    <AdminTable headers={["Tarih", "Tutar", "Bağış türü", "İlgili proje", "Ödeme", "Makbuz", "İşlem"]}>
+    <AdminTable headers={["Tarih", "Tutar", "Bağış türü", "İlgili proje", "Ödeme", "Makbuz", "İşlem"]} recordCount={donations.length} empty={!donations.length}>
       {donations.map((donation) => (
         <tr key={donation.id}>
           <td className="px-4 py-3 text-ink-muted">{donation.date}</td>

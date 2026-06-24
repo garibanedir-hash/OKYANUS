@@ -1,14 +1,12 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { adminHomePath, isAdminDemoMode } from "@/config/admin";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { AuthSubmitButton } from "@/components/auth/AuthSubmitButton";
-import { isSupabaseConfigured } from "@/lib/auth/adminGuard";
 import { signInAdmin } from "@/app/admin/giris/actions";
 
 export const metadata: Metadata = {
-  title: "Admin Girişi",
-  description: "Okyanus Yönetim Paneli giriş taslağı."
+  title: "Yönetim Paneli Girişi",
+  description: "Okyanus Yönetim Paneli yetkili kullanıcı girişi."
 };
 
 export default async function AdminLoginPage({
@@ -16,12 +14,10 @@ export default async function AdminLoginPage({
 }: {
   searchParams?: Promise<{ durum?: string; mesaj?: string }>;
 }) {
-  const configured = isSupabaseConfigured();
   const params = await searchParams;
   const statusMessages: Record<string, string> = {
-    demo: "Demo mod aktif. Gerçek giriş yapılmaz; /admin route'u önizleme için açıktır.",
-    "env-eksik": "Supabase env değişkenleri eksik. Giriş akışı başlatılamadı.",
-    hata: "Giriş bilgileri doğrulanamadı.",
+    "env-eksik": "Giriş işlemi şu anda tamamlanamıyor. Lütfen daha sonra tekrar deneyin.",
+    hata: "Giriş bilgileri doğrulanamadı. Lütfen bilgilerinizi kontrol ederek tekrar deneyin.",
     yetkisiz: "Bu alana erişmek için yetkili hesabınızla giriş yapmanız gerekiyor.",
     "rol-dogrulanamadi": "Bu alana erişmek için yetkili hesabınızla giriş yapmanız gerekiyor."
   };
@@ -30,18 +26,11 @@ export default async function AdminLoginPage({
   return (
     <AuthShell
       mode="admin"
-      title="Okyanus Yönetim Paneli"
-      description="Yetkili kullanıcılar için güvenli yönetim erişimi."
+      title="Yönetim Paneli Girişi"
+      description="Yetkili kullanıcılar, kendilerine tanımlanan bilgilerle sisteme giriş yapabilir."
     >
-        <div className="rounded-2xl bg-soft-blue p-4 text-sm font-semibold leading-6 text-deep-blue">
-          {isAdminDemoMode
-            ? "Demo mod aktif: /admin route'u önizleme için açıktır."
-            : configured
-              ? "Auth modu aktif: Supabase signInWithPassword akışı kullanılmaya hazır."
-              : "Auth modu açık ancak Supabase env değişkenleri eksik."}
-        </div>
         {statusMessage ? (
-          <div className="mt-4 rounded-2xl bg-warm-accent/10 p-4 text-sm font-semibold leading-6 text-dark-navy">
+          <div className="rounded-2xl bg-warm-accent/10 p-4 text-sm font-semibold leading-6 text-dark-navy">
             {statusMessage}
           </div>
         ) : null}
@@ -49,7 +38,7 @@ export default async function AdminLoginPage({
         <form action={signInAdmin} className="mt-6 grid gap-4">
           <label className="text-sm font-bold text-dark-navy">
             E-posta
-            <input name="email" type="email" required className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="admin@okyanus.org" />
+            <input name="email" type="email" required className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-3" placeholder="E-posta adresiniz" />
           </label>
           <label className="text-sm font-bold text-dark-navy">
             Şifre
@@ -66,9 +55,6 @@ export default async function AdminLoginPage({
           <Link href="/" className="focus-ring rounded-full bg-white px-4 py-2 text-center text-sm font-bold text-deep-blue ring-1 ring-border-soft">
             Siteye Dön
           </Link>
-          {isAdminDemoMode ? <Link href={adminHomePath} className="focus-ring rounded-full bg-mint-green px-4 py-2 text-center text-sm font-bold text-ocean-green">
-            Demo Paneli Aç
-          </Link> : null}
         </div>
     </AuthShell>
   );

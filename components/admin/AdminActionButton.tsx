@@ -1,5 +1,6 @@
 "use client";
 
+import { sanitizeAdminUiNode } from "@/components/admin/adminUiText";
 import { cn } from "@/lib/utils";
 
 export function AdminActionButton({
@@ -13,6 +14,7 @@ export function AdminActionButton({
   href?: string;
   onClick?: () => void;
 }) {
+  const safeChildren = sanitizeAdminUiNode(children);
   const className = cn(
     "focus-ring inline-flex min-h-8 items-center justify-center rounded-md px-2.5 py-1 text-[0.72rem] font-extrabold transition",
     variant === "primary" && "bg-deep-blue text-white hover:bg-dark-navy",
@@ -23,7 +25,7 @@ export function AdminActionButton({
   if (href) {
     return (
       <a href={href} className={className}>
-        {children}
+        {safeChildren}
       </a>
     );
   }
@@ -32,9 +34,9 @@ export function AdminActionButton({
     <button
       type="button"
       className={className}
-      onClick={onClick ?? (() => window.alert("Demo mod: Bu işlem gerçek veri üzerinde değişiklik yapmaz."))}
+      onClick={onClick ?? (() => window.alert("Bu işlem şu anda pasif durumda."))}
     >
-      {children}
+      {safeChildren}
     </button>
   );
 }

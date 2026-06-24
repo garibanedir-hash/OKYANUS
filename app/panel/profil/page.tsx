@@ -20,12 +20,12 @@ export default function PortalProfilePage() {
         <Field label="Telefon" value={user.phone} />
         <Field label="Şehir" value={user.city} />
         <Field label="Hesap türü" value={user.accountType} />
-        <Field label="Gönüllülük ilgi alanları" value="Saha, eğitim, lojistik" />
-        <Field label="Bağış tercihleri" value="Gıda, eğitim, sponsorluk" />
-        <Field label="İletişim izinleri" value="E-posta açık, SMS kapalı" />
-        <Field label="Şifre değiştirme" value="Demo alan" />
-        <Field label="Hesabı silme / veri talebi" value="Demo talep akışı" />
-        <div className="md:col-span-2"><Button type="button">Demo Kaydet</Button></div>
+        <Field label="Gönüllülük ilgi alanları" value="" />
+        <Field label="Bağış tercihleri" value="" />
+        <Field label="İletişim izinleri" value="" />
+        <Field label="Şifre değiştirme" value="Hesap desteği için iletişime geçin" />
+        <Field label="Hesabı silme / veri talebi" value="KVKK talepleri iletişim kanalıyla alınır" />
+        <div className="md:col-span-2"><Button type="button">Kaydet</Button></div>
       </form>
     </div>
   );

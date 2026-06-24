@@ -27,7 +27,7 @@ export default async function AdminQurbanExportPage() {
           </div>
           <button type="button" className="focus-ring mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-deep-blue px-4 py-2 text-sm font-extrabold text-white transition hover:bg-dark-navy">
             <Download aria-hidden className="h-4 w-4" />
-            CSV Demo Export
+            CSV Export
           </button>
         </form>
         <aside className="grid gap-4">

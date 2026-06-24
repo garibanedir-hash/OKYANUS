@@ -18,8 +18,8 @@ export default async function AdminOrphanUpdatesPage() {
       />
       <PrivacyNotice />
       <AdminFilterBar>
-        <label>Yetim kodu<input disabled placeholder="Demo filtre" /></label>
-        <label>Güncelleme türü<input disabled placeholder="Demo filtre" /></label>
+        <label>Yetim kodu<input disabled placeholder="Filtre" /></label>
+        <label>Güncelleme türü<input disabled placeholder="Filtre" /></label>
         <label>Durum<select disabled><option>Tümü</option><option>Taslak</option><option>Yayında</option></select></label>
       </AdminFilterBar>
       <AdminTable headers={["Yetim kodu", "Başlık", "Güncelleme türü", "Durum", "Yayın tarihi", "Oluşturan", "İşlem"]} recordCount={updates.length} empty={!updates.length}>

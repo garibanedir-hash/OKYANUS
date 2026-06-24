@@ -1,3 +1,7 @@
+import { isAdminDemoMode } from "@/config/admin";
+
+const demoOnly = <T>(items: T[]) => (isAdminDemoMode ? items : []);
+
 export type QurbanType = "vacip" | "adak" | "akika" | "sukur" | "nafile" | "genel";
 export type QurbanRegionType = "yurt_ici" | "yurt_disi";
 export type QurbanCampaignStatus = "draft" | "active" | "paused" | "completed" | "archived";
@@ -230,7 +234,7 @@ export const qurbanPaymentStatusLabels: Record<QurbanPaymentStatus, string> = {
   cancelled: "İptal edildi"
 };
 
-export const mockQurbanCampaigns: QurbanCampaign[] = [
+export const mockQurbanCampaigns: QurbanCampaign[] = demoOnly([
   {
     id: "qcamp-2026-vacip-yurt-disi",
     slug: "2026-yurt-disi-vacip-kurban",
@@ -314,9 +318,9 @@ export const mockQurbanCampaigns: QurbanCampaign[] = [
     transparencyNote: "Duraklatılmış kampanyalar public aktif listede gösterilmez; admin ekranda operasyon hazırlığı için izlenir.",
     updatedAt: "2026-05-14"
   }
-];
+]);
 
-export const mockQurbanOrders: QurbanOrder[] = [
+export const mockQurbanOrders: QurbanOrder[] = demoOnly([
   {
     id: "qorder-001",
     orderNo: "KRB-2026-0001",
@@ -423,7 +427,7 @@ export const mockQurbanOrders: QurbanOrder[] = [
     receiptStatus: "Makbuz yok",
     createdAt: "2026-05-15"
   }
-];
+]);
 
 export const mockQurbanDelegations: QurbanDelegation[] = mockQurbanOrders.map((order, index) => ({
   id: `qdelegation-${index + 1}`,
@@ -438,7 +442,7 @@ export const mockQurbanDelegations: QurbanDelegation[] = mockQurbanOrders.map((o
   acceptedAt: order.delegationAcceptedAt
 }));
 
-export const mockQurbanShares: QurbanShare[] = [
+export const mockQurbanShares: QurbanShare[] = demoOnly([
   {
     id: "qshare-001",
     orderId: "qorder-001",
@@ -484,9 +488,9 @@ export const mockQurbanShares: QurbanShare[] = [
     slaughteredAt: "2026-05-16 10:35",
     createdAt: "2026-05-14"
   }
-];
+]);
 
-export const mockQurbanOperations: QurbanOperation[] = [
+export const mockQurbanOperations: QurbanOperation[] = demoOnly([
   {
     id: "qop-001",
     campaignId: "qcamp-2026-vacip-yurt-disi",
@@ -551,9 +555,9 @@ export const mockQurbanOperations: QurbanOperation[] = [
     notes: "Kampanya duraklatıldığı için operasyon kilitlenmedi.",
     updatedAt: "2026-05-14"
   }
-];
+]);
 
-export const mockQurbanDistributionLogs: QurbanDistributionLog[] = [
+export const mockQurbanDistributionLogs: QurbanDistributionLog[] = demoOnly([
   {
     id: "qdist-001",
     operationId: "qop-002",
@@ -568,9 +572,9 @@ export const mockQurbanDistributionLogs: QurbanDistributionLog[] = [
     notes: "Fotoğraf/PDF yükleme sonraki aşamada eklenecek.",
     statusLabel: "Rapor bekliyor"
   }
-];
+]);
 
-export const mockQurbanNotifications: QurbanNotification[] = [
+export const mockQurbanNotifications: QurbanNotification[] = demoOnly([
   {
     id: "qnotif-001",
     orderId: "qorder-001",
@@ -597,7 +601,7 @@ export const mockQurbanNotifications: QurbanNotification[] = [
     status: "prepared",
     statusLabel: "Hazır"
   }
-];
+]);
 
 export const mockQurbanStats: QurbanStats = {
   totalOrders: mockQurbanOrders.length,
@@ -608,13 +612,13 @@ export const mockQurbanStats: QurbanStats = {
   slaughtered: mockQurbanOrders.filter((order) => ["slaughtered", "distributed", "completed"].includes(order.orderStatus)).length,
   distributed: mockQurbanOrders.filter((order) => ["distributed", "completed"].includes(order.orderStatus)).length,
   notificationPending: mockQurbanNotifications.filter((notification) => notification.status !== "sent").length,
-  regionBreakdown: [
+  regionBreakdown: demoOnly([
     { label: "Yurt dışı", value: 3 },
     { label: "Yurt içi", value: 2 }
-  ],
-  typeBreakdown: [
+  ]),
+  typeBreakdown: demoOnly([
     { label: "Vacip", value: 3 },
     { label: "Adak", value: 1 },
     { label: "Akika", value: 1 }
-  ]
+  ])
 };

@@ -3,7 +3,7 @@ import type { MockPortalNotification } from "@/data/portalMock";
 export function PortalNotificationList({ notifications }: { notifications: MockPortalNotification[] }) {
   return (
     <div className="grid gap-3">
-      {notifications.map((notification) => (
+      {notifications.length ? notifications.map((notification) => (
         <article key={notification.id} className="rounded-2xl border border-border-soft bg-white p-4 shadow-card">
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -14,7 +14,11 @@ export function PortalNotificationList({ notifications }: { notifications: MockP
           </div>
           <p className="mt-2 text-sm leading-6 text-ink-muted">{notification.summary}</p>
         </article>
-      ))}
+      )) : (
+        <div className="rounded-2xl border border-dashed border-border-soft bg-white p-4 text-sm font-semibold leading-6 text-ink-muted shadow-card">
+          Bildirimler eklendiğinde burada görüntülenecektir.
+        </div>
+      )}
     </div>
   );
 }

@@ -16,7 +16,7 @@ export default async function AdminSponsorshipNotificationsPage() {
         description="Sponsor bilgilendirme kayıtları demo olarak hazırlanır. Gerçek SMS/e-posta gönderimi bu aşamada yapılmaz."
       />
       <AdminFilterBar>
-        <label>Sponsorluk<input disabled placeholder="Demo filtre" /></label>
+        <label>Sponsorluk<input disabled placeholder="Filtre" /></label>
         <label>Kanal<select disabled><option>Tümü</option><option>E-posta</option><option>SMS</option></select></label>
         <label>Durum<select disabled><option>Tümü</option><option>Bekliyor</option><option>Hazır</option></select></label>
       </AdminFilterBar>
@@ -30,7 +30,7 @@ export default async function AdminSponsorshipNotificationsPage() {
             <td><SponsorshipStatusCell status={notification.statusLabel} /></td>
             <td>{notification.sentAt ?? "Bekliyor"}</td>
             <td>{notification.errorMessage ?? "-"}</td>
-            <td><AdminActionButton>Gönderim demo</AdminActionButton></td>
+            <td><AdminActionButton>Gönderim</AdminActionButton></td>
           </tr>
         ))}
       </AdminTable>
