@@ -58,7 +58,7 @@ export function Footer({ donationConfig }: { donationConfig: DonationPublicConfi
         </div>
         <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr_0.9fr_1fr]">
           <div>
-            <OfficialLogo variant="white" context="footer" />
+            <OfficialLogo variant="white" context="footer" className="-ml-1 sm:-ml-2" />
             <p className="mt-5 max-w-sm text-sm leading-7 text-white/70">
               İhtiyaç sahiplerine umut, güven ve destek ulaştırmak için bağışçı, gönüllü ve saha ekiplerimizle birlikte çalışıyoruz.
             </p>

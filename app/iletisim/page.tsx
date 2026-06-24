@@ -8,7 +8,7 @@ import { PageHero } from "@/components/sections/PageHero";
 import { createContactMessageAction } from "@/app/iletisim/actions";
 import { getTurnstilePublicConfig } from "@/lib/security/turnstilePublic";
 import { contactInfo } from "@/data/contactInfo";
-import { activeSocialLinks, socialLinks } from "@/data/socialLinks";
+import { activeSocialLinks } from "@/data/socialLinks";
 
 export const metadata: Metadata = {
   title: "İletişim",
@@ -84,18 +84,6 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                     ))}
                   </div>
                 ) : null}
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {socialLinks
-                    .filter((item) => !item.isActive)
-                    .map((item) => (
-                      <span key={item.label} className="rounded-full border border-border-soft bg-soft-gray px-3 py-1.5 text-xs font-bold text-ink-muted">
-                        {item.label}
-                      </span>
-                    ))}
-                </div>
-                <p className="mt-4 text-sm leading-7 text-slate-600">
-                  Sosyal medya hesap bağlantıları netleştirildiğinde bu alana eklenecektir; boş veya geçici link kullanılmaz.
-                </p>
               </div>
               <div className="mt-6 rounded-[1.75rem] border border-border-soft bg-white p-6 shadow-card">
                 <p className="text-sm font-bold text-dark-navy">Çalışma ve iletişim merkezi</p>

@@ -39,7 +39,7 @@ const sizeClasses = {
     text: "text-xl"
   },
   footer: {
-    logo: "h-[4.75rem] w-[18.5rem] sm:h-20 sm:w-[19.5rem]",
+    logo: "h-[5.25rem] w-[20.5rem] sm:h-[5.5rem] sm:w-[21.5rem]",
     mark: "h-28 w-28",
     text: "text-lg"
   },
@@ -49,7 +49,7 @@ const sizeClasses = {
     text: "text-xl"
   },
   header: {
-    logo: "h-12 w-[11.75rem]",
+    logo: "h-14 w-[13.75rem]",
     mark: "h-20 w-20",
     text: "text-base"
   }
