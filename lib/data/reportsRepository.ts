@@ -75,7 +75,7 @@ export function mapSupabaseReportToReport(row: SupabaseReportRow): Report {
     period: row.period,
     category: row.category,
     summary: safePublicReportText(row.summary, "Dönemsel faaliyet çalışmalarına ait özet bilgiler bu alanda paylaşılır."),
-    statusLabel: row.pdf_asset_id ? "Özet yayınlandı" : "PDF hazırlanıyor",
+    statusLabel: row.pdf_asset_id ? "Özet yayınlandı" : "PDF paylaşılmadı",
     pdfUrl: row.file_url ?? undefined,
     metrics: metrics.length ? metrics : [{ label: "Durum", value: "Yayında" }],
     tags: [row.category, row.period].filter(Boolean)

@@ -1,7 +1,6 @@
 import { legalPages } from "@/data/legalPages";
 import { projects } from "@/data/projects";
 import { news } from "@/data/news";
-import { AdminActionButton } from "@/components/admin/AdminActionButton";
 import { AdminSectionHeader } from "@/components/admin/AdminSectionHeader";
 import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
 
@@ -22,7 +21,7 @@ function SettingsPanel({ title, description, children }: { title: string; descri
           <h2 className="text-xl font-bold text-dark-navy">{title}</h2>
           <p className="mt-1 text-sm leading-6 text-ink-muted">{description}</p>
         </div>
-        <AdminStatusBadge status="Demo" />
+        <AdminStatusBadge status="Read-only" />
       </div>
       <div className="mt-5 grid gap-4 md:grid-cols-2">{children}</div>
     </section>
@@ -65,11 +64,11 @@ export default function AdminSettingsPage() {
         ))}
       </div>
 
-      <SettingsPanel title="Genel Ayarlar" description="Platformun demo/public/auth davranışını yöneten ana ayarlar.">
-        <Field label="Public kayıt" value="Açık / demo" />
+      <SettingsPanel title="Genel Ayarlar" description="Platformun public ve giriş davranışını yöneten ana ayarlar.">
+        <Field label="Public kayıt" value="Açık" />
         <Field label="Yeni kullanıcı admin onayı" value="Gerekli" />
-        <Field label="Demo mode uyarıları" value="Göster" />
-        <Field label="Profil tamamlama zorunluluğu" value="Önerilir / demo" />
+        <Field label="Panel bilgilendirmeleri" value="Sade" />
+        <Field label="Profil tamamlama zorunluluğu" value="Önerilir" />
       </SettingsPanel>
 
       <SettingsPanel title="Kurumsal Bilgiler" description="Marka adı, kısa açıklama ve kurumsal özet alanları.">
@@ -84,18 +83,18 @@ export default function AdminSettingsPage() {
         <Field label="Sosyal medya bağlantıları" value="Bağlantılar netleştikçe merkezi sosyal link datasına eklenecek" />
       </SettingsPanel>
 
-      <SettingsPanel title="Bağış Ayarları" description="Bağış formu ve ödeme entegrasyonu öncesi demo yapılandırma.">
+      <SettingsPanel title="Bağış Ayarları" description="Bağış yönlendirmesi ve makbuz süreçleri için temel yapılandırma.">
         <Field label="Varsayılan bağış tutarları" value="100, 250, 500, 1000" />
-        <Field label="Bağış türleri" value="Genel, Gıda, Eğitim, Yetim ve Aile, Acil Yardım, Kış" />
-        <Field label="Demo ödeme sağlayıcı alanı" value="Ödeme sağlayıcı seçimi ileride eklenecek" />
-        <Field label="Makbuz modu" value="Demo / manuel kontrol" />
-        <Field label="Bağışçı paneli aktif/pasif" value="Aktif / demo" />
-        <Field label="Bağış makbuzu gösterimi" value="Aktif / demo" />
+        <Field label="Bağış türleri" value="Genel, Gıda, Yetim ve Kurban" />
+        <Field label="Ödeme sağlayıcı alanı" value="Online ödeme kapalı" />
+        <Field label="Makbuz modu" value="Manuel kontrol" />
+        <Field label="Bağışçı paneli görünürlüğü" value="Aktif" />
+        <Field label="Bağış makbuzu gösterimi" value="Yetki kontrollü" />
       </SettingsPanel>
 
       <SettingsPanel title="Gönüllülük Ayarları" description="Gönüllü paneli, etkinlik başvuruları ve saha koordinasyonu.">
-        <Field label="Gönüllü paneli aktif/pasif" value="Aktif / demo" />
-        <Field label="Gönüllü etkinlik başvuruları" value="Aktif / demo" />
+        <Field label="Gönüllü paneli görünürlüğü" value="Aktif" />
+        <Field label="Gönüllü etkinlik başvuruları" value="Aktif" />
         <Field label="Etkinlik kontenjan uyarıları" value="Göster" />
         <Field label="Koordinatör onayı" value="Gerekli" />
       </SettingsPanel>
@@ -103,17 +102,17 @@ export default function AdminSettingsPage() {
       <SettingsPanel title="Kullanıcı Ayarları" description="Bağışçı, gönüllü, koordinatör ve personel hesap davranışları.">
         <Field label="Public kayıt açık/kapalı" value="Açık / admin onayı gerekli" />
         <Field label="Hesap türleri" value="Bağışçı, Gönüllü, Bağışçı + Gönüllü" />
-        <Field label="Şifre sıfırlama" value="Supabase Auth sonrası aktif" />
-        <Field label="KVKK veri talebi" value="Demo talep akışı" />
+        <Field label="Şifre sıfırlama" value="Giriş sağlayıcısı üzerinden" />
+        <Field label="KVKK veri talebi" value="Kurum içi değerlendirme" />
       </SettingsPanel>
 
       <SettingsPanel title="Panel Ayarları" description="Kullanıcı, gönüllü ve sponsorluk panellerinin görünürlük ayarları.">
         <Field label="Bağışçı paneli" value="Aktif" />
         <Field label="Gönüllü paneli" value="Aktif" />
         <Field label="Yetim sponsorluk modülü" value="Aktif / mahremiyet modu" />
-        <Field label="Bildirimler" value="Aktif / demo" />
+        <Field label="Bildirimler" value="Yetki kontrollü" />
         <Field label="Profil tamamlama zorunluluğu" value="Yüzde 80 önerilir" />
-        <Field label="Demo mode uyarıları" value="Göster" />
+        <Field label="Panel uyarıları" value="Sade" />
       </SettingsPanel>
 
       <SettingsPanel title="İçerik Ayarları" description="Ana sayfa öne çıkan içerik seçimleri.">
@@ -128,7 +127,7 @@ export default function AdminSettingsPage() {
         ))}
       </SettingsPanel>
 
-      <SettingsPanel title="Yetki ve Roller" description="Rol bazlı erişim, panel yönlendirme ve işlem yetkileri demo ayarları.">
+      <SettingsPanel title="Yetki ve Roller" description="Rol bazlı erişim, panel yönlendirme ve işlem yetkileri.">
         <Field label="Super Admin" value="Tüm modüller" />
         <Field label="Koordinatör" value="Kendi ekip/faaliyet alanı" />
         <Field label="Personel" value="Kendi görev ve mesajları" />
@@ -136,10 +135,10 @@ export default function AdminSettingsPage() {
       </SettingsPanel>
 
       <SettingsPanel title="Bildirim Ayarları" description="Panel, e-posta ve sistem bildirimlerinin gelecekteki yönetim alanı.">
-        <Field label="Bağış makbuzu bildirimi" value="Aktif / demo" />
-        <Field label="Proje güncellemesi" value="Aktif / demo" />
-        <Field label="Gönüllü etkinliği" value="Aktif / demo" />
-        <Field label="Görev atama bildirimi" value="Aktif / demo" />
+        <Field label="Bağış makbuzu bildirimi" value="Yetki kontrollü" />
+        <Field label="Proje güncellemesi" value="Yetki kontrollü" />
+        <Field label="Gönüllü etkinliği" value="Yetki kontrollü" />
+        <Field label="Görev atama bildirimi" value="Yetki kontrollü" />
       </SettingsPanel>
 
       <SettingsPanel title="Güvenlik" description="Auth, RBAC, RLS ve audit log için production öncesi kontrol alanları.">
@@ -153,12 +152,8 @@ export default function AdminSettingsPage() {
         <Field label="Giriş modu" value="Yetkili oturum gerektirir" />
         <Field label="Audit log" value="Dokümante / entegrasyon bekliyor" />
         <Field label="RLS politikası" value="Taslak SQL hazır" />
-        <Field label="Son güncelleme" value="Demo veri" />
+        <Field label="Son güncelleme" value="Kayıt oluştuğunda güncellenir" />
       </SettingsPanel>
-
-      <div>
-        <AdminActionButton variant="primary">Ayarları Kaydet</AdminActionButton>
-      </div>
     </div>
   );
 }

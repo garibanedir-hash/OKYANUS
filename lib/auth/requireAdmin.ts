@@ -17,6 +17,8 @@ type AdminProfileRow = {
 type AdminAccountRow = {
   id: string;
   auth_user_id: string;
+  full_name?: string | null;
+  email?: string | null;
   account_type: string;
   role: string;
   status: string;
@@ -55,6 +57,16 @@ function isAdminRole(role: string | null | undefined): role is "super_admin" | "
   return normalized === "super_admin" || normalized === "admin";
 }
 
+function buildProfileFromAccount(user: User, account: AdminAccountRow, role: "super_admin" | "admin"): AdminProfileRow {
+  return {
+    id: user.id,
+    full_name: account.full_name ?? user.user_metadata?.full_name ?? "Admin",
+    email: account.email ?? user.email ?? "",
+    role,
+    status: account.status
+  };
+}
+
 export async function getAdminContext(): Promise<AdminContext> {
   if (isAdminDemoMode) {
     throw new AdminAuthorizationError("Gerçek içerik işlemleri için admin hesabınızla giriş yapmanız gerekiyor.", "demo_mode");
@@ -81,33 +93,54 @@ export async function getAdminContext(): Promise<AdminContext> {
     .eq("id", user.id)
     .maybeSingle();
 
-  if (profileResult.error || !profileResult.data) {
-    throw new AdminAuthorizationError("Admin rolünüz doğrulanamadı. Lütfen yetkili hesabınızla tekrar giriş yapın.", "profile_missing");
-  }
-
-  if (profileResult.data.status !== "active") {
-    throw new AdminAuthorizationError("Bu admin hesabı aktif görünmüyor. Lütfen yetkili kişiyle iletişime geçin.", "inactive");
-  }
-
-  if (!isAdminRole(profileResult.data.role)) {
-    throw new AdminAuthorizationError("Bu işlem için admin veya super admin yetkisi gerekiyor.", "forbidden");
-  }
-
   const accountResult = await db
     .from<AdminAccountRow>("user_accounts")
-    .select("id, auth_user_id, account_type, role, status")
+    .select("id, auth_user_id, full_name, email, account_type, role, status")
     .eq("auth_user_id", user.id)
     .maybeSingle();
 
   const account = accountResult.error ? null : accountResult.data;
 
-  return {
-    user,
-    supabase,
-    role: normalizeRole(profileResult.data.role) as "super_admin" | "admin",
-    profile: profileResult.data,
-    account
-  };
+  if (profileResult.data) {
+    if (profileResult.data.status !== "active") {
+      throw new AdminAuthorizationError("Bu admin hesabı aktif görünmüyor. Lütfen yetkili kişiyle iletişime geçin.", "inactive");
+    }
+
+    if (isAdminRole(profileResult.data.role)) {
+      return {
+        user,
+        supabase,
+        role: normalizeRole(profileResult.data.role) as "super_admin" | "admin",
+        profile: profileResult.data,
+        account
+      };
+    }
+  }
+
+  if (account) {
+    if (account.status !== "active") {
+      throw new AdminAuthorizationError("Bu admin hesabı aktif görünmüyor. Lütfen yetkili kişiyle iletişime geçin.", "inactive");
+    }
+
+    const normalizedAccountType = normalizeRole(account.account_type);
+    const normalizedAccountRole = normalizeRole(account.role);
+    if (normalizedAccountType === "admin" || normalizedAccountRole === "admin" || normalizedAccountRole === "super_admin") {
+      const role = normalizedAccountRole === "super_admin" ? "super_admin" : "admin";
+      return {
+        user,
+        supabase,
+        role,
+        profile: buildProfileFromAccount(user, account, role),
+        account
+      };
+    }
+  }
+
+  if (profileResult.error || accountResult.error) {
+    throw new AdminAuthorizationError("Admin rolünüz doğrulanamadı. Lütfen yetkili hesabınızla tekrar giriş yapın.", "profile_missing");
+  }
+
+  throw new AdminAuthorizationError("Bu işlem için admin veya super admin yetkisi gerekiyor.", "forbidden");
 }
 
 export async function requireAdminUser() {
@@ -121,7 +154,10 @@ export async function requireSuperAdmin() {
     throw new AdminAuthorizationError("Bu işlem için super admin yetkisi gerekiyor.", "super_admin_required");
   }
 
-  return context;
+  return {
+    ...context,
+    role: context.role
+  };
 }
 
 export function canManageContent(context: AdminContext) {

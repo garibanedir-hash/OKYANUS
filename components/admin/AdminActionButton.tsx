@@ -34,7 +34,7 @@ export function AdminActionButton({
     <button
       type="button"
       className={className}
-      onClick={onClick ?? (() => window.alert("Bu işlem şu anda pasif durumda."))}
+      onClick={onClick ?? (() => window.alert("Bu işlem için gerekli kayıt henüz bulunmuyor."))}
     >
       {safeChildren}
     </button>

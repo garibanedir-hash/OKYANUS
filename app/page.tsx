@@ -18,6 +18,7 @@ import { VolunteerCTA } from "@/components/sections/VolunteerCTA";
 import { TrustSection } from "@/components/sections/TrustSection";
 import { MotionReveal } from "@/components/MotionReveal";
 import { ProjectRegionSection } from "@/components/projects/ProjectRegionSection";
+import { SupportersStrip } from "@/components/SupportersStrip";
 
 const homeFlow: Array<{ icon: LucideIcon; title: string; text: string }> = [
   { icon: HandHeart, title: "Kimiz?", text: "Emanet bilinciyle çalışan insani yardım derneğiyiz." },
@@ -39,6 +40,7 @@ export default async function HomePage() {
     <>
       <HeroSection donationConfig={donationConfig} />
       <StatsSection />
+      <SupportersStrip />
 
       {regions.length ? (
         <section className="bg-warm-white py-20 sm:py-24">

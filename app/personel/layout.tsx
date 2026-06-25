@@ -3,7 +3,7 @@ import { StaffShell } from "@/components/staff/StaffShell";
 
 export const metadata: Metadata = {
   title: "Personel Paneli | Okyanus",
-  description: "Okyanus personel demo paneli."
+  description: "Okyanus personel paneli."
 };
 
 export default function StaffLayout({ children }: { children: React.ReactNode }) {

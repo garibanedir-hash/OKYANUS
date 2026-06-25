@@ -17,7 +17,7 @@ export default function AdminTasksPage() {
       <AdminSectionHeader
         eyebrow="Operasyon Yönetimi"
         title="Görevler"
-        description="Proje, bağış, gönüllü başvurusu, iletişim mesajı ve rapor süreçleri için kurum içi görev takibi demo olarak hazırlanmıştır."
+        description="Proje, bağış, gönüllü başvurusu, iletişim mesajı ve rapor süreçleri için kurum içi görev takibi."
         actionLabel="Yeni Görev Ata"
       />
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
@@ -27,8 +27,8 @@ export default function AdminTasksPage() {
         <AdminMiniStat label="Tamamlanan" value={summary.completed} />
         <AdminMiniStat label="Geciken" value={summary.overdue} />
       </section>
-      <AdminPanelNotice title="Demo görev sistemi">
-        Bu ekran gerçek görev kaydı oluşturmaz. Supabase aşamasında internal_tasks, task_comments ve audit_logs tablolarına bağlanacak şekilde hazırlanmıştır.
+      <AdminPanelNotice title="Görev kayıtları">
+        Görev, yorum ve audit log entegrasyonu tamamlandığında gerçek kayıtlar bu alanda yönetilecektir.
       </AdminPanelNotice>
       <AdminFilterBar>
         <label className="text-sm font-bold text-dark-navy">Durum<select className="focus-ring mt-2 w-full rounded-2xl border border-border-soft px-4 py-2"><option>Tümü</option><option>Yeni</option><option>Devam Ediyor</option><option>Gecikti</option><option>Tamamlandı</option></select></label>

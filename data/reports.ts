@@ -5,7 +5,7 @@ export type Report = {
   period: string;
   category: string;
   summary: string;
-  statusLabel: "Özet yayınlandı" | "PDF hazırlanıyor";
+  statusLabel: "Özet yayınlandı" | "PDF paylaşılmadı";
   pdfUrl?: string;
   metrics: Array<{ label: string; value: string }>;
   tags: string[];

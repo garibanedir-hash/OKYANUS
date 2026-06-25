@@ -9,7 +9,7 @@ import { AdminTable } from "@/components/admin/AdminTable";
 export default function AdminExpensePage() {
   return (
     <div className="grid gap-5">
-      <AdminSectionHeader eyebrow="Finans Operasyon" title="Harcama & Masraf Talepleri" description="Görev, faaliyet ve proje bazlı masraf taleplerinin demo takip ekranı." actionLabel="Yeni Masraf Talebi" />
+      <AdminSectionHeader eyebrow="Finans Operasyon" title="Harcama & Masraf Talepleri" description="Görev, faaliyet ve proje bazlı masraf taleplerinin takip ekranı." actionLabel="Yeni Masraf Talebi" />
       <AdminFilterBar showActions>
         <label>Açıklama<input className="focus-ring mt-1 w-full border px-3" placeholder="Harcama ara" /></label>
         <label>Gider türü<select className="focus-ring mt-1 w-full border px-3"><option>Tümü</option><option>Lojistik</option><option>Ulaşım</option></select></label>

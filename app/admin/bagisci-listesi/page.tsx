@@ -19,7 +19,7 @@ export default function AdminDonorDirectoryPage() {
       <AdminSectionHeader
         eyebrow="Bağışçı ilişkileri"
         title="Bağışçı Listesi"
-        description="Maskeli kişisel verilerle hazırlanmış demo bağışçı yönetimi ekranı."
+        description="Bağışçı kayıtları gerçek veri oluştuğunda maskeli ve yetki kontrollü şekilde listelenir."
       />
       <section className="grid gap-4 md:grid-cols-4">
         <SummaryCard label="Toplam bağışçı" value={mockDonorDirectory.length} />
@@ -27,7 +27,7 @@ export default function AdminDonorDirectoryPage() {
         <SummaryCard label="Sponsorluk sahibi" value={1} />
         <SummaryCard label="Son 30 gün aktif" value={3} />
       </section>
-      <AdminTable headers={["Ad soyad", "E-posta", "Telefon", "Toplam bağış", "Son bağış", "Proje", "Sponsorluk"]}>
+      <AdminTable headers={["Ad soyad", "E-posta", "Telefon", "Toplam bağış", "Son bağış", "Proje", "Sponsorluk"]} recordCount={mockDonorDirectory.length} empty={!mockDonorDirectory.length}>
         {mockDonorDirectory.map((donor) => (
           <tr key={donor.email}>
             <td className="px-4 py-4 font-bold text-dark-navy">{donor.fullName}</td>
@@ -41,7 +41,7 @@ export default function AdminDonorDirectoryPage() {
         ))}
       </AdminTable>
       <AdminPanelNotice title="KVKK uyarısı">
-        Bağışçı kişisel verileri yalnızca yetkili roller tarafından görüntülenmelidir. Bu demo ekranda e-posta ve telefon alanları maskelenmiştir.
+        Bağışçı kişisel verileri yalnızca yetkili roller tarafından görüntülenmelidir. Listeleme ekranında e-posta ve telefon alanları maskeli tutulmalıdır.
       </AdminPanelNotice>
     </div>
   );

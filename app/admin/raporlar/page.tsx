@@ -6,7 +6,7 @@ import { AdminTable } from "@/components/admin/AdminTable";
 export default function AdminReportsHubPage() {
   return (
     <div className="grid gap-5">
-      <AdminSectionHeader eyebrow="Raporlama" title="Raporlar" description="Faaliyet raporu, operasyon raporu ve finansal özetlerin demo yönetim merkezi." actionLabel="Rapor Oluştur" />
+      <AdminSectionHeader eyebrow="Raporlama" title="Raporlar" description="Faaliyet raporu, operasyon raporu ve finansal özetlerin yönetim merkezi." actionLabel="Rapor Oluştur" />
       <AdminTable headers={["Rapor", "Dönem", "Kategori", "Durum", "Metrikler"]} recordCount={reports.length}>
         {reports.map((report) => (
           <tr key={report.id}>

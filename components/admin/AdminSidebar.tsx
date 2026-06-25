@@ -133,7 +133,7 @@ const navGroups: AdminNavGroup[] = [
   {
     title: "AYARLAR",
     items: [
-      { label: "Kullanıcılar", href: "/admin/kullanicilar", icon: UsersRound },
+      { label: "Kullanıcılar", href: "/admin/ayarlar/kullanicilar", icon: UsersRound },
       { label: "Roller/Yetkiler", href: "/admin/yetkiler", icon: ShieldCheck },
       { label: "Site Ayarları", href: "/admin/ayarlar", icon: Settings }
     ]

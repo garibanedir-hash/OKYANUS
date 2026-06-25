@@ -16,7 +16,7 @@ export default function AdminMessagesPage() {
       <AdminSectionHeader
         eyebrow="İç İletişim"
         title="Mesajlar"
-        description="Personel mesajları, görev yorumları ve proje iç notları için gerçek zamanlı iletişim sistemine hazır demo merkezidir."
+        description="Personel mesajları, görev yorumları ve proje iç notları gerçek kayıtlar oluştuğunda burada izlenir."
         actionLabel="Yeni Konuşma"
       />
       <section className="grid gap-4 md:grid-cols-3">
@@ -24,8 +24,8 @@ export default function AdminMessagesPage() {
         <AdminMiniStat label="Okunmamış mesaj" value={summary.unreadTotal} />
         <AdminMiniStat label="Görev bağlantılı" value={summary.taskRelated} />
       </section>
-      <AdminPanelNotice title="Realtime hazırlığı">
-        Bu sayfa şu an mock veriyle çalışır. Production aşamasında konuşma katılımcısı kontrolü, Supabase Realtime kanal yetkileri ve mesaj audit izleri eklenecektir.
+      <AdminPanelNotice title="İletişim kayıtları">
+        Konuşma katılımcısı kontrolü, kanal yetkileri ve mesaj audit izleri tamamlandığında gerçek kayıtlar bu alanda listelenecektir.
       </AdminPanelNotice>
       <section className="grid gap-6 xl:grid-cols-[380px_1fr]">
         <div className="rounded-brand border border-border-soft bg-white p-5 shadow-card">

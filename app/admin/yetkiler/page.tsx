@@ -10,7 +10,7 @@ export default function AdminPermissionsPage() {
 
   return (
     <div className="grid gap-6">
-      <AdminSectionHeader eyebrow="RBAC" title="Rol ve Yetki Yönetimi" description="Rol bazlı görünürlük, panel erişimi ve işlem yetkileri için demo matris." actionLabel="Rol Oluştur" />
+      <AdminSectionHeader eyebrow="RBAC" title="Rol ve Yetki Yönetimi" description="Rol bazlı görünürlük, panel erişimi ve işlem yetkileri için yönetim matrisi." actionLabel="Rol Oluştur" />
       <AdminPanelNotice title="Güvenlik uyarısı">Yetki değişiklikleri production ortamında server-side doğrulanmalı ve audit log’a kaydedilmelidir.</AdminPanelNotice>
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {roles.map((role) => <article key={role.id} className="rounded-brand border border-border-soft bg-white p-5 shadow-card"><h2 className="font-bold text-dark-navy">{role.title}</h2><p className="mt-2 text-sm text-ink-muted">{role.scope}</p></article>)}

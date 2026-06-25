@@ -65,7 +65,7 @@ export function ProjectRegionProjects({
                         <path d="M4 19.5V8.8L12 4l8 4.8v10.7" strokeLinecap="round" strokeLinejoin="round" />
                         <path d="M8 20v-7h8v7M9 9.5h.01M15 9.5h.01" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
-                      <span className="text-[0.68rem] font-bold leading-4">Proje görseli hazırlanıyor</span>
+                      <span className="text-[0.68rem] font-bold leading-4">Proje görseli paylaşılmadı</span>
                     </div>
                   )}
                 </div>
@@ -124,7 +124,7 @@ export function ProjectRegionProjects({
                   <p className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-[#64748B]">{formatActivityDate(activity.activityDate ?? activity.completedAt ?? activity.publishedAt)}</p>
                   <h4 className="mt-2 text-sm font-bold leading-6 text-[#0F2547]">{activity.title}</h4>
                   <p className="mt-1 text-sm leading-6 text-[#64748B]">
-                    {activity.publicSummary ?? activity.distributedItemType ?? "Bu faaliyet için public saha özeti hazırlanıyor."}
+                    {activity.publicSummary ?? activity.distributedItemType ?? "Bu faaliyet için saha özeti paylaşılmadı."}
                   </p>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {projectById.get(activity.projectId) ? (
