@@ -3,6 +3,7 @@ import "server-only";
 import type { User } from "@supabase/supabase-js";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { AdminAuthorizationError, requireAdminUser } from "@/lib/auth/requireAdmin";
+import { getAuthInviteRedirectUrl } from "@/lib/config/siteUrl";
 
 export type ManagedUserRole = "super_admin" | "admin" | "coordinator" | "staff";
 export type ManagedUserStatus = "active" | "inactive";
@@ -235,6 +236,7 @@ export async function inviteManagedUser(formData: FormData) {
   }
 
   const inviteResult = await client.auth.admin.inviteUserByEmail(input.email, {
+    redirectTo: getAuthInviteRedirectUrl(),
     data: {
       full_name: input.fullName,
       role: input.role,

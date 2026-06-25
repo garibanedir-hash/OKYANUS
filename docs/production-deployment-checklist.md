@@ -142,6 +142,13 @@ PRODUCTION_SMOKE_BASE_URL=https://www.okyanus.org.tr PRODUCTION_SMOKE_EXPECTED_W
 - [ ] Test kullanıcı şifreleri `.env.local`/staging secret dışında hiçbir yere yazılmadı.
 - [ ] Metadata tek başına güvenlik kaynağı olarak kullanılmıyor; server guard + RLS asıl sınır.
 - [ ] Her rol kendi paneliyle sınırlı ve yasaklı paneller manuel checklist ile doğrulandı.
+- [ ] Admin/personel davetlerinde `redirectTo` canlı domain üzerinden kuruluyor: `https://www.okyanus.org.tr/giris`.
+- [ ] Supabase Authentication -> URL Configuration içinde Site URL `https://www.okyanus.org.tr`.
+- [ ] Supabase Redirect URLs içinde `https://www.okyanus.org.tr/**` ve local test için `http://localhost:3000/**` var.
+- [ ] Supabase Invite user e-posta subject'i `Okyanus Yönetim Paneli Daveti`.
+- [ ] Invite user template'i Türkçe ve `{{ .ConfirmationURL }}` kullanıyor.
+- [ ] Custom SMTP aktif; sender name `Okyanus İnsani Yardım Derneği`, from email `info@okyanus.org.tr` veya `no-reply@okyanus.org.tr`.
+- [ ] Test davet e-postasında localhost, İngilizce default başlık/metin ve `powered by Supabase` footer'ı yok.
 
 ## Read-only Public Data
 

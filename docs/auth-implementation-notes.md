@@ -130,6 +130,46 @@ Supabase password reset e-postası kullanılabilir. Reset URL’i admin login do
 
 Admin kullanıcıları için e-posta doğrulama zorunlu olmalıdır. Davet akışı Super Admin onayıyla yönetilmelidir.
 
+## 16F Admin Davet E-postası Production Ayarları
+
+Admin kullanıcı/personel davetleri `inviteUserByEmail` ile server-side çalışır. Davet linki `redirectTo` parametresiyle canlı domain üzerinden kurulmalıdır:
+
+- Production redirect: `https://www.okyanus.org.tr/giris`
+- Local geliştirme redirect: `http://localhost:3000/giris`
+
+Kod tarafında `lib/config/siteUrl.ts` helper'ı `NEXT_PUBLIC_SITE_URL`, `SITE_URL` ve güvenli fallback değerlerini değerlendirir. Production runtime'da env eksikse veya yanlışlıkla localhost/http verilirse davet redirect'i `https://www.okyanus.org.tr/giris` değerine düşer. Service role yalnızca server-side repository/action içinde kullanılmalıdır.
+
+Supabase Dashboard checklist:
+
+- Authentication -> URL Configuration -> Site URL: `https://www.okyanus.org.tr`
+- Authentication -> URL Configuration -> Redirect URLs:
+  - `https://www.okyanus.org.tr/**`
+  - `http://localhost:3000/**`
+- Authentication -> Email Templates -> Invite user subject:
+  - `Okyanus Yönetim Paneli Daveti`
+- Authentication -> SMTP Settings:
+  - Custom SMTP aktif edilmeli.
+  - Sender name: `Okyanus İnsani Yardım Derneği`
+  - From email: `info@okyanus.org.tr` veya `no-reply@okyanus.org.tr`
+
+Supabase Invite user HTML template önerisi:
+
+```html
+<p>Merhaba,</p>
+
+<p>Okyanus İnsani Yardım Derneği yönetim paneline kullanıcı olarak davet edildiniz.</p>
+
+<p>Hesabınızı oluşturmak ve giriş işleminizi tamamlamak için aşağıdaki bağlantıya tıklayabilirsiniz:</p>
+
+<p><a href="{{ .ConfirmationURL }}">Davetiyeyi kabul et</a></p>
+
+<p>Bu davet size kurum yetkilisi tarafından gönderilmiştir. Daveti siz talep etmediyseniz bu e-postayı dikkate almayabilirsiniz.</p>
+
+<p>Okyanus İnsani Yardım Derneği</p>
+```
+
+Template içinde `{{ .ConfirmationURL }}` korunmalıdır. İngilizce `You have been invited`, `Supabase Auth` gönderen adı ve `powered by Supabase` benzeri default footer production e-postasında kalmamalıdır. Custom SMTP kurulmadan gönderen adı hâlâ Supabase/Auth varsayılanı gibi görünebilir; ilk test kurum içi e-posta adresine gönderilerek doğrulanmalıdır.
+
 ## Rate limiting / brute force notu
 
 Login endpoint’i rate limiting ve bot korumasıyla desteklenmelidir. Çok sayıda başarısız giriş audit/security log’a yazılmalıdır.
