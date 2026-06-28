@@ -142,14 +142,14 @@ export default function BylawPage() {
                 </summary>
                 <div className="mt-4 space-y-3 border-t border-border-soft pt-4">
                   {section.paragraphs?.map((paragraph) => (
-                    <p key={paragraph} className="text-sm leading-7 text-ink-muted">
+                    <p key={paragraph} className="text-base leading-7 text-ink-muted">
                       {paragraph}
                     </p>
                   ))}
                   {section.items ? (
                     <ul className="grid gap-2">
                       {section.items.map((item) => (
-                        <li key={item} className="flex gap-3 text-sm leading-7 text-ink-muted">
+                        <li key={item} className="flex gap-3 text-base leading-7 text-ink-muted">
                           <span className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-ocean-green" />
                           <span>{item}</span>
                         </li>

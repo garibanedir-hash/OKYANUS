@@ -40,7 +40,6 @@ export default async function HomePage() {
     <>
       <HeroSection donationConfig={donationConfig} />
       <StatsSection />
-      <SupportersStrip />
 
       {regions.length ? (
         <section className="bg-warm-white py-20 sm:py-24">
@@ -86,7 +85,7 @@ export default async function HomePage() {
                     <Icon aria-hidden className="h-6 w-6" />
                   </span>
                   <h3 className="relative mt-5 text-xl font-bold text-dark-navy">{title}</h3>
-                  <p className="relative mt-3 text-sm leading-6 text-slate-600">{text}</p>
+                  <p className="relative mt-3 text-[0.95rem] leading-7 text-slate-600">{text}</p>
                 </article>
               </MotionReveal>
             ))}
@@ -174,6 +173,8 @@ export default async function HomePage() {
           </div>
         </Container>
       </section>
+
+      <SupportersStrip />
     </>
   );
 }

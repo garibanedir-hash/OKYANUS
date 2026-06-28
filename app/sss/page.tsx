@@ -65,7 +65,7 @@ export default function FaqPage() {
                   </span>
                   <ChevronDown aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-ink-muted transition group-open:rotate-180" />
                 </summary>
-                <p className="mt-4 border-t border-border-soft pt-4 text-sm leading-7 text-ink-muted">{item.answer}</p>
+                <p className="mt-4 border-t border-border-soft pt-4 text-base leading-7 text-ink-muted">{item.answer}</p>
               </details>
             ))}
           </div>

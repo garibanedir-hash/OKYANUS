@@ -26,7 +26,7 @@ export function ActivityCard({
         </div>
 
         <h3 className="text-xl font-bold text-dark-navy">{title}</h3>
-        <p className="mt-3 flex-1 text-sm leading-6 text-slate-600">{description}</p>
+        <p className="mt-3 flex-1 text-[0.95rem] leading-7 text-slate-600">{description}</p>
 
         {supportTypes && supportTypes.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-1.5">

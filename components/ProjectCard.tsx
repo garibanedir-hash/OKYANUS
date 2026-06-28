@@ -86,8 +86,8 @@ export function ProjectCard({
           ) : null}
         </div>
         <h3 className="text-xl font-bold text-dark-navy">{title}</h3>
-        <p className={`${compact ? "min-h-16" : "min-h-20"} mt-3 text-sm leading-6 text-slate-600`}>{description}</p>
-        <div className="mt-5 rounded-md border border-[#D7E0E7] bg-[#F8FBFA] px-3 py-3 text-sm font-semibold leading-6 text-[#526574]">
+        <p className={`${compact ? "min-h-16" : "min-h-20"} mt-3 text-[0.95rem] leading-7 text-slate-600`}>{description}</p>
+        <div className="mt-5 rounded-md border border-[#D7E0E7] bg-[#F8FBFA] px-3 py-3 text-[0.95rem] font-semibold leading-7 text-[#526574]">
           Faaliyet bilgileri doğrulanan içeriklerle güncellenecektir.
         </div>
         <Button href={slug ? `/projeler/${slug}` : "/projeler"} variant="ghost" className="mt-6 w-full rounded-md" showIcon>

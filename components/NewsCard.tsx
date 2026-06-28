@@ -25,7 +25,7 @@ export function NewsCard({
         </div>
       </div>
       <h3 className="mt-4 text-xl font-bold leading-snug text-dark-navy">{title}</h3>
-      <p className="mt-3 min-h-20 text-sm leading-6 text-slate-600">{summary}</p>
+      <p className="mt-3 min-h-20 text-[0.95rem] leading-7 text-slate-600">{summary}</p>
       <Link
         href={`/haberler/${slug}`}
         className="focus-ring mt-5 inline-flex items-center gap-2 rounded-full text-sm font-semibold text-ocean-green"

@@ -8,8 +8,13 @@ export type Supporter = {
 export const supporters: Supporter[] = [
   {
     name: "Tropikal Bahçem",
-    logoSrc: "/supporters/tropikal-bahcem.png",
+    logoSrc: "/supporters/tropikal-bahcem-clean.png",
     website: "https://tropicalbahcem.com/",
+    isActive: true
+  },
+  {
+    name: "PDR'net",
+    logoSrc: "/supporters/pdrnet.png",
     isActive: true
   }
 ];
