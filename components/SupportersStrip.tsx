@@ -27,14 +27,13 @@ export function SupportersStrip() {
       <Container>
         <MotionReveal>
           <SectionHeading
-            eyebrow="Destekçilerimiz"
-            title="İyilik yolculuğumuzda yanımızda olan kurumlar"
+            title="Destekçilerimiz"
             description="İyilik yolculuğumuzda yanımızda olan kurum ve paydaşlarımıza teşekkür ederiz."
             align="center"
           />
         </MotionReveal>
 
-        <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="mt-10 flex flex-wrap justify-center gap-3">
           {activeSupporters.map((supporter) => {
             const logo = (
               <Image
@@ -47,7 +46,7 @@ export function SupportersStrip() {
               />
             );
             const className =
-              "group focus-ring flex min-h-24 items-center justify-center rounded-lg border border-border-soft bg-white px-4 py-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-card";
+              "group focus-ring flex min-h-24 w-full max-w-[13rem] items-center justify-center rounded-lg border border-border-soft bg-white px-4 py-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-card sm:w-[13rem]";
 
             if (isValidExternalUrl(supporter.website)) {
               return (
