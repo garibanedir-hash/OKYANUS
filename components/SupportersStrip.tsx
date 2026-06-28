@@ -24,18 +24,18 @@ export function SupportersStrip() {
   const marqueeCopies = Array.from({ length: 6 }, (_, copyIndex) => ({ copyIndex, supporters: activeSupporters }));
 
   return (
-    <section className="border-t border-border-soft bg-warm-white py-8 sm:py-10">
+    <section className="border-t border-border-soft bg-warm-white py-10 sm:py-12">
       <Container>
         <MotionReveal>
-          <div className="grid gap-5 lg:grid-cols-[minmax(0,0.42fr)_minmax(0,1fr)] lg:items-center">
-            <div className="max-w-xl">
-              <h2 className="text-sm font-extrabold uppercase tracking-[0.14em] text-dark-navy sm:text-base">Destekçilerimiz</h2>
-              <p className="mt-2 text-sm leading-6 text-ink-muted">
+          <div>
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-base font-extrabold uppercase tracking-[0.14em] text-dark-navy sm:text-lg">Destekçilerimiz</h2>
+              <p className="mt-2 text-sm leading-6 text-ink-muted sm:text-base sm:leading-7">
                 İyilik yolculuğumuzda yanımızda olan kurum ve paydaşlarımıza teşekkür ederiz.
               </p>
             </div>
 
-            <div className="relative min-w-0 overflow-hidden py-3 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)] [-webkit-mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+            <div className="relative mt-7 min-w-0 overflow-hidden py-3 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)] [-webkit-mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
               <div className="supporters-marquee-track flex w-max items-center gap-12 motion-reduce:w-auto motion-reduce:flex-wrap motion-reduce:justify-center">
                 {marqueeCopies.map(({ copyIndex, supporters }) =>
                   supporters.map((supporter) => {
@@ -44,14 +44,14 @@ export function SupportersStrip() {
                       <Image
                         src={supporter.logoSrc}
                         alt={`${supporter.name} logosu`}
-                        width={220}
-                        height={110}
-                        className="h-16 w-auto max-w-[12rem] object-contain opacity-70 grayscale transition duration-300 group-hover:opacity-100 group-hover:grayscale-0 group-focus-visible:opacity-100 group-focus-visible:grayscale-0 sm:h-20 sm:max-w-[14rem]"
+                        width={260}
+                        height={130}
+                        className="h-20 w-auto max-w-[14rem] object-contain opacity-70 grayscale transition duration-300 group-hover:opacity-100 group-hover:grayscale-0 group-focus-visible:opacity-100 group-focus-visible:grayscale-0 sm:h-24 sm:max-w-[16rem]"
                         loading="lazy"
                       />
                     );
                     const className =
-                      "group focus-ring inline-flex min-h-20 min-w-36 shrink-0 items-center justify-center rounded-lg px-3 py-2 transition hover:-translate-y-0.5 motion-reduce:min-w-0 sm:min-w-44";
+                      "group focus-ring inline-flex min-h-24 min-w-44 shrink-0 items-center justify-center rounded-lg px-4 py-2 transition hover:-translate-y-0.5 motion-reduce:min-w-0 sm:min-w-52";
 
                     if (isValidExternalUrl(supporter.website)) {
                       return (
@@ -60,7 +60,7 @@ export function SupportersStrip() {
                           href={supporter.website}
                           target="_blank"
                           rel="noopener noreferrer"
-                          aria-label={`${supporter.name} web sitesini aç`}
+                          aria-label={`${supporter.name} bağlantısını aç`}
                           aria-hidden={isDuplicate ? true : undefined}
                           tabIndex={isDuplicate ? -1 : undefined}
                           className={`${className} ${isDuplicate ? "motion-reduce:hidden" : ""}`}

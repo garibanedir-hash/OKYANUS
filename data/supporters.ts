@@ -15,6 +15,12 @@ export const supporters: Supporter[] = [
   {
     name: "PDR'net",
     logoSrc: "/supporters/pdrnet.png",
+    website: "https://www.instagram.com/pdrnet.tr?igsh=MWhobGxtd3R1aGgwbw==",
+    isActive: true
+  },
+  {
+    name: "My Smile",
+    logoSrc: "/supporters/my-smile.png",
     isActive: true
   }
 ];
