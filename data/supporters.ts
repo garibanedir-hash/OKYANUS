@@ -21,6 +21,7 @@ export const supporters: Supporter[] = [
   {
     name: "My Smile",
     logoSrc: "/supporters/my-smile.png",
+    website: "https://mysmyletr.com/",
     isActive: true
   }
 ];

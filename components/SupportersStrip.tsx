@@ -40,18 +40,24 @@ export function SupportersStrip() {
                 {marqueeCopies.map(({ copyIndex, supporters }) =>
                   supporters.map((supporter) => {
                     const isDuplicate = copyIndex > 0;
+                    const isMySmile = supporter.name === "My Smile";
+                    const logoClassName = isMySmile
+                      ? "max-h-24 w-auto max-w-[16rem] object-contain opacity-70 grayscale transition duration-300 group-hover:opacity-100 group-hover:grayscale-0 group-focus-visible:opacity-100 group-focus-visible:grayscale-0 sm:max-h-28 sm:max-w-[18rem]"
+                      : "max-h-20 w-auto max-w-[14rem] object-contain opacity-70 grayscale transition duration-300 group-hover:opacity-100 group-hover:grayscale-0 group-focus-visible:opacity-100 group-focus-visible:grayscale-0 sm:max-h-24 sm:max-w-[16rem]";
                     const logo = (
                       <Image
                         src={supporter.logoSrc}
                         alt={`${supporter.name} logosu`}
                         width={260}
                         height={130}
-                        className="h-20 w-auto max-w-[14rem] object-contain opacity-70 grayscale transition duration-300 group-hover:opacity-100 group-hover:grayscale-0 group-focus-visible:opacity-100 group-focus-visible:grayscale-0 sm:h-24 sm:max-w-[16rem]"
+                        className={logoClassName}
                         loading="lazy"
                       />
                     );
                     const className =
-                      "group focus-ring inline-flex min-h-24 min-w-44 shrink-0 items-center justify-center rounded-lg px-4 py-2 transition hover:-translate-y-0.5 motion-reduce:min-w-0 sm:min-w-52";
+                      `group focus-ring inline-flex shrink-0 items-center justify-center rounded-lg px-4 py-2 transition hover:-translate-y-0.5 motion-reduce:min-w-0 ${
+                        isMySmile ? "min-h-28 min-w-56 sm:min-h-32 sm:min-w-64" : "min-h-24 min-w-44 sm:min-w-52"
+                      }`;
 
                     if (isValidExternalUrl(supporter.website)) {
                       return (
